@@ -1,9 +1,11 @@
 "use client"
 import * as React from "react"
+import Link from "next/link"
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getPaginationRowModel, getSortedRowModel, SortingState, getFilteredRowModel, ColumnFiltersState } from "@tanstack/react-table"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import Pagniation from "./Pagniation"
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -98,33 +100,43 @@ export function DataTable<TData, TValue>({
                     />
                 </div>
             )}
-            <div className="rounded-md border mt-4">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
-                            </TableRow>
-                        ))}
+            <div className="overflow-x-auto w-full mt-4">
+                <Table className="w-full text-left border-collapse">
+                    <TableHeader className="bg-gray-50 transition">
+                        <TableRow className="">
+                            {table.getHeaderGroups()[0].headers.map((header, index) => (
+                                console.log('header', header),
+                                <TableHead
+                                    key={header.id}
+                                    className="py-3 bg-[#FAFAFA] transition  px-4 text-[#0A0A0A] text-sm font-semibold border-b border-gray-200"
+                                    style={{ textAlign: 'left' }}
+                                >
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
+                                     {/* {index % 2 === 1 && header.column.id !== "actions" ? (
+                                                        <ChevronUp className="inline-block ml-2" />
+                                                    ): (
+                                                        <ChevronDown className="inline-block ml-2" />
+                                                    )} */}
+                                                    {
+                                                        index % 2 === 1 && header.column.id !== "actions" && (
+                                                            <ChevronUp className="inline-block ml-2" color="#A3A3A3" width={15} />
+                                                        )
+                                                    }
+                                                    {
+                                                        index % 2 === 0 && header.column.id !== "actions" && (
+                                                            <ChevronDown className="inline-block ml-2" color="#A3A3A3" width={15} />
+                                                        )
+                                                    }
+                                </TableHead>
+                            ))}
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
                         {loading ? (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
+                            <TableRow className="border-b">
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
                                     <div className="flex items-center justify-center">
                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary mr-2" />
                                         Loading...
@@ -135,24 +147,31 @@ export function DataTable<TData, TValue>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
+                                    className=""
+                                    // style={{ borderBottom: 'none' }}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
+                                        // console.log('cell', cell),
+                                          <TableCell
+                                            key={cell.id}
+                                            className={`py-4 px-4  text-sm ${cell.column.id === 'actions' ? 'text-[#252DAE] font-semibold cursor-pointer' : 'text-[#171717]'}`}
+                                            style={{ border: 'none', background: 'transparent' }}
+                                        >
+                                           
+                                            {cell.column.id === 'action' ? (
+                                                <Link href={cell.getValue() as string} className="text-blue-600 font-medium">Open</Link>
+                                            ) : (
+                                                flexRender(cell.column.columnDef.cell, cell.getContext())
                                             )}
+                                             
                                         </TableCell>
+                                      
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>

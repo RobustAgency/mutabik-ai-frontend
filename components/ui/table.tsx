@@ -9,6 +9,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     <div
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
+      style={{
+        border: '1px solid #ECECEE',
+        boxShadow: '0px 0px 0px 1px #ECECEE',
+        borderRadius: 12,
+      }}
     >
       <table
         data-slot="table"
