@@ -8,7 +8,7 @@ import {
 import { Landmark } from 'lucide-react';
 
 
-const ComplianceLibrary = ({
+const Accordian = ({
   children
 }) => {
   return (
@@ -42,4 +42,4 @@ const ComplianceLibrary = ({
   );
 };
 
-export default ComplianceLibrary;
+export default Accordian;

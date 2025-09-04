@@ -12,7 +12,7 @@ import {
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import ComplianceLibrary from "@/components/custom/ComplianceLibrary";
+import Accordian from "@/components/custom/Accordian";
 
 const adminRoutes = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -79,7 +79,7 @@ export function Sidebar({
             </Link>  }
 
             <div className="mt-3">
-              {item.children && <ComplianceLibrary children={item.children} />}
+              {item.children && <Accordian children={item.children} />}
             </div>
           </div>
         ))}

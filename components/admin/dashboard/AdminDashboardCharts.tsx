@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from 'react';
 import ApexCharts from 'apexcharts';
-import { Separator } from "@/components/ui/separator";
 
 
 

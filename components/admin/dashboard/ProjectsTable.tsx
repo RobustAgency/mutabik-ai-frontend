@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button'
 import { RefreshCw, AlertCircle } from 'lucide-react'
 
 
-const DashboardTable = () => {
-    
+const ProjectsTable = () => {
 
      const projects = [
         {
@@ -49,4 +48,4 @@ const DashboardTable = () => {
     )
 }
 
-export default DashboardTable
+export default ProjectsTable
