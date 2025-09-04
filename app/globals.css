@@ -5,8 +5,10 @@
 
 :root {
   /* Theme colors */
-  --primary: #252525;
-  --secondary: #252525;
+  --primary:#4FD58F;
+  --firstSecondary: #171717;
+  --secondSecondary: #404040;
+  --thirdSecondary: #737373;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -46,6 +48,9 @@
   /* Use your theme colors in Tailwind */
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-firstSecondary: var(--firstSecondary);
+  --color-secondSecondary: var(--secondSecondary);
+  --color-thirdSecondary: var(--thirdSecondary);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

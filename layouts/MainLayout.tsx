@@ -17,7 +17,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if (isLoading) return <Spinner />
 
     return (
-        <div className="bg-background text-foreground">
+        <div className="!bg-[#FAFAFA] text-foreground">
             <MobileLayout
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}

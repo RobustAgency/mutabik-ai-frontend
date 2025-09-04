@@ -14,7 +14,7 @@ const MobileLayout = ({ children, sidebarOpen, setSidebarOpen, desktopCollapsed,
                     <DrawerHeader className="hidden">
                         <DrawerTitle>Navigation</DrawerTitle>
                     </DrawerHeader>
-                    <aside className="h-full border-r bg-background">
+                    <aside className="h-full bg-background">
                         <Sidebar collapsed={false} onNavigate={() => setSidebarOpen(false)} />
                     </aside>
                 </DrawerContent>

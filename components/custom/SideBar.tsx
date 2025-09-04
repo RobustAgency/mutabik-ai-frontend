@@ -1,82 +1,91 @@
 import Link from "next/link";
-import { LayoutDashboard, Settings as SettingsIcon, LogOut, CreditCard, FileChartColumnIncreasing } from "lucide-react";
+import {
+  LayoutDashboard,
+  Settings as SettingsIcon,
+  LayoutGrid,
+  House,
+  Users,
+  LogOut,
+  CreditCard,
+  FileChartColumnIncreasing,
+} from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import Accordian from "@/components/custom/Accordian";
 
 const adminRoutes = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },
+  { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/projects", label: "Projects", icon: House },
+  {
+    href: "",
+    label: "Compliance Library",
+    icon: House,
+    children: [
+      { href: "/admin/compliance-library/frameworks", label: "Frameworks", icon: House },
+      { href: "/admin/compliance-library/requirements", label: "Requirements", icon: House },
+      { href: "/admin/compliance-library/controls", label: "Controls", icon: House },
+    ],
+  },
 ];
+
 const userRoutes = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/plans", label: "Plans", icon: CreditCard },
-    { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/plans", label: "Plans", icon: CreditCard },
+  { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
 ];
 
 const baseRoutes = [
-    { href: "/settings", label: "Settings", icon: SettingsIcon },
-    { href: "/logout", label: "Logout", icon: LogOut },
+  { href: "/settings", label: "Settings", icon: SettingsIcon },
+  { href: "/logout", label: "Logout", icon: LogOut },
 ];
 
 export function Sidebar({
-    collapsed = false,
-    onNavigate,
+  collapsed = false,
+  onNavigate,
 }: {
-    collapsed?: boolean;
-    onNavigate: () => void;
+  collapsed?: boolean;
+  onNavigate: () => void;
 }) {
-    const { user } = useAuth();
-    const role = user?.user_metadata?.role ?? "user"
-    const navigationRoutes = role === "admin" ? adminRoutes : userRoutes;
-    const pathname = usePathname();
-    return (
-        <div className="flex h-full flex-col overflow-hidden">
-            <div
-                aria-details="logo"
-                className="flex items-center justify-between md:hidden">
-                <Link href="/">
-                    <Image src="/logo.png" alt="logo" width={100} height={100} className='object-cover object-start w-30 h-14' />
-                </Link>
-            </div>
+  const { user } = useAuth();
+  const role = user?.user_metadata?.role ?? "user";
+  const navigationRoutes = role === "admin" ? adminRoutes : userRoutes;
+  const pathname = usePathname();
 
-            <nav className="flex flex-col gap-1 p-2 md:p-3 mt-6">
-                {navigationRoutes.map((item) => {
-                    const isActive = pathname.includes(item.href);
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={onNavigate}
-                            className={"relative flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"}
-                        >
-                            {item.icon ? <item.icon className="shrink-0 size-4" /> : null}
-                            {!collapsed && (
-                                <span className={`whitespace-nowrap`}>{item.label}</span>
-                            )}
-                            {isActive && (
-                                <div className='absolute top-1/2 -translate-y-1/2 rounded-full -left-1 w-1 h-[calc(100%-10px)] bg-gradient-to-r from-black via-neutral-800 to-gray-900'></div>
-                            )}
-                        </Link>
-                    )
-                })}
-            </nav>
-            <div className={"mt-auto border-t p-2 md:p-3"}>
-                {baseRoutes.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={onNavigate}
-                        className={"flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"}
-                    >
-                        {item.icon ? <item.icon className="shrink-0 size-4" /> : null}
-                        {!collapsed && (
-                            <span className={`whitespace-nowrap`}>{item.label}</span>
-                        )}
-                    </Link>
-                ))}
+  return (
+    <div className="flex h-full flex-col overflow-hidden">
+      <div aria-details="logo" className="flex items-center justify-between md:hidden">
+        <Link href="/" className="p-2">
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={120}
+            height={56}
+          />
+        </Link>
+      </div>
+
+      <div className="flex flex-col gap-1 p-2 md:p-3 mt-6">
+        {navigationRoutes.map((item) => (
+          <div key={item.label}>
+            {!(item.href === "") &&  <Link
+              href={item.href || "#"}
+              onClick={onNavigate}
+              className="relative flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"
+            >
+              {item.icon ? <item.icon className="shrink-0 size-6" color="#737373" /> : null}
+              {!collapsed && <span className="whitespace-nowrap text-[#404040] text-sm font-medium">{item.label}</span>}
+            </Link>  }
+
+            <div className="mt-3">
+              {item.children && <Accordian children={item.children} />}
             </div>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default Sidebar;
