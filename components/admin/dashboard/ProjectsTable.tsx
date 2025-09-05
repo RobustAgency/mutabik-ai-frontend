@@ -31,14 +31,12 @@ const ProjectsTable = () => {
         },
     ]
 
-    // const columns = useMemo(() => createColumns(handleRefresh))
-
-
     return (
         <TableCard title="Latest Projects"  >
             <DataTable
                 columns={columns}
                 data={projects}
+                showRowSelector={true}
                 serverSide={false}
             />
         </TableCard>

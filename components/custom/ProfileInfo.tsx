@@ -4,14 +4,11 @@ import Link from 'next/link'
 import React, { useEffect } from 'react'
 
 const ProfileInfo = () => {
-    const { profile, fetchProfile,
-        //  user 
-        } = useAuth()
+    const { profile, fetchProfile, } = useAuth()
+    const avatarUrl = profile?.avatar_url || "/default-avatar.png/placeholders/user_placeholder.png"
     // const avatarUrl = profile?.avatar_url
     // const displayName = profile?.full_name ?? "User"
     // const role = user?.user_metadata?.role ?? "user"
-    const avatarUrl = '/profile/Profile.png';
-
     useEffect(() => {
         if (!profile) {
             fetchProfile()
@@ -23,7 +20,7 @@ const ProfileInfo = () => {
             <Link href="/settings" className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
                 {avatarUrl && (
                     <Image src={avatarUrl} alt="Image not found" fill sizes="40px" className="object-cover" unoptimized />
-                ) }
+                )}
             </Link>
             {/* <div className="min-w-0">
                 <div className="truncate text-sm font-medium">{displayName}</div>
