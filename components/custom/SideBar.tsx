@@ -9,7 +9,9 @@ import {
   CreditCard,
   FileChartColumnIncreasing,
   LucideIcon,
+  Users2,
 } from "lucide-react";
+import { Landmark } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import Accordian from "@/components/custom/Accordian";
@@ -24,17 +26,26 @@ type RouteItem = {
 
 // --- Routes ---
 const adminRoutes: RouteItem[] = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },
+  { href: "/admin/dashboard", label: "Dashboard", icon: House },
   { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/projects", label: "Projects", icon: House },
+  { href: "/admin/projects", label: "Projects", icon: LayoutGrid },
   {
     href: "",
     label: "Compliance Library",
-    icon: House,
+    icon: Landmark,
     children: [
       { href: "/admin/frameworks", label: "Frameworks", icon: House },
-      { href: "/admin/compliance-library/requirements", label: "Requirements", icon: House },
-      { href: "/admin/compliance-library/controls", label: "Controls", icon: House },
+      { href: "/admin/compliance-library/requirements", label: "Requirements" },
+      { href: "/admin/compliance-library/controls", label: "Controls" },
+    ],
+  },
+  {
+    href: "",
+    label: "Users Administration",
+    icon: Users2,
+    children: [
+      { href: "/admin/users-administration/admin-users", label: "Admins" },
+      { href: "/admin/users-administration/customers", label: "Customers" },
     ],
   },
 ];
@@ -93,8 +104,8 @@ export function Sidebar({
             )}
 
             {item.children && (
-              <div className="mt-3">
-                <Accordian items={item.children} />
+              <div>
+                <Accordian label={item.label} items={item.children} icon={item.icon} />
               </div>
             )}
           </div>

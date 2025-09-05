@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onSearch?: (searchTerm: string) => void;
   loading?: boolean;
+  showRowSelector?: boolean;
   serverSide?: boolean;
 }
 
@@ -53,6 +54,7 @@ export function DataTable<TData, TValue>({
   pagination,
   onPageChange,
   onSearch,
+  showRowSelector = false,
   loading = false,
   serverSide = false,
 }: DataTableProps<TData, TValue>) {
@@ -63,17 +65,17 @@ export function DataTable<TData, TValue>({
   const [searchValue, setSearchValue] = React.useState("");
   const pathname = usePathname();
 
-    // State to manage selected rows
-    const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  // State to manage selected rows
+  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
 
-    // Toggle row selection
-    const handleRowCheckboxChange = (rowId: string) => {
-      setSelectedRows((prev) =>
-        prev.includes(rowId)
-          ? prev.filter((id) => id !== rowId)
-          : [...prev, rowId]
-      );
-    } 
+  // Toggle row selection
+  const handleRowCheckboxChange = (rowId: string) => {
+    setSelectedRows((prev) =>
+      prev.includes(rowId)
+        ? prev.filter((id) => id !== rowId)
+        : [...prev, rowId]
+    );
+  }
 
   const table = useReactTable({
     data,
@@ -141,7 +143,7 @@ export function DataTable<TData, TValue>({
                 serverSide
                   ? searchValue
                   : (table.getColumn(searchKey)?.getFilterValue() as string) ??
-                    ""
+                  ""
               }
               onChange={handleSearchChange}
               className="pl-10 pr-4 py-5 w-full text-sm text-[#A3A3A3] rounded-[8px] focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -158,10 +160,10 @@ export function DataTable<TData, TValue>({
         <Table className="w-full text-left  ">
           <TableHeader className="bg-gray-50 transition">
             <TableRow className="">
-              {/* Checkbox header cell */}
-              <TableHead className="py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
-                {/* Optionally, add a master checkbox here for select all */}
-              </TableHead>
+              {showRowSelector && (
+                <TableHead className="py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
+                </TableHead>
+              )}
               {table.getHeaderGroups()[0].headers.map(
                 (header, index) => (
                   console.log("header", header),
@@ -174,9 +176,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                       {index % 2 === 1 &&
                         header.column.id !== "actions" &&
                         pathname.includes("admin/dashboard") && (
@@ -209,7 +211,7 @@ export function DataTable<TData, TValue>({
                   className="h-24 text-center"
                 >
                   <div className="flex items-center justify-center">
-                    <div className="h-4 w-4 animate-spin border-2 border-border border-t-primary mr-2" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 mr-2" />
                     Loading...
                   </div>
                 </TableCell>
@@ -221,22 +223,23 @@ export function DataTable<TData, TValue>({
                   className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"}`}
                 >
                   {/* Checkbox cell at the start of each row */}
-                  <TableCell className="py-4 pl-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(row.id)}
-                      className="text-[#FFFFFF] border border-[#D4D4D4] rounded-[4px] w-[16px] h-[16px]"
-                      onChange={() => handleRowCheckboxChange(row.id)}
-                    />
-                  </TableCell>
+                  {showRowSelector && (
+                    <TableCell className="py-4 pl-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row.id)}
+                        className="text-[#FFFFFF] border border-[#D4D4D4] rounded-[4px] w-[16px] h-[16px]"
+                        onChange={() => handleRowCheckboxChange(row.id)}
+                      />
+                    </TableCell>
+                  )}
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-4 px-4  text-sm ${
-                        cell.column.id === "actions"
-                          ? "text-[#252DAE] font-semibold cursor-pointer"
-                          : "text-[#171717]"
-                      }`}
+                      className={`py-4 px-4  text-sm ${cell.column.id === "actions"
+                        ? "text-[#252DAE] font-semibold cursor-pointer"
+                        : "text-[#171717]"
+                        }`}
                       style={{ border: "none", background: "transparent" }}
                     >
                       {cell.column.id === "action" ? (

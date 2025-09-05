@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 const Pagniation = ({ pagination, currentPage, totalPages, handlePageChange, loading }: { pagination: { page: number, limit: number, total: number, totalPages: number }, currentPage: number, totalPages: number, handlePageChange: (page: number) => void, loading: boolean }) => {
     return (
-        <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex items-center justify-between space-x-2 py-4 px-5">
             <div className="flex-1 text-sm text-muted-foreground">
                 {pagination ? (
                     <>
