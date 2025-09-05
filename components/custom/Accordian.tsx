@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Landmark } from "lucide-react";
 
 // --- RouteItem Type ---
 type RouteItem = {
@@ -13,7 +12,8 @@ type RouteItem = {
   label: string;
 };
 
-const Accordian = ({ items }: { items: RouteItem[] }) => {
+const Accordian = ({ items, label, icon }: { items: RouteItem[], label: string, icon: any }) => {
+  const Icon = icon
   return (
     <div>
       <Accordion type="single" collapsible>
@@ -22,10 +22,10 @@ const Accordian = ({ items }: { items: RouteItem[] }) => {
             className="flex items-center justify-start p-2 md:p-3 mt-0 gap-2 [&>svg]:ml-6 cursor-pointer no-underline hover:no-underline decoration-transparent"
           >
             <span>
-              <Landmark className="shrink-0 size-6" color="#737373" />
+              <Icon className="shrink-0 size-6" color="#737373" />
             </span>
             <span className="text-[#737373] font-medium text-[14px]">
-              Compliance Library
+              {label}
             </span>
           </AccordionTrigger>
           <AccordionContent>
