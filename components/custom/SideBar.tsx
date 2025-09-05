@@ -100,7 +100,7 @@ export function Sidebar({
         ))}
 
         {/* Base routes (Settings, Logout) */}
-        {baseRoutes.map((item) => (
+        {/* {baseRoutes.map((item) => (
           <Link
             key={item.label}
             href={item.href}
@@ -114,7 +114,7 @@ export function Sidebar({
               </span>
             )}
           </Link>
-        ))}
+        ))} */}
       </div>
     </div>
   );

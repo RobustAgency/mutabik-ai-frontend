@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import Description from "@/components/admin/dashboard/Description";
-import AdditionalInformation from "@/components/admin/dashboard/AdditionalInformation";
-import Status from "@/components/admin/dashboard/Status";
-import Associations from "@/components/admin/dashboard/Associations.fixed";
+import Description from "@/components/admin/createFrameworks/Description";
+import AdditionalInformation from "@/components/admin/createFrameworks/AdditionalInformation";
+import Status from "@/components/admin/createFrameworks/Status";
+import Associations from "@/components/admin/createFrameworks/Associations";
 
 // --- Local helper types ---
 type AdditionalInfo = Record<string, string>;
