@@ -6,7 +6,7 @@ const DesktopLayout = ({ children, desktopCollapsed }: { children: React.ReactNo
         <div className="hidden md:flex">
             <aside className={cn(
                 "fixed left-0 top-14 z-30 h-[calc(100vh-3.5rem)] bg-[#FAFAFA] transition-all duration-200",
-                desktopCollapsed ? "w-16" : "w-80"
+                desktopCollapsed ? "w-16" : "w-60"
             )}>
                 <div className="h-full overflow-y-auto">
                     <Sidebar collapsed={desktopCollapsed} onNavigate={() => { }} />
@@ -15,7 +15,7 @@ const DesktopLayout = ({ children, desktopCollapsed }: { children: React.ReactNo
 
             <main className={cn(
                 "flex-1 transition-all duration-200 min-h-screen",
-                desktopCollapsed ? "ml-16" : "ml-80"
+                desktopCollapsed ? "ml-16" : "ml-55"
             )}>
                 <div className="py-10">
                     {children}
