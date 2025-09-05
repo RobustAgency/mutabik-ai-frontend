@@ -74,11 +74,10 @@ const columns: ColumnDef<Framework>[] = [
       const value = getValue() as string;
       return (
         <span
-          className={`px-2 py-1 rounded text-xs font-semibold ${
-            value === 'Published'
+          className={`px-2 py-1 rounded text-xs font-semibold ${value === 'Published'
               ? 'bg-[#F2FDF5] text-[#16A34A] border border-[#D3F3DF]'
               : 'bg-[#FFFBEB] text-[#C47E09] border border-[#FDECCE]'
-          }`}
+            }`}
         >
           {value}
         </span>
@@ -106,14 +105,14 @@ const columns: ColumnDef<Framework>[] = [
 const FrameworkTable = () => {
   return (
     <TableCard title="" >
-              <DataTable
-            columns={columns}
-            data={frameworks}
-            searchKey="regulation"
-            searchPlaceholder="Search"
-            
-          />
-        
+      <DataTable
+        columns={columns}
+        data={frameworks}
+        searchKey="regulation"
+        searchPlaceholder="Search"
+
+      />
+
     </TableCard>
   );
 };
