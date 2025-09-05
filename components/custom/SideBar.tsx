@@ -39,11 +39,12 @@ const adminRoutes: RouteItem[] = [
   },
 ];
 
-const userRoutes: RouteItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+const userRoutes = [
+  // { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/plans", label: "Plans", icon: CreditCard },
-  { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
+  // { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
 ];
+
 
 const baseRoutes: RouteItem[] = [
   { href: "/settings", label: "Settings", icon: SettingsIcon },

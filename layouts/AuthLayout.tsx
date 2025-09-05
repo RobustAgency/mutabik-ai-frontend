@@ -1,14 +1,52 @@
+'use client'
 import React from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+    const pathname = usePathname()
+
+    if (pathname === '/admin/login' || pathname === '/logout') {
+        return <>{children}</>
+    }
     return (
-        <div className='relative flex flex-col h-svh items-center justify-center'>
-            <Link href="/" className='absolute top-4 left-4'>
-                <Image src="/logo.png" alt="logo" width={100} height={100} className='object-cover object-start w-30 h-14' />
-            </Link>
-            {children}
+        <div className="min-h-screen grid lg:grid-cols-2">
+            <div className="flex items-center justify-center p-8 bg-white">
+                <div className="w-full max-w-md">
+                    {children}
+                </div>
+            </div>
+
+            <div className=" hidden lg:flex items-center justify-center bg-[#041D2D] relative">
+                <Image
+                    src="/auth/shape.png"
+                    alt="mutabiq.ai logo"
+                    width={450}
+                    height={250}
+                    className='absolute top-0 right-0'
+                />
+                <Image
+                    src="/auth/shape.png"
+                    alt="mutabiq.ai logo"
+                    width={450}
+                    height={250}
+                    className='absolute bottom-0 left-0 rotate-180'
+                />
+                <div className="text-center text-white">
+                    <div className="flex items-center justify-center mb-6">
+                        <Image
+                            src="/auth/logo.svg"
+                            alt="mutabiq.ai logo"
+                            width={200}
+                            height={48}
+                        />
+                    </div>
+                    <p className="text-lg text-slate-300 max-w-sm">
+                        Governing Data, Privacy, and AI with Confidence.
+                    </p>
+                </div>
+            </div>
+
         </div>
     )
 }
