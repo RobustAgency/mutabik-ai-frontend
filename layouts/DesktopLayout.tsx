@@ -17,7 +17,7 @@ const DesktopLayout = ({ children, desktopCollapsed }: { children: React.ReactNo
                 "flex-1 transition-all duration-200 min-h-screen",
                 desktopCollapsed ? "ml-16" : "ml-80"
             )}>
-                <div className="p-4 md:p-6">
+                <div className="">
                     {children}
                 </div>
             </main>

@@ -1,12 +1,9 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import { DataTable } from '@/components/custom/DataTable'
 import { columns } from './projectColumns'
 import TableCard from '@/components/custom/TableCard'
-import { Button } from '@/components/ui/button'
-import { RefreshCw, AlertCircle } from 'lucide-react'
-
 
 const ProjectsTable = () => {
 

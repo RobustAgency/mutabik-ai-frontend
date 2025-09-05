@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 const AdminDashboardPage = () => {
   return (
     <React.Fragment>
-      <div className="mb-6">
+      <div className="mb-6 py-8">
         <h1 className="text-3xl font-bold text-[#171717]">Dashboard</h1>
       </div>
       <div>
