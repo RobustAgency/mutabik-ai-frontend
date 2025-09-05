@@ -10,9 +10,10 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
       style={{
-        border: '1px solid #ECECEE',
+        borderTop: '1px solid #ECECEE',
+        borderBottom: '1px solid #ECECEE',
         boxShadow: '0px 0px 0px 1px #ECECEE',
-        borderRadius: 12,
+        borderRadius: 0,
       }}
     >
       <table
@@ -62,7 +63,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        " data-[state=selected]:bg-muted border-b transition-colors",
         className
       )}
       {...props}

@@ -6,7 +6,7 @@ export const Separator: React.FC<{ style?: React.CSSProperties }> = ({ style }) 
       width: "100%",
       height: 1,
       background: "#eee",
-      margin: "1rem 0",
+      margin: "0 0",
       ...style,
     }}
   />
