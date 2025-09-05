@@ -16,7 +16,7 @@ const DashboardInfoCards: React.FC = () => {
 						<CardTitle className=" text-[#737373] text-sm font-medium ">{card.label}</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<span className="text-3xl font-bold text-[#171717] font-semibold">{card.value}</span>
+						<span className="text-3xl text-[#171717] font-semibold">{card.value}</span>
 					</CardContent>
 				</Card>
 			))}
