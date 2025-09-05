@@ -31,9 +31,9 @@ const adminRoutes = [
 ];
 
 const userRoutes = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  // { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/plans", label: "Plans", icon: CreditCard },
-  { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
+  // { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
 ];
 
 const baseRoutes = [

@@ -23,7 +23,7 @@ export async function loginAdmin(email: string, password: string): Promise<Admin
                 email: string;
                 role: string;
             };
-        }>('/admin/login', {
+        }>('/auth/login', {
             email,
             password
         });

@@ -42,7 +42,7 @@ export function LoginForm() {
             if (state.data?.user_metadata?.role === "admin") {
                 window.location.href = "/admin/dashboard";
             } else {
-                window.location.href = "/dashboard";
+                window.location.href = "/plans";
             }
         } else if (state.message) {
             toast.error(state.message);

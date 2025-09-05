@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname()
 
-    if (pathname === '/admin/login') {
+    if (pathname === '/admin/login' || pathname === '/logout') {
         return <>{children}</>
     }
     return (
