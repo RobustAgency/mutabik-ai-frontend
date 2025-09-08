@@ -34,7 +34,7 @@ const adminRoutes: RouteItem[] = [
     label: "Compliance Library",
     icon: Landmark,
     children: [
-      { href: "/admin/frameworks", label: "Frameworks", icon: House },
+      { href: "/admin/compliance-library/frameworks", label: "Frameworks", icon: House },
       { href: "/admin/compliance-library/requirements", label: "Requirements" },
       { href: "/admin/compliance-library/controls", label: "Controls" },
     ],

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -22,6 +22,7 @@ interface DescriptionProps {
 }
 
 export default function Description({ value, onChange }: DescriptionProps) {
+  console.log("value", value)
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -41,6 +42,12 @@ export default function Description({ value, onChange }: DescriptionProps) {
     },
   });
 
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [editor, value]);
+
   if (!editor) return null;
 
   return (
@@ -58,11 +65,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
             type="button"
             aria-label="Bold"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("bold")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("bold")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <Bold size={18} />
           </button>
@@ -70,11 +76,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
             type="button"
             aria-label="Italic"
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("italic")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("italic")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <Italic size={18} />
           </button>
@@ -82,11 +87,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
             type="button"
             aria-label="Underline"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("underline")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("underline")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <UnderlineIcon size={18} />
           </button>
@@ -99,11 +103,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
                 editor.chain().focus().setLink({ href: url }).run();
               }
             }}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("link")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("link")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <LinkIcon size={18} />
           </button>
@@ -111,11 +114,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
             type="button"
             aria-label="Bullet List"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("bulletList")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("bulletList")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <List size={18} />
           </button>
@@ -123,11 +125,10 @@ export default function Description({ value, onChange }: DescriptionProps) {
             type="button"
             aria-label="Numbered List"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`p-2 rounded-md transition-colors ${
-              editor.isActive("orderedList")
+            className={`p-2 rounded-md transition-colors ${editor.isActive("orderedList")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
-            }`}
+              }`}
           >
             <ListOrdered size={18} />
           </button>

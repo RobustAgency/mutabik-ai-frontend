@@ -11,21 +11,15 @@ const MobileLayout = ({
   children,
   sidebarOpen,
   setSidebarOpen,
-  desktopCollapsed,
-  setDesktopCollapsed,
 }: {
   children: React.ReactNode;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
-  desktopCollapsed: boolean;
-  setDesktopCollapsed: (collapsed: boolean) => void;
 }) => {
   return (
     <>
       <Drawer open={sidebarOpen} onOpenChange={setSidebarOpen} direction="left">
         <Header
-          desktopCollapsed={desktopCollapsed}
-          setDesktopCollapsed={setDesktopCollapsed}
         />
         <DrawerContent className="w-[80%] max-w-[200px] p-0 md:hidden">
           <DrawerHeader className="hidden">

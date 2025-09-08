@@ -14,7 +14,7 @@ const columns: ColumnDef<Framework>[] = [
     accessorKey: 'name',
     header: 'Regulation',
     cell: ({ row }) => (
-      <div>
+      <div className='pl-4'>
         <div className="font-normal text-sm text-[#171717]">{row.original.name}</div>
         <div className="text-xs text-[#757575]">Code: {row.original.code}</div>
       </div>
@@ -30,8 +30,8 @@ const columns: ColumnDef<Framework>[] = [
       return (
         <span
           className={`px-2 py-1 rounded text-xs font-semibold ${value
-              ? 'bg-[#F2FDF5] text-[#16A34A] border border-[#D3F3DF]'
-              : 'bg-[#FFFBEB] text-[#C47E09] border border-[#FDECCE]'
+            ? 'bg-[#F2FDF5] text-[#16A34A] border border-[#D3F3DF]'
+            : 'bg-[#FFFBEB] text-[#C47E09] border border-[#FDECCE]'
             }`}
         >
           {value ? 'Published' : 'Draft'}

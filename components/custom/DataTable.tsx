@@ -161,7 +161,7 @@ export function DataTable<TData, TValue>({
           <TableHeader className="bg-gray-50 transition">
             <TableRow className="">
               {showRowSelector && (
-                <TableHead className="py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
+                <TableHead className="py-3 px-4 pl-6 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
                 </TableHead>
               )}
               {table.getHeaderGroups()[0].headers.map(
@@ -170,7 +170,9 @@ export function DataTable<TData, TValue>({
                   (
                     <TableHead
                       key={header.id}
-                      className="py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200"
+                      className={`py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${
+                        index === 0 ? "pl-10" : ""
+                      }`}
                       style={{ textAlign: "left" }}
                     >
                       {header.isPlaceholder
@@ -224,7 +226,7 @@ export function DataTable<TData, TValue>({
                 >
                   {/* Checkbox cell at the start of each row */}
                   {showRowSelector && (
-                    <TableCell className="py-4 pl-4">
+                    <TableCell className="py-4 pl-6">
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row.id)}
@@ -233,10 +235,12 @@ export function DataTable<TData, TValue>({
                       />
                     </TableCell>
                   )}
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map((cell, cellIndex) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-4 px-4  text-sm ${cell.column.id === "actions"
+                      className={`py-4 px-4 text-sm ${
+                        cellIndex === 0 ? "pl-6" : ""
+                      } ${cell.column.id === "actions"
                         ? "text-[#252DAE] font-semibold cursor-pointer"
                         : "text-[#171717]"
                         }`}
