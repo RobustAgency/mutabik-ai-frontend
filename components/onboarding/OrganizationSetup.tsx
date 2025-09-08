@@ -36,7 +36,7 @@ const OrganizationSetup = () => {
     try {
       // Simulate API call
       await new Promise((res) => setTimeout(res, 1000));
-        router.push("/onboarding?mode=invite-team")
+      router.push("/onboarding?mode=invite-team")
       // Reset form or handle success
       alert("Organization details submitted successfully!");
       setForm(initialState);

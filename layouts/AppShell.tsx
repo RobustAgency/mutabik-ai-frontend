@@ -30,7 +30,6 @@ export default function AppShell({ children }: AppShellProps) {
     }, [pathname]);
 
     const isOnboardingRoute = useMemo(() => {
-        // Match /onboarding or any subroute like /onboarding/step1
         return pathname === "/onboarding" || pathname.startsWith("/onboarding");
     }, [pathname]);
 

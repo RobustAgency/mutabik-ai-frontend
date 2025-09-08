@@ -7,8 +7,6 @@ import OrganizationSetup from "@/components/onboarding/OrganizationSetup";
 import InviteTeam from "@/components/onboarding/InviteTeam";
 import Plans from "@/components/app/plans/Plans";
 
-// The static pages and components are created but the validation in the middleware or AppShell is still under development
-
 const COMPONENTS: Record<string, React.ReactNode> = {
   "unapproved-account": <UnApprovedAccount />,
   "add-payment-method": <AddPaymentMethod />,
