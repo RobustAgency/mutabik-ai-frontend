@@ -166,13 +166,11 @@ export function DataTable<TData, TValue>({
               )}
               {table.getHeaderGroups()[0].headers.map(
                 (header, index) => (
-                  console.log("header", header),
                   (
                     <TableHead
                       key={header.id}
-                      className={`py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${
-                        index === 0 ? "pl-10" : ""
-                      }`}
+                      className={`py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-10" : ""
+                        }`}
                       style={{ textAlign: "left" }}
                     >
                       {header.isPlaceholder
@@ -238,11 +236,10 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell, cellIndex) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-4 px-4 text-sm ${
-                        cellIndex === 0 ? "pl-6" : ""
-                      } ${cell.column.id === "actions"
-                        ? "text-[#252DAE] font-semibold cursor-pointer"
-                        : "text-[#171717]"
+                      className={`py-4 px-4 text-sm ${cellIndex === 0 ? "pl-6" : ""
+                        } ${cell.column.id === "actions"
+                          ? "text-[#252DAE] font-semibold cursor-pointer"
+                          : "text-[#171717]"
                         }`}
                       style={{ border: "none", background: "transparent" }}
                     >

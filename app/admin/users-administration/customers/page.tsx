@@ -1,9 +1,8 @@
-import React from 'react'
+import React from 'react';
+import OrganizationsTable from '@/components/admin/organizations/OrganizationsTable';
 
 const CustomersPage = () => {
-    return (
-        <div>CustomersPage</div>
-    )
-}
+    return <OrganizationsTable />;
+};
 
-export default CustomersPage
+export default CustomersPage;
