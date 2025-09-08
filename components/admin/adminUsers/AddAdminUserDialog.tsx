@@ -166,7 +166,7 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
                             type="submit"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Creating...' : 'Create Admin User'}
+                            {isSubmitting ? 'Adding...' : 'Add'}
                         </Button>
                     </div>
                 </form>

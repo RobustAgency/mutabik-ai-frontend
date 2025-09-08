@@ -15,7 +15,7 @@ export const useAdminUsers = () => {
         page: 1,
         limit: 10,
         total: 0,
-        totalPages: 0
+        totalPages: 1
     });
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,17 +30,25 @@ export const useAdminUsers = () => {
                 per_page: params.per_page || pagination.limit,
                 ...params
             });
-            
+
             setUsers(response.data);
             setPagination({
-                page: response.page,
-                limit: response.limit,
+                page: response.current_page,
+                limit: response.per_page,
                 total: response.total,
-                totalPages: response.totalPages
+                totalPages: response.last_page
             });
         } catch (error) {
             console.error('Error fetching users:', error);
             toast.error('Failed to fetch users');
+
+            setUsers([]);
+            setPagination({
+                page: 1,
+                limit: 10,
+                total: 0,
+                totalPages: 1
+            });
         } finally {
             setLoading(false);
         }
@@ -68,6 +76,15 @@ export const useAdminUsers = () => {
         } catch (error) {
             console.error('Error searching users:', error);
             toast.error('Failed to search users');
+
+            // Set empty state if search fails
+            setUsers([]);
+            setPagination(prev => ({
+                ...prev,
+                page: 1,
+                total: 0,
+                totalPages: 1
+            }));
         } finally {
             setLoading(false);
         }
@@ -78,14 +95,14 @@ export const useAdminUsers = () => {
             setLoading(true);
             await adminUsersService.createAdminUser(userData);
             toast.success('Admin user created successfully');
-            
+
             // Refresh the users list
             if (isSearching) {
                 await searchUsers(searchTerm);
             } else {
                 await fetchUsers();
             }
-            
+
             return true;
         } catch (error: any) {
             console.error('Error creating user:', error);
@@ -99,7 +116,7 @@ export const useAdminUsers = () => {
 
     const handlePageChange = useCallback(async (page: number) => {
         setPagination(prev => ({ ...prev, page }));
-        
+
         if (isSearching) {
             // For search, we typically don't paginate on frontend
             return;

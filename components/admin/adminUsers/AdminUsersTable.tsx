@@ -25,7 +25,7 @@ const AdminUsersTable: React.FC = () => {
             accessorKey: 'name',
             header: 'Name',
             cell: ({ row }) => (
-                <div className="flex flex-col">
+                <div className="pl-4 flex flex-col">
                     <span className="font-medium text-gray-900">{row.getValue('name')}</span>
                 </div>
             ),
@@ -53,36 +53,6 @@ const AdminUsersTable: React.FC = () => {
             },
         },
         {
-            accessorKey: 'is_approved',
-            header: 'Status',
-            cell: ({ row }) => {
-                const isApproved = row.getValue('is_approved') as boolean;
-                return (
-                    <Badge
-                        variant="light"
-                        color={isApproved ? 'success' : 'error'}
-                    >
-                        {isApproved ? 'Approved' : 'Pending'}
-                    </Badge>
-                );
-            },
-        },
-        {
-            accessorKey: 'email_verified_at',
-            header: 'Email Verified',
-            cell: ({ row }) => {
-                const emailVerified = row.getValue('email_verified_at') as string | null;
-                return (
-                    <Badge
-                        variant="light"
-                        color={emailVerified ? 'success' : 'warning'}
-                    >
-                        {emailVerified ? 'Verified' : 'Unverified'}
-                    </Badge>
-                );
-            },
-        },
-        {
             accessorKey: 'created_at',
             header: 'Created At',
             cell: ({ row }) => {
@@ -98,7 +68,6 @@ const AdminUsersTable: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Admin Users</h1>
@@ -106,64 +75,6 @@ const AdminUsersTable: React.FC = () => {
                 </div>
                 <AddAdminUserDialog onSubmit={createUser} loading={loading} />
             </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                            <Users className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Total Users</p>
-                            <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                            <CheckCircle className="w-6 h-6 text-green-600" />
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Active Users</p>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {users.filter(user => user.is_approved).length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-yellow-100 rounded-lg">
-                            <Clock className="w-6 h-6 text-yellow-600" />
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Pending Approval</p>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {users.filter(user => !user.is_approved).length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                            <Shield className="w-6 h-6 text-purple-600" />
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Admins</p>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {users.filter(user => user.role === 'admin').length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <TableCard
                 title="Admin Users">
                 <DataTable
