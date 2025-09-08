@@ -12,7 +12,6 @@ type MainLayoutProps = {
 export default function MainLayout({ children }: MainLayoutProps) {
     const { isLoading } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [desktopCollapsed, setDesktopCollapsed] = useState(false);
 
     if (isLoading) return <Spinner />
 
@@ -20,12 +19,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <div className="!bg-[#FAFAFA] text-foreground">
             <MobileLayout
                 sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-                desktopCollapsed={desktopCollapsed}
-                setDesktopCollapsed={setDesktopCollapsed}>
+                setSidebarOpen={setSidebarOpen}>
                 {children}
             </MobileLayout>
-            <DesktopLayout desktopCollapsed={desktopCollapsed}>
+            <DesktopLayout>
                 {children}
             </DesktopLayout>
 

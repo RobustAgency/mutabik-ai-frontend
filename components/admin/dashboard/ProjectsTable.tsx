@@ -32,7 +32,7 @@ const ProjectsTable = () => {
     ]
 
     return (
-        <TableCard title="Latest Projects"  >
+        <TableCard title="Latest Projects">
             <DataTable
                 columns={columns}
                 data={projects}

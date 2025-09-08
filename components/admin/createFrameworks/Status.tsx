@@ -14,7 +14,7 @@ type StatusProps = {
 
 export default function Status({ releaseDate, published, onChange }: StatusProps) {
   return (
-    <Card className="w-full mb-6">
+    <Card className="bg-white w-full mb-6">
       <div>
         <h1 className="pl-6 text-[#171717] text-lg font-semibold">Status</h1>
       </div>
@@ -32,11 +32,7 @@ export default function Status({ releaseDate, published, onChange }: StatusProps
             type="date"
             value={releaseDate}
             onChange={(e) => onChange("releaseDate", e.target.value)}
-            onClick={(e) =>
-              // ✅ showPicker ko optional banaya (TypeScript safe)
-              (e.currentTarget as HTMLInputElement).showPicker?.()
-            }
-            className="mt-2 text-[#171717] [&::-webkit-calendar-picker-indicator]:hidden"
+            className="mt-2 text-[#171717]"
           />
         </div>
 
