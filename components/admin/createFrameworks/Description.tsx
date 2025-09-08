@@ -1,25 +1,19 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import Image from "@tiptap/extension-image";
-import { Table } from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableHeader from "@tiptap/extension-table-header";
-import TableCell from "@tiptap/extension-table-cell";
 
 import {
   Bold,
   Italic,
   Underline as UnderlineIcon,
   Link as LinkIcon,
-  Code2,
-  Table2,
-  Image as ImageIcon,
+  List,
+  ListOrdered,
 } from "lucide-react";
 
 interface DescriptionProps {
@@ -28,18 +22,11 @@ interface DescriptionProps {
 }
 
 export default function Description({ value, onChange }: DescriptionProps) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const editor = useEditor({
     extensions: [
       StarterKit,
       Underline,
       Link,
-      Image,
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
       Placeholder.configure({
         placeholder: "Enter description...",
         emptyEditorClass: "text-gray-400",
@@ -55,18 +42,6 @@ export default function Description({ value, onChange }: DescriptionProps) {
   });
 
   if (!editor) return null;
-
-  // ✅ Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        editor.chain().focus().setImage({ src: reader.result as string }).run();
-      };
-      reader.readAsDataURL(file); // Convert to Base64
-    }
-  };
 
   return (
     <div>
@@ -98,7 +73,7 @@ export default function Description({ value, onChange }: DescriptionProps) {
             className={`p-2 rounded-md transition-colors ${
               editor.isActive("italic")
                 ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100 font-bold"
+                : "text-[#404040] hover:bg-gray-100"
             }`}
           >
             <Italic size={18} />
@@ -134,47 +109,28 @@ export default function Description({ value, onChange }: DescriptionProps) {
           </button>
           <button
             type="button"
-            aria-label="Code"
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            aria-label="Bullet List"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
             className={`p-2 rounded-md transition-colors ${
-              editor.isActive("codeBlock")
+              editor.isActive("bulletList")
                 ? "bg-blue-100 text-blue-600"
                 : "text-[#404040] hover:bg-gray-100"
             }`}
           >
-            <Code2 size={18} />
+            <List size={18} />
           </button>
           <button
             type="button"
-            aria-label="Table"
-            onClick={() =>
-              editor
-                .chain()
-                .focus()
-                .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
-                .run()
-            }
-            className="p-2 rounded-md transition-colors text-[#404040] hover:bg-gray-100"
+            aria-label="Numbered List"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={`p-2 rounded-md transition-colors ${
+              editor.isActive("orderedList")
+                ? "bg-blue-100 text-blue-600"
+                : "text-[#404040] hover:bg-gray-100"
+            }`}
           >
-            <Table2 size={18} />
+            <ListOrdered size={18} />
           </button>
-
-          {/* ✅ Image Upload */}
-          <button
-            type="button"
-            aria-label="Image"
-            onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-md transition-colors text-[#404040] hover:bg-gray-100"
-          >
-            <ImageIcon size={18} />
-          </button>
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleImageUpload}
-          />
         </div>
 
         {/* Editor Area */}

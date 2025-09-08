@@ -1,21 +1,30 @@
 import React from 'react';
 import FrameworkTable from '@/components/admin/frameworks/FrameworkTable';
-import Link from "next/link";
+import Breadcrumbs from '@/components/custom/Breadcrumbs';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const Page = () => {
+  const breadcrumbItems = [
+    { label: 'Frameworks' },
+    { label: 'List' },
+  ];
+
   return (
-    <div className="py-8 pr-8 w-full max-w-7xl mx-auto">
-      {/* Breadcrumb */}
-      <div style={{ display: "flex", alignItems: "center", marginBottom: 24, gap: 20 }}>
-        <span style={{ color: "#737373", fontSize: 16, fontWeight: 500 }}>Frameworks</span>
-        <span style={{ color: "#A3A3A3", width: 10 }}>&gt;</span>
-        <span style={{ color: "#737373", fontSize: 16, fontWeight: 500 }}>List</span>
-        <Link href="/admin/create-frameworks" style={{ color: "#737373", fontSize: 16, fontWeight: 500 }}>Create Framework</Link>
+    <React.Fragment>
+      <Breadcrumbs items={breadcrumbItems} />
+      <div className='flex items-center justify-between mt-2 mb-10'>
+        <h1 className="font-bold text-4xl text-neutral-900">Frameworks</h1>
+        <Link href="/admin/frameworks/create">
+          <Button
+            className="px-6 py-2 rounded-lg"
+          >
+            Create Framework
+          </Button>
+        </Link>
       </div>
-      {/* Heading */}
-      <h1 style={{ fontWeight: 700, fontSize: 32, marginBottom: 32, color: "#171717" }}>Frameworks</h1>
       <FrameworkTable />
-    </div>
+    </React.Fragment>
   );
 };
 
