@@ -88,20 +88,20 @@ export function CustomMultiSelect({
                             {selectedOptions.slice(0, 3).map((option) => (
                                 <div
                                     key={option.value}
-                                    className="inline-flex items-center rounded-full border border-gray-600 px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-transparent text-gray-800 hover:bg-gray-50"
+                                    className="inline-flex items-center rounded-sm bg-green-50 border border-green-200 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors"
                                 >
                                     {option.label}
                                     <button
                                         type="button"
                                         onClick={(e) => handleRemoveItem(option.value, e)}
-                                        className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-gray-600 hover:text-gray-800"
+                                        className="ml-1.5 rounded-full outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-green-600 hover:text-green-800 hover:bg-green-100"
                                     >
                                         <X className="h-3 w-3" />
                                     </button>
                                 </div>
                             ))}
                             {selectedOptions.length > 3 && (
-                                <div className="inline-flex items-center rounded-full border border-gray-500 px-2.5 py-0.5 text-xs font-medium bg-transparent text-gray-700">
+                                <div className="inline-flex items-center rounded-sm bg-green-50 border border-green-200 px-2.5 py-1 text-xs font-medium text-green-700">
                                     +{selectedOptions.length - 3} more
                                 </div>
                             )}

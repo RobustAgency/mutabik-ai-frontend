@@ -54,5 +54,3 @@ const UsersTable = () => {
 }
 
 export default UsersTable
-//   border: '1px solid #ECECEE',
-//   boxShadow: 'box-shadow: 0px 0px 0px 1px #ECECEE',
