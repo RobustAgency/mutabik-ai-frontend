@@ -29,7 +29,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
     activeStep = 1;
   }
   return (
-    <div className="flex w-full min-h-screen">
+    <div className="flex w-full min-h-screen overflow-hidden">
       {/* Aside: hidden on mobile, visible on md+ */}
       <aside
         className="hidden md:fixed md:flex flex-col justify-between w-[300px] min-h-screen bg-[#0B2232] px-8 py-10 left-0 top-0 z-30"
@@ -91,7 +91,8 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
             <span className="hidden sm:inline">Logout</span>
           </Button>
         </header>
-        <main className="flex-1 w-full bg-white pt-[150px] md:pt-[150px] px-2 md:px-36 pb-8">
+        {/* Main content area */}
+        <main className="flex-1 w-full bg-white pt-[150px] md:pt-[150px] px-2 md:px-20 lg:px-36 pb-8">
           {children}
         </main>
       </div>

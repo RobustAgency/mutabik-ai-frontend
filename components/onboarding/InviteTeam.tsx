@@ -20,8 +20,6 @@ const InviteTeam = () => {
       const router = useRouter();
   const [members, setMembers] = useState<Member[]>([
     { email: "", role: "" },
-    { email: "", role: "" },
-    { email: "", role: "" },
   ]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,7 +56,7 @@ const InviteTeam = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[60vh] justify-center">
+    <div className="flex flex-col min-h-[60vh]  px-2 md:px-0">
       <form
         className="w-full max-w-2xl bg-white"
         onSubmit={handleSubmit}
@@ -72,9 +70,9 @@ const InviteTeam = () => {
           {members.map((member, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center  md:flex-row gap-4 md:gap-6"
+              className="flex flex-col md:flex-row gap-4 md:gap-6 w-full"
             >
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <label className="block text-sm font-medium text-[#344054] mb-1">Email</label>
                 <Input
                   type="email"
@@ -82,16 +80,16 @@ const InviteTeam = () => {
                   value={member.email}
                   onChange={e => handleMemberChange(idx, "email", e.target.value)}
                   required={false}
-                  className="h-[44px] w-[408px] text-sm placeholder:text-[#98A2B3]"
+                  className="w-full text-sm placeholder:text-[#98A2B3]"
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 w-full  max-w-[150px]">
                 <label className="block text-sm font-medium text-[#344054] mb-1">Role</label>
                 <Select
                   value={member.role}
                   onValueChange={val => handleMemberChange(idx, "role", val)}
                 >
-                  <SelectTrigger className="h-12 text-base">
+                  <SelectTrigger className="h-12 text-base w-full">
                     <SelectValue placeholder="Select Option" />
                   </SelectTrigger>
                   <SelectContent>
@@ -110,15 +108,15 @@ const InviteTeam = () => {
           <Button
             type="button"
             variant="outline"
-            className="gap-2 px-4 py-6 h-[44px w-[171px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] text-gray-700 hover:bg-gray-100"
+            className="gap-2 px-4 py-2 h-[44px] w-full md:w-[171px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] text-gray-700 hover:bg-gray-100"
             onClick={addMember}
           >
-            <span className="text-sm font-medium border-2 pb-1 border-[#344054] flex justify-center items-center rounded-full w-[15px] h-[15px]   text-[#344054]">+</span> Add new member
+            <span className="text-sm font-medium border-2 pb-1 border-[#344054] flex justify-center items-center rounded-full w-[15px] h-[15px] text-[#344054]">+</span> Add new member
           </Button>
         </div>
         <Button
           type="submit"
-          className="w-full max-w-[594px] h-[44px] mt-8  text-sm font-medium rounded-lg bg-primary hover:bg-[#32c986] text-white transition"
+          className="w-full h-[44px] mt-8 text-sm font-medium rounded-lg bg-primary hover:bg-[#32c986] text-white transition"
           disabled={submitting}
         >
           Skip and continue
