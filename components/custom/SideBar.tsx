@@ -105,28 +105,11 @@ export function Sidebar({
 
             {item.children && (
               <div>
-                <Accordian label={item.label} items={item.children} icon={item.icon} />
+                <Accordian label={item.label} items={item.children} icon={item.icon} collapsed={collapsed} />
               </div>
             )}
           </div>
         ))}
-
-        {/* Base routes (Settings, Logout) */}
-        {/* {baseRoutes.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            onClick={onNavigate}
-            className="relative flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"
-          >
-            {item.icon ? <item.icon className="shrink-0 size-6" color="#737373" /> : null}
-            {!collapsed && (
-              <span className="whitespace-nowrap text-[#404040] text-sm font-medium">
-                {item.label}
-              </span>
-            )}
-          </Link>
-        ))} */}
       </div>
     </div>
   );
