@@ -32,10 +32,7 @@ export const useOrganization = (organizationId: number) => {
         try {
             setUpdating(true);
             const success = await organizationsService.updateOrganization(organizationId, updateData);
-            console.log("Update success:", success)
-            
             if (success) {
-                // API was successful, update local state with the changes we made
                 setOrganization(prevOrg => {
                     if (!prevOrg) return prevOrg;
                     return { ...prevOrg, ...updateData };

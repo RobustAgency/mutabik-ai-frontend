@@ -128,7 +128,6 @@ export class OrganizationsService {
         try {
 
             const response = await api.get<Organization>(`${this.basePath}/${organizationId}`);
-            console.log('API get organization response received:', response);
             return response.data;
         } catch (error) {
             console.error('Error fetching organization from API:', error);
@@ -138,20 +137,13 @@ export class OrganizationsService {
 
     async updateOrganization(organizationId: number, updateData: UpdateOrganizationRequest): Promise<boolean> {
         try {
-            console.log('Making API request to update organization:', `${this.basePath}/${organizationId}`);
-            console.log('Update data:', updateData);
-
-            const response = await api.post<{error: boolean, message: string, data: any}>(`${this.basePath}/${organizationId}`, updateData);
-
-            console.log('API update organization response received:', response);
-            
-            // Check if the operation was successful based on error flag
-            if (response.data.error === false) {
+            const response = await api.post<{ error: boolean, message: string, data: any }>(`${this.basePath}/${organizationId}`, updateData);
+            if (response.error === false) {
                 console.log('Organization updated successfully');
                 return true;
             } else {
-                console.error('API returned error:', response.data.message);
-                throw new Error(response.data.message || 'Failed to update organization');
+                console.error('API returned error:', response.message);
+                throw new Error(response.message || 'Failed to update organization');
             }
         } catch (error) {
             console.error('Error updating organization via API:', error);

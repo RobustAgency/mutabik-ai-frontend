@@ -88,7 +88,7 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
 
     const handleConfirmToggle = async () => {
         if (!organization) return;
-        
+
         try {
             const success = await updateOrganization({ is_active: !organization.is_active });
             if (success) {
@@ -121,14 +121,14 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
             ),
         },
         {
-            accessorKey: 'role',
-            header: 'Roles',
+            accessorKey: 'created_at',
+            header: 'Created At',
             cell: ({ row }) => {
-                const role = row.getValue('role') as string;
+                const createdAt = row.getValue('created_at') as string;
                 return (
-                    <Badge variant="light" color="info">
-                        {role}
-                    </Badge>
+                    <p>
+                        {createdAt ? formatDate(createdAt) : '-'}
+                    </p>
                 );
             },
         },

@@ -27,7 +27,6 @@ type RouteItem = {
 // --- Routes ---
 const adminRoutes: RouteItem[] = [
   { href: "/admin/dashboard", label: "Dashboard", icon: House },
-  { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/projects", label: "Projects", icon: LayoutGrid },
   {
     href: "",
