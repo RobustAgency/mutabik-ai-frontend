@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/lib/auth-actions"
+import { Role } from "@/interfaces/Roles"
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -39,7 +40,7 @@ export function LoginForm() {
         if (state.success) {
             toast.success("Logged in successfully");
             formRef.current?.reset();
-            if (state.data?.user_metadata?.role === "admin") {
+            if (state.data?.user_metadata?.role === Role.SUPER_ADMIN) {
                 window.location.href = "/admin/dashboard";
             } else {
                 window.location.href = "/onboarding?mode=organization-setup";

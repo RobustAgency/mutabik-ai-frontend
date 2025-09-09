@@ -29,7 +29,7 @@ export async function signup(formData: FormData) {
     const email = formData.get("email") as string;
     const firstName = formData.get("first-name") as string;
     const lastName = formData.get("last-name") as string;
-    
+
     // Concatenate first name and last name to create full name
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
@@ -40,7 +40,7 @@ export async function signup(formData: FormData) {
             data: {
                 full_name: fullName,
                 email: email,
-                role: "user",
+                role: "owner",
             },
         },
     };

@@ -15,6 +15,7 @@ import { Landmark } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import Accordian from "@/components/custom/Accordian";
+import { Role } from "@/interfaces/Roles";
 
 // --- Types ---
 type RouteItem = {
@@ -70,9 +71,9 @@ export function Sidebar({
   onNavigate: () => void;
 }) {
   const { user } = useAuth();
-  const role: string = user?.user_metadata?.role ?? "user";
+  const role: string = user?.user_metadata?.role ?? "Owner";
 
-  const navigationRoutes: RouteItem[] = role === "admin" ? adminRoutes : userRoutes;
+  const navigationRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
