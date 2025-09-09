@@ -42,7 +42,7 @@ export function LoginForm() {
             if (state.data?.user_metadata?.role === "admin") {
                 window.location.href = "/admin/dashboard";
             } else {
-                window.location.href = "/plans";
+                window.location.href = "/onboarding?mode=organization-setup";
             }
         } else if (state.message) {
             toast.error(state.message);

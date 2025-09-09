@@ -86,7 +86,7 @@ const PlanCard: React.FC = () => {
   return (
     <>
       {plans.map((plan) => (
-        <div key={plan.name} className={`w-full relative  flex flex-col justify-center rounded-4xl items-center ${plan.highlight ? 'bg-primary px-1  pb-1 -mt-12' : ''}`}>
+        <div key={plan.name} className={`w-full relative  flex flex-col justify-center rounded-4xl items-center ${plan.highlight ? 'bg-primary px-1  pb-1 md:-mt-12' : ''}`}>
         {plan.highlight && (<h2 className="text-center py-4 text-[12px] font-medium">Most Popular Plan</h2>)}
         
           <Card
