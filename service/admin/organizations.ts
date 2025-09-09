@@ -126,27 +126,33 @@ export class OrganizationsService {
 
     async getOrganization(organizationId: number): Promise<Organization> {
         try {
-            console.log('Making API request to get organization:', `${this.basePath}/${organizationId}`);
 
-            const response = await api.get<OrganizationApiResponse>(`${this.basePath}/${organizationId}`);
-
+            const response = await api.get<Organization>(`${this.basePath}/${organizationId}`);
             console.log('API get organization response received:', response);
-            return response.data.data;
+            return response.data;
         } catch (error) {
             console.error('Error fetching organization from API:', error);
             throw error;
         }
     }
 
-    async updateOrganization(organizationId: number, updateData: UpdateOrganizationRequest): Promise<Organization> {
+    async updateOrganization(organizationId: number, updateData: UpdateOrganizationRequest): Promise<boolean> {
         try {
             console.log('Making API request to update organization:', `${this.basePath}/${organizationId}`);
             console.log('Update data:', updateData);
 
-            const response = await api.post<OrganizationApiResponse>(`${this.basePath}/${organizationId}`, updateData);
+            const response = await api.post<{error: boolean, message: string, data: any}>(`${this.basePath}/${organizationId}`, updateData);
 
             console.log('API update organization response received:', response);
-            return response.data.data;
+            
+            // Check if the operation was successful based on error flag
+            if (response.data.error === false) {
+                console.log('Organization updated successfully');
+                return true;
+            } else {
+                console.error('API returned error:', response.data.message);
+                throw new Error(response.data.message || 'Failed to update organization');
+            }
         } catch (error) {
             console.error('Error updating organization via API:', error);
             throw error;

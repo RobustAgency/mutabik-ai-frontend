@@ -6,14 +6,16 @@ import { toast } from 'react-toastify';
 export const useOrganization = (organizationId: number) => {
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(false);
+    const [updating, setUpdating] = useState(false);
     const [initialized, setInitialized] = useState(false);
 
     const fetchOrganization = useCallback(async () => {
         if (!organizationId) return;
-        
+
         try {
             setLoading(true);
             const response = await organizationsService.getOrganization(organizationId);
+            console.log("Fetched organization:", response);
             setOrganization(response);
         } catch (error) {
             console.error('Error fetching organization:', error);
@@ -26,20 +28,31 @@ export const useOrganization = (organizationId: number) => {
 
     const updateOrganization = useCallback(async (updateData: UpdateOrganizationRequest): Promise<boolean> => {
         if (!organizationId) return false;
-        
+
         try {
-            setLoading(true);
-            const updatedOrganization = await organizationsService.updateOrganization(organizationId, updateData);
-            setOrganization(updatedOrganization);
-            toast.success('Organization updated successfully');
-            return true;
+            setUpdating(true);
+            const success = await organizationsService.updateOrganization(organizationId, updateData);
+            console.log("Update success:", success)
+            
+            if (success) {
+                // API was successful, update local state with the changes we made
+                setOrganization(prevOrg => {
+                    if (!prevOrg) return prevOrg;
+                    return { ...prevOrg, ...updateData };
+                });
+                toast.success('Organization updated successfully');
+                return true;
+            } else {
+                toast.error('Failed to update organization');
+                return false;
+            }
         } catch (error: any) {
             console.error('Error updating organization:', error);
             const errorMessage = error?.response?.data?.message || 'Failed to update organization';
             toast.error(errorMessage);
             return false;
         } finally {
-            setLoading(false);
+            setUpdating(false);
         }
     }, [organizationId]);
 
@@ -54,6 +67,7 @@ export const useOrganization = (organizationId: number) => {
     return {
         organization,
         loading,
+        updating,
         fetchOrganization,
         updateOrganization,
         refetch: fetchOrganization

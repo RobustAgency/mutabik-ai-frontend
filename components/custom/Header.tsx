@@ -20,9 +20,9 @@ const Header = () => {
         <header className={headerGridClass}>
             <div className="h-full w-full flex items-center justify-between px-4">
                 <div className="w-full flex items-center justify-start md:justify-between gap-0 md:gap-2">
-                    <div aria-details="logo">
+                    <div aria-details="logo" className='pl-2'>
                         <Link href="/" className='hidden md:block'>
-                            <Image src="/logo.png" alt="logo" width={120} height={56} />
+                            <Image src="/auth/dashboard-logo.svg" alt="logo" width={120} height={56} />
                         </Link>
                     </div>
                     <DrawerTrigger className="md:hidden" asChild>
@@ -37,10 +37,10 @@ const Header = () => {
                     </DrawerTrigger>
                 </div>
             </div>
-              <div className='flex items-center justify-end gap-0.5'>
+            <div className='flex items-center justify-end gap-0.5'>
                 <SearchBar />
                 <ProfileInfo />
-              </div>
+            </div>
 
         </header>
     )

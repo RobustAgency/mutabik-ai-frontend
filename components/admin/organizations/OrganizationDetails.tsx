@@ -24,6 +24,7 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/custom/DataTable';
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
+import ConfirmationDialog from '@/components/custom/ConfirmationDialog';
 
 interface OrganizationDetailsProps { }
 
@@ -32,9 +33,9 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
     const router = useRouter();
     const organizationId = Number(params.id);
 
-    const { organization, loading, updateOrganization } = useOrganization(organizationId);
-
+    const { organization, loading, updating, updateOrganization } = useOrganization(organizationId);
     const [isEditing, setIsEditing] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [editData, setEditData] = useState<{
         name: string;
         website: string;
@@ -81,6 +82,29 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
         setIsEditing(false);
     };
 
+    const handleToggleStatus = () => {
+        setShowConfirmDialog(true);
+    };
+
+    const handleConfirmToggle = async () => {
+        if (!organization) return;
+        
+        try {
+            const success = await updateOrganization({ is_active: !organization.is_active });
+            if (success) {
+                setShowConfirmDialog(false);
+            }
+        } catch (error) {
+            console.error('Failed to update organization status:', error);
+        }
+    };
+
+    const handleCloseDialog = () => {
+        if (!updating) {
+            setShowConfirmDialog(false);
+        }
+    };
+
     const memberColumns: ColumnDef<OrganizationMember>[] = [
         {
             accessorKey: 'name',
@@ -108,26 +132,26 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                 );
             },
         },
-        {
-            id: 'actions',
-            header: '',
-            cell: ({ row }) => (
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                        View
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                        <Edit3 className="w-4 h-4" />
-                        Edit
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                        <Trash2 className="w-4 h-4" />
-                        Delete
-                    </Button>
-                </div>
-            ),
-        }
+        // {
+        //     id: 'actions',
+        //     header: '',
+        //     cell: ({ row }) => (
+        //         <div className="flex items-center gap-2">
+        //             <Button variant="ghost" size="sm">
+        //                 <Eye className="w-4 h-4" />
+        //                 View
+        //             </Button>
+        //             <Button variant="ghost" size="sm">
+        //                 <Edit3 className="w-4 h-4" />
+        //                 Edit
+        //             </Button>
+        //             <Button variant="ghost" size="sm">
+        //                 <Trash2 className="w-4 h-4" />
+        //                 Delete
+        //             </Button>
+        //         </div>
+        //     ),
+        // }
     ];
 
     const breadcrumbItems = [
@@ -155,22 +179,20 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className='w-full'>
+                <Breadcrumbs items={breadcrumbItems} />
+                <div className='w-full flex justify-between items-center flex-wrap'>
+                    <h1 className="text-2xl font-bold text-gray-900 mt-2">{organization.name}</h1>
                     <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.back()}
+                        onClick={handleToggleStatus}
+                        className={organization.is_active ? 'bg-red-400 hover:bg-red-500 duration-200' : 'bg-primary hover:bg-primary/90 duration-200'}
+                        disabled={updating}
                     >
-                        <ChevronLeft className="w-4 h-4" />
+                        {organization.is_active ? 'Deactivate' : 'Activate'}
                     </Button>
-                    <div>
-                        <Breadcrumbs items={breadcrumbItems} />
-                        <h1 className="text-2xl font-bold text-gray-900 mt-2">{organization.name}</h1>
-                    </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                     {isEditing ? (
                         <>
                             <Button variant="outline" onClick={handleCancel}>
@@ -188,17 +210,14 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                             Edit Organization
                         </Button>
                     )}
-                </div>
+                </div> */}
             </div>
 
             {/* Organization Details Card */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5" />
-                        Organization Details
-                    </CardTitle>
-                </CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg font-bold px-6 border-b pb-4">
+                    Organization Details
+                </CardTitle>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Left Column */}
@@ -213,12 +232,12 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                                         className="mt-1"
                                     />
                                 ) : (
-                                    <div className="mt-1 text-gray-900 font-medium">{organization.name}</div>
+                                    <div className="mt-2 text-gray-900 border border-[#E5E5E5] rounded-sm py-2 px-3">{organization.name}</div>
                                 )}
                             </div>
 
                             <div>
-                                <Label htmlFor="website">Email</Label>
+                                <Label htmlFor="website">Website</Label>
                                 {isEditing ? (
                                     <Input
                                         id="website"
@@ -228,7 +247,7 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                                         className="mt-1"
                                     />
                                 ) : (
-                                    <div className="mt-1 text-gray-600">
+                                    <div className="mt-2 text-gray-900 border border-[#E5E5E5] rounded-sm py-2 px-3">
                                         {organization.website ? (
                                             <a
                                                 href={organization.website}
@@ -246,7 +265,6 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                             </div>
                         </div>
 
-                        {/* Right Column */}
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="phone">Contact Number</Label>
@@ -258,12 +276,12 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                                         className="mt-1"
                                     />
                                 ) : (
-                                    <div className="mt-1 text-gray-600">{organization.phone || '-'}</div>
+                                    <div className="mt-2 text-gray-900 border border-[#E5E5E5] rounded-sm py-2 px-3">{organization.phone || '-'}</div>
                                 )}
                             </div>
 
                             <div>
-                                <Label htmlFor="country">Designation</Label>
+                                <Label htmlFor="country">Country</Label>
                                 {isEditing ? (
                                     <Input
                                         id="country"
@@ -272,65 +290,27 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                                         className="mt-1"
                                     />
                                 ) : (
-                                    <div className="mt-1 text-gray-600">{organization.country}</div>
+                                    <div className="mt-2 text-gray-900 border border-[#E5E5E5] rounded-sm py-2 px-3 capitalize">{organization.country}</div>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    <div className="my-6 border-t border-gray-200"></div>
-
-                    {/* Status and Metadata */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="status">Status</Label>
-                            {isEditing ? (
-                                <Switch
-                                    id="status"
-                                    checked={editData.is_active}
-                                    onCheckedChange={(checked) => setEditData(prev => ({ ...prev, is_active: checked }))}
-                                />
-                            ) : (
-                                <Badge variant="light" color={organization.is_active ? 'success' : 'error'}>
-                                    {organization.is_active ? 'Active' : 'Inactive'}
-                                </Badge>
-                            )}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-gray-400" />
-                            <div>
-                                <div className="text-sm text-gray-500">Created</div>
-                                <div className="text-sm font-medium">{formatDate(organization.created_at)}</div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-gray-400" />
-                            <div>
-                                <div className="text-sm text-gray-500">Last Updated</div>
-                                <div className="text-sm font-medium">{formatDate(organization.updated_at)}</div>
-                            </div>
-                        </div>
-                    </div>
                 </CardContent>
             </Card>
 
             {/* Members Card */}
-            <Card>
+            <Card className='gap-0'>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Users className="w-5 h-5" />
+                    <CardTitle className='text-lg font-semibold '>
                         Members
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='mt-0 py-0'>
                     {organization.members && organization.members.length > 0 ? (
                         <DataTable
                             columns={memberColumns}
                             data={organization.members}
-                            searchKey="name"
-                            searchPlaceholder="Search members..."
                             loading={loading}
                         />
                     ) : (
@@ -340,6 +320,20 @@ const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Confirmation Dialog */}
+            <ConfirmationDialog
+                isOpen={showConfirmDialog}
+                onClose={handleCloseDialog}
+                onConfirm={handleConfirmToggle}
+                title={`${organization.is_active ? 'Deactivate' : 'Activate'} Organization`}
+                description={`Are you sure you want to ${organization.is_active ? 'deactivate' : 'activate'} "${organization.name}"? ${organization.is_active ? 'This will disable access for all members.' : 'This will restore access for all members.'}`}
+                confirmText={organization.is_active ? 'Deactivate' : 'Activate'}
+                cancelText="Cancel"
+                type={organization.is_active ? 'danger' : 'success'}
+                isLoading={updating}
+                loadingText={organization.is_active ? 'Deactivating...' : 'Activating...'}
+            />
         </div>
     );
 };

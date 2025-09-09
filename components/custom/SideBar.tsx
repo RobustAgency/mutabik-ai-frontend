@@ -79,8 +79,8 @@ export function Sidebar({
     <div className="flex h-full flex-col overflow-hidden">
       {/* Logo for mobile */}
       <div aria-details="logo" className="flex items-center justify-between md:hidden">
-        <Link href="/" className="p-2">
-          <Image src="/logo.png" alt="logo" width={120} height={56} />
+        <Link href="/" className="pl-5 pt-2">
+          <Image src="/auth/dashboard-logo.svg" alt="logo" width={120} height={56} />
         </Link>
       </div>
 
