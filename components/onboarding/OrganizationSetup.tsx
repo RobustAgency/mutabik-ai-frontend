@@ -80,7 +80,7 @@ const OrganizationSetup: React.FC = () => {
               id="organizationName"
               name="organizationName"
               placeholder="Acme Inc."
-               value={form.organizationName || ""}
+              value={form.organizationName || ""}
               onChange={handleChange}
               className="mt-1 h-[44px] text-lg bg-white border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A2B3]"
               autoComplete="organization"

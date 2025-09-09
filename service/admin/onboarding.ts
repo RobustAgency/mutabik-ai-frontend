@@ -1,14 +1,11 @@
 import { api, ApiError } from '@/lib/api';
-import { Organization } from '@/interfaces/Organization';
+import { Organization, CreateOrganizationRequest } from '@/interfaces/Organization';
 import { toast } from "react-toastify"
 
-// ✅ Function to create a new organization
-export async function createOrganization(orgData: Organization) {
+export async function createOrganization(orgData: CreateOrganizationRequest) {
   try {
     const response = await api.post<Organization>('/organizations', orgData);
-    console.log("response", response)
     toast.success(response.message)
-    // toast.success()
     return response.data;
   } catch (error) {
     if (error instanceof ApiError) {

@@ -21,6 +21,14 @@ export interface OrganizationMember {
     updated_at: string;
 }
 
+export interface CreateOrganizationRequest {
+    name: string;
+    website?: string;
+    phone?: string;
+    country: string;
+    is_active: number;
+}
+
 export interface OrganizationsApiResponse {
     error: boolean;
     message: string;
