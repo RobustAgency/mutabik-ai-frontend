@@ -10,7 +10,6 @@ interface ControlFormData {
     question: string
     summary: string
     description: string
-    context: string
     linkedFrameworks: string[]
     linkedRequirements: string[]
     tags: string[]
@@ -28,15 +27,15 @@ const Associations = ({ formData, onFieldChange }: AssociationsProps) => {
                 <CardTitle className='text-lg font-semibold !py-0'>Associations</CardTitle>
             </CardHeader>
             <CardContent className='py-4 space-y-6'>
-                <LinkedFrameWorks 
+                <LinkedFrameWorks
                     value={formData.linkedFrameworks}
                     onChange={(value) => onFieldChange('linkedFrameworks', value)}
                 />
-                <LinkedRequirements 
+                <LinkedRequirements
                     value={formData.linkedRequirements}
                     onChange={(value) => onFieldChange('linkedRequirements', value)}
                 />
-                <LinkedTags 
+                <LinkedTags
                     value={formData.tags}
                     onChange={(value) => onFieldChange('tags', value)}
                 />

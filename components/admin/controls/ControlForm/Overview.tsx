@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Description from '@/components/custom/Description'
-import { Notebook, StickyNote } from 'lucide-react'
+import { StickyNote } from 'lucide-react'
 
 interface ControlFormData {
     title: string
@@ -11,7 +11,6 @@ interface ControlFormData {
     question: string
     summary: string
     description: string
-    context: string
     linkedFrameworks: string[]
     linkedRequirements: string[]
     tags: string[]
@@ -37,7 +36,7 @@ const Overview = ({ formData, onFieldChange }: OverviewProps) => {
                         <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
-                            placeholder="Responses to high-priority AI risks are properly documented"
+                            placeholder="Title"
                             value={formData.title}
                             onChange={(e) => onFieldChange('title', e.target.value)}
                         />
@@ -46,7 +45,7 @@ const Overview = ({ formData, onFieldChange }: OverviewProps) => {
                         <Label htmlFor="code">Code</Label>
                         <Input
                             id="code"
-                            placeholder="MRF-391"
+                            placeholder="Code"
                             value={formData.code}
                             onChange={(e) => onFieldChange('code', e.target.value)}
                         />

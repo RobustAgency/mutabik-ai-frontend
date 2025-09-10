@@ -1,6 +1,5 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
 import Description from '@/components/custom/Description'
 import { BookOpen } from 'lucide-react'
 
@@ -10,7 +9,6 @@ interface ControlFormData {
     question: string
     summary: string
     description: string
-    context: string
     linkedFrameworks: string[]
     linkedRequirements: string[]
     tags: string[]

@@ -11,7 +11,6 @@ interface ControlFormData {
     question: string
     summary: string
     description: string
-    context: string
     linkedFrameworks: string[]
     linkedRequirements: string[]
     tags: string[]
@@ -19,15 +18,14 @@ interface ControlFormData {
 
 const ControlForm = () => {
     const [formData, setFormData] = useState<ControlFormData>({
-        title: 'Responses to high-priority AI risks are properly documented',
-        code: 'MRF-391',
-        question: '<p>Have the objectives for the project been specified and documented?</p>',
-        summary: '<p>Define and document project objectives, considering the organisation-wide objectives. Indicate the source of project objectives and associated stakeholders.</p>',
+        title: '',
+        code: '',
+        question: '',
+        summary: '',
         description: '',
-        context: '<p>Defining and documenting the high-level objectives of your AI project is a pivotal step in ensuring your AI project is responsibly developed, deployed, aligns with your business goals. These objectives should possess the qualities of clarity, measurability, and achievability.</p><p>Moreover, these high-level objectives play a dual role.</p><p>First, they define the foundation for deriving related requirements, encompassing regulations, ethical frameworks, organisational policies, and software best practices...</p>',
-        linkedFrameworks: ['MFE-3', 'MFE-7'],
-        linkedRequirements: ['MCF-182', 'MCF-182-X', 'MCF-322', 'MCF-104'],
-        tags: ['lifecycle-design-development', 'scope-project']
+        linkedFrameworks: [],
+        linkedRequirements: [],
+        tags: []
     })
 
     const handleFieldChange = (field: keyof ControlFormData, value: string | string[]) => {
@@ -39,7 +37,6 @@ const ControlForm = () => {
 
     const handleSubmit = () => {
         console.log('Form Data:', formData)
-        alert('Control created successfully!')
     }
 
     const handleCancel = () => {
@@ -49,7 +46,6 @@ const ControlForm = () => {
             question: '',
             summary: '',
             description: '',
-            context: '',
             linkedFrameworks: [],
             linkedRequirements: [],
             tags: []
