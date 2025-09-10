@@ -47,25 +47,25 @@ const OrganizationDetails: React.FC = () => {
         }
     }, [organization]);
 
-    const handleSave = async () => {
-        const success = await updateOrganization(editData);
-        if (success) {
-            setIsEditing(false);
-        }
-    };
+    // const handleSave = async () => {
+    //     const success = await updateOrganization(editData);
+    //     if (success) {
+    //         setIsEditing(false);
+    //     }
+    // };
 
-    const handleCancel = () => {
-        if (organization) {
-            setEditData({
-                name: organization.name,
-                website: organization.website || '',
-                phone: organization.phone || '',
-                country: organization.country,
-                is_active: organization.is_active
-            });
-        }
-        setIsEditing(false);
-    };
+    // const handleCancel = () => {
+    //     if (organization) {
+    //         setEditData({
+    //             name: organization.name,
+    //             website: organization.website || '',
+    //             phone: organization.phone || '',
+    //             country: organization.country,
+    //             is_active: organization.is_active
+    //         });
+    //     }
+    //     setIsEditing(false);
+    // };
 
     const handleToggleStatus = () => {
         setShowConfirmDialog(true);

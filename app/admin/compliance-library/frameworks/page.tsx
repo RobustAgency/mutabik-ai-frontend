@@ -1,5 +1,5 @@
 import React from 'react';
-import FrameworkTable from '@/components/admin/frameworks/FrameworkTable';
+import FrameworkTable from '@/components/admin/frameworks/createFramework/FrameworkTable';
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

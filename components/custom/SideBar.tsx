@@ -1,9 +1,9 @@
 import Link from "next/link";
 import {
-  Settings as SettingsIcon,
+  // Settings as SettingsIcon,
   LayoutGrid,
   House,
-  LogOut,
+  // LogOut,
   CreditCard,
   LucideIcon,
   Users2,
@@ -54,10 +54,10 @@ const userRoutes = [
 ];
 
 
-const baseRoutes: RouteItem[] = [
-  { href: "/settings", label: "Settings", icon: SettingsIcon },
-  { href: "/logout", label: "Logout", icon: LogOut },
-];
+// const baseRoutes: RouteItem[] = [
+//   { href: "/settings", label: "Settings", icon: SettingsIcon },
+//   { href: "/logout", label: "Logout", icon: LogOut },
+// ];
 
 // --- Component ---
 export function Sidebar({

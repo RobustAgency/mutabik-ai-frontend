@@ -97,10 +97,10 @@ export default function AdditionalInformation({
     }, [
         initialAuthorityPublisher,
         initialBindingLevel,
-        JSON.stringify(initialSectorApplicability),
-        JSON.stringify(initialRiskClassCoverage),
-        JSON.stringify(initialCertificationAttestation),
-        JSON.stringify(initialAssessmentMode)
+        initialSectorApplicability,
+        initialRiskClassCoverage,
+        initialCertificationAttestation,
+        initialAssessmentMode
     ]);
 
     // Memoized callback functions that call onChange directly

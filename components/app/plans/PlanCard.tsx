@@ -90,7 +90,7 @@ const PlanCard: React.FC = () => {
         
           <Card
             key={plan.name}
-            className={`flex flex-col w-full h-full bg-white justify-between py-6 border- transition-all duration-200
+            className={`flex flex-col w-full h-full p-5 bg-white justify-between py-6 border- transition-all duration-200
            ${plan.highlight ? "border-none" : ""}
             rounded-4xl
           `}>

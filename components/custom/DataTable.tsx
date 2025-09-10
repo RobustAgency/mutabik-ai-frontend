@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Pagniation from "./Pagniation";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Funnel } from "lucide-react";
 
@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
     []
   );
   const [searchValue, setSearchValue] = React.useState("");
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   // State to manage selected rows
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
@@ -155,11 +155,11 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       <div className="overflow-x-auto w-full mt-4">
-        <Table className="w-full text-left  ">
+        <Table className="w-full text-left">
           <TableHeader className="bg-gray-50 transition">
             <TableRow className="">
               {showRowSelector && (
-                <TableHead className="py-3 px-4 pl-6 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
+                <TableHead className="py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
                 </TableHead>
               )}
               {table.getHeaderGroups()[0].headers.map(
@@ -167,8 +167,7 @@ export function DataTable<TData, TValue>({
                   (
                     <TableHead
                       key={header.id}
-                      className={`py-3 px-4 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-10" : ""
-                        }`}
+                      className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-8" : ""}`}
                       style={{ textAlign: "left" }}
                     >
                       {header.isPlaceholder
@@ -183,16 +182,15 @@ export function DataTable<TData, TValue>({
               )}
             </TableRow>
           </TableHeader>
-          <TableBody className="relative">
+          <TableBody className="relative ">
             {loading ? (
               <TableRow className="border-b">
                 <TableCell
                   colSpan={columns.length + 1}
-                  className="h-24 text-center"
+                  className="h-24 text-center "
                 >
-                  <div className="flex items-center justify-center">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 mr-2" />
-                    Loading...
+                  <div className="flex items-center justify-center gap-2 ">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
                   </div>
                 </TableCell>
               </TableRow>
@@ -200,15 +198,15 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"}`}
+                  className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"} `}
                 >
                   {/* Checkbox cell at the start of each row */}
                   {showRowSelector && (
-                    <TableCell className="py-4 pl-6">
+                    <TableCell className="py-4 pl-4">
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row.id)}
-                        className="text-[#FFFFFF] border border-[#D4D4D4] rounded-[4px] w-[16px] h-[16px]"
+                        className="text-[#FFFFFF] border border-[#D4D4D4] rounded-[4px] h-[16px]"
                         onChange={() => handleRowCheckboxChange(row.id)}
                       />
                     </TableCell>
@@ -216,7 +214,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell, cellIndex) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-4 px-4 text-sm ${cellIndex === 0 ? "pl-6" : ""
+                      className={`py-4  text-sm ${cellIndex === 0 && !showRowSelector ? "pl-4" : ""
                         } ${cell.column.id === "actions"
                           ? "text-[#252DAE] font-semibold cursor-pointer"
                           : "text-[#171717]"

@@ -6,37 +6,37 @@ import { Organization } from '@/interfaces/Organization';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/utils/formatDate';
 import { useOrganizations } from '@/hooks/admin/useOrganizations';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { SquarePen } from 'lucide-react';
 
 const OrganizationsTable: React.FC = () => {
-    const router = useRouter();
+    // const router = useRouter();
     const {
         organizations,
         pagination,
         loading,
         handlePageChange,
         handleSearch,
-        updateOrganization
+        // updateOrganization
     } = useOrganizations();
 
-    const handleToggleActive = async (organizationId: number, currentStatus: boolean) => {
-        if (!organizationId || typeof organizationId !== 'number') {
-            console.error('Invalid organization ID for toggle:', organizationId);
-            return;
-        }
-        await updateOrganization(organizationId, { is_active: !currentStatus });
-    };
+    // const handleToggleActive = async (organizationId: number, currentStatus: boolean) => {
+    //     if (!organizationId || typeof organizationId !== 'number') {
+    //         console.error('Invalid organization ID for toggle:', organizationId);
+    //         return;
+    //     }
+    //     await updateOrganization(organizationId, { is_active: !currentStatus });
+    // };
 
-    const handleViewDetails = (organizationId: number) => {
-        if (!organizationId || typeof organizationId !== 'number') {
-            console.error('Invalid organization ID for details:', organizationId);
-            return;
-        }
-        router.push(`/admin/users-administration/customers/${organizationId}`);
-    };
+    // const handleViewDetails = (organizationId: number) => {
+    //     if (!organizationId || typeof organizationId !== 'number') {
+    //         console.error('Invalid organization ID for details:', organizationId);
+    //         return;
+    //     }
+    //     router.push(`/admin/users-administration/customers/${organizationId}`);
+    // };
 
     const safeOrganizations = Array.isArray(organizations) ? organizations : [];
     const safePagination = pagination ? {
@@ -57,7 +57,7 @@ const OrganizationsTable: React.FC = () => {
             header: 'Organization',
             cell: ({ row }) => {
                 const name = row.getValue('name') as string || 'Unknown Organization';
-                const website = row.original?.website;
+                // const website = row.original?.website;
                 return (
                     <div className="pl-4 flex flex-col">
                         <span className="font-medium text-gray-900">{name}</span>
