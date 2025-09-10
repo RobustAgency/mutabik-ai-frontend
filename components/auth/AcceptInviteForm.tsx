@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { acceptInvite, type AcceptInviteRequest } from '@/service/app/invite';
+import { login } from '@/lib/auth-actions';
 
 const AcceptInviteForm = () => {
     const router = useRouter();
@@ -84,7 +85,7 @@ const AcceptInviteForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!token) {
             toast.error('Invalid invitation link');
             return;
@@ -106,8 +107,24 @@ const AcceptInviteForm = () => {
             const response = await acceptInvite(payload);
 
             if (response.success) {
-                toast.success(response.message || 'Invitation accepted successfully!');
-                router.push('/login');
+                if (response.data?.email) {
+                    const loginFormData = new FormData();
+                    loginFormData.append('email', response.data.email);
+                    loginFormData.append('password', formData.password);
+
+                    const loginResponse = await login(loginFormData);
+
+                    if (loginResponse.success) {
+                        toast.success('Thanks for accepting the invite.');
+                        router.push('/dashboard');
+                    } else {
+                        toast.error('Invitation accepted but auto-login failed. Please log in manually.');
+                        router.push('/login');
+                    }
+                } else {
+                    toast.success('Invitation accepted! Please log in with your credentials.');
+                    router.push('/login');
+                }
             } else {
                 toast.error(response.message || 'Failed to accept invitation');
             }
@@ -130,7 +147,7 @@ const AcceptInviteForm = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Accept Invitation</h1>
                     <p className="mt-2 text-gray-600">Enter your full name and password to accept invitation!</p>
                 </div>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Label htmlFor="name" className="text-gray-700 font-medium">
@@ -192,7 +209,7 @@ const AcceptInviteForm = () => {
                         className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-md transition-colors"
                         disabled={loading}
                     >
-                        {loading ? "Accepting Invitation..." : "Accept Invitation"}
+                        {loading ? "Processing..." : "Accept Invitation"}
                     </Button>
                 </form>
             </div>
