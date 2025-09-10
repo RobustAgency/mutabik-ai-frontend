@@ -11,8 +11,9 @@ import {
 import { useRouter } from 'next/navigation'
 
 const ProfileInfo = () => {
-    const { profile, fetchProfile, } = useAuth()
-    const avatarUrl = profile?.avatar_url || "/default-avatar.png/placeholders/user_placeholder.png"
+    const { profile, fetchProfile, } = useAuth()""
+    console.log("profile?.avatar_url",profile?.avatar_url)
+    const avatarUrl = profile?.avatar_url || "/placeholders/user_placeholder.png"
     // const avatarUrl = profile?.avatar_url
     // const displayName = profile?.full_name ?? "User"
     // const role = user?.user_metadata?.role ?? "user"
@@ -25,7 +26,7 @@ const ProfileInfo = () => {
     const router = useRouter();
     return (
         <div className="flex items-center gap-3 justify-end px-4">
-    <DropdownMenu>
+            <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <button
                         className="relative h-10 w-10 overflow-hidden rounded-full bg-muted focus:outline-none "

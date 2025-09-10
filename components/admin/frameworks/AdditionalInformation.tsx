@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CustomMultiSelect } from "@/components/admin/frameworks/CustomMultiSelect";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 import { 
     AuthorityPublisher, 
     BindingLevel, 

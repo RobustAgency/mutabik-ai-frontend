@@ -34,7 +34,7 @@ const MobileLayout = ({
         </DrawerContent>
       </Drawer>
       <div className="md:hidden">
-        <main className="min-h-[calc(100vh-3.5rem)] p-4">{children}</main>
+        <main className="min-h-[calc(100vh-3.5rem)] p-2 xs:p-4">{children}</main>
       </div>
     </>
   );
