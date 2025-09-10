@@ -5,7 +5,7 @@ import UnApprovedAccount from "@/components/onboarding/UnApprovedAccount";
 import AddPaymentMethod from "@/components/onboarding/AddPaymentMethod";
 import OrganizationSetup from "@/components/onboarding/OrganizationSetup";
 import InviteTeam from "@/components/onboarding/InviteTeam";
-import Plans from "@/components/app/plans/Plans";
+import Plans from "@/components/onboarding/Plans";
 
 const COMPONENTS: Record<string, React.ReactNode> = {
   "unapproved-account": <UnApprovedAccount />,

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { Organization, OrganizationsApiResponse, OrganizationApiResponse } from '@/interfaces/Organization';
+import { Organization, OrganizationsApiResponse } from '@/interfaces/Organization';
 import { PaginatedResponse } from '@/interfaces/Pagination';
 
 export interface SearchOrganizationsParams {

@@ -8,19 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
-import { acceptInvite, type AcceptInviteRequest } from '@/service/app/acceptInvite';
+import { acceptInvite, type AcceptInviteRequest } from '@/service/app/invite';
 
 const AcceptInviteForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        full_name: '',
+        name: '',
         password: '',
         confirm_password: ''
     });
     const [errors, setErrors] = useState({
-        full_name: '',
+        name: '',
         password: '',
         confirm_password: ''
     });
@@ -36,16 +36,16 @@ const AcceptInviteForm = () => {
 
     const validateForm = (): boolean => {
         const newErrors = {
-            full_name: '',
+            name: '',
             password: '',
             confirm_password: ''
         };
 
-        // Validate full name
-        if (!formData.full_name.trim()) {
-            newErrors.full_name = 'Full name is required';
-        } else if (formData.full_name.trim().length < 2) {
-            newErrors.full_name = 'Full name must be at least 2 characters';
+        // Validate name
+        if (!formData.name.trim()) {
+            newErrors.name = 'Name is required';
+        } else if (formData.name.trim().length < 2) {
+            newErrors.name = 'Name must be at least 2 characters';
         }
 
         // Validate password
@@ -99,7 +99,7 @@ const AcceptInviteForm = () => {
         try {
             const payload: AcceptInviteRequest = {
                 token,
-                full_name: formData.full_name.trim(),
+                name: formData.name.trim(),
                 password: formData.password
             };
 
@@ -133,21 +133,21 @@ const AcceptInviteForm = () => {
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="full_name" className="text-gray-700 font-medium">
-                            Full Name<span className="text-red-500">*</span>
+                        <Label htmlFor="name" className="text-gray-700 font-medium">
+                            Name<span className="text-red-500">*</span>
                         </Label>
                         <Input
-                            id="full_name"
-                            name="full_name"
+                            id="name"
+                            name="name"
                             type="text"
-                            placeholder="Enter your full name"
+                            placeholder="Enter your name"
                             className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
-                            value={formData.full_name}
+                            value={formData.name}
                             onChange={handleInputChange}
                             required
                         />
-                        {errors.full_name && (
-                            <p className="mt-1 text-sm text-red-500">{errors.full_name}</p>
+                        {errors.name && (
+                            <p className="mt-1 text-sm text-red-500">{errors.name}</p>
                         )}
                     </div>
 
