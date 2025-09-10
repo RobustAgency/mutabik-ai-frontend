@@ -20,7 +20,7 @@ const columns: ColumnDef<Control>[] = [
     accessorKey: "control-code",
     header: "Control Code",
     cell: ({ row }) => (
-      <span className="">
+      <span className="pl-4">
         {row.getValue("control-code")}
       </span>
     ),
@@ -127,9 +127,8 @@ const ControlsTable = () => {
       <DataTable
         columns={columns}
         data={controls}
-        searchKey="title" // ✅ fixed (your data has "title", not "name")
+        searchKey="title"
         searchPlaceholder="Search controls"
-        showRowSelector={true}
       />
     </TableCard>
   );

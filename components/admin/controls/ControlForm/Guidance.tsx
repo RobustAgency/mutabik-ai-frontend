@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Description from '@/components/custom/Description'
-import { BookOpen } from 'lucide-react'
+import { BookOpenText } from 'lucide-react'
 
 interface ControlFormData {
     title: string
@@ -22,13 +22,13 @@ interface GuidanceProps {
 const Guidance = ({ formData, onFieldChange }: GuidanceProps) => {
     return (
         <Card className='gap-0 !pt-0'>
-            <CardHeader className='border-b !py-4 !gap-0'>
+            <CardHeader className='border-b !py-4 !gap-0 px-5'>
                 <div className='flex items-center gap-2'>
-                    <BookOpen />
+                    <BookOpenText className="w-[24px] h-[24px] text-[#000000]" />
                     <CardTitle className='text-lg font-semibold !py-0'>Guidance</CardTitle>
                 </div>
             </CardHeader>
-            <CardContent className='py-4 space-y-6'>
+            <CardContent className='py-4 space-y-6 px-5'>
                 <Description
                     value={formData.description}
                     onChange={(value) => onFieldChange('description', value)}

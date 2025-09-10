@@ -23,10 +23,10 @@ interface AssociationsProps {
 const Associations = ({ formData, onFieldChange }: AssociationsProps) => {
     return (
         <Card className='gap-0 !pt-0'>
-            <CardHeader className='border-b !py-4 !gap-0'>
+            <CardHeader className='border-b !py-4 !gap-0 px-5'>
                 <CardTitle className='text-lg font-semibold !py-0'>Associations</CardTitle>
             </CardHeader>
-            <CardContent className='py-4 space-y-6'>
+            <CardContent className='py-4 space-y-6 px-5'>
                 <LinkedFrameWorks
                     value={formData.linkedFrameworks}
                     onChange={(value) => onFieldChange('linkedFrameworks', value)}

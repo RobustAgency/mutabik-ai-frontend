@@ -10,7 +10,7 @@ import { BookOpenText } from "lucide-react"; // Guidance ke liye ek relevant ico
 
 const Guidance = () => {
   return (
-    <Card className="shadow-sm rounded-2xl py-0 gap-0">
+    <Card className="shadow-none rounded-2xl py-0 gap-0">
       <CardHeader className="">
         {/* Title with icon */}
         <CardTitle className="text-lg py-4 flex items-center justify-start gap-4 pl-5">
@@ -18,8 +18,7 @@ const Guidance = () => {
           <span className="text-lg font-bold text-[#171717]">Guidance</span>
         </CardTitle>
 
-        {/* Separator */}
-        <Separator className="h-[0.5px] border shadow-sm" />
+        <hr />
       </CardHeader>
 
       {/* Content */}

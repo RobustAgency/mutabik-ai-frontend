@@ -18,12 +18,12 @@ const Associations: React.FC = () => {
   const tags: string[] = ["Lifecycle Design & Development", "Scope: Project"];
 
   return (
-    <Card className="shadow-sm rounded-2xl py-0 gap-0 w-full">
+    <Card className="shadow-none rounded-2xl py-0 gap-0 w-full">
       <CardHeader>
         <CardTitle className="text-lg py-4 flex items-center justify-start gap-4 pl-5">
           <span className="text-lg font-bold text-[#171717]">Associations</span>
         </CardTitle>
-        <Separator className="h-[0.5px] border shadow-sm" />
+        <hr />
       </CardHeader>
 
       <CardContent className="px-4 sm:px-6 pt-6 pb-6 text-sm text-[#171717] font-normal space-y-6 leading-relaxed w-full">
