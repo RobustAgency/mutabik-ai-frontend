@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import FrameworkForm from "@/components/admin/frameworks/FrameworkForm";
+import FrameworkForm from "@/components/admin/frameworks/createFramework/FrameworkForm";
 
 export default function CreateFrameworkPage() {
   const router = useRouter();

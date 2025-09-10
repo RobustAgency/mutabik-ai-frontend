@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Description from "@/components/custom/Description";
-import FrameworkStatus from "@/components/admin/frameworks/FrameworkStatus";
-import AdditionalInformation from "@/components/admin/frameworks/AdditionalInformation";
+import FrameworkStatus from "./FrameworkStatus";
+import AdditionalInformation from "./AdditionalInformation";
 import { useFrameworkMutations } from "@/hooks/admin/useFrameworks";
 import { convertFrameworkArraysToStrings, convertFrameworkStringsToArrays } from "@/utils/frameworkUtils";
 import {

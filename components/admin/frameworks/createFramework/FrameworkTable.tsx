@@ -1,8 +1,8 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { DataTable } from '../../custom/DataTable';
-import TableCard from '../../custom/TableCard';
+import { DataTable } from '../../../custom/DataTable';
+import TableCard from '../../../custom/TableCard';
 import { SquarePen } from 'lucide-react';
 import { useFrameworks } from '@/hooks/admin/useFrameworks';
 import { Framework } from '@/interfaces/Framework';
