@@ -5,7 +5,7 @@ import { DataTable } from '../../custom/DataTable';
 import TableCard from '../../custom/TableCard';
 import { SquarePen } from 'lucide-react';
 import { useFrameworks } from '@/hooks/admin/useFrameworks';
-import { Framework, FrameworkType } from '@/interfaces/Framework';
+import { Framework } from '@/interfaces/Framework';
 
 import { ColumnDef } from "@tanstack/react-table";
 

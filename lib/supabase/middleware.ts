@@ -51,6 +51,7 @@ export async function updateSession(request: NextRequest) {
         '/admin/login',
         '/signup',
         '/forgot-password',
+        '/accept-invite',
         '/reset-password',
         '/update-password',
         '/auth/confirm',

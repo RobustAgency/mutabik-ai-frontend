@@ -4,11 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { Role } from "@/interfaces/Roles";
+import { inviteService, type TeamMember } from "@/service/app/invite";
 
 const ROLES = [
-  { label: "Admin", value: "admin" },
-  { label: "Member", value: "member" },
-  { label: "Viewer", value: "viewer" },
+  { label: "Project Lead", value: Role.PROJECT_LEAD },
+  { label: "Reviewer", value: Role.REVIEWER },
+  { label: "Contributor", value: Role.CONTRIBUTOR },
+  { label: "Auditor", value: Role.AUDITOR },
 ];
 
 type Member = {
@@ -17,7 +21,7 @@ type Member = {
 };
 
 const InviteTeam = () => {
-      const router = useRouter();
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([
     { email: "", role: "" },
   ]);
@@ -38,21 +42,42 @@ const InviteTeam = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // Filter out empty members
-    // Filter out empty members (for future API use)
-    // const filtered = members.filter(m => m.email && m.role);
+
     try {
-      // TODO: Replace with actual API call
-      await new Promise((res) => setTimeout(res, 1200));
-      router.push("/onboarding?mode=plans")
-      // Show success toast or redirect
-      alert("Invitations sent successfully!");
-    } catch {
-      // Show error toast
-      alert("Failed to send invitations.");
+      // Filter out empty members and validate
+      const validMembers = members.filter(member =>
+        member.email.trim() !== '' && member.role !== ''
+      );
+
+      if (validMembers.length === 0) {
+        toast.error('Please add at least one team member with email and role');
+        return;
+      }
+
+      // Prepare payload
+      const teamMembers: TeamMember[] = validMembers.map(member => ({
+        email: member.email.trim(),
+        role: member.role as Role
+      }));
+
+      const response = await inviteService.inviteTeamMembers({ members: teamMembers });
+
+      if (response.success) {
+        toast.success(response.message || 'Team invitations sent successfully!');
+        router.push('/onboarding?mode=plans');
+      } else {
+        toast.error(response.message || 'Failed to send invitations');
+      }
+    } catch (error) {
+      console.error("Failed to send invitations:", error);
+      toast.error('An error occurred while sending invitations');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSkipAndContinue = () => {
+    router.push('/onboarding?mode=plans');
   };
 
   return (
@@ -70,9 +95,9 @@ const InviteTeam = () => {
           {members.map((member, idx) => (
             <div
               key={idx}
-              className="flex flex-col md:flex-row gap-4 md:gap-6 w-full"
+              className="grid grid-cols-3 gap-4"
             >
-              <div className="flex-1 w-full">
+              <div className="col-span-2">
                 <label className="block text-sm font-medium text-[#344054] mb-1">Email</label>
                 <Input
                   type="email"
@@ -80,16 +105,16 @@ const InviteTeam = () => {
                   value={member.email}
                   onChange={e => handleMemberChange(idx, "email", e.target.value)}
                   required={false}
-                  className="w-full text-sm placeholder:text-[#98A2B3]"
+                  className="w-full text-sm placeholder:text-[#98A2B3] h-12"
                 />
               </div>
-              <div className="flex-1 w-full  max-w-[150px]">
+              <div className="col-span-1 min-h-[44px]">
                 <label className="block text-sm font-medium text-[#344054] mb-1">Role</label>
                 <Select
                   value={member.role}
                   onValueChange={val => handleMemberChange(idx, "role", val)}
                 >
-                  <SelectTrigger className="h-12 text-base w-full">
+                  <SelectTrigger className="text-base w-full !h-[48px]">
                     <SelectValue placeholder="Select Option" />
                   </SelectTrigger>
                   <SelectContent>
@@ -116,8 +141,17 @@ const InviteTeam = () => {
         </div>
         <Button
           type="submit"
-          className="w-full h-[44px] mt-8 text-sm font-medium rounded-lg bg-primary hover:bg-[#32c986] text-white transition"
+          className="w-full h-[44px] mt-8"
           disabled={submitting}
+        >
+          {submitting ? 'Sending Invitations...' : 'Invite team members'}
+        </Button>
+        <Button
+          type="button"
+          className="w-full h-[44px] mt-4"
+          disabled={submitting}
+          variant={"outline"}
+          onClick={handleSkipAndContinue}
         >
           Skip and continue
         </Button>

@@ -22,10 +22,9 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Pagniation from "./Pagniation";
-import { ChevronUp, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { Funnel, LayoutGrid } from "lucide-react";
+import { Funnel } from "lucide-react";
 
 
 interface DataTableProps<TData, TValue> {
@@ -151,7 +150,6 @@ export function DataTable<TData, TValue>({
             />
             <div className="flex gap-4 text-gray-400">
               <Funnel className="cursor-pointer" />
-              <LayoutGrid className="cursor-pointer" />
             </div>
           </div>
         </div>

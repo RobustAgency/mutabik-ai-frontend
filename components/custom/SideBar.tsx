@@ -1,13 +1,10 @@
 import Link from "next/link";
 import {
-  LayoutDashboard,
   Settings as SettingsIcon,
   LayoutGrid,
   House,
-  Users,
   LogOut,
   CreditCard,
-  FileChartColumnIncreasing,
   LucideIcon,
   Users2,
 } from "lucide-react";
@@ -103,9 +100,9 @@ export function Sidebar({
               </Link>
             )}
 
-            {item.children && (
+            {item.children && item.icon && (
               <div>
-                <Accordian label={item.label} items={item.children} icon={item.icon} collapsed={collapsed} />
+                <Accordian label={item.label} items={item.children} icon={item.icon} />
               </div>
             )}
           </div>

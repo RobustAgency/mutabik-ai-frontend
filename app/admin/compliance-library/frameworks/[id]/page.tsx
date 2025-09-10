@@ -52,7 +52,7 @@ export default function FrameworkPage() {
             <div className="min-h-screen bg-[#FAFAFA] px-2 py-8 flex flex-col items-center justify-center">
                 <div className="text-center">
                     <p className="text-lg font-semibold text-[#171717]">Framework not found</p>
-                    <p className="mt-2 text-[#737373]">The framework you're looking for doesn't exist.</p>
+                    <p className="mt-2 text-[#737373]">The framework you&apos;re looking for doesn&apos;t exist.</p>
                     <button
                         onClick={handleCancel}
                         className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"

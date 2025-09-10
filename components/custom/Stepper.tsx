@@ -27,10 +27,10 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, orientation = "hor
                 {/* Dot */}
                 <div
                   className={`w-3 h-3 rounded-full border-2 transition-all duration-200 ${isActive
+                    ? "bg-primary border-primary"
+                    : isCompleted
                       ? "bg-primary border-primary"
-                      : isCompleted
-                        ? "bg-primary border-primary"
-                        : "bg-white"
+                      : "bg-white"
                     }`}
                 />
                 {/* Line */}
@@ -44,10 +44,10 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, orientation = "hor
               {/* Step Label */}
               <div
                 className={`font-semibold text-base transition-all duration-200 ${isActive
+                  ? "text-primary"
+                  : isCompleted
                     ? "text-primary"
-                    : isCompleted
-                      ? "text-primary"
-                      : "text-[#B6C2CB]"
+                    : "text-[#B6C2CB]"
                   }`}
               >
                 {step.label}
@@ -71,17 +71,17 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, orientation = "hor
             <div className="flex flex-col items-center flex-1">
               <div
                 className={`w-3 h-3 rounded-full border-2 transition-all duration-200 ${isActive
-                    ? "bg-primary border-primary"
-                    : isCompleted
-                      ? "bg-white border-white"
-                      : "bg-white border-[#B6C2CB]"
+                  ? "bg-primary border-primary"
+                  : isCompleted
+                    ? "bg-white border-white"
+                    : "bg-white border-[#B6C2CB]"
                   }`}
               />
               <span className={`mt-2 text-xs font-semibold transition-all duration-200 ${isActive
-                  ? "text-primary"
-                  : isCompleted
-                    ? "text-white"
-                    : "text-[#B6C2CB]"
+                ? "text-primary"
+                : isCompleted
+                  ? "text-gray-800 md:text-white"
+                  : "text-[#B6C2CB]"
                 }`}>
                 {step.label}
               </span>

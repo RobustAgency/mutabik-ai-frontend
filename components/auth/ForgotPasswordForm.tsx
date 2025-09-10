@@ -57,7 +57,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <div className="space-y-6">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Forgot password?</h1>
-                        <p className="mt-2 text-gray-600">No worries, we'll send you reset instructions.</p>
+                        <p className="mt-2 text-gray-600">No worries, we&apos;ll send you reset instructions.</p>
                     </div>
 
                     <form onSubmit={handleForgotPassword} className="space-y-4">

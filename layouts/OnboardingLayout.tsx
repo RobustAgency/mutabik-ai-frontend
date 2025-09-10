@@ -92,7 +92,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
           </Button>
         </header>
         {/* Main content area */}
-        <main className="flex-1 w-full bg-white pt-[150px] md:pt-[150px] px-2 md:px-20 lg:px-36 pb-8">
+        <main className="flex-1 w-full bg-white pt-[150px] px-2 md:px-20 lg:px-36 pb-8">
           {children}
         </main>
       </div>
