@@ -1,21 +1,22 @@
 import { api, type ApiResponse } from '@/lib/api';
 
 export interface Profile {
-    id: string;
-    full_name?: string | null;
+    id: number;
+    name?: string | null;
     email: string;
+    organization_id?: number | null;
+    role?: string | null;
     avatar_url?: string | null;
-    plan_id: number | null;
+    plan_id?: number | null;
     has_payment_method?: boolean | null;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface ProfileResponse {
     error: boolean;
     message: string;
-    data: {
-        user: Profile;
-        has_payment_method: boolean | null;
-    };
+    data: Profile;
 }
 
 export interface ProfileResult {
@@ -31,7 +32,8 @@ export class ProfileService {
 
     async getProfile(): Promise<ProfileResult> {
         try {
-            const response: ApiResponse<ProfileResponse['data']> = await api.get(this.baseUrl);
+            const response: ApiResponse<Profile> = await api.get(this.baseUrl);
+            console.log("Profile API response:", response);
 
             if (response.error) {
                 return {
@@ -42,14 +44,10 @@ export class ProfileService {
                     message: response.message
                 };
             }
-
+            
             return {
                 success: true,
-                data: {
-                    ...response.data.user,
-                    has_payment_method: response.data.has_payment_method,
-                    plan_id: response.data.user.plan_id ?? null
-                },
+                data: response.data,
                 error: false
             };
         } catch (error: any) {

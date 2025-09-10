@@ -17,7 +17,7 @@ type Member = {
 };
 
 const InviteTeam = () => {
-      const router = useRouter();
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([
     { email: "", role: "" },
   ]);
@@ -38,18 +38,11 @@ const InviteTeam = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // Filter out empty members
-    // Filter out empty members (for future API use)
-    // const filtered = members.filter(m => m.email && m.role);
     try {
-      // TODO: Replace with actual API call
       await new Promise((res) => setTimeout(res, 1200));
       router.push("/onboarding?mode=plans")
-      // Show success toast or redirect
-      alert("Invitations sent successfully!");
     } catch {
-      // Show error toast
-      alert("Failed to send invitations.");
+      console.error("Failed to send invitations.")
     } finally {
       setSubmitting(false);
     }
