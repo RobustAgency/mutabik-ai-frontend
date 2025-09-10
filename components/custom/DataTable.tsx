@@ -148,9 +148,6 @@ export function DataTable<TData, TValue>({
               className="pl-10 pr-4 py-5 w-full text-sm text-[#A3A3A3] rounded-[8px] focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               disabled={loading}
             />
-            <div className="flex gap-4 text-gray-400">
-              <Funnel className="cursor-pointer" />
-            </div>
           </div>
         </div>
       )}
