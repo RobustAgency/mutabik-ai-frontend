@@ -28,9 +28,9 @@ export class AdminUsersService {
             const queryParams = new URLSearchParams();
             if (params.page) queryParams.append('page', params.page.toString());
             if (params.per_page) queryParams.append('per_page', params.per_page.toString());
-            
+
             const response = await api.get<PaginatedResponse<User>>(
-                `${this.basePath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+                `${this.basePath}${queryParams.toString() ? `?role=admin&${queryParams.toString()}` : ''}`
             );
             return response.data;
         } catch (error) {
@@ -49,7 +49,7 @@ export class AdminUsersService {
             const response = await api.get<User[]>(
                 `${this.basePath}/search?${queryParams.toString()}`
             );
-            
+
             return response.data;
         } catch (error) {
             console.error('Error searching users from API:', error);
@@ -63,9 +63,9 @@ export class AdminUsersService {
                 ...userData,
                 password: 'password' // Default password as requested
             };
-            
+
             const response = await api.post<User>(this.basePath, payload);
-            
+
             return response.data;
         } catch (error) {
             console.error('Error creating user via API:', error);

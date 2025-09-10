@@ -17,7 +17,7 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
     const [formData, setFormData] = useState<CreateAdminUserRequest>({
         name: '',
         email: '',
-        role: 'Admin'
+        role: 'admin'
     });
     const [errors, setErrors] = useState<Partial<CreateAdminUserRequest>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);

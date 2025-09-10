@@ -8,7 +8,6 @@ import { formatDate } from '@/utils/formatDate';
 import { useAdminUsers } from '@/hooks/admin/useAdminUsers';
 import AddAdminUserDialog from './AddAdminUserDialog';
 import TableCard from '@/components/custom/TableCard';
-import { Users, CheckCircle, Clock, Shield } from 'lucide-react';
 
 const AdminUsersTable: React.FC = () => {
     const {
