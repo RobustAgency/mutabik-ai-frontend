@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import ActionCell from "./ActionCell";
 import { TableUser } from "@/hooks/admin/useUsers";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const getStatusBadge = (status: TableUser["status"]) => {
   const colorMap = {

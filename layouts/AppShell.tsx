@@ -15,6 +15,7 @@ export default function AppShell({ children }: AppShellProps) {
     const isAuthRoute = useMemo(() => {
         const authRoutes = [
             "/login",
+            "/accept-invite",
             "/admin/login",
             "/signup",
             "/forgot-password",

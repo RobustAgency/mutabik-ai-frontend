@@ -50,7 +50,7 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
                 name: requirement.name || "",
                 code: requirement.code || "",
                 description: requirement.description || "",
-                frameworks: requirement.frameworks?.map((f: any) => f.id.toString()) || [],
+                frameworks: requirement.frameworks?.map((f: Framework) => f.id.toString()) || [],
             });
         }
     }, [mode, requirement]);

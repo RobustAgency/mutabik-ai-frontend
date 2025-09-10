@@ -5,6 +5,7 @@ export interface Profile {
     name?: string | null;
     email: string;
     organization_id?: number | null;
+    full_name?: string | null;
     role?: string | null;
     avatar_url?: string | null;
     plan_id?: number | null;

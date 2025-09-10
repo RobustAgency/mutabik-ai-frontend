@@ -1,36 +1,21 @@
 "use client";
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useOrganization } from '@/hooks/admin/useOrganization';
 import { OrganizationMember } from '@/interfaces/Organization';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { formatDate } from '@/utils/formatDate';
-import {
-    Building2,
-    Calendar,
-    Users,
-    ChevronLeft,
-    Edit3,
-    Save,
-    X,
-    Eye,
-    Trash2
-} from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/custom/DataTable';
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
 import ConfirmationDialog from '@/components/custom/ConfirmationDialog';
 
-interface OrganizationDetailsProps { }
-
-const OrganizationDetails: React.FC<OrganizationDetailsProps> = () => {
+// Component without props
+const OrganizationDetails: React.FC = () => {
     const params = useParams();
-    const router = useRouter();
     const organizationId = Number(params.id);
 
     const { organization, loading, updating, updateOrganization } = useOrganization(organizationId);

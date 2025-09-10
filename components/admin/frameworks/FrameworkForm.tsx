@@ -180,21 +180,24 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
         // Add the converted comma-separated strings to the request data
         // These will be sent as strings to the backend
-        (requestData as any).sector_applicability = convertedAdditionalInfo.sector_applicability;
-        (requestData as any).risk_class_coverage = convertedAdditionalInfo.risk_class_coverage;
-        (requestData as any).certification_attestation = convertedAdditionalInfo.certification_attestation;
-        (requestData as any).assessment_mode = convertedAdditionalInfo.assessment_mode;
+        const finalRequestData = {
+            ...requestData,
+            sector_applicability: convertedAdditionalInfo.sector_applicability,
+            risk_class_coverage: convertedAdditionalInfo.risk_class_coverage,
+            certification_attestation: convertedAdditionalInfo.certification_attestation,
+            assessment_mode: convertedAdditionalInfo.assessment_mode,
+        } as unknown;
 
         if (logoFile) {
-            (requestData as any).framework_logo = logoFile;
+            (finalRequestData as Record<string, unknown>).framework_logo = logoFile;
         }
 
         let success = false;
 
         if (isEditing && framework) {
-            success = await updateFramework(framework.id, requestData as any);
+            success = await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
         } else {
-            success = await createFramework(requestData as any);
+            success = await createFramework(finalRequestData as CreateFrameworkRequest);
         }
 
         // Form will be redirected by the hook on success

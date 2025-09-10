@@ -6,7 +6,6 @@ import { Organization } from '@/interfaces/Organization';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/utils/formatDate';
 import { useOrganizations } from '@/hooks/admin/useOrganizations';
-import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';

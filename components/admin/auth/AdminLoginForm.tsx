@@ -25,9 +25,9 @@ const AdminLoginForm = () => {
             } else {
                 setError(res.message || 'Login failed');
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Login error:', err);
-            setError(err.message || 'An error occurred during login');
+            setError((err as Error)?.message || 'An error occurred during login');
         }
         setLoading(false);
     };

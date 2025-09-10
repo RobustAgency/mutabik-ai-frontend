@@ -6,7 +6,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useRouter } from "next/navigation";
 
 // --- RouteItem Type ---
 type RouteItem = {
@@ -14,7 +13,7 @@ type RouteItem = {
   label: string;
 };
 
-const Accordian = ({ items, label, icon, collapsed }: { items: RouteItem[], label: string, icon: any, collapsed: Boolean }) => {
+const Accordian = ({ items, label, icon }: { items: RouteItem[], label: string, icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }) => {
   const Icon = icon
   const pathname = window?.location?.pathname;
   return (

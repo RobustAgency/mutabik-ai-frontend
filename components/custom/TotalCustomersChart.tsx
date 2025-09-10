@@ -92,11 +92,6 @@ const titleStyle: React.CSSProperties = {
   borderBottom: "1px solid #E5E5E5",
 };
 
-type ChartSeries = {
-  name: string;
-  data: number[];
-};
-
 const TotalCustomersChart: React.FC = () => {
   const chartRef = useRef<HTMLDivElement>(null);
   const series = React.useMemo(() => [
