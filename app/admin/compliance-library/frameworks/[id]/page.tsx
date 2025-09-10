@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import FrameworkForm from "@/components/admin/frameworks/FrameworkForm";
+import FrameworkForm from "@/components/admin/frameworks/createFramework/FrameworkForm";
 import { useFramework } from "@/hooks/admin/useFrameworks";
 import Spinner from "@/components/ui/spinner";
 

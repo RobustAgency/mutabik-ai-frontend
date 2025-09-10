@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
-import Description from "@/components/admin/createFrameworks/Description";
+import Description from "@/components/admin/frameworks/createFramework/Description";
 import { CustomMultiSelect } from "@/components/admin/frameworks/CustomMultiSelect";
 import { useRequirement, useRequirementMutations } from "@/hooks/admin/useRequirements";
 import { useFrameworks } from "@/hooks/admin/useFrameworks";

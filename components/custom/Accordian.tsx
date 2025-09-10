@@ -36,6 +36,7 @@ const Accordian = ({ items, label, icon, collapsed }: { items: RouteItem[], labe
           <AccordionContent>
             <ul className="flex flex-col gap-2">
               {items.map((child) => {
+                console.log('chlid href', child.href)
                 const isActive = pathname.includes(child.href);
                 return (
                   <li
