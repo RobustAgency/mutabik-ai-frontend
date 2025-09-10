@@ -7,30 +7,26 @@ import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { signup } from "@/lib/auth-actions";
-import SignInWithGoogleButton from "./SignInWithGoogleButton";
 
 function SubmitButton() {
     const { pending } = useFormStatus();
     return (
-        <Button type="submit" className="w-full" disabled={pending}>
+        <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg transition-colors"
+            disabled={pending}
+        >
             {pending ? (
                 <>
-                    <Loader2 className="animate-spin" />
+                    <Loader2 className="animate-spin mr-2" />
                     Creating account...
                 </>
             ) : (
-                "Create an account"
+                "Sign Up"
             )}
         </Button>
     );
@@ -57,52 +53,102 @@ export function SignUpForm() {
     }, [state]);
 
     return (
-        <Card className="min-w-sm mx-auto max-w-sm">
-            <CardHeader>
-                <CardTitle className="text-xl">Sign Up</CardTitle>
-                <CardDescription>
-                    Enter your information to create an account
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form ref={formRef} action={formAction}>
-                    <div className="grid gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="full-name">Full name</Label>
-                            <Input
-                                name="full-name"
-                                id="full-name"
-                                placeholder="Max Robinson"
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                name="email"
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                required
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <PasswordInput name="password" id="password" />
-                        </div>
-                        <SubmitButton />
-                    </div>
-                </form>
-                <div className="mt-4">
-                    <SignInWithGoogleButton />
+        <div className="w-full">
+            {/* Form */}
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900">Sign Up</h1>
+                    <p className="mt-2 text-gray-600">Enter your email and password to sign up!</p>
                 </div>
-                <div className="mt-4 text-center text-sm">
+
+                <form ref={formRef} action={formAction} className="space-y-4">
+                    {/* First name and Last name in a row */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="first-name" className="text-gray-700 font-medium">
+                                First name<span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                id="first-name"
+                                name="first-name"
+                                type="text"
+                                placeholder="John"
+                                className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="last-name" className="text-gray-700 font-medium">
+                                Last name<span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                id="last-name"
+                                name="last-name"
+                                type="text"
+                                placeholder="Doe"
+                                className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <Label htmlFor="email" className="text-gray-700 font-medium">
+                            Email<span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="password" className="text-gray-700 font-medium">
+                            Password<span className="text-red-500">*</span>
+                        </Label>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            placeholder="hello123"
+                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            required
+                        />
+                    </div>
+
+                    <div className="flex items-start space-x-2">
+                        <input
+                            id="terms"
+                            name="terms"
+                            type="checkbox"
+                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded mt-1"
+                            required
+                        />
+                        <label htmlFor="terms" className="text-sm text-gray-700">
+                            By creating an account, you agree to the{" "}
+                            <Link href="/terms" className="text-primary hover:text-primary/80">
+                                terms and conditions
+                            </Link>
+                            {" "}and our{" "}
+                            <Link href="/privacy" className="text-primary hover:text-primary/80">
+                                privacy policy
+                            </Link>
+                        </label>
+                    </div>
+
+                    <SubmitButton />
+                </form>
+
+                <div className="text-sm text-gray-600">
                     Already have an account?{" "}
-                    <Link href="/login" className="underline">
-                        Sign in
+                    <Link href="/login" className="text-primary hover:text-primary/80 font-medium">
+                        Sign In
                     </Link>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

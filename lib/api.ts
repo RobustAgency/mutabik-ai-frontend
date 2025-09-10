@@ -103,8 +103,6 @@ apiClient.interceptors.response.use(
             originalRequest._retryCount += 1;
             const delay = RETRY_CONFIG.retryDelay * Math.pow(2, originalRequest._retryCount - 1); // Exponential backoff
 
-            console.log(`🔄 Retrying request (${originalRequest._retryCount}/${RETRY_CONFIG.maxRetries}) after ${delay}ms delay`);
-
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve(apiClient(originalRequest));

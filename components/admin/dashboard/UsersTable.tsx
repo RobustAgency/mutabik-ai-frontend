@@ -24,7 +24,7 @@ const UsersTable = () => {
     if (error) {
         return (
             <TableCard title="Users">
-                <div className="flex flex-col items-center justify-center py-8">
+                <div className="flex flex-col items-center justify-center py-8 border ">
                     <AlertCircle className="h-8 w-8 text-red-500 mb-4" />
                     <p className="text-red-600 mb-4">{error}</p>
                     <Button onClick={handleRefresh} variant="outline">
@@ -37,7 +37,7 @@ const UsersTable = () => {
     }
 
     return (
-        <TableCard title="Users">
+        <TableCard title="Users"  >
             <DataTable
                 columns={columns}
                 data={users}

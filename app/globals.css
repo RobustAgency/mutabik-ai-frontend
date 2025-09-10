@@ -3,9 +3,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  scroll-behavior: smooth;
+}
+
+.container {
+  @apply max-w-[1440px] mx-auto px-5 sm:px-8 md:px-10 lg:px-14;
+}
+
 :root {
   /* Theme colors */
-  --primary: #252525;
+  --primary: #4FD58F;
   --secondary: #252525;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -84,7 +92,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #252525;
+    --primary: #4FD58F;
     --secondary: #252525;
   }
 }
@@ -96,7 +104,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
+  --primary: #4FD58F;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);

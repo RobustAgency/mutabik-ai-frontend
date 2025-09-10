@@ -27,7 +27,11 @@ export async function signup(formData: FormData) {
     const supabase = await createClient();
 
     const email = formData.get("email") as string;
-    const fullName = formData.get("full-name") as string;
+    const firstName = formData.get("first-name") as string;
+    const lastName = formData.get("last-name") as string;
+
+    // Concatenate first name and last name to create full name
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
     const data = {
         email: email,
@@ -36,7 +40,7 @@ export async function signup(formData: FormData) {
             data: {
                 full_name: fullName,
                 email: email,
-                role: "user",
+                role: "owner",
             },
         },
     };
@@ -75,7 +79,6 @@ export async function signInWithGoogle() {
     });
 
     if (error) {
-        console.log(error);
         redirect("/error");
     }
 

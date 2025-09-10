@@ -8,6 +8,7 @@ const PlansPage = () => {
         <ContainerCard
             title="Plans & Billing"
             description="Choose the perfect plan for your needs"
+        
         >
             <Plans />
         </ContainerCard>

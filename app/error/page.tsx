@@ -21,9 +21,9 @@ export default function ErrorPage() {
                     </p>
                 </CardContent>
                 <CardFooter className="gap-3 justify-center">
-                    <Button asChild>
-                        <Link href="/">Go home</Link>
-                    </Button>
+                    <Link href="/">
+                        <Button>Go home</Button>
+                    </Link>
                 </CardFooter>
             </Card>
         </div>
