@@ -43,7 +43,7 @@ export function LoginForm() {
             if (state.data?.user_metadata?.role === Role.SUPER_ADMIN) {
                 window.location.href = "/admin/dashboard";
             } else {
-                window.location.href = "/onboarding?mode=organization-setup";
+                window.location.href = "/dashboard";
             }
         } else if (state.message) {
             toast.error(state.message);

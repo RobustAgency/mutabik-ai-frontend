@@ -15,7 +15,6 @@ export const useOrganization = (organizationId: number) => {
         try {
             setLoading(true);
             const response = await organizationsService.getOrganization(organizationId);
-            console.log("Fetched organization:", response);
             setOrganization(response);
         } catch (error) {
             console.error('Error fetching organization:', error);

@@ -179,24 +179,6 @@ export function DataTable<TData, TValue>({
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                      {index % 2 === 1 &&
-                        header.column.id !== "actions" &&
-                        pathname.includes("admin/dashboard") && (
-                          <ChevronUp
-                            className="inline-block ml-2"
-                            color="#A3A3A3"
-                            width={15}
-                          />
-                        )}
-                      {index % 2 === 0 &&
-                        header.column.id !== "actions" &&
-                        pathname.includes("admin/dashboard") && (
-                          <ChevronDown
-                            className="inline-block ml-2"
-                            color="#A3A3A3"
-                            width={15}
-                          />
-                        )}
                     </TableHead>
                   )
                 )

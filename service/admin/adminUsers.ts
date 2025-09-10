@@ -28,14 +28,10 @@ export class AdminUsersService {
             const queryParams = new URLSearchParams();
             if (params.page) queryParams.append('page', params.page.toString());
             if (params.per_page) queryParams.append('per_page', params.per_page.toString());
-            
-            console.log('Making API request to:', `${this.basePath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`);
-            
+
             const response = await api.get<PaginatedResponse<User>>(
-                `${this.basePath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+                `${this.basePath}${queryParams.toString() ? `?role=admin&${queryParams.toString()}` : ''}`
             );
-            
-            console.log('API response received:', response);
             return response.data;
         } catch (error) {
             console.error('Error fetching users from API:', error);
@@ -50,13 +46,10 @@ export class AdminUsersService {
             if (params.page) queryParams.append('page', params.page.toString());
             if (params.per_page) queryParams.append('per_page', params.per_page.toString());
 
-            console.log('Making API search request to:', `${this.basePath}/search?${queryParams.toString()}`);
-
             const response = await api.get<User[]>(
                 `${this.basePath}/search?${queryParams.toString()}`
             );
-            
-            console.log('API search response received:', response);
+
             return response.data;
         } catch (error) {
             console.error('Error searching users from API:', error);
@@ -70,13 +63,9 @@ export class AdminUsersService {
                 ...userData,
                 password: 'password' // Default password as requested
             };
-            
-            console.log('Making API create user request to:', this.basePath);
-            console.log('Payload:', payload);
-            
+
             const response = await api.post<User>(this.basePath, payload);
-            
-            console.log('API create user response received:', response);
+
             return response.data;
         } catch (error) {
             console.error('Error creating user via API:', error);

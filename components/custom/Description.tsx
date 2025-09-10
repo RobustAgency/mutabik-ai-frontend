@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 
 interface DescriptionProps {
+  title?: string;
   value: string;
   onChange: (content: string) => void;
 }
 
-export default function Description({ value, onChange }: DescriptionProps) {
-  console.log("value", value)
+export default function Description({ title = "Description", value, onChange }: DescriptionProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -56,7 +56,7 @@ export default function Description({ value, onChange }: DescriptionProps) {
         htmlFor="description"
         className="block text-base font-semibold text-[#171717] mb-2"
       >
-        Description
+        {title}
       </label>
       <div className="w-full bg-white rounded-lg shadow border border-gray-200 p-0">
         {/* Toolbar */}
@@ -66,8 +66,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
             aria-label="Bold"
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={`p-2 rounded-md transition-colors ${editor.isActive("bold")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <Bold size={18} />
@@ -77,8 +77,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
             aria-label="Italic"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={`p-2 rounded-md transition-colors ${editor.isActive("italic")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <Italic size={18} />
@@ -88,8 +88,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
             aria-label="Underline"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={`p-2 rounded-md transition-colors ${editor.isActive("underline")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <UnderlineIcon size={18} />
@@ -104,8 +104,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
               }
             }}
             className={`p-2 rounded-md transition-colors ${editor.isActive("link")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <LinkIcon size={18} />
@@ -115,8 +115,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
             aria-label="Bullet List"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             className={`p-2 rounded-md transition-colors ${editor.isActive("bulletList")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <List size={18} />
@@ -126,8 +126,8 @@ export default function Description({ value, onChange }: DescriptionProps) {
             aria-label="Numbered List"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             className={`p-2 rounded-md transition-colors ${editor.isActive("orderedList")
-                ? "bg-blue-100 text-blue-600"
-                : "text-[#404040] hover:bg-gray-100"
+              ? "bg-blue-100 text-blue-600"
+              : "text-[#404040] hover:bg-gray-100"
               }`}
           >
             <ListOrdered size={18} />

@@ -18,7 +18,7 @@ const Header = () => {
 
     return (
         <header className={headerGridClass}>
-            <div className="h-full w-full flex items-center justify-between px-4">
+            <div className="h-full w-full flex items-center justify-between px-0 xs:px-4">
                 <div className="w-full flex items-center justify-start md:justify-between gap-0 md:gap-2">
                     <div aria-details="logo" className='pl-2'>
                         <Link href="/" className='hidden md:block'>

@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
-import Description from "@/components/admin/createFrameworks/Description";
-import { CustomMultiSelect } from "@/components/admin/frameworks/CustomMultiSelect";
+import Description from "@/components/custom/Description";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 import { useRequirement, useRequirementMutations } from "@/hooks/admin/useRequirements";
 import { useFrameworks } from "@/hooks/admin/useFrameworks";
 import { Framework } from "@/interfaces/Framework";
@@ -24,8 +24,6 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
     const { createRequirement, updateRequirement } = useRequirementMutations();
     const { requirement, loading: loadingRequirement } = useRequirement(requirementId || '');
     const { frameworks } = useFrameworks({ page: 1, per_page: 100 });
-    console.log("frameworks", frameworks)
-
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -100,8 +98,6 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
                 description: formData.description,
                 framework_ids: formData.frameworks.map(id => parseInt(id)),
             };
-
-            console.log("Requirements payload:", submitData);
 
             if (mode === "create") {
                 await createRequirement(submitData);

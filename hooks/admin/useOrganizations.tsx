@@ -40,14 +40,6 @@ export const useOrganizations = () => {
             const safeTotal = typeof response.total === 'number' && response.total >= 0 ? response.total : 0;
             const safeTotalPages = typeof response.last_page === 'number' && response.last_page > 0 ? response.last_page : 1;
 
-            console.log('Raw API response for pagination debugging:', response);
-            console.log('Extracted pagination values:', {
-                current_page: safePage,
-                per_page: safeLimit,
-                total: safeTotal,
-                last_page: safeTotalPages
-            });
-
             setPagination({
                 page: safePage,
                 limit: safeLimit,
@@ -55,10 +47,6 @@ export const useOrganizations = () => {
                 totalPages: safeTotalPages
             });
 
-            // Show success message only if we have actual data
-            if (organizations.length === 0 && safeTotal === 0) {
-                console.log('No organizations found');
-            }
         } catch (error) {
             console.error('Error fetching organizations:', error);
             toast.error('Failed to fetch organizations. Please check your connection and try again.');
@@ -100,9 +88,6 @@ export const useOrganizations = () => {
                 totalPages: 1
             }));
 
-            if (safeResults.length === 0) {
-                console.log(`No organizations found for search term: "${term}"`);
-            }
         } catch (error) {
             console.error('Error searching organizations:', error);
             toast.error('Failed to search organizations. Please check your connection and try again.');

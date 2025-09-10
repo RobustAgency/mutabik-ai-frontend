@@ -7,13 +7,13 @@ import TableCard from '@/components/custom/TableCard'
 
 const ProjectsTable = () => {
 
-     const projects = [
+    const projects = [
         {
             id: 1,
             date: "May 1, 2023",
             title: "Project 1",
             status: "In Progress",
-            actions:"Open"
+            actions: "Open"
         },
         {
             id: 2,
@@ -36,7 +36,7 @@ const ProjectsTable = () => {
             <DataTable
                 columns={columns}
                 data={projects}
-                showRowSelector={true}
+                showRowSelector={false}
                 serverSide={false}
             />
         </TableCard>

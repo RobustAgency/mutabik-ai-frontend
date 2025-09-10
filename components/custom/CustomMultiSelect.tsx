@@ -18,15 +18,15 @@ interface CustomMultiSelectProps {
 }
 
 export function CustomMultiSelect({
-  options,
-  value,
-  onChange,
-  placeholder = "Select items...",
-  className,
+    options,
+    value,
+    onChange,
+    placeholder = "Select items...",
+    className,
 }: CustomMultiSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);    // Close dropdown when clicking outside
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
