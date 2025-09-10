@@ -36,7 +36,7 @@ const Associations: React.FC = () => {
             {linkedFrameworks.map((framework: string) => (
               <Badge
                 key={framework}
-              
+
                 className="rounded-[4px] text-[#171717] border-[#D9D9D9]  p-1.5 text-sm bg-[#F5F5F5] flex-shrink-0"
               >
                 {framework}
@@ -71,7 +71,7 @@ const Associations: React.FC = () => {
             {tags.map((tag: string, idx: number) => (
               <Badge
                 key={idx}
-                
+
                 className="rounded-[4px] text-[#171717] border-[#D9D9D9]  p-1.5 text-sm bg-[#F5F5F5] flex-shrink-0"
               >
                 {tag}

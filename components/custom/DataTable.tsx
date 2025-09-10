@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Pagniation from "./Pagniation";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Funnel } from "lucide-react";
 
@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
     []
   );
   const [searchValue, setSearchValue] = React.useState("");
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   // State to manage selected rows
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
@@ -167,8 +167,7 @@ export function DataTable<TData, TValue>({
                   (
                     <TableHead
                       key={header.id}
-                      className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-1" : ""
-                        }`}
+                      className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-8" : ""}`}
                       style={{ textAlign: "left" }}
                     >
                       {header.isPlaceholder
@@ -190,9 +189,8 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length + 1}
                   className="h-24 text-center "
                 >
-                  <div className="flex items-center justify-center">
-                    <div className="h-5  animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-                    Loading...
+                  <div className="flex items-center justify-center gap-2 ">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
                   </div>
                 </TableCell>
               </TableRow>

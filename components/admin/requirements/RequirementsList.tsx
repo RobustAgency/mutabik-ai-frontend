@@ -16,28 +16,28 @@ export default function RequirementsList() {
         per_page: 10,
     });
 
-    const { requirements, loading, refetch } = useRequirements(filters);
+    const { requirements, loading } = useRequirements(filters);
 
     const breadcrumbItems = [
         { label: 'Requirements', href: '/admin/compliance-library/requirements' },
         { label: 'List' },
     ];
 
-    const handleSearch = (searchTerm: string) => {
-        setFilters(prev => ({
-            ...prev,
-            search: searchTerm || undefined,
-            page: 1,
-        }));
-    };
+    // const handleSearch = (searchTerm: string) => {
+    //     setFilters(prev => ({
+    //         ...prev,
+    //         search: searchTerm || undefined,
+    //         page: 1,
+    //     }));
+    // };
 
     const handlePageChange = (page: number) => {
         setFilters(prev => ({ ...prev, page }));
     };
 
-    const handlePerPageChange = (perPage: number) => {
-        setFilters(prev => ({ ...prev, per_page: perPage, page: 1 }));
-    };
+    // const handlePerPageChange = (perPage: number) => {
+    //     setFilters(prev => ({ ...prev, per_page: perPage, page: 1 }));
+    // };
 
     const columns: ColumnDef<Requirement>[] = useMemo(() => [
         {

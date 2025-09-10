@@ -11,7 +11,7 @@ const DashboardInfoCards: React.FC = () => {
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
 			{infoCards.map((card, idx) => (
-				<Card key={idx} className="flex-1 min-w-0">
+				<Card key={idx} className="flex-1 min-w-0 p-5">
 					<CardHeader>
 						<CardTitle className=" text-[#737373] text-sm font-medium ">{card.label}</CardTitle>
 					</CardHeader>

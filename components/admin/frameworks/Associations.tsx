@@ -9,12 +9,19 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon, XIcon } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 const REQUIREMENT_OPTIONS = ["MRF-3", "MRF-7"];
 const CONTROL_OPTIONS = ["MCF-182", "MCF-122", "MCF-104"];
 
-function MultiSelect({ label, value, options, onChange, placeholder }) {
+interface MultiSelectProps {
+  label: string;
+  value: string[];
+  options: string[];
+  onChange: (value: string[]) => void;
+  placeholder: string;
+}
+
+function MultiSelect({ label, value, options, onChange, placeholder }: MultiSelectProps) {
   const handleRemove = (item: string) => {
     onChange(value.filter((v: string) => v !== item));
   };

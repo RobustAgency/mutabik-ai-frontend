@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -192,12 +193,10 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
             (finalRequestData as Record<string, unknown>).framework_logo = logoFile;
         }
 
-        let success = false;
-
         if (isEditing && framework) {
-            success = await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
+            await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
         } else {
-            success = await createFramework(finalRequestData as CreateFrameworkRequest);
+            await createFramework(finalRequestData as CreateFrameworkRequest);
         }
 
         // Form will be redirected by the hook on success
@@ -210,10 +209,10 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         initialCertificationAttestation: additionalInfo.certification_attestation,
         initialAssessmentMode: additionalInfo.assessment_mode,
     }), [
-        JSON.stringify(additionalInfo.sector_applicability),
-        JSON.stringify(additionalInfo.risk_class_coverage),
-        JSON.stringify(additionalInfo.certification_attestation),
-        JSON.stringify(additionalInfo.assessment_mode)
+        additionalInfo.assessment_mode,
+        additionalInfo.certification_attestation,
+        additionalInfo.risk_class_coverage,
+        additionalInfo.sector_applicability
     ]);
 
     const isLoading = creating || updating;
@@ -249,10 +248,12 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
                                             {preview ? (
                                                 <div className="flex flex-col items-center gap-4">
-                                                    <img
+                                                    <Image
                                                         src={preview}
                                                         alt="Framework logo preview"
-                                                        className="w-16 h-16 object-cover rounded-lg"
+                                                        width={64}
+                                                        height={64}
+                                                        className="object-cover rounded-lg"
                                                     />
                                                     <div className="text-sm text-gray-600">
                                                         Drag & Drop your file or <span className="text-green-500 font-medium">Browse</span>
