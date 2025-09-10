@@ -39,9 +39,7 @@ const OrganizationsTable: React.FC = () => {
         router.push(`/admin/users-administration/customers/${organizationId}`);
     };
 
-    console.log("organizations", organizations)
     const safeOrganizations = Array.isArray(organizations) ? organizations : [];
-    console.log("safeOrganizations", safeOrganizations)
     const safePagination = pagination ? {
         page: typeof pagination.page === 'number' && !isNaN(pagination.page) ? pagination.page : 1,
         limit: typeof pagination.limit === 'number' && !isNaN(pagination.limit) ? pagination.limit : 10,

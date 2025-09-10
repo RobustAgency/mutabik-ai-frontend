@@ -11,8 +11,7 @@ import {
 import { useRouter } from 'next/navigation'
 
 const ProfileInfo = () => {
-    const { profile, fetchProfile, } = useAuth()""
-    console.log("profile?.avatar_url",profile?.avatar_url)
+    const { profile, fetchProfile, } = useAuth();
     const avatarUrl = profile?.avatar_url || "/placeholders/user_placeholder.png"
     // const avatarUrl = profile?.avatar_url
     // const displayName = profile?.full_name ?? "User"

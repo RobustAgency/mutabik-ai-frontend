@@ -24,8 +24,6 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
     const { createRequirement, updateRequirement } = useRequirementMutations();
     const { requirement, loading: loadingRequirement } = useRequirement(requirementId || '');
     const { frameworks } = useFrameworks({ page: 1, per_page: 100 });
-    console.log("frameworks", frameworks)
-
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -100,8 +98,6 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
                 description: formData.description,
                 framework_ids: formData.frameworks.map(id => parseInt(id)),
             };
-
-            console.log("Requirements payload:", submitData);
 
             if (mode === "create") {
                 await createRequirement(submitData);

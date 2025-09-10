@@ -34,14 +34,7 @@ export class OrganizationsService {
             const response = await api.get<OrganizationsApiResponse>(
                 `${this.basePath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
             );
-
-            console.log('API response received:', response);
-
-            // The organizations array is directly in response.data.data
             const apiData = response.data.data;
-
-            console.log('apiData:', apiData);
-
             // apiData is the organizations array itself, not a pagination object
             const safeData = Array.isArray(apiData) ? apiData : [];
             const currentPage = params.page || 1;
@@ -67,7 +60,6 @@ export class OrganizationsService {
                 to: Math.min(currentPage * perPage, total)
             };
 
-            console.log('Service returning:', result);
             return result;
         } catch (error) {
             console.error('Error fetching organizations from API:', error);
@@ -102,13 +94,9 @@ export class OrganizationsService {
             if (params.per_page) queryParams.append('per_page', params.per_page.toString());
             if (params.is_active !== undefined) queryParams.append('is_active', params.is_active.toString());
 
-            console.log('Making API search request to:', `${this.basePath}?${queryParams.toString()}`);
-
             const response = await api.get<OrganizationsApiResponse>(
                 `${this.basePath}?${queryParams.toString()}`
             );
-
-            console.log('API search response received:', response);
 
             // Validate response structure
             if (!response?.data?.data?.data || !Array.isArray(response.data.data.data)) {
@@ -139,7 +127,6 @@ export class OrganizationsService {
         try {
             const response = await api.post<{ error: boolean, message: string, data: any }>(`${this.basePath}/${organizationId}`, updateData);
             if (response.error === false) {
-                console.log('Organization updated successfully');
                 return true;
             } else {
                 console.error('API returned error:', response.message);

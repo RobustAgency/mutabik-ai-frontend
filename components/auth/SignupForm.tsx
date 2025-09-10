@@ -37,7 +37,6 @@ export function SignUpForm() {
     const [state, formAction] = useActionState(
         async (_prevState: unknown, formData: FormData) => {
             const result = await signup(formData);
-            console.log("signup result", result)
             return result;
         },
         null as null | { success: boolean; message?: string }
