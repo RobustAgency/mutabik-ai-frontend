@@ -31,9 +31,14 @@ const adminRoutes: RouteItem[] = [
     label: "Compliance Library",
     icon: Landmark,
     children: [
-      { href: "/admin/compliance-library/frameworks", label: "Frameworks", icon: House },
+      {
+        href: "/admin/compliance-library/frameworks",
+        label: "Frameworks",
+        icon: House,
+      },
       { href: "/admin/compliance-library/requirements", label: "Requirements" },
       { href: "/admin/compliance-library/controls", label: "Controls" },
+      { href: "/admin/compliance-library/tags", label: "Tags" },
     ],
   },
   {
@@ -53,7 +58,6 @@ const userRoutes = [
   // { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
 ];
 
-
 // const baseRoutes: RouteItem[] = [
 //   { href: "/settings", label: "Settings", icon: SettingsIcon },
 //   { href: "/logout", label: "Logout", icon: LogOut },
@@ -70,14 +74,23 @@ export function Sidebar({
   const { user } = useAuth();
   const role: string = user?.user_metadata?.role ?? "Owner";
 
-  const navigationRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
+  const navigationRoutes: RouteItem[] =
+    role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Logo for mobile */}
-      <div aria-details="logo" className="flex items-center justify-between md:hidden">
+      <div
+        aria-details="logo"
+        className="flex items-center justify-between md:hidden"
+      >
         <Link href="/" className="pl-5 pt-2">
-          <Image src="/auth/dashboard-logo.svg" alt="logo" width={120} height={56} />
+          <Image
+            src="/auth/dashboard-logo.svg"
+            alt="logo"
+            width={120}
+            height={56}
+          />
         </Link>
       </div>
 
@@ -91,7 +104,9 @@ export function Sidebar({
                 onClick={onNavigate}
                 className="relative flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"
               >
-                {item.icon ? <item.icon className="shrink-0 size-6" color="#737373" /> : null}
+                {item.icon ? (
+                  <item.icon className="shrink-0 size-6" color="#737373" />
+                ) : null}
                 {!collapsed && (
                   <span className="whitespace-nowrap text-[#404040] text-sm font-medium">
                     {item.label}
@@ -102,7 +117,11 @@ export function Sidebar({
 
             {item.children && item.icon && (
               <div>
-                <Accordian label={item.label} items={item.children} icon={item.icon} />
+                <Accordian
+                  label={item.label}
+                  items={item.children}
+                  icon={item.icon}
+                />
               </div>
             )}
           </div>

@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
     <div className="">
       {searchKey && (
         <div className="flex items-center justify-end w-full">
-          <div className="flex gap-4 items-center w-full max-w-80 mr-4 relative">
+          <div className="flex gap-4 items-center w-full max-w-80 mx-4 relative">
             <span className="absolute left-3 text-[#A3A3A3]">
               <Search size={20} color="#A3A3A3" />
             </span>
