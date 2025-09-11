@@ -1,3 +1,6 @@
 name = "mutabiq-ai"
 compatibility_date = "2024-09-01"
 compatibility_flags = ["nodejs_compat"]
+
+# Tell Cloudflare Pages where to find Next.js build output
+pages_build_output_dir = ".vercel/output/static"
