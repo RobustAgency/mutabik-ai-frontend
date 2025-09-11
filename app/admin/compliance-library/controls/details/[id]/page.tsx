@@ -6,12 +6,13 @@ import ControlsDetails from '@/components/admin/controls/controlDetail/ControlsD
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
 
 interface ControlDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-const page = ({ params }: ControlDetailsPageProps) => {
+const page = async ({ params }: ControlDetailsPageProps) => {
+  const { id } = await params;
   const breadcrumbItems = [
     { label: 'Controls', href: "/admin/compliance-library/controls" },
     { label: 'Details' },
@@ -22,7 +23,7 @@ const page = ({ params }: ControlDetailsPageProps) => {
       <div className='flex items-center justify-between mt-2 mb-10'>
         <h1 className="font-bold text-3xl text-neutral-900">Control Details</h1>
       </div>
-      <ControlsDetails controlId={params.id} />
+      <ControlsDetails controlId={id} />
     </div>
   )
 }

@@ -5,9 +5,9 @@ import Breadcrumbs from '@/components/custom/Breadcrumbs'
 import React from 'react'
 
 interface EditControlPageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 const breadcrumbItems = [
@@ -15,12 +15,13 @@ const breadcrumbItems = [
     { label: 'Edit' },
 ];
 
-const EditControlPage = ({ params }: EditControlPageProps) => {
+const EditControlPage = async ({ params }: EditControlPageProps) => {
+    const { id } = await params;
     return (
         <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-start">
             <Breadcrumbs items={breadcrumbItems} />
             <h1 className="text-3xl text-[#171717] font-bold mt-3 mb-6">Edit Control</h1>
-            <ControlForm controlId={params.id} mode="edit" />
+            <ControlForm controlId={id} mode="edit" />
         </div>
     )
 }

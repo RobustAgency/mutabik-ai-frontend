@@ -58,7 +58,7 @@ export default function CreateTagDialog({ open, onOpenChange, onSubmit, isCreati
             setNamesInput('')
             setTagPills([])
             onOpenChange(false)
-        } catch (error) {
+        } catch {
             // Error handling is done in the hook
         }
     }

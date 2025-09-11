@@ -19,6 +19,7 @@ const OrganizationDetails: React.FC = () => {
     const organizationId = Number(params.id);
 
     const { organization, loading, updating, updateOrganization } = useOrganization(organizationId);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isEditing, setIsEditing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [editData, setEditData] = useState<{

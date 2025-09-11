@@ -4,7 +4,7 @@ import Link from "next/link";
 import { DataTable } from "../../custom/DataTable";
 import TableCard from "../../custom/TableCard";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Eye } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { useControls } from "@/hooks/admin/useControls";
 import { Control } from "@/interfaces/Control";
 import { Button } from "@/components/ui/button";
