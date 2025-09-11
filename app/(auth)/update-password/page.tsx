@@ -1,5 +1,7 @@
 import { UpdatePasswordForm } from "@/components/auth/UpdatePasswordForm"
 
+export const runtime = 'edge';
+
 export default function UpdatePasswordPage() {
     return (
         <div className="flex min-h-screen w-full items-center justify-center p-6 md:p-10">

@@ -1,5 +1,7 @@
 import React from 'react'
 
+export const runtime = 'edge';
+
 const ProjectsPage = () => {
     return (
         <div className="mb-6 space-y-6">

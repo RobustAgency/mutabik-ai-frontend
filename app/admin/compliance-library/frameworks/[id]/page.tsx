@@ -1,4 +1,7 @@
 "use client";
+
+export const runtime = 'edge';
+
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import FrameworkForm from "@/components/admin/frameworks/createFramework/FrameworkForm";

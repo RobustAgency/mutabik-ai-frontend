@@ -1,4 +1,7 @@
 "use client";
+
+export const runtime = 'edge';
+
 import { useParams } from "next/navigation";
 import RequirementForm from "@/components/admin/requirements/RequirementForm";
 

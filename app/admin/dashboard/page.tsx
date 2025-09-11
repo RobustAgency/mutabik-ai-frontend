@@ -1,5 +1,7 @@
 import React from "react";
 
+export const runtime = 'edge';
+
 import DashboardInfoCards from "@/components/admin/dashboard/DashboardInfoCards";
 import ProjectsTable from "@/components/admin/dashboard/ProjectsTable";
 import ProjectsPerMonthChart from "@/components/admin/dashboard/ProjectsPerMonthChart";

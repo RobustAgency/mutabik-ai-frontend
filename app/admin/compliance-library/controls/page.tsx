@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import ControlsTable from "@/components/admin/controls/ControlsTable";
 import React from "react";
 

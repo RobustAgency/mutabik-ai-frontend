@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import AcceptInviteForm from '@/components/auth/AcceptInviteForm'
 import React from 'react'
 

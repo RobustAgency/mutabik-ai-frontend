@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import React from 'react'
 import ProfileForm from '@/components/settings/ProfileForm'
 import ChangePasswordForm from '@/components/settings/ChangePasswordForm'

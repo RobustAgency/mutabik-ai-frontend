@@ -1,4 +1,7 @@
 'use client';
+
+export const runtime = 'edge';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
