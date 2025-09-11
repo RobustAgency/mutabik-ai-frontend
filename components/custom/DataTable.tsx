@@ -22,10 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Pagniation from "./Pagniation";
-// import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { Funnel } from "lucide-react";
-
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -62,7 +59,9 @@ export function DataTable<TData, TValue>({
     []
   );
   const [searchValue, setSearchValue] = React.useState("");
-  // const pathname = usePathname();
+
+  // debounce timer ref
+  const debounceRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // State to manage selected rows
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
@@ -74,7 +73,7 @@ export function DataTable<TData, TValue>({
         ? prev.filter((id) => id !== rowId)
         : [...prev, rowId]
     );
-  }
+  };
 
   const table = useReactTable({
     data,
@@ -94,22 +93,19 @@ export function DataTable<TData, TValue>({
     pageCount: serverSide ? pagination?.totalPages || 0 : undefined,
   });
 
-  React.useEffect(() => {
-    if (serverSide && onSearch) {
-      const timeoutId = setTimeout(() => {
-        onSearch(searchValue);
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchValue, onSearch, serverSide]);
-
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchValue(value);
 
     if (!serverSide && searchKey) {
       table.getColumn(searchKey)?.setFilterValue(value);
+    }
+
+    if (serverSide && onSearch) {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        onSearch(value);
+      }, 300);
     }
   };
 
@@ -156,27 +152,26 @@ export function DataTable<TData, TValue>({
           <TableHeader className="bg-gray-50 transition">
             <TableRow className="">
               {showRowSelector && (
-                <TableHead className="py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200" style={{ textAlign: "left" }}>
+                <TableHead
+                  className="py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200"
+                  style={{ textAlign: "left" }}
+                ></TableHead>
+              )}
+              {table.getHeaderGroups()[0].headers.map((header, index) => (
+                <TableHead
+                  key={header.id}
+                  className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-8" : ""
+                    }`}
+                  style={{ textAlign: "left" }}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
-              )}
-              {table.getHeaderGroups()[0].headers.map(
-                (header, index) => (
-                  (
-                    <TableHead
-                      key={header.id}
-                      className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-8" : ""}`}
-                      style={{ textAlign: "left" }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                )
-              )}
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody className="relative ">
@@ -195,7 +190,8 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"} `}
+                  className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"
+                    } `}
                 >
                   {/* Checkbox cell at the start of each row */}
                   {showRowSelector && (
