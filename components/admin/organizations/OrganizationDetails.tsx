@@ -95,7 +95,7 @@ const OrganizationDetails: React.FC = () => {
             accessorKey: 'name',
             header: 'Name',
             cell: ({ row }) => (
-                <span className="font-medium text-gray-900">{row.getValue('name')}</span>
+                <span className="pl-4 font-medium text-gray-900">{row.getValue('name')}</span>
             ),
         },
         {
@@ -203,7 +203,7 @@ const OrganizationDetails: React.FC = () => {
                 <CardTitle className="flex items-center gap-2 text-lg font-bold px-6 border-b pb-4">
                     Organization Details
                 </CardTitle>
-                <CardContent>
+                <CardContent className='px-5'>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Left Column */}
                         <div className="space-y-4">
@@ -286,7 +286,7 @@ const OrganizationDetails: React.FC = () => {
 
             {/* Members Card */}
             <Card className='gap-0'>
-                <CardHeader>
+                <CardHeader className='px-5'>
                     <CardTitle className='text-lg font-semibold '>
                         Members
                     </CardTitle>

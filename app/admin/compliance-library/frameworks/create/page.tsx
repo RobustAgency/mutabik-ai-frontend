@@ -9,7 +9,7 @@ export default function CreateFrameworkPage() {
   const router = useRouter();
 
   const handleCancel = () => {
-    router.push('/admin/frameworks');
+    router.push('/admin/compliance-library/frameworks');
   };
 
   return (

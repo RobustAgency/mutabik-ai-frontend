@@ -7,8 +7,37 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { SquareChartGantt } from "lucide-react";
+import { useControl } from "@/hooks/admin/useControls";
 
-const Overview = () => {
+interface OverviewProps {
+  controlId: string;
+}
+
+const Overview = ({ controlId }: OverviewProps) => {
+  const { control, loading } = useControl(controlId);
+
+  if (loading) {
+    return (
+      <Card className="shadow-none rounded-2xl py-0 gap-0">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!control) {
+    return (
+      <Card className="shadow-none rounded-2xl py-0 gap-0">
+        <CardContent className="p-6">
+          <p className="text-red-600">Control not found</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="shadow-none rounded-2xl py-0 gap-0">
       <CardHeader className="">
@@ -18,19 +47,23 @@ const Overview = () => {
         </CardTitle>
 
         <hr />
-        <span className="px-6 pt-6 pb-2 text-sm font-medium text-[#171717]">Question</span>
-        <CardDescription className="pb-6 px-6 teaxt-sm text-[#171717] font-normal">
-          Have the objectives for the project been specified and documented?
-        </CardDescription>
+        {control.question && (
+          <>
+            <span className="px-6 pt-6 pb-2 text-sm font-medium text-[#171717]">Question</span>
+            <CardContent className="pb-6 px-6 text-sm text-[#171717] font-normal">
+              <div dangerouslySetInnerHTML={{ __html: control.question }} />
+            </CardContent>
+          </>
+        )}
       </CardHeader>
-      <span className="px-6 pb-2 text-sm font-medium text-[#171717]">Description</span>
-      <CardContent className="pb-6 px-6 text-sm text-[#171717] font-normal">
-        <p>
-          Define and document project objectives, considering the
-          organisation-wide objectives. Indicate the source of project
-          objectives and associated stakeholders.
-        </p>
-      </CardContent>
+      {control.summary && (
+        <>
+          <span className="px-6 pb-2 text-sm font-medium text-[#171717]">Summary</span>
+          <CardContent className="pb-6 px-6 text-sm text-[#171717] font-normal">
+            <div dangerouslySetInnerHTML={{ __html: control.summary }} />
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 };

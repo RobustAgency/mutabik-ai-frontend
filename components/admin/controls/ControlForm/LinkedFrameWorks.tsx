@@ -1,22 +1,29 @@
-import React from 'react'
-import { Label } from '@/components/ui/label'
-import { CustomMultiSelect } from '@/components/custom/CustomMultiSelect'
+"use client";
+import React, { useState, useEffect, useMemo } from 'react';
+import { Label } from '@/components/ui/label';
+import { CustomMultiSelect } from '@/components/custom/CustomMultiSelect';
+import { useFrameworks } from '@/hooks/admin/useFrameworks';
 
-interface LinkedFrameWorksProps {
-    value: string[]
-    onChange: (value: string[]) => void
+interface LinkedFrameworksProps {
+    value: string[];
+    onChange: (value: string[]) => void;
 }
 
-// Mock data based on the screenshot
-const frameworkOptions = [
-    { value: 'MFE-3', label: 'MFE-3' },
-    { value: 'MFE-7', label: 'MFE-7' },
-    { value: 'MFE-15', label: 'MFE-15' },
-    { value: 'MFE-22', label: 'MFE-22' },
-    { value: 'MFE-30', label: 'MFE-30' },
-]
+const LinkedFrameworks = ({ value, onChange }: LinkedFrameworksProps) => {
+    const filters = useMemo(() => ({ per_page: 100 }), []);
+    const { frameworks, loading } = useFrameworks(filters);
+    const [frameworkOptions, setFrameworkOptions] = useState<{ value: string; label: string }[]>([]);
 
-const LinkedFrameWorks = ({ value, onChange }: LinkedFrameWorksProps) => {
+    useEffect(() => {
+        if (frameworks && frameworks.length > 0) {
+            const options = frameworks.map(framework => ({
+                value: framework.id.toString(),
+                label: `${framework.code} - ${framework.name}`
+            }));
+            setFrameworkOptions(options);
+        }
+    }, [frameworks]);
+
     return (
         <div className='space-y-2'>
             <Label>Linked Frameworks <span className='text-red-500'>*</span></Label>
@@ -24,10 +31,10 @@ const LinkedFrameWorks = ({ value, onChange }: LinkedFrameWorksProps) => {
                 options={frameworkOptions}
                 value={value}
                 onChange={onChange}
-                placeholder="Select option"
+                placeholder={loading ? "Loading frameworks..." : "Select frameworks"}
             />
         </div>
-    )
-}
+    );
+};
 
-export default LinkedFrameWorks
+export default LinkedFrameworks;

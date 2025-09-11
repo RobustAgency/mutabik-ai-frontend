@@ -186,7 +186,6 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
                             >
                                 {loading ? (
                                     <>
-                                        <Spinner />
                                         <span className="ml-2">
                                             {mode === "create" ? "Creating..." : "Updating..."}
                                         </span>

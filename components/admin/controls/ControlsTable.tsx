@@ -1,121 +1,113 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { DataTable } from "../../custom/DataTable";
 import TableCard from "../../custom/TableCard";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen } from "lucide-react";
-
-// Define the data type for rows
-interface Control {
-  "control-code": string;
-  title: string;
-  requirements: string;
-  frameworks: string;
-  "last-updated": string;
-}
+import { SquarePen, Eye } from "lucide-react";
+import { useControls } from "@/hooks/admin/useControls";
+import { Control } from "@/interfaces/Control";
+import { Button } from "@/components/ui/button";
 
 // Columns styled as per image
 const columns: ColumnDef<Control>[] = [
   {
-    accessorKey: "control-code",
+    accessorKey: "code",
     header: "Control Code",
-    cell: ({ row }) => (
-      <span className="pl-4">
-        {row.getValue("control-code")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const control = row.original;
+      return (
+        <Link href={`/admin/compliance-library/controls/details/${control.id}`} className="pl-4 hover:underline">
+          {row.getValue("code")}
+        </Link>
+      );
+    },
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => (
       <span className="">
-        {row.getValue("title")}
+        {row.getValue("name")}
       </span>
     ),
   },
   {
-    accessorKey: "requirements",
+    accessorKey: "requirements_count",
     header: "Requirements",
-    cell: ({ row }) => (
-      <span className="">
-        {row.getValue("requirements")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      return (
+        <span className="">
+          {row.getValue("requirements_count")}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: "frameworks",
+    accessorKey: "frameworks_count",
     header: "Frameworks",
-    cell: ({ row }) => (
-      <span className="">
-        {row.getValue("frameworks")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      return (
+        <span className="">
+          {row.getValue("frameworks_count")}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: "last-updated",
+    accessorKey: "updated_at",
     header: "Last Updated",
-    cell: ({ row }) => (
-      <span className="">
-        {row.getValue("last-updated")}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updated_at"));
+      return (
+        <span className="">
+          {date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          })}
+        </span>
+      );
+    },
   },
   {
-    id: "edit",
+    id: "actions",
     header: "",
-    cell: () => (
-      <span className="text-[#4FD58F] cursor-pointer flex items-center gap-1 text-sm font-semibold hover:underline">
-        <SquarePen width={14} height={14} /> Edit
-      </span>
-    ),
+    cell: ({ row }) => {
+      const control = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          <Link href={`/admin/compliance-library/controls/edit/${control.id}`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+            >
+              <SquarePen width={14} height={14} className="mr-1" />
+              Edit
+            </Button>
+          </Link>
+        </div>
+      );
+    },
     enableSorting: false,
   },
 ];
 
-// Dummy data
-const controls: Control[] = [
-  {
-    "control-code": "C-001",
-    title: "Control A",
-    requirements: "Requirement 1",
-    frameworks: "Framework A",
-    "last-updated": "2025-09-10",
-  },
-  {
-    "control-code": "C-002",
-    title: "Control B",
-    requirements: "Requirement 2",
-    frameworks: "Framework B",
-    "last-updated": "2025-09-09",
-  },
-  {
-    "control-code": "C-003",
-    title: "Control C",
-    requirements: "Requirement 3",
-    frameworks: "Framework C",
-    "last-updated": "2025-09-08",
-  },
-];
-
 const ControlsTable = () => {
-  const loading = false;
-  const error: string | null = null;
-
-  if (loading) {
-    return (
-      <TableCard title="Controls List">
-        <div className="flex items-center justify-center p-8 text-[#737373]">
-          Loading controls...
-        </div>
-      </TableCard>
-    );
-  }
+  const {
+    controls,
+    loading,
+    error,
+    pagination,
+    handlePageChange,
+    handleSearch
+  } = useControls({ page: 1, per_page: 10 });
 
   if (error) {
     return (
       <TableCard title="Controls List">
-        <div className="">
+        <div className="flex items-center justify-center p-8 text-red-600">
           Error: {error}
         </div>
       </TableCard>
@@ -127,8 +119,13 @@ const ControlsTable = () => {
       <DataTable
         columns={columns}
         data={controls}
-        searchKey="title"
+        searchKey="name"
         searchPlaceholder="Search controls"
+        loading={loading}
+        serverSide={true}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
       />
     </TableCard>
   );

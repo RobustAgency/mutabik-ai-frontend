@@ -229,7 +229,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
             <div className="flex flex-col md:flex-row gap-6 w-full">
                 {/* Main Form Card */}
-                <Card className="flex-1 border border-[#ECECEE] rounded-xl py-0">
+                <Card className="flex-1 border-0 rounded-xl py-0 !bg-transparent">
                     <form className="space-y-6 w-full" onSubmit={handleSubmit}>
 
                         {/* Basic Information */}
@@ -391,8 +391,6 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                             initialAssessmentMode={memoizedArrayProps.initialAssessmentMode}
                             onChange={handleAdditionalInfoChange}
                         />
-
-                        <Separator />
 
                         {/* Action Buttons */}
                         <div className="flex gap-4">

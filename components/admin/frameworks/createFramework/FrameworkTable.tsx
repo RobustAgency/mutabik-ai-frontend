@@ -52,7 +52,7 @@ const columns: ColumnDef<Framework>[] = [
     header: '',
     cell: ({ row }) => (
       <Link
-        href={`/admin/frameworks/${row.original.id}`}
+        href={`/admin/compliance-library/frameworks/${row.original.id}`}
         className="text-[#4FD58F] flex items-center gap-1 text-sm font-semibold hover:underline"
       >
         <SquarePen width={14} height={14} /> Edit

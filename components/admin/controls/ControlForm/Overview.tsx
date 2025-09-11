@@ -6,14 +6,14 @@ import Description from '@/components/custom/Description'
 import { SquareChartGantt } from 'lucide-react'
 
 interface ControlFormData {
-    title: string
+    name: string
     code: string
     question: string
     summary: string
     description: string
-    linkedFrameworks: string[]
-    linkedRequirements: string[]
-    tags: string[]
+    framework_ids: string[]
+    requirement_ids: string[]
+    tag_ids: string[]
 }
 
 interface OverviewProps {
@@ -33,12 +33,12 @@ const Overview = ({ formData, onFieldChange }: OverviewProps) => {
             <CardContent className='py-4 space-y-6 px-5'>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <div className='space-y-2'>
-                        <Label htmlFor="title">Title</Label>
+                        <Label htmlFor="name">Name</Label>
                         <Input
-                            id="title"
-                            placeholder="Title"
-                            value={formData.title}
-                            onChange={(e) => onFieldChange('title', e.target.value)}
+                            id="name"
+                            placeholder="Control Name"
+                            value={formData.name}
+                            onChange={(e) => onFieldChange('name', e.target.value)}
                         />
                     </div>
                     <div className='space-y-2'>

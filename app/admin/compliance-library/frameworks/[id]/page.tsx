@@ -18,7 +18,7 @@ export default function FrameworkPage() {
     );
 
     const handleCancel = () => {
-        router.push('/admin/frameworks');
+        router.push('/admin/compliance-library/frameworks');
     };
 
     // Show loading state for edit mode

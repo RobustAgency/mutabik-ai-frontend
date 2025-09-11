@@ -15,6 +15,7 @@ export interface Requirement {
 
 export interface RequirementFilters extends Record<string, unknown> {
     search?: string;
+    framework_id?: string | number;
     page?: number;
     per_page?: number;
 }

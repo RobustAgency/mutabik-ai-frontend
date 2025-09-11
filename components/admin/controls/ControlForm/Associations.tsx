@@ -5,14 +5,14 @@ import LinkedRequirements from './LinkedRequirements'
 import LinkedTags from './LinkedTags'
 
 interface ControlFormData {
-    title: string
+    name: string
     code: string
     question: string
     summary: string
     description: string
-    linkedFrameworks: string[]
-    linkedRequirements: string[]
-    tags: string[]
+    framework_ids: string[]
+    requirement_ids: string[]
+    tag_ids: string[]
 }
 
 interface AssociationsProps {
@@ -28,16 +28,16 @@ const Associations = ({ formData, onFieldChange }: AssociationsProps) => {
             </CardHeader>
             <CardContent className='py-4 space-y-6 px-5'>
                 <LinkedFrameWorks
-                    value={formData.linkedFrameworks}
-                    onChange={(value) => onFieldChange('linkedFrameworks', value)}
+                    value={formData.framework_ids}
+                    onChange={(value) => onFieldChange('framework_ids', value)}
                 />
                 <LinkedRequirements
-                    value={formData.linkedRequirements}
-                    onChange={(value) => onFieldChange('linkedRequirements', value)}
+                    value={formData.requirement_ids}
+                    onChange={(value) => onFieldChange('requirement_ids', value)}
                 />
                 <LinkedTags
-                    value={formData.tags}
-                    onChange={(value) => onFieldChange('tags', value)}
+                    value={formData.tag_ids}
+                    onChange={(value) => onFieldChange('tag_ids', value)}
                 />
             </CardContent>
         </Card>

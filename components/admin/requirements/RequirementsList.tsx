@@ -70,10 +70,11 @@ export default function RequirementsList() {
             ),
         },
         {
+            accessorKey: "controls_count",
             header: "Controls",
-            cell: () => (
-                <span className="text-gray-700">
-                    0 {/* This would be calculated based on actual controls */}
+            cell: ({ row }) => (
+                <span className="font-medium text-gray-900">
+                    {row.getValue("controls_count")}
                 </span>
             ),
         },
@@ -126,7 +127,7 @@ export default function RequirementsList() {
                     </Button>
                 </Link>
             </div>
-            <Card className="bg-white w-full border-0 rounded-xl py-0">
+            <Card className="bg-white w-full rounded-xl py-0">
                 <DataTable
                     columns={columns}
                     data={requirements?.data || []}

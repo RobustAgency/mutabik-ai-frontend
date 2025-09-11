@@ -4,14 +4,14 @@ import Description from '@/components/custom/Description'
 import { BookOpenText } from 'lucide-react'
 
 interface ControlFormData {
-    title: string
+    name: string
     code: string
     question: string
     summary: string
     description: string
-    linkedFrameworks: string[]
-    linkedRequirements: string[]
-    tags: string[]
+    framework_ids: string[]
+    requirement_ids: string[]
+    tag_ids: string[]
 }
 
 interface GuidanceProps {

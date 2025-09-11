@@ -140,7 +140,7 @@ export function useFrameworkMutations(): UseFrameworkMutationsResult {
       }
 
       toast.success('Framework created successfully');
-      router.push('/admin/frameworks');
+      router.push('/admin/compliance-library/frameworks');
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create framework';
@@ -162,7 +162,7 @@ export function useFrameworkMutations(): UseFrameworkMutationsResult {
       }
 
       toast.success('Framework updated successfully');
-      router.push('/admin/frameworks');
+      router.push('/admin/compliance-library/frameworks');
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update framework';
