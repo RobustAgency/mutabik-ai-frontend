@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "./AuthLayout";
+import OnboardingLayout from "./OnboardingLayout";
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -14,6 +15,8 @@ export default function AppShell({ children }: AppShellProps) {
     const isAuthRoute = useMemo(() => {
         const authRoutes = [
             "/login",
+            "/accept-invite",
+            "/admin/login",
             "/signup",
             "/forgot-password",
             "/reset-password",
@@ -21,14 +24,18 @@ export default function AppShell({ children }: AppShellProps) {
             "/auth/confirm",
             "/logout",
             "/error",
-            "/onboarding",
         ];
         return authRoutes.some(
             (route) => pathname === route || pathname.startsWith(`${route}/`)
         );
     }, [pathname]);
 
+    const isOnboardingRoute = useMemo(() => {
+        return pathname === "/onboarding" || pathname.startsWith("/onboarding");
+    }, [pathname]);
+
     if (isAuthRoute) return <AuthLayout>{children}</AuthLayout>;
+    if (isOnboardingRoute) return <OnboardingLayout>{children}</OnboardingLayout>;
 
     return <MainLayout>{children}</MainLayout>;
 }

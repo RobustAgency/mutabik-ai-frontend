@@ -1,5 +1,7 @@
 'use client'
 
+export const runtime = 'edge';
+
 import React from 'react'
 import { useInvoices, useUpcomingInvoice } from '@/hooks/app/usePlans'
 import Spinner from '@/components/ui/spinner'

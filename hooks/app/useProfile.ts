@@ -4,6 +4,7 @@ import { profileService, type Profile } from '@/service/app/profile';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
+import { Role } from '@/interfaces/Roles';
 
 interface UseProfileReturn {
     profile: Profile | null;
@@ -43,17 +44,19 @@ export const useProfile = (user: User | null, initialProfile: Profile | null): U
                 return;
             }
 
-            if (user?.user_metadata?.role === "user") {
+            if (user?.user_metadata?.role !== Role.ADMIN && user?.user_metadata?.role !== Role.SUPER_ADMIN) {
                 const profileResult = await profileService.getProfile();
 
                 if (profileResult.success && profileResult.data) {
                     setProfile({
                         ...supabaseData,
-                        has_payment_method: profileResult.data.has_payment_method ?? null,
-                        plan_id: profileResult.data.plan_id ?? null
+                        ...profileResult.data,
+                        id: String(profileResult.data.id),
+                        full_name: profileResult.data.name
                     });
-                    if (!profileResult.data.has_payment_method) {
-                        router.push('/onboarding?mode=add-payment-method');
+
+                    if (!profileResult.data.organization_id) {
+                        router.push('/onboarding?mode=organization-setup');
                     }
                 } else if (profileResult.error) {
                     if (profileResult.errorCode === 403) {

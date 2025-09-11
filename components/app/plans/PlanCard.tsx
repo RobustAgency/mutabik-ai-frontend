@@ -1,123 +1,165 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import Spinner from '@/components/ui/spinner'
-import { Check, CreditCard } from 'lucide-react'
-import type { Plan } from '@/interfaces/Plan'
-import { formatCurrency } from '@/utils/formatCurrency'
-import { useAuth } from '@/providers/AuthProvider'
-import ConfirmationDialog from '@/components/custom/ConfirmationDialog'
-import { useCancelSubscription } from '@/hooks/app/usePlans'
+import React from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-interface PlanCardProps {
-    plan: Plan
-    onSubscribe: (plan: Plan) => Promise<void>
-    isLoading: boolean
-    isSelected: boolean
-}
+const plans = [
+  {
+    name: "Starter",
+    subtitle: "Ideal for small projects",
+    price: "Free",
+    priceNote: "",
+    features: [
+      "Unlimited personal files",
+      "Email support",
+      "CSV data export",
+      "Basic analytics dashboard",
+      "1,000 API calls per month",
+    ],
+    button: "Try for free",
+    highlight: false,
+    badge: null,
+    featurePrefix: (
+      <span className="inline-block w-4 h-4 mr-2 align-middle">⚙️</span>
+    ),
+    pricePer: "",
+  },
+  {
+    name: "Professional",
+    subtitle: "For freelancers and startups",
+    price: "$15",
+    priceNote: "/per user",
+    features: [
+      <span key="all-starter">
+        <span className="inline-block align-middle text-primary mr-2">✔️</span>{" "}
+        <span className="font-semibold">All starter features +</span>
+      </span>,
+      "Up to 5 user accounts",
+      "Team collaboration tools",
+      "Custom dashboards",
+      "Multiple data export formats",
+      "Basic custom integrations",
+    ],
+    button: "Select plan",
+    highlight: true,
+    badge: "MOST POPULAR PLAN",
+    featurePrefix: (
+      <span className="inline-block w-4 h-4 mr-2 align-middle">⚙️</span>
+    ),
+    pricePer: "/per user",
+  },
+  {
+    name: "Organization",
+    subtitle: "For fast-growing businesses",
+    price: "$30",
+    priceNote: "/per user",
+    features: [
+      <span key="all-pro">
+        <span className="inline-block align-middle text-primary mr-2">✔️</span>{" "}
+        <span className="font-semibold">All professional features +</span>
+      </span>,
+      "Enterprise security suite",
+      "Single Sign-On (SSO)",
+      "Custom contract terms",
+      "Dedicated phone support",
+      "Custom integration support",
+      "Compliance tools",
+    ],
+    button: "Select plan",
+    highlight: false,
+    badge: null,
+    featurePrefix: (
+      <span className="inline-block w-4 h-4 mr-2 align-middle">⚙️</span>
+    ),
+    pricePer: "/per user",
+  },
+];
 
-const PlanCard: React.FC<PlanCardProps> = ({
-    plan,
-    onSubscribe,
-    isLoading,
-    isSelected,
-}) => {
-    const { cancel, loading: isCancelling } = useCancelSubscription()
-    const { profile, fetchProfile } = useAuth()
-    const isCurrentPlan = profile?.plan_id === plan.id
-    const [showCancelModal, setShowCancelModal] = useState(false)
-
-    const handleCancelClick = () => {
-        setShowCancelModal(true)
-    }
-
-    const handleCancelModal = () => {
-        setShowCancelModal(false)
-    }
-
-    const handleCancel = async () => {
-        try {
-            const response = await cancel(fetchProfile)
-            if (!response.error) {
-                setShowCancelModal(false)
-            }
-        } catch (error) {
-            console.error('Cancel error:', error)
-        }
-    }
-
-    return (
-        <>
-            <Card className="relative">
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">{plan.name}</CardTitle>
-                        {isCurrentPlan && (
-                            <Badge variant="light" color="success">Subscribed</Badge>
-                        )}
-                    </div>
-                    <CardDescription>{plan.description}</CardDescription>
-                    <div className="mt-4">
-                        <span className="text-3xl font-bold text-gray-900">
-                            {formatCurrency(plan.price, plan.currency)}
+const PlanCard: React.FC = () => {
+  return (
+    <>
+      {plans.map((plan) => (
+        <div key={plan.name} className={`w-full relative  flex flex-col justify-center rounded-4xl items-center ${plan.highlight ? 'bg-primary px-1  pb-1 md:-mt-12' : ''}`}>
+        {plan.highlight && (<h2 className="text-center py-4 text-[12px] font-medium">Most Popular Plan</h2>)}
+        
+          <Card
+            key={plan.name}
+            className={`flex flex-col w-full h-full p-5 bg-white justify-between py-6 border- transition-all duration-200
+           ${plan.highlight ? "border-none" : ""}
+            rounded-4xl
+          `}>
+            <CardHeader className=" border-6-red">
+              <CardTitle
+                className={` text-[#1A1A1A] text-[20px] font-bold ${
+                  plan.highlight
+                    ? "text-[20px] font-bold"
+                    : "text-[20px] font-bold"
+                }`}
+              >
+                {plan.name}
+              </CardTitle>
+              <CardDescription className="text-base text-[#666666] text-[14px] mb-2">
+                {plan.subtitle}
+              </CardDescription>
+              <div className="flex items-center justify-start gap-1">
+                <span
+                  className={`font-bold ${
+                    plan.highlight ? "text-[32px]" : "text-[32px]"
+                  } ${plan.price === "Free" ? "text-black" : "text-gray-900"}`}
+                >
+                  {plan.price}
+                </span>
+                {plan.priceNote && (
+                  <span className="text-[32px] font-bold text-[#1A1A1A]">
+                    {plan.priceNote}
+                  </span>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 px-6 pb-0">
+              <ul className="flex flex-col gap-3 text-left">
+                {plan.features.map((feature, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start text-sm text-gray-700"
+                  >
+                    {typeof feature === "string" ? (
+                      <>
+                        <span className="inline-block w-4 h-4 mr-2 mt-0.5 text-[#1A1A1A]">
+                          ⚙️
                         </span>
-                        <span className="text-gray-600 ml-2">
-                            /{plan.billing_cycle}
-                        </span>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-3 mb-6">
-                        <div className="flex items-center">
-                            <Check className="h-4 w-4 text-green-500 mr-2" />
-                            <span className="text-sm text-gray-700">
-                                Up to {plan.limit} items
-                            </span>
-                        </div>
-                        <div className="flex items-center">
-                            <Check className="h-4 w-4 text-green-500 mr-2" />
-                            <span className="text-sm text-gray-700">
-                                {plan.billing_cycle} billing
-                            </span>
-                        </div>
-                        <div className="flex items-center">
-                            <Check className="h-4 w-4 text-green-500 mr-2" />
-                            <span className="text-sm text-gray-700">
-                                Priority support
-                            </span>
-                        </div>
-                    </div>
-                    <Button
-                        className="w-full"
-                        variant={"default"}
-                        onClick={isCurrentPlan ? handleCancelClick : () => onSubscribe(plan)}
-                        disabled={(isLoading && isSelected) || (isCancelling && isCurrentPlan)}
-                    >
-                        {(isLoading && isSelected) || (isCancelling && isCurrentPlan) ? (
-                            <Spinner size="sm" className="mr-2" />
-                        ) : (
-                            <CreditCard className="h-4 w-4 mr-2" />
-                        )}
-                        {isCurrentPlan ? 'Cancel Plan' : (isLoading && isSelected ? 'Subscribing...' : 'Subscribe')}
-                    </Button>
-                </CardContent>
-            </Card>
+                        {feature}
+                      </>
+                    ) : (
+                      feature
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter className="flex justify-center pt-6 pb-2">
+              <Button
+                className={`w-full max-w-[236px] rounded-full py-2 text-base font-semibold ${
+                  plan.highlight
+                    ? "bg-[#1A1A1A] hover:bg-gray-700 text-white shadow-lg"
+                    : "bg-[#1A1A1A] hover:bg-gray-700 text-white"
+                }`}
+                size="lg"
+              >
+                {plan.button}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      ))}
+    </>
+  );
+};
 
-            <ConfirmationDialog
-                isOpen={showCancelModal}
-                onClose={handleCancelModal}
-                onConfirm={handleCancel}
-                title="Cancel Subscription"
-                description={`Are you sure you want to cancel your ${plan.name} subscription? You will lose access to premium features at the end of your current billing period.`}
-                confirmText="Cancel Subscription"
-                cancelText="Keep Subscription"
-                type="danger"
-                isLoading={isCancelling}
-                loadingText="Cancelling..."
-            />
-        </>
-    )
-}
-
-export default PlanCard
+export default PlanCard;

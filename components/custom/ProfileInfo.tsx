@@ -1,35 +1,49 @@
 import { useAuth } from '@/providers/AuthProvider'
 import Image from 'next/image'
-import Link from 'next/link'
 import React, { useEffect } from 'react'
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
+import { useRouter } from 'next/navigation'
 
 const ProfileInfo = () => {
-    const { profile, fetchProfile, user } = useAuth()
-    const avatarUrl = profile?.avatar_url
-    const displayName = profile?.full_name ?? "User"
-    const role = user?.user_metadata?.role ?? "user"
-
+    const { profile, fetchProfile, } = useAuth();
+    const avatarUrl = profile?.avatar_url || "/placeholders/user_placeholder.png"
+    // const avatarUrl = profile?.avatar_url
+    // const displayName = profile?.full_name ?? "User"
+    // const role = user?.user_metadata?.role ?? "user"
     useEffect(() => {
         if (!profile) {
             fetchProfile()
         }
     }, [profile, fetchProfile])
 
+    const router = useRouter();
     return (
         <div className="flex items-center gap-3 justify-end px-4">
-            <Link href="/settings" className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
-                {avatarUrl ? (
-                    <Image src={avatarUrl} alt={displayName} fill sizes="40px" className="object-cover" unoptimized />
-                ) : (
-                    <div className="flex h-full w-full items-center justify-center text-sm font-medium">
-                        {displayName.slice(0, 2).toUpperCase()}
-                    </div>
-                )}
-            </Link>
-            <div className="min-w-0">
-                <div className="truncate text-sm font-medium">{displayName}</div>
-                <div className="text-xs capitalize text-muted-foreground">{role}</div>
-            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <button
+                        className="relative h-10 w-10 overflow-hidden rounded-full bg-muted focus:outline-none "
+                        aria-label="Open profile menu"
+                    >
+                        {avatarUrl && (
+                            <Image src={avatarUrl} alt="Profile" fill sizes="40px" className="object-cover cursor-pointer" unoptimized />
+                        )}
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40 ">
+                    <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/settings')}>
+                        Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/logout')}>
+                        Logout
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     )
 }

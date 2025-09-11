@@ -1,4 +1,7 @@
 'use client';
+
+export const runtime = 'edge';
+
 import { useEffect } from "react";
 import { signout } from "@/lib/auth-actions";
 

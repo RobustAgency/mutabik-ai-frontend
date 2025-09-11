@@ -1,5 +1,7 @@
 import LoginButton from "@/components/auth/LoginLogoutButton";
 
+export const runtime = 'edge';
+
 export default function Home() {
   return (
     <main className="min-h-screen">
