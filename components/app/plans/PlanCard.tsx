@@ -122,7 +122,7 @@ const PlanCard: React.FC = () => {
                 )}
               </div>
             </CardHeader>
-            <CardContent className="flex-1 px-6 pb-0">
+            <CardContent className="flex-1  md:px-6 pb-0">
               <ul className="flex flex-col gap-3 text-left">
                 {plan.features.map((feature, i) => (
                   <li
@@ -145,7 +145,7 @@ const PlanCard: React.FC = () => {
             </CardContent>
             <CardFooter className="flex justify-center pt-6 pb-2">
               <Button
-                className={`w-full max-w-[236px] rounded-full py-2 text-base font-semibold ${
+                className={`w-full max-w-[236px] px-18 md:px-0 rounded-full py-2 text-base font-semibold ${
                   plan.highlight
                     ? "bg-[#1A1A1A] hover:bg-gray-700 text-white shadow-lg"
                     : "bg-[#1A1A1A] hover:bg-gray-700 text-white"

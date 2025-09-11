@@ -14,10 +14,10 @@ const Page = () => {
     <React.Fragment>
       <Breadcrumbs items={breadcrumbItems} />
       <div className='flex items-center justify-between mt-2 mb-10'>
-        <h1 className="font-bold text-4xl text-neutral-900">Frameworks</h1>
+        <h1 className="font-bold text-lg sm:text-2xl md:text-3xl text-neutral-900">Frameworks</h1>
         <Link href="/admin/compliance-library/frameworks/create">
           <Button
-            className="px-6 py-2 rounded-lg"
+            className="px-2 md:px-6 py-2 rounded-lg"
           >
             Create Framework
           </Button>

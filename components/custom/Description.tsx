@@ -60,12 +60,12 @@ export default function Description({ title = "Description", value, onChange }: 
       </label>
       <div className="w-full bg-white rounded-lg shadow border border-gray-200 p-0">
         {/* Toolbar */}
-        <div className="flex items-center gap-1 px-4 pt-4 pb-2 border-b border-gray-100">
+        <div className="flex items-center   pt-4 pb-2 border-b border-gray-100">
           <button
             type="button"
             aria-label="Bold"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-2 rounded-md transition-colors ${editor.isActive("bold")
+            className={` rounded-md transition-colors ${editor.isActive("bold")
               ? "bg-blue-100 text-blue-600"
               : "text-[#404040] hover:bg-gray-100"
               }`}

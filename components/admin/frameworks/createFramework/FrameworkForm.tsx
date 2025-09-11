@@ -223,7 +223,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
             <Breadcrumbs items={breadcrumbItems} />
 
             {/* Heading */}
-            <h1 className="text-3xl text-[#171717] font-bold mt-4 mb-6">
+            <h1 className="text-lg sm:text-2xl md:text-3xl text-[#171717] font-bold mt-4 mb-6">
                 {isEditing ? 'Edit Framework' : 'Create Framework'}
             </h1>
 
@@ -245,7 +245,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                             id="logo-upload"
                                         />
-                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 text-center hover:border-gray-400 transition-colors">
                                             {preview ? (
                                                 <div className="flex flex-col items-center gap-4">
                                                     <Image
@@ -255,12 +255,12 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                                         height={64}
                                                         className="object-cover rounded-lg"
                                                     />
-                                                    <div className="text-sm text-gray-600">
+                                                    <div className="text-xs md:text-sm text-gray-600">
                                                         Drag & Drop your file or <span className="text-green-500 font-medium">Browse</span>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="text-sm text-gray-600">
+                                                <div className="text-xs md:text-sm text-gray-600">
                                                     Drag & Drop your file or <span className="text-green-500 font-medium cursor-pointer">Browse</span>
                                                 </div>
                                             )}
