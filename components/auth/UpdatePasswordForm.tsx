@@ -62,13 +62,13 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
                             id="password"
                             name="password"
                             placeholder="Enter your password"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    
+
                     <div>
                         <Label htmlFor="confirm-password" className="text-gray-700 font-medium">
                             Confirm Password<span className="text-red-500">*</span>
@@ -77,18 +77,18 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
                             id="confirm-password"
                             name="confirm-password"
                             placeholder="Enter your password"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
-                    
+
                     {error && <p className="text-sm text-red-500">{error}</p>}
-                    
-                    <Button 
-                        type="submit" 
-                        className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg transition-colors" 
+
+                    <Button
+                        type="submit"
+                        className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg transition-colors"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Saving...' : 'Save password'}

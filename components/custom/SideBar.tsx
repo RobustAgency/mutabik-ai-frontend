@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import {
   // Settings as SettingsIcon,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import { Landmark } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Accordian from "@/components/custom/Accordian";
 import { Role } from "@/interfaces/Roles";
@@ -69,9 +71,19 @@ export function Sidebar({
   onNavigate: () => void;
 }) {
   const { user } = useAuth();
+  const pathname = usePathname();
   const role: string = user?.user_metadata?.role ?? "Owner";
 
   const navigationRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
+
+  // Helper function to check if a route is active
+  const isRouteActive = (href: string, children?: RouteItem[]) => {
+    if (href && pathname === href) return true;
+    if (children) {
+      return children.some(child => pathname === child.href || pathname.startsWith(child.href + '/'));
+    }
+    return false;
+  };
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -84,30 +96,51 @@ export function Sidebar({
 
       {/* Sidebar Navigation */}
       <div className="flex flex-col gap-1 p-2 md:p-3 mt-6">
-        {navigationRoutes.map((item) => (
-          <div key={item.label}>
-            {item.href !== "" && (
-              <Link
-                href={item.href || "#"}
-                onClick={onNavigate}
-                className="relative flex items-center rounded-md hover:bg-accent hover:text-accent-foreground gap-2 px-3 py-2 text-sm"
-              >
-                {item.icon ? <item.icon className="shrink-0 size-6" color="#737373" /> : null}
-                {!collapsed && (
-                  <span className="whitespace-nowrap text-[#404040] text-sm font-medium">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            )}
+        {navigationRoutes.map((item) => {
+          const isActive = isRouteActive(item.href, item.children);
+          
+          return (
+            <div key={item.label}>
+              {item.href !== "" && (
+                <Link
+                  href={item.href || "#"}
+                  onClick={onNavigate}
+                  className={`relative flex items-center rounded-md gap-2 px-3 py-2 text-sm transition-colors ${
+                    isActive 
+                      ? "bg-primary/10 text-primary border-primary" 
+                      : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
+                  }`}
+                >
+                  {item.icon ? (
+                    <item.icon 
+                      className="shrink-0 size-6" 
+                      color={isActive ? "currentColor" : "#737373"} 
+                    />
+                  ) : null}
+                  {!collapsed && (
+                    <span className={`whitespace-nowrap text-sm font-medium ${
+                      isActive ? "text-primary" : "text-[#404040]"
+                    }`}>
+                      {item.label}
+                    </span>
+                  )}
+                </Link>
+              )}
 
-            {item.children && item.icon && (
-              <div>
-                <Accordian label={item.label} items={item.children} icon={item.icon} />
-              </div>
-            )}
-          </div>
-        ))}
+              {item.children && item.icon && (
+                <div>
+                  <Accordian 
+                    label={item.label} 
+                    items={item.children} 
+                    icon={item.icon}
+                    isParentActive={isActive}
+                    pathname={pathname}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   );

@@ -130,7 +130,7 @@ export function LoginForm() {
                             name="email"
                             type="email"
                             placeholder="Enter your email"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                         />
                     </div>
@@ -143,7 +143,7 @@ export function LoginForm() {
                             id="password"
                             name="password"
                             placeholder="hello123"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                         />
                     </div>

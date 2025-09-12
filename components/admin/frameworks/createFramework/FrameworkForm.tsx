@@ -34,7 +34,7 @@ interface FrameworkFormProps {
 
 export default function FrameworkForm({ framework, isEditing = false, onCancel }: FrameworkFormProps) {
     const breadcrumbItems = [
-        { label: 'Frameworks', href: '/admin/frameworks' },
+        { label: 'Frameworks', href: '/admin/compliance-library/frameworks' },
         { label: isEditing ? 'Edit' : 'Create' },
     ];
 

@@ -73,7 +73,7 @@ export function SignUpForm() {
                                 name="first-name"
                                 type="text"
                                 placeholder="John"
-                                className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                                className="mt-1 border-gray-300"
                                 required
                             />
                         </div>
@@ -86,7 +86,7 @@ export function SignUpForm() {
                                 name="last-name"
                                 type="text"
                                 placeholder="Doe"
-                                className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                                className="mt-1 border-gray-300"
                                 required
                             />
                         </div>
@@ -101,7 +101,7 @@ export function SignUpForm() {
                             name="email"
                             type="email"
                             placeholder="Enter your email"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                         />
                     </div>
@@ -114,7 +114,7 @@ export function SignUpForm() {
                             id="password"
                             name="password"
                             placeholder="hello123"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             required
                         />
                     </div>
@@ -129,11 +129,11 @@ export function SignUpForm() {
                         />
                         <label htmlFor="terms" className="text-sm text-gray-700">
                             By creating an account, you agree to the{" "}
-                            <Link href="/terms" className="text-primary hover:text-primary/80">
+                            <Link href="/terms" className="text-[#667085] font-bold">
                                 terms and conditions
                             </Link>
                             {" "}and our{" "}
-                            <Link href="/privacy" className="text-primary hover:text-primary/80">
+                            <Link href="/privacy" className="text-[#667085] font-bold">
                                 privacy policy
                             </Link>
                         </label>

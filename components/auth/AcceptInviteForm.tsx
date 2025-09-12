@@ -158,7 +158,7 @@ const AcceptInviteForm = () => {
                             name="name"
                             type="text"
                             placeholder="Enter your name"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             value={formData.name}
                             onChange={handleInputChange}
                             required
@@ -176,7 +176,7 @@ const AcceptInviteForm = () => {
                             id="password"
                             name="password"
                             placeholder="Enter your password"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             value={formData.password}
                             onChange={handleInputChange}
                             required
@@ -194,7 +194,7 @@ const AcceptInviteForm = () => {
                             id="confirm_password"
                             name="confirm_password"
                             placeholder="Confirm your password"
-                            className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                            className="mt-1 border-gray-300"
                             value={formData.confirm_password}
                             onChange={handleInputChange}
                             required

@@ -5,14 +5,17 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const [email, setEmail] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+
+    // Timer state
+    const [timer, setTimer] = useState(60)
+    const [canResend, setCanResend] = useState(false)
 
     const handleForgotPassword = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -21,16 +24,47 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         setError(null)
 
         try {
-            // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: `${window.location.origin}/update-password`,
             })
             if (error) throw error
             setSuccess(true)
+            setTimer(60) // reset countdown on success
+            setCanResend(false)
         } catch (error: unknown) {
             setError(error instanceof Error ? error.message : 'An error occurred')
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    // Timer effect
+    useEffect(() => {
+        if (!success || canResend) return
+
+        if (timer > 0) {
+            const interval = setInterval(() => {
+                setTimer((prev) => prev - 1)
+            }, 1000)
+
+            return () => clearInterval(interval)
+        } else {
+            setCanResend(true)
+        }
+    }, [timer, success, canResend])
+
+    const handleResendEmail = async () => {
+        if (!email) return
+        const supabase = createClient()
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/update-password`,
+            })
+            if (error) throw error
+            setTimer(60)
+            setCanResend(false)
+        } catch (err) {
+            console.error(err)
         }
     }
 
@@ -40,18 +74,26 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <div className="space-y-6">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Verify your email</h1>
-                        <p className="mt-2 text-gray-600">Verify your email address to get started.
-                            If you didn’t receive the email, click the resend button.</p>
+                        <p className="mt-2 text-gray-600">
+                            Verify your email address to get started. <br />
+                            If you didn’t receive the email, click the resend button.
+                        </p>
                     </div>
-                    <Link
-                        href="/login"
-                        className="inline-flex items-center text-sm text-primary hover:text-primary/80"
-                    >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back to login
-                    </Link>
+
+                    <div>
+                        {!canResend && (
+                            <p className="text-sm text-gray-500 mb-2">
+                                You can resend in {timer}s
+                            </p>
+                        )}
+                        <Button
+                            onClick={handleResendEmail}
+                            className="min-h-[44px] w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-lg transition-colors"
+                            disabled={!canResend}
+                        >
+                            Resend Verification Email
+                        </Button>
+                    </div>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -69,7 +111,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                                 id="email"
                                 type="email"
                                 placeholder="Enter your email"
-                                className="mt-1 border-gray-300 focus:border-primary focus:ring-primary"
+                                className="mt-1 border-gray-300"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -86,13 +128,6 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                             {isLoading ? 'Sending...' : 'Reset password'}
                         </Button>
                     </form>
-
-                    <div className="text-sm text-gray-600">
-                        Already have an account?{' '}
-                        <Link href="/login" className="text-primary hover:text-primary/80 font-medium">
-                            Sign In
-                        </Link>
-                    </div>
                 </div>
             )}
         </div>
