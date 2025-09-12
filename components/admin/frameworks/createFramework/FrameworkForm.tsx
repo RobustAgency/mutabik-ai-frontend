@@ -38,7 +38,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         { label: isEditing ? 'Edit' : 'Create' },
     ];
 
-    // Basic form state
+    // Basic form state - store enum values (strings) to match Select component expectations
     const [formData, setFormData] = useState({
         name: "",
         code: "",
@@ -47,6 +47,13 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         category: FrameworkCategory.Mandatory,
         version: "",
     });
+
+    console.log("formData", formData)
+
+    // Debug: Track formData changes
+    useEffect(() => {
+        console.log('FormData changed:', formData);
+    }, [formData]);
 
     // Additional information state - will be managed by AdditionalInformation component
     const [additionalInfo, setAdditionalInfo] = useState({
@@ -105,15 +112,25 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
     // Initialize form with existing framework data
     useEffect(() => {
-        if (framework && isEditing) {
-            setFormData({
+        if (framework && isEditing && framework.id) {
+            console.log('Framework data received:', {
+                framework,
+                type: framework.type,
+                category: framework.category,
+                frameworkId: framework.id
+            });
+
+            const newFormData = {
                 name: framework.name || "",
                 code: framework.code || "",
                 type: framework.type || FrameworkType.LAW_ACT,
                 geography: framework.geography || "",
                 category: framework.category || FrameworkCategory.Mandatory,
                 version: framework.version || "",
-            });
+            };
+
+            console.log('Setting form data to:', newFormData);
+            setFormData(newFormData);
 
             setDescription(framework.description || "");
             setStatus({
@@ -131,8 +148,8 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
             });
 
             const newAdditionalInfo = {
-                authority_publisher: framework.authority_publisher,
-                binding_level: framework.binding_level,
+                authority_publisher: framework.authority_publisher as AuthorityPublisher | undefined,
+                binding_level: framework.binding_level as BindingLevel | undefined,
                 sector_applicability: convertedArrays.sector_applicability,
                 risk_class_coverage: convertedArrays.risk_class_coverage,
                 certification_attestation: convertedArrays.certification_attestation,
@@ -146,7 +163,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                 setPreview(framework.framework_logo_url);
             }
         }
-    }, [framework, isEditing]);
+    }, [framework?.id, isEditing]); // Only re-run when framework ID changes or editing mode changes
 
     // File Upload Handler
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,6 +188,9 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
         const requestData = {
             ...formData,
+            // Convert string values back to enum types for the API
+            type: formData.type as FrameworkType,
+            category: formData.category as FrameworkCategory,
             authority_publisher: additionalInfo.authority_publisher,
             binding_level: additionalInfo.binding_level,
             description,
@@ -335,24 +355,25 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             Type
                                         </Label>
                                         <Select
+                                            key={`type-${formData.type}`}
                                             value={formData.type}
-                                            onValueChange={(value) => handleInputChange('type', value as FrameworkType)}
+                                            onValueChange={(value) => handleInputChange('type', value)}
                                         >
                                             <SelectTrigger className="mt-1 w-full">
                                                 <SelectValue placeholder="Select type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value={FrameworkType.LAW_ACT}>Law/Act</SelectItem>
-                                                <SelectItem value={FrameworkType.REGULATION}>Regulation</SelectItem>
-                                                <SelectItem value={FrameworkType.STANDARD}>Standard</SelectItem>
-                                                <SelectItem value={FrameworkType.FRAMEWORK}>Framework</SelectItem>
-                                                <SelectItem value={FrameworkType.GUIDELINE}>Guideline</SelectItem>
-                                                <SelectItem value={FrameworkType.POLICY_INTERNAL}>Internal Policy</SelectItem>
-                                                <SelectItem value={FrameworkType.SUPERVISORY_NOTICE}>Supervisory Circular/Notice</SelectItem>
-                                                <SelectItem value={FrameworkType.INDUSTRY_CODE}>Industry Code of Conduct</SelectItem>
-                                                <SelectItem value={FrameworkType.CERT_SCHEME}>Certification/Accreditation Scheme</SelectItem>
-                                                <SelectItem value={FrameworkType.CONTRACTUAL}>Contractual/Procurement Rule</SelectItem>
-                                                <SelectItem value={FrameworkType.OTHER}>Other</SelectItem>
+                                                <SelectItem value={FrameworkType.LAW_ACT}>{FrameworkType.LAW_ACT}</SelectItem>
+                                                <SelectItem value={FrameworkType.REGULATION}>{FrameworkType.REGULATION}</SelectItem>
+                                                <SelectItem value={FrameworkType.STANDARD}>{FrameworkType.STANDARD}</SelectItem>
+                                                <SelectItem value={FrameworkType.FRAMEWORK}>{FrameworkType.FRAMEWORK}</SelectItem>
+                                                <SelectItem value={FrameworkType.GUIDELINE}>{FrameworkType.GUIDELINE}</SelectItem>
+                                                <SelectItem value={FrameworkType.POLICY_INTERNAL}>{FrameworkType.POLICY_INTERNAL}</SelectItem>
+                                                <SelectItem value={FrameworkType.SUPERVISORY_NOTICE}>{FrameworkType.SUPERVISORY_NOTICE}</SelectItem>
+                                                <SelectItem value={FrameworkType.INDUSTRY_CODE}>{FrameworkType.INDUSTRY_CODE}</SelectItem>
+                                                <SelectItem value={FrameworkType.CERT_SCHEME}>{FrameworkType.CERT_SCHEME}</SelectItem>
+                                                <SelectItem value={FrameworkType.CONTRACTUAL}>{FrameworkType.CONTRACTUAL}</SelectItem>
+                                                <SelectItem value={FrameworkType.OTHER}>{FrameworkType.OTHER}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -361,15 +382,16 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             Category
                                         </Label>
                                         <Select
+                                            key={`category-${formData.category}`}
                                             value={formData.category}
-                                            onValueChange={(value) => handleInputChange('category', value as FrameworkCategory)}
+                                            onValueChange={(value) => handleInputChange('category', value)}
                                         >
                                             <SelectTrigger className="mt-1 w-full">
                                                 <SelectValue placeholder="Select category" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value={FrameworkCategory.Mandatory}>Mandatory</SelectItem>
-                                                <SelectItem value={FrameworkCategory.Voluntary}>Voluntary</SelectItem>
+                                                <SelectItem value={FrameworkCategory.Mandatory}>{FrameworkCategory.Mandatory}</SelectItem>
+                                                <SelectItem value={FrameworkCategory.Voluntary}>{FrameworkCategory.Voluntary}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>

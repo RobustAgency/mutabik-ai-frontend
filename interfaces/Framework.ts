@@ -28,7 +28,7 @@ export enum AuthorityPublisher {
   OECD = "OECD",
   UNESCO = "UNESCO",
   COUNCIL_OF_EUROPE = "Council of Europe",
-  
+
   // EU
   EU_PARLIAMENT_COUNCIL = "EU Parliament & Council",
   EU_COMMISSION = "European Commission",
@@ -38,7 +38,7 @@ export enum AuthorityPublisher {
   ESMA = "ESMA",
   EIOPA = "EIOPA",
   ECB = "European Central Bank",
-  
+
   // US
   NIST = "NIST",
   FTC = "Federal Trade Commission",
@@ -48,13 +48,13 @@ export enum AuthorityPublisher {
   FDIC = "FDIC",
   CFPB = "CFPB",
   NTIA = "NTIA",
-  
+
   // UK
   UK_ICO = "UK ICO",
   UK_FCA = "UK FCA",
   PRA_BOE = "Prudential Regulation Authority (BoE)",
   UK_DSI_ASI = "UK Department for Science & AI Safety Institute",
-  
+
   // GCC / Middle East
   UAE_DATA_OFFICE = "UAE Data Office",
   CBUAE = "Central Bank of the UAE",
@@ -69,7 +69,7 @@ export enum AuthorityPublisher {
   QFCRA = "Qatar Financial Centre Regulatory Authority",
   CBK = "Central Bank of Kuwait",
   CBO = "Central Bank of Oman",
-  
+
   // APAC / Others
   MAS = "Monetary Authority of Singapore",
   HKMA = "Hong Kong Monetary Authority",
