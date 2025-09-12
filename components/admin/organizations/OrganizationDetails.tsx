@@ -2,26 +2,25 @@
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useOrganization } from '@/hooks/admin/useOrganization';
-import { OrganizationMember } from '@/interfaces/Organization';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { formatDate } from '@/utils/formatDate';
-import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/custom/DataTable';
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
 import ConfirmationDialog from '@/components/custom/ConfirmationDialog';
-import { formatRole } from '@/utils/formatRole';
+import MembersTable from './MembersTable';
 
 const OrganizationDetails: React.FC = () => {
     const params = useParams();
     const organizationId = Number(params.id);
 
-    const { organization, loading, updating, updateOrganization } = useOrganization(organizationId);
+    const { organization, loading, updating, updateOrganization, refetch } = useOrganization(organizationId);
+
+    // Organization edit states
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isEditing, setIsEditing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [refreshingMembers, setRefreshingMembers] = useState(false);
     const [editData, setEditData] = useState<{
         name: string;
         website: string;
@@ -91,61 +90,19 @@ const OrganizationDetails: React.FC = () => {
         }
     };
 
-    const memberColumns: ColumnDef<OrganizationMember>[] = [
-        {
-            accessorKey: 'name',
-            header: 'Name',
-            cell: ({ row }) => (
-                <span className="pl-4 font-medium text-gray-900">{row.getValue('name')}</span>
-            ),
-        },
-        {
-            accessorKey: 'email',
-            header: 'Email',
-            cell: ({ row }) => (
-                <span className="text-gray-600">{row.getValue('email')}</span>
-            ),
-        },
-        {
-            accessorKey: 'role',
-            header: 'Role',
-            cell: ({ row }) => (
-                <span className="text-gray-600">{formatRole(row.getValue('role'))}</span>
-            ),
-        },
-        {
-            accessorKey: 'created_at',
-            header: 'Created At',
-            cell: ({ row }) => {
-                const createdAt = row.getValue('created_at') as string;
-                return (
-                    <p>
-                        {createdAt ? formatDate(createdAt) : '-'}
-                    </p>
-                );
-            },
-        },
-        // {
-        //     id: 'actions',
-        //     header: '',
-        //     cell: ({ row }) => (
-        //         <div className="flex items-center gap-2">
-        //             <Button variant="ghost" size="sm">
-        //                 <Eye className="w-4 h-4" />
-        //                 View
-        //             </Button>
-        //             <Button variant="ghost" size="sm">
-        //                 <Edit3 className="w-4 h-4" />
-        //                 Edit
-        //             </Button>
-        //             <Button variant="ghost" size="sm">
-        //                 <Trash2 className="w-4 h-4" />
-        //                 Delete
-        //             </Button>
-        //         </div>
-        //     ),
-        // }
-    ];
+    const handleMemberUpdated = async () => {
+        // Refetch organization data to get updated member info
+        setRefreshingMembers(true);
+        await refetch();
+        setRefreshingMembers(false);
+    };
+
+    const handleMemberDeleted = async () => {
+        // Refetch organization data after member deletion
+        setRefreshingMembers(true);
+        await refetch();
+        setRefreshingMembers(false);
+    };
 
     const breadcrumbItems = [
         { label: 'Customers', href: '/admin/users-administration/customers' },
@@ -292,29 +249,15 @@ const OrganizationDetails: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {/* Members Card */}
-            <Card className='gap-0'>
-                <CardHeader className='px-5'>
-                    <CardTitle className='text-lg font-semibold '>
-                        Members
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='mt-0 py-0'>
-                    {organization.members && organization.members.length > 0 ? (
-                        <DataTable
-                            columns={memberColumns}
-                            data={organization.members}
-                            loading={loading}
-                        />
-                    ) : (
-                        <div className="text-center py-8 text-gray-500">
-                            No members found for this organization
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+            {/* Members Table */}
+            <MembersTable
+                members={organization.members || []}
+                loading={loading || refreshingMembers}
+                onMemberUpdated={handleMemberUpdated}
+                onMemberDeleted={handleMemberDeleted}
+            />
 
-            {/* Confirmation Dialog */}
+            {/* Organization Status Confirmation Dialog */}
             <ConfirmationDialog
                 isOpen={showConfirmDialog}
                 onClose={handleCloseDialog}
