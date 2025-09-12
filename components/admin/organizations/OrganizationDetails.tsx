@@ -12,8 +12,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/custom/DataTable';
 import Breadcrumbs from '@/components/custom/Breadcrumbs';
 import ConfirmationDialog from '@/components/custom/ConfirmationDialog';
+import { formatRole } from '@/utils/formatRole';
 
-// Component without props
 const OrganizationDetails: React.FC = () => {
     const params = useParams();
     const organizationId = Number(params.id);
@@ -104,6 +104,13 @@ const OrganizationDetails: React.FC = () => {
             header: 'Email',
             cell: ({ row }) => (
                 <span className="text-gray-600">{row.getValue('email')}</span>
+            ),
+        },
+        {
+            accessorKey: 'role',
+            header: 'Role',
+            cell: ({ row }) => (
+                <span className="text-gray-600">{formatRole(row.getValue('role'))}</span>
             ),
         },
         {

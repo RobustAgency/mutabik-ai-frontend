@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useActionState, useEffect, useRef } from "react"
+import { useActionState, useEffect, useRef, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { toast } from "react-toastify"
 import type { User } from "@supabase/supabase-js"
@@ -11,22 +11,26 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/lib/auth-actions"
 import { Role } from "@/interfaces/Roles"
+import { profileService } from "@/service/app/profile"
 
-function SubmitButton() {
+function SubmitButton({ isProcessing }: { isProcessing: boolean }) {
     const { pending } = useFormStatus();
+    const isLoading = pending || isProcessing;
+
     return (
         <Button
             type="submit"
             className="min-h-10 w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-md transition-colors"
-            disabled={pending}
+            disabled={isLoading}
         >
-            {pending ? "Signing in..." : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign In"}
         </Button>
     );
 }
 
 export function LoginForm() {
     const formRef = useRef<HTMLFormElement | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [state, formAction] = useActionState(
         async (_prev: null | { success: false; message: string } | { success: true; data: User | null }, formData: FormData) => {
             const result = await login(formData);
@@ -38,15 +42,72 @@ export function LoginForm() {
     useEffect(() => {
         if (!state) return;
         if (state.success) {
-            toast.success("Logged in successfully");
+            setIsProcessing(true);
             formRef.current?.reset();
-            if (state.data?.user_metadata?.role === Role.SUPER_ADMIN) {
-                window.location.href = "/admin/dashboard";
-            } else {
-                window.location.href = "/dashboard";
+
+            const userRole = state.data?.user_metadata?.role;
+
+            // Check if user is super admin or admin - they can proceed directly
+            if (userRole === Role.SUPER_ADMIN || userRole === Role.ADMIN) {
+                toast.success("Logged in successfully");
+                if (userRole === Role.SUPER_ADMIN) {
+                    window.location.href = "/admin/dashboard";
+                } else {
+                    window.location.href = "/dashboard";
+                }
+                return;
             }
+
+            // For all other roles, check organization status
+            const checkOrganizationStatus = async () => {
+                try {
+                    const profileResult = await profileService.getProfile();
+
+                    if (profileResult.success && profileResult.data) {
+                        const profile = profileResult.data;
+                        const { organization_id, is_organization_active, role } = profile;
+
+                        // If role is owner and organization is not active and no organization_id
+                        if (role === Role.OWNER && !is_organization_active && !organization_id) {
+                            toast.success("Logged in successfully");
+                            window.location.href = "/onboarding?mode=organization-setup";
+                            return;
+                        }
+
+                        // For any user, if organization is not active
+                        if (!is_organization_active) {
+                            toast.error("Your organization is inactive. Please contact administration.");
+                            setTimeout(() => {
+                                window.location.href = "/logout";
+                            }, 1500);
+                            setIsProcessing(false);
+                            return;
+                        }
+
+                        // If everything is fine, redirect to dashboard
+                        toast.success("Logged in successfully");
+                        window.location.href = "/dashboard";
+                    } else {
+                        // Handle profile fetch error
+                        if (profileResult.errorCode === 403) {
+                            toast.success("Logged in successfully");
+                            window.location.href = "/onboarding?mode=unapproved-account";
+                        } else {
+                            toast.error(profileResult.message || "An error occurred");
+                            setIsProcessing(false);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error checking organization status:", error);
+                    toast.error("An error occurred while checking organization status");
+                    setIsProcessing(false);
+                }
+            };
+
+            checkOrganizationStatus();
         } else if (state.message) {
             toast.error(state.message);
+            setIsProcessing(false);
         }
     }, [state]);
 
@@ -103,7 +164,7 @@ export function LoginForm() {
                             Forgot password?
                         </Link>
                     </div>
-                    <SubmitButton />
+                    <SubmitButton isProcessing={isProcessing} />
                 </form>
 
                 <div className="text-sm text-gray-600">
