@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/utils/formatDate';
 import { useAdminUsers } from '@/hooks/admin/useAdminUsers';
 import AddAdminUserDialog from './AddAdminUserDialog';
+import AdminUserActionCell from './AdminUserActionCell';
 import TableCard from '@/components/custom/TableCard';
 
 const AdminUsersTable: React.FC = () => {
@@ -15,6 +16,7 @@ const AdminUsersTable: React.FC = () => {
         pagination,
         loading,
         createUser,
+        deleteUser,
         handlePageChange,
         handleSearch
     } = useAdminUsers();
@@ -61,6 +63,14 @@ const AdminUsersTable: React.FC = () => {
                         {formatDate(date)}
                     </span>
                 );
+            },
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            cell: ({ row }) => {
+                const user = row.original;
+                return <AdminUserActionCell user={user} onDelete={deleteUser} />;
             },
         }
     ];

@@ -83,6 +83,21 @@ export class AdminUsersService {
             throw error;
         }
     }
+
+    async deleteUser(userId: number): Promise<boolean> {
+        try {
+            const response = await api.delete<{ error: boolean, message: string }>(`${this.basePath}/${userId}`);
+            if (response.error === false) {
+                return true;
+            } else {
+                console.error('API returned error:', response.message);
+                throw new Error(response.message || 'Failed to delete user');
+            }
+        } catch (error) {
+            console.error('Error deleting user via API:', error);
+            throw error;
+        }
+    }
 }
 
 export const adminUsersService = new AdminUsersService();

@@ -114,6 +114,35 @@ export const useAdminUsers = () => {
         }
     }, [isSearching, searchTerm, searchUsers, fetchUsers]);
 
+    const deleteUser = useCallback(async (userId: number): Promise<boolean> => {
+        try {
+            setLoading(true);
+            const success = await adminUsersService.deleteUser(userId);
+            if (success) {
+                toast.success('Admin user deleted successfully');
+                
+                // Refresh the users list
+                if (isSearching) {
+                    await searchUsers(searchTerm);
+                } else {
+                    await fetchUsers();
+                }
+                
+                return true;
+            } else {
+                toast.error('Failed to delete admin user');
+                return false;
+            }
+        } catch (error: any) {
+            console.error('Error deleting user:', error);
+            const errorMessage = error?.response?.data?.message || 'Failed to delete admin user';
+            toast.error(errorMessage);
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    }, [isSearching, searchTerm, searchUsers, fetchUsers]);
+
     const handlePageChange = useCallback(async (page: number) => {
         setPagination(prev => ({ ...prev, page }));
 
@@ -147,6 +176,7 @@ export const useAdminUsers = () => {
         fetchUsers,
         searchUsers,
         createUser,
+        deleteUser,
         handlePageChange,
         handleSearch,
         refetch: fetchUsers
