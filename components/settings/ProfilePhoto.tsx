@@ -184,7 +184,7 @@ const ProfilePhoto = () => {
     }
 
     return (
-        <Card>
+        <Card className="px-5">
             <CardHeader>
                 <CardTitle className="text-2xl">Profile Photo</CardTitle>
                 <CardDescription>Upload or change your profile picture.</CardDescription>

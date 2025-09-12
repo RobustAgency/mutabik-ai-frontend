@@ -50,7 +50,7 @@ export default function ProfileForm() {
   }, [state, fetchProfile])
 
   return (
-    <Card>
+    <Card className="px-5">
       <CardHeader>
         <CardTitle className="text-2xl">Profile</CardTitle>
         <CardDescription>Update your name. Email cannot be changed.</CardDescription>

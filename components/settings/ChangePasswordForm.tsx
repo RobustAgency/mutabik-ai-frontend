@@ -39,7 +39,7 @@ export default function ChangePasswordForm() {
   }, [state])
 
   return (
-    <Card>
+    <Card className="px-5">
       <CardHeader>
         <CardTitle className="text-2xl">Change password</CardTitle>
         <CardDescription>Enter your current password to set a new one.</CardDescription>
