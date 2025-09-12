@@ -26,7 +26,7 @@ export default function RequirementsList() {
     const handleSearch = (searchTerm: string) => {
         setFilters(prev => ({
             ...prev,
-            term: searchTerm || undefined,
+            name: searchTerm || undefined,
             page: 1,
         }));
     };

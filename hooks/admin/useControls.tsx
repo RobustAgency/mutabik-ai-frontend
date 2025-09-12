@@ -50,7 +50,7 @@ export function useControls(initialFilters?: ControlFilters): UseControlsResult 
       const response = await controlsService.getControls({
         page: params.page || 1,
         per_page: params.per_page || 10,
-        term: params.search,
+        name: params.search,
         framework_ids: params.framework_ids,
         requirement_ids: params.requirement_ids,
         tag_ids: params.tag_ids

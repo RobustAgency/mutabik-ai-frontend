@@ -71,15 +71,6 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex-1 w-full md:ml-[260px] flex flex-col min-h-screen">
         <header className="w-full fixed top-0 left-0  z-20 bg-white flex flex-col md:flex-row md:justify-end items-center h-auto md:h-[100px] px-4 py-4 gap-4">
           {/* Horizontal stepper for mobile only */}
-          <div className="flex w-full justify-center md:hidden mb-2">
-            <Stepper
-              steps={steps}
-              activeStep={activeStep}
-              orientation="horizontal"
-
-              className="w-full max-w-md"
-            />
-          </div>
           <Button
             onClick={() => {
               router.push("/logout")
