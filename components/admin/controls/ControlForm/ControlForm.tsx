@@ -74,6 +74,14 @@ const ControlForm = ({ controlId, mode = 'create' }: ControlFormProps) => {
             toast.error('Control code is required')
             return
         }
+        if (formData.framework_ids.length === 0) {
+            toast.error('At least one framework must be selected')
+            return
+        }
+        if (formData.requirement_ids.length === 0) {
+            toast.error('At least one requirement must be selected')
+            return
+        }
 
         const payload = {
             name: formData.name,

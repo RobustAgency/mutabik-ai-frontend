@@ -4,13 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
-import { 
-    AuthorityPublisher, 
-    BindingLevel, 
-    SectorApplicability, 
-    RiskClassCoverage, 
-    CertificationAttestation, 
-    AssessmentMode 
+import AuthorityPublisherSelect from "./AuthorityPublisherSelect";
+import {
+    AuthorityPublisher,
+    BindingLevel,
+    SectorApplicability,
+    RiskClassCoverage,
+    CertificationAttestation,
+    AssessmentMode
 } from "@/interfaces/Framework";
 
 interface AdditionalInformationProps {
@@ -21,7 +22,7 @@ interface AdditionalInformationProps {
     initialRiskClassCoverage?: RiskClassCoverage[];
     initialCertificationAttestation?: CertificationAttestation[];
     initialAssessmentMode?: AssessmentMode[];
-    
+
     // Callback to pass data back to parent
     onChange: (data: {
         authority_publisher?: AuthorityPublisher;
@@ -54,28 +55,28 @@ export default function AdditionalInformation({
     const isInitialized = useRef(false);
 
     // Memoize options to prevent infinite re-renders
-    const sectorApplicabilityOptions = useMemo(() => 
+    const sectorApplicabilityOptions = useMemo(() =>
         Object.values(SectorApplicability).map(value => ({
             value: value,
             label: value
         })), []
     );
 
-    const riskClassCoverageOptions = useMemo(() => 
+    const riskClassCoverageOptions = useMemo(() =>
         Object.values(RiskClassCoverage).map(value => ({
             value: value,
             label: value
         })), []
     );
 
-    const certificationAttestationOptions = useMemo(() => 
+    const certificationAttestationOptions = useMemo(() =>
         Object.values(CertificationAttestation).map(value => ({
             value: value,
             label: value
         })), []
     );
 
-    const assessmentModeOptions = useMemo(() => 
+    const assessmentModeOptions = useMemo(() =>
         Object.values(AssessmentMode).map(value => ({
             value: value,
             label: value
@@ -90,7 +91,7 @@ export default function AdditionalInformation({
         setRiskClassCoverage(initialRiskClassCoverage);
         setCertificationAttestation(initialCertificationAttestation);
         setAssessmentMode(initialAssessmentMode);
-        
+
         if (!isInitialized.current) {
             isInitialized.current = true;
         }
@@ -189,31 +190,19 @@ export default function AdditionalInformation({
         <Card className="bg-white p-6">
             <div className="space-y-6">
                 <h3 className="text-lg font-semibold text-[#171717]">Additional Information</h3>
-                
+
                 {/* Authority Publisher & Binding Level */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <Label className="text-[#171717] text-sm font-medium" htmlFor="authority_publisher">
                             Authority / Publisher
                         </Label>
-                        <Select
-                            value={authorityPublisher || ""}
-                            onValueChange={(value) => handleAuthorityPublisherChange(value as AuthorityPublisher)}
-                        >
-                            <SelectTrigger className="mt-1 w-full">
-                                <SelectValue placeholder="ISO/IEC JTC 1/SC 42" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-60 overflow-auto">
-                                <SelectItem value={AuthorityPublisher.ISO_IEC_JTC1_SC42}>ISO/IEC JTC 1/SC 42</SelectItem>
-                                <SelectItem value={AuthorityPublisher.EU_COMMISSION}>European Commission</SelectItem>
-                                <SelectItem value={AuthorityPublisher.NIST}>NIST</SelectItem>
-                                <SelectItem value={AuthorityPublisher.ISO_IEC}>ISO/IEC (general)</SelectItem>
-                                <SelectItem value={AuthorityPublisher.IEEE}>IEEE</SelectItem>
-                                <SelectItem value={AuthorityPublisher.FTC}>Federal Trade Commission</SelectItem>
-                                <SelectItem value={AuthorityPublisher.UK_ICO}>UK ICO</SelectItem>
-                                <SelectItem value={AuthorityPublisher.OTHER}>Other</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <AuthorityPublisherSelect
+                            value={authorityPublisher}
+                            onValueChange={handleAuthorityPublisherChange}
+                            placeholder="Select Authority / Publisher"
+                            className="mt-1 w-full"
+                        />
                     </div>
                     <div>
                         <Label className="text-[#171717] text-sm font-medium" htmlFor="binding_level">

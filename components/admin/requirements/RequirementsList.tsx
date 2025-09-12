@@ -23,21 +23,17 @@ export default function RequirementsList() {
         { label: 'List' },
     ];
 
-    // const handleSearch = (searchTerm: string) => {
-    //     setFilters(prev => ({
-    //         ...prev,
-    //         search: searchTerm || undefined,
-    //         page: 1,
-    //     }));
-    // };
+    const handleSearch = (searchTerm: string) => {
+        setFilters(prev => ({
+            ...prev,
+            term: searchTerm || undefined,
+            page: 1,
+        }));
+    };
 
     const handlePageChange = (page: number) => {
         setFilters(prev => ({ ...prev, page }));
     };
-
-    // const handlePerPageChange = (perPage: number) => {
-    //     setFilters(prev => ({ ...prev, per_page: perPage, page: 1 }));
-    // };
 
     const columns: ColumnDef<Requirement>[] = useMemo(() => [
         {
@@ -127,11 +123,13 @@ export default function RequirementsList() {
                     </Button>
                 </Link>
             </div>
-            <Card className="bg-white w-full rounded-xl py-0">
+            <Card className="bg-white w-full rounded-xl">
                 <DataTable
                     columns={columns}
                     data={requirements?.data || []}
                     searchKey="name"
+                    searchPlaceholder="Search requirements..."
+                    onSearch={handleSearch}
                     loading={loading}
                     serverSide={true}
                     pagination={{

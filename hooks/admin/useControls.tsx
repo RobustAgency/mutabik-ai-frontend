@@ -3,11 +3,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { controlsService } from '@/service/admin/controls';
-import { 
-  Control, 
-  ControlFilters, 
-  CreateControlRequest, 
-  UpdateControlRequest 
+import {
+  Control,
+  ControlFilters,
+  CreateControlRequest,
+  UpdateControlRequest
 } from '@/interfaces/Control';
 
 export interface UseControlsResult {
@@ -50,7 +50,7 @@ export function useControls(initialFilters?: ControlFilters): UseControlsResult 
       const response = await controlsService.getControls({
         page: params.page || 1,
         per_page: params.per_page || 10,
-        search: params.search,
+        term: params.search,
         framework_ids: params.framework_ids,
         requirement_ids: params.requirement_ids,
         tag_ids: params.tag_ids
@@ -124,9 +124,9 @@ export function useControl(id?: string | number): UseControlResult {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await controlsService.getControl(controlId);
-      
+
       if (response.error) {
         throw new Error(response.message);
       }
@@ -170,9 +170,9 @@ export function useControlMutations(): UseControlMutationsResult {
   const createControl = async (data: CreateControlRequest): Promise<boolean> => {
     try {
       setCreating(true);
-      
+
       const response = await controlsService.createControl(data);
-      
+
       if (response.error) {
         throw new Error(response.message);
       }
@@ -192,9 +192,9 @@ export function useControlMutations(): UseControlMutationsResult {
   const updateControl = async (id: string | number, data: UpdateControlRequest): Promise<boolean> => {
     try {
       setUpdating(true);
-      
+
       const response = await controlsService.updateControl(id, data);
-      
+
       if (response.error) {
         throw new Error(response.message);
       }

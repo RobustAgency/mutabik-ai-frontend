@@ -16,7 +16,7 @@ export class TagsService {
 
         if (params.page) queryParams.append('page', params.page.toString())
         if (params.per_page) queryParams.append('per_page', params.per_page.toString())
-        if (params.search) queryParams.append('search', params.search)
+        if (params.search) queryParams.append('term', params.search)
 
         const url = queryParams.toString() ? `${this.baseUrl}?${queryParams.toString()}` : this.baseUrl
         const response = await api.get<TagsListResponse>(url)

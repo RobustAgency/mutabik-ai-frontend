@@ -43,6 +43,7 @@ export class AdminUsersService {
         try {
             const queryParams = new URLSearchParams();
             if (params.term) queryParams.append('term', params.term);
+            if (params.term) queryParams.append('role', "admin");
             if (params.page) queryParams.append('page', params.page.toString());
             if (params.per_page) queryParams.append('per_page', params.per_page.toString());
 
