@@ -116,18 +116,17 @@ export const useAdminUsers = () => {
 
     const deleteUser = useCallback(async (userId: number): Promise<boolean> => {
         try {
-            setLoading(true);
             const success = await adminUsersService.deleteUser(userId);
             if (success) {
                 toast.success('Admin user deleted successfully');
-                
+
                 // Refresh the users list
                 if (isSearching) {
                     await searchUsers(searchTerm);
                 } else {
                     await fetchUsers();
                 }
-                
+
                 return true;
             } else {
                 toast.error('Failed to delete admin user');

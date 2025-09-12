@@ -55,6 +55,7 @@ const AdminUserActionCell = ({ user, onDelete }: AdminUserActionCellProps) => {
                 confirmText="Delete"
                 type="danger"
                 isLoading={isDeleting}
+                loadingText="Deleting..."
             />
         </>
     )

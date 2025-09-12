@@ -20,19 +20,19 @@ interface ConfirmationDialogProps {
     loadingText?: string
 }
 
-const ConfirmationDialog = ({ 
-    isOpen, 
-    onClose, 
-    onConfirm, 
-    title, 
-    description, 
+const ConfirmationDialog = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    description,
     confirmText = "Confirm",
     cancelText = "Cancel",
     type = "danger",
     isLoading = false,
     loadingText = "Loading..."
 }: ConfirmationDialogProps) => {
-    
+
     const getIcon = () => {
         switch (type) {
             case "danger":
@@ -118,7 +118,6 @@ const ConfirmationDialog = ({
                     >
                         {isLoading ? (
                             <>
-                                <Spinner size="sm" className="mr-2" />
                                 {loadingText}
                             </>
                         ) : (
