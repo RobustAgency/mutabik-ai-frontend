@@ -1,15 +1,14 @@
 "use client"
 import Link from "next/link";
 import {
-  // Settings as SettingsIcon,
   LayoutGrid,
   House,
-  // LogOut,
   CreditCard,
   LucideIcon,
   Users2,
+  Box,
+  Landmark,
 } from "lucide-react";
-import { Landmark } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -50,17 +49,10 @@ const adminRoutes: RouteItem[] = [
   },
 ];
 
-const userRoutes = [
-  // { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+const userRoutes: RouteItem[] = [
   { href: "/plans", label: "Plans", icon: CreditCard },
-  // { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
+  { href: "/projects", label: "Projects", icon: Box },
 ];
-
-
-// const baseRoutes: RouteItem[] = [
-//   { href: "/settings", label: "Settings", icon: SettingsIcon },
-//   { href: "/logout", label: "Logout", icon: LogOut },
-// ];
 
 // --- Component ---
 export function Sidebar({
@@ -86,7 +78,7 @@ export function Sidebar({
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="flex flex-col overflow-hidden  w-full">
       {/* Logo for mobile */}
       <div aria-details="logo" className="flex items-center justify-between md:hidden">
         <Link href="/" className="pl-5 pt-2">

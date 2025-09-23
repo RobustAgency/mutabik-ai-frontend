@@ -29,7 +29,6 @@ export const useTags = (initialParams: GetTagsParams = {}) => {
                 per_page: params.per_page || 10,
                 search: params.search
             })
-            console.log("response", response)
 
             setTags(response.data)
             setPagination({
