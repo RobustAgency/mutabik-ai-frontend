@@ -211,7 +211,7 @@ const AllProjectsTable: React.FC = () => {
             className="w-full lg:w-auto"
           >
             <div className="w-full overflow-x-auto">
-              <TabsList className="flex w-max sm:w-full sm:flex-wrap lg:flex-nowrap rounded-lg p-1 bg-[#F2F4F7] gap-1 ">
+              <TabsList className="flex w-max sm:w-full sm:flex-wrap lg:flex-nowrap rounded-md p-0.5 bg-[#F2F4F7] gap-1 ">
                 {tabsData.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
@@ -234,7 +234,7 @@ const AllProjectsTable: React.FC = () => {
               Filter
             </Button>
             <Button
-              onClick={() => router.push("/createProjects")}
+              onClick={() => router.push(`/projects/create-projects?step=${1}`)}
               className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"
             >
               Create Project

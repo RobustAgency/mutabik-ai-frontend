@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,8 +13,11 @@ import {
 } from "@/components/ui/select";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const CreateProject = () => {
+
+  const router = useRouter();
   return (
     <div className="w-full flex flex-col lg:flex-row gap-6">
       {/* Project Details */}
@@ -88,7 +92,12 @@ const CreateProject = () => {
         </CardContent>
       </Card>
       <div className="flex justify-end">
-            <Button className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white">
+            <Button 
+              onClick={() => {
+               
+                router.push(`/projects/create-projects/add-members?step=${2}`)
+              }}
+            className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white">
               Continue
             </Button>
           </div>
