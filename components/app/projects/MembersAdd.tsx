@@ -14,14 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 
 export interface ProjectData {
   id: number;
@@ -146,7 +145,7 @@ const MembersAdd = () => {
             onClick={() => setOpen(true)}
             className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"
           >
-            <Users /> Add Member
+            <UserPlus /> Add Member
           </Button>
         </CardHeader>
         <CardContent className="flex flex-col flex-1 gap-4">

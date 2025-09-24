@@ -61,49 +61,47 @@ const CreateProject = () => {
       {/* Project Settings */}
       <div className="w-full lg:w-1/2 h-1/2">
         <Card className="  rounded-2xl border border-[#E4E7EC] bg-white mb-4">
-        <CardHeader className="flex items-center border-b border-[#E4E7EC] px-4 sm:px-6 py-4 sm:py-5">
-          <CardTitle className="text-base sm:text-lg font-medium">
-            Project Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6 space-y-4">
-          <Label
-            htmlFor="projectSettings"
-            className="font-medium text-sm leading-5 text-[#344054]"
-          >
-            Choose governance pillar
-          </Label>
-          <Select>
-            <SelectTrigger className="w-full cursor-pointer h-[50px] rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
-              <SelectValue
-                placeholder="AI Governance"
-                className="font-normal text-sm text-[#1D2939]"
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="ai">AI Governance</SelectItem>
-                <SelectItem value="data">Data Governance</SelectItem>
-                <SelectItem value="privacy">Privacy/PDPL</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          
-        </CardContent>
-      </Card>
-      <div className="flex justify-end">
-            <Button 
-              onClick={() => {
-               
-                router.push(`/projects/create-projects/add-members?step=${2}`)
-              }}
+          <CardHeader className="flex items-center border-b border-[#E4E7EC] px-4 sm:px-6 py-4 sm:py-5">
+            <CardTitle className="text-base sm:text-lg font-medium">
+              Project Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 space-y-4">
+            <Label
+              htmlFor="projectSettings"
+              className="font-medium text-sm leading-5 text-[#344054]"
+            >
+              Choose governance pillar
+            </Label>
+            <Select>
+              <SelectTrigger className="w-full cursor-pointer h-[50px] rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
+                <SelectValue
+                  placeholder="AI Governance"
+                  className="font-normal text-sm text-[#1D2939]"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="ai">AI Governance</SelectItem>
+                  <SelectItem value="data">Data Governance</SelectItem>
+                  <SelectItem value="privacy">Privacy/PDPL</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+          </CardContent>
+        </Card>
+        <div className="flex justify-end">
+          <Button
+            onClick={() => {
+
+              router.push(`/projects/create-projects/add-members?step=${2}`)
+            }}
             className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white">
-              Continue
-            </Button>
-          </div>
+            Continue
+          </Button>
+        </div>
       </div>
-      
-      
     </div>
   );
 };
