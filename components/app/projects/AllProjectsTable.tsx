@@ -201,7 +201,7 @@ const AllProjectsTable: React.FC = () => {
   }, [activeTab, fetchProjects]);
 
   return (
-    <Card className="w-full max-w-6xl rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
+    <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
       <CardContent className="flex flex-col flex-1 gap-4">
  
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -211,12 +211,12 @@ const AllProjectsTable: React.FC = () => {
             className="w-full lg:w-auto"
           >
             <div className="w-full overflow-x-auto">
-              <TabsList className="flex w-max sm:w-full sm:flex-wrap lg:flex-nowrap rounded-md p-0.5 bg-[#F2F4F7] gap-1 ">
+              <TabsList className="flex w-max sm:w-full px-[2px] py-[2px] sm:flex-wrap lg:flex-nowrap rounded-md  bg-[#F2F4F7] ">
                 {tabsData.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="min-w-[120px] cursor-pointer h-[36px] text-sm font-medium data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-[#E4E7EC] data-[state=active]:rounded-md data-[state=active]:text-[#101828] data-[state=inactive]:text-gray-600"
+                    className="min-w-[120px] cursor-pointer h-[33px] text-sm font-medium data-[state=active]:bg-white  data-[state=active]:rounded-md data-[state=active]:text-[#101828] data-[state=inactive]:text-gray-600"
                   >
                     {tab.label}
                   </TabsTrigger>

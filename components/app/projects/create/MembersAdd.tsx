@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import AddMemberNew from "@/components/app/projects/AddMemberNew";
+import AddMemberNew from "@/components/app/projects/create/AddMemberNew";
 import {
   Select,
   SelectContent,
@@ -136,7 +136,7 @@ const MembersAdd = () => {
 
   return (
     <div>
-      <Card className="w-full max-w-6xl rounded-2xl border border-[#E4E7EC] bg-white  flex flex-col justify-start mx-0 gap-0 px-4 sm:px-6 py-4">
+      <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white  flex flex-col justify-start mx-0 gap-0 px-4 sm:px-6 py-4">
         <CardHeader className="flex items-center justify-between">
           <CardTitle className="text-base sm:text-lg font-medium">
             Project Settings
@@ -163,7 +163,7 @@ const MembersAdd = () => {
         <Button
           onClick={() => {
             router.push(
-              `/projects/create-projects/add-members/choose-frameworks?step=${3}`
+              `/projects/create-projects/choose-frameworks?step=${3}`
             );
           }}
           className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"

@@ -1,7 +1,6 @@
 import ProjectContainer from "@/components/app/projects/create/projectContainer/ProjectContainer";
-
 import React from "react";
-import CreateProject from "@/components/app/projects/create/CreateProject";
+import ChooseFrameworks from "@/components/app/projects/create/ChooseFrameworks";
 
 interface PageProps {
   searchParams: { step?: string }; // Next.js automatically pass karega
@@ -15,10 +14,10 @@ const Page = ({ searchParams }: PageProps) => {
     <>
       <ProjectContainer
         step={step}
-        title="Create a new project"
-        description="Projects are the unit of work, give your project a unique name and description."
+        title="Choose frameworks"
+        description="In order to be compliant, choose the frameworks suitable for your project."
       />
-      <CreateProject />
+      <ChooseFrameworks />
     </>
   );
 };

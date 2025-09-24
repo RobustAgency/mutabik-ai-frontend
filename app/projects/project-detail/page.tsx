@@ -1,4 +1,4 @@
-import ProjectDetails from '@/components/app/projects/ProjectDetails'
+import ProjectDetails from '@/components/app/projects/create/projectDetail/ProjectDetail'
 import React from 'react'
 
 const page = () => {
