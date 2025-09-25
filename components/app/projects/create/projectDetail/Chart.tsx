@@ -16,7 +16,7 @@ const chartOptions: ApexCharts.ApexOptions = {
   },
   fill: {
     type: "solid",
-    opacity: 0.2, 
+    opacity: 0.02, 
   },
   dataLabels: {
     enabled: false,

@@ -1,6 +1,6 @@
 import React from "react";
 import Matrics from "./Matrics";
-import { Brain, } from "lucide-react";
+import { Brain,  Users, TriangleAlert, CircleCheckBig } from "lucide-react";
 
 const ProjectMatrices = () => {
   return (
@@ -11,17 +11,17 @@ const ProjectMatrices = () => {
       value="4"
     />
     <Matrics
-      icon={<Brain className="w-6 h-6 text-[#344054]" />}
+      icon={<Users className="w-6 h-6 text-[#344054]" />}
       label="Use Cases"
       value="9"
     />
     <Matrics
-      icon={<Brain className="w-6 h-6 text-[#344054]" />}
+      icon={< TriangleAlert className="w-6 h-6 text-[#344054]" />}
       label="Open Incidents"
       value="5"
     />
     <Matrics
-      icon={<Brain className="w-6 h-6 text-[#344054]" />}
+      icon={<CircleCheckBig  className="w-6 h-6 text-[#344054]" />}
       label="Pending Approvals"
       value="2"
     />

@@ -105,7 +105,7 @@ const AddMemberNew = () => {
           </div>
         </RadioGroup>
         <div className="flex justify-end">
-            <Button className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white mt-6">Add New Member</Button>
+            <Button className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white mt-6 cursor-pointer">Add New Member</Button>
           </div>
       </div>
     </div>

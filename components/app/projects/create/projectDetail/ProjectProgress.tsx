@@ -34,7 +34,7 @@ const ProjectProgress: React.FC<CircleProgressProps> = ({ progress }) => {
 
   return (
     <div className="w-full flex">
-      <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white p-6">
+      <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white p-9.5">
         <CardHeader className="flex flex-col ">
           <CardTitle className="font-sans font-semibold text-lg leading-7 tracking-normal text-[#1D2939] text-center sm:text-left">
             Project Progress

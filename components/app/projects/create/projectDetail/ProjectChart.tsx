@@ -37,14 +37,12 @@ const ProjectChart = () => {
               className="w-full sm:w-auto"
             >
               <div className="w-full overflow-x-auto">
-                <TabsList className="flex items-center justify-start sm:justify-center lg:justify-start w-max sm:w-full px-[2px] pt-[4px] flex-nowrap sm:flex-wrap lg:flex-nowrap rounded-md bg-[#F2F4F7]">
+                <TabsList className="flex w-max sm:w-full px-[2px] py-[2px] sm:flex-wrap lg:flex-nowrap rounded-md  bg-[#F2F4F7] ">
                   {tabsData.map((tab) => (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="min-w-[84px] cursor-pointer h-[33px] text-sm font-medium whitespace-nowrap
-                        data-[state=active]:bg-white data-[state=active]:rounded-md data-[state=active]:text-[#101828] 
-                        data-[state=inactive]:text-gray-600"
+                      className="min-w-[120px] cursor-pointer h-[33px] text-sm font-medium data-[state=active]:bg-white  data-[state=active]:rounded-md data-[state=active]:text-[#101828] data-[state=inactive]:text-gray-600"
                     >
                       {tab.label}
                     </TabsTrigger>
