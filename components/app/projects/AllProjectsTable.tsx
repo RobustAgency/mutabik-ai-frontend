@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+import Tab from "@/components/app/projects/Tab"
 import Image from "next/image";
 
 interface TabData {
@@ -205,25 +205,7 @@ const AllProjectsTable: React.FC = () => {
       <CardContent className="flex flex-col flex-1 gap-4">
  
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full lg:w-auto"
-          >
-            <div className="w-full overflow-x-auto">
-              <TabsList className="flex w-max sm:w-full px-[2px] py-[2px] sm:flex-wrap lg:flex-nowrap rounded-md  bg-[#F2F4F7] ">
-                {tabsData.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="min-w-[120px] cursor-pointer h-[33px] text-sm font-medium data-[state=active]:bg-white  data-[state=active]:rounded-md data-[state=active]:text-[#101828] data-[state=inactive]:text-gray-600"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-          </Tabs>
+          <Tab tabsData={tabsData} activeTab={activeTab} setActiveTab={setActiveTab} />
 
           <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
             <Button
@@ -241,8 +223,6 @@ const AllProjectsTable: React.FC = () => {
             </Button>
           </div>
         </div>
-
-        {/* Data Table */}
         <Card className="bg-white w-full rounded-xl border-0 py-0">
           <DataTable
             columns={columns}

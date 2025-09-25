@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DatePicker } from "./DatePicker";
 import Chart from "./Chart";
+import Tab from "@/components/app/projects/Tab"
 
 interface TabData {
   value: string;
@@ -37,17 +38,7 @@ const ProjectChart = () => {
               className="w-full sm:w-auto"
             >
               <div className="w-full overflow-x-auto">
-                <TabsList className="">
-                  {tabsData.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      className="min-w-[120px] cursor-pointer h-[33px] text-sm font-medium data-[state=active]:bg-white  data-[state=active]:rounded-md data-[state=active]:text-[#101828] data-[state=inactive]:text-gray-600"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+                <Tab tabsData={tabsData} activeTab={activeTab} setActiveTab={setActiveTab} />
               </div>
             </Tabs>
             <div className="w-full sm:w-auto">

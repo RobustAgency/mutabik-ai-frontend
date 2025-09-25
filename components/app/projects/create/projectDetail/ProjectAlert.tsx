@@ -20,7 +20,7 @@ const ProjectAlert = () => {
               </p>
             </div>
             <Link
-              href=""
+              href="/projects/setup/settings"
               className="font-medium text-sm leading-5 text-[#667085] underline underline-offset-4"
             >
               Project Settings
