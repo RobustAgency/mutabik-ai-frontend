@@ -163,7 +163,7 @@ const MembersAdd = () => {
         <Button
           onClick={() => {
             router.push(
-              `/projects/create-projects/choose-frameworks?step=${3}`
+              `/projects/create/frameworks?step=${3}`
             );
           }}
           className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"

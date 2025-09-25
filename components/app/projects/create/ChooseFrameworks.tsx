@@ -254,7 +254,7 @@ const ChooseFrameworks = () => {
       <div className="flex justify-end w-full mt-6">
         <Button
           onClick={() => {
-            router.push("/projects/project-detail");
+            router.push("/projects/details");
           }}
           className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer"
         >

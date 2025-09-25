@@ -37,7 +37,7 @@ const ProjectChart = () => {
               className="w-full sm:w-auto"
             >
               <div className="w-full overflow-x-auto">
-                <TabsList className="flex w-max sm:w-full px-[2px] py-[2px] sm:flex-wrap lg:flex-nowrap rounded-md  bg-[#F2F4F7] ">
+                <TabsList className="">
                   {tabsData.map((tab) => (
                     <TabsTrigger
                       key={tab.value}
@@ -56,7 +56,7 @@ const ProjectChart = () => {
           </div>
         </CardHeader>
         <CardContent className="mt-4 sm:mt-6">
-          <div className="w-full overflow-hidden">
+          <div className="w-full overflow-x-auto">
             <Chart />
           </div>
         </CardContent>

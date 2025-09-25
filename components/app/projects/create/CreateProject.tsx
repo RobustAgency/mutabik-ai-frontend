@@ -95,7 +95,7 @@ const CreateProject = () => {
           <Button
             onClick={() => {
 
-              router.push(`/projects/create-projects/add-members?step=${2}`)
+              router.push(`/projects/create/members?step=${2}`)
             }}
             className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white">
             Continue

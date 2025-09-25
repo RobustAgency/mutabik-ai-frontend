@@ -234,7 +234,7 @@ const AllProjectsTable: React.FC = () => {
               Filter
             </Button>
             <Button
-              onClick={() => router.push(`/projects/create-projects?step=${1}`)}
+              onClick={() => router.push(`/projects/create?step=${1}`)}
               className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer"
             >
               Create Project
