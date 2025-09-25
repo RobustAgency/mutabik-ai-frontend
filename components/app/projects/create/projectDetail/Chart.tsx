@@ -16,13 +16,13 @@ const chartOptions: ApexCharts.ApexOptions = {
   },
   fill: {
     type: "solid",
-    opacity: 0.02, 
+    opacity: 0.02,
   },
   dataLabels: {
     enabled: false,
   },
   markers: {
-    size: 0, 
+    size: 0,
   },
   grid: {
     borderColor: "#F2F4F7",
@@ -63,7 +63,7 @@ const chartOptions: ApexCharts.ApexOptions = {
   legend: {
     show: false,
   },
-  colors: ["#4FD58F", "#6ee7b7"], 
+  colors: ["#4FD58F", "#6ee7b7"],
 };
 
 const chartSeries = [
@@ -100,7 +100,7 @@ const Chart: React.FC = () => {
         background: "#fff",
       }}
     >
-      
+
       <div ref={chartRef} />
     </div>
   );

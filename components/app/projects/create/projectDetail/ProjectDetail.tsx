@@ -18,10 +18,7 @@ const ProjectDetails = () => {
     <div className="space-y-6">
       <ProjectAlert />
       <ProjectSummary />
-      <div className="w-full flex flex-wrap gap-4 justify-start">
-        <ProjectMatrices />
-      </div>
-
+      <ProjectMatrices />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className=" col-span-1 w-full flex flex-col gap-6">
           <ProjectProgress progress={75} />
@@ -34,10 +31,7 @@ const ProjectDetails = () => {
           <ProjectMembers />
         </div>
       </div>
-
-      <div>
-        <ProjectChart />
-      </div>
+      <ProjectChart />
     </div>
   );
 };
