@@ -47,7 +47,7 @@ const ProjectChart = () => {
           </div>
         </CardHeader>
         <CardContent className="mt-4 sm:mt-6">
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-hidden">
             <Chart />
           </div>
         </CardContent>

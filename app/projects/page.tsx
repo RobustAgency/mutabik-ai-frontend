@@ -1,4 +1,4 @@
-import AllProjectsTable from '@/components/app/projects/AllProjectsTable'
+import AllProjectsTable from '@/components/app/projects/ProjectsTable'
 import React from 'react'
 
 const page = () => {

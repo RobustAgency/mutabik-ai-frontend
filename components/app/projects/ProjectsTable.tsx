@@ -9,6 +9,9 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import Tab from "@/components/app/projects/Tab"
 import Image from "next/image";
+import { useProjects } from "@/hooks/app/useProjects";
+import { Project } from "@/service/app/projects";
+import { getGovernancePillarLabel, GovernancePillar } from "@/utils/governancePillar";
 
 interface TabData {
   value: string;
@@ -25,37 +28,6 @@ export interface ProjectData {
   progress: string;
 }
 
-// ✅ dummy data outside component
-const dummyProjects: ProjectData[] = [
-  {
-    id: 1,
-    name: "AI Credit Risk Scoring",
-    pillar: "AI Governance",
-    frameworks: ["/projects/image-9.png", "/projects/image-10.png"],
-    owner: "John Doe",
-    lastModified: "2025-09-01",
-    progress: "65%",
-  },
-  {
-    id: 2,
-    name: "Customer Data Platform",
-    pillar: "Data Governance",
-   frameworks: ["/projects/image-9.png", "/projects/image-10.png"],
-    owner: "Jane Smith",
-    lastModified: "2025-09-10",
-    progress: "45%",
-  },
-  {
-    id: 3,
-    name: "Privacy Compliance Tool",
-    pillar: "Privacy/PDPL",
-    frameworks: ["/projects/image-9.png", "/projects/image-10.png"],
-    owner: "Michael Lee",
-    lastModified: "2025-09-15",
-    progress: "80%",
-  },
-];
-
 const AllProjectsTable: React.FC = () => {
   const tabsData: TabData[] = [
     { value: "all", label: "All Projects" },
@@ -65,11 +37,30 @@ const AllProjectsTable: React.FC = () => {
   ];
 
   const [activeTab, setActiveTab] = React.useState<string>("all");
-  const [projects, setProjects] = React.useState<ProjectData[]>([]);
-
   const router = useRouter();
+  
+  const { projects, loading, fetchProjects } = useProjects();
 
-  const columns: ColumnDef<ProjectData>[] = [
+  React.useEffect(() => {
+    const pillar = getGovernancePillarFromTab(activeTab);
+    const filters = activeTab === "all" ? {} : pillar ? { governance_pillar: pillar } : {};
+    fetchProjects(filters);
+  }, [activeTab, fetchProjects]);
+
+  const getGovernancePillarFromTab = (tab: string): GovernancePillar | undefined => {
+    switch (tab) {
+      case "ai":
+        return GovernancePillar.AI_GOVERNANCE;
+      case "data":
+        return GovernancePillar.DATA_GOVERNANCE;
+      case "privacy":
+        return GovernancePillar.PRIVACY_PDPL;
+      default:
+        return undefined;
+    }
+  };
+
+  const columns: ColumnDef<Project>[] = [
     {
       accessorKey: "name",
       header: () => (
@@ -88,18 +79,19 @@ const AllProjectsTable: React.FC = () => {
       },
     },
     {
-      accessorKey: "pillar",
+      accessorKey: "governance_pillar",
       header: () => (
         <div className="font-sans font-medium text-xs leading-4 tracking-normal text-[#667085]  py-1 rounded">
           Pillar
         </div>
       ),
       cell: ({ getValue }) => {
+        const pillarValue = getValue() as string;
         return (
           <div
             className={`font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]   py-1 rounded `}
           >
-            {getValue() as string}
+            {getGovernancePillarLabel(pillarValue)}
           </div>
         );
       },
@@ -111,55 +103,62 @@ const AllProjectsTable: React.FC = () => {
           Frameworks
         </div>
       ),
-      cell: ({ getValue }) => {
-        const frameworks = getValue() as string[];
+      cell: ({ row }) => {
+        const frameworks = row.original.frameworks || [];
         return (
           <div className="flex gap-2">
-            {frameworks.map((src, idx) => (
+            {frameworks.slice(0, 3).map((framework, idx) => (
               <Image
-              key={idx} 
-                src={src} 
-                alt="React Logo"
+                key={idx} 
+                src="/projects/fraemwork-logo.png" // Default framework logo
+                alt={framework.name}
                 width={20} 
                 height={20} 
                 className="rounded"
+                title={framework.name}
               />
             ))}
+            {frameworks.length > 3 && (
+              <span className="text-xs text-gray-500">+{frameworks.length - 3}</span>
+            )}
           </div>
         );
       },
     },
 
     {
-      accessorKey: "owner",
+      accessorKey: "users",
       header: () => (
         <div className="font-sans font-medium text-xs leading-4 tracking-normal text-[#667085]  py-1 rounded">
           Owner
         </div>
       ),
-      cell: ({ getValue }) => {
+      cell: ({ row }) => {
+        const users = row.original.users || [];
+        const owner = users.find(user => user.pivot?.role === 'owner');
         return (
           <div
             className={`font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]   py-1 rounded `}
           >
-            {getValue() as string}
+            {owner?.name || 'No Owner'}
           </div>
         );
       },
     },
     {
-      accessorKey: "lastModified",
+      accessorKey: "updated_at",
       header: () => (
         <div className="font-sans font-medium text-xs leading-4 tracking-normal text-[#667085]  py-1 rounded">
           Last Modified
         </div>
       ),
       cell: ({ getValue }) => {
+        const date = new Date(getValue() as string);
         return (
           <div
             className={`font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]   py-1 rounded `}
           >
-            {getValue() as string}
+            {date.toLocaleDateString()}
           </div>
         );
       },
@@ -183,22 +182,7 @@ const AllProjectsTable: React.FC = () => {
     },
   ];
 
-  // ✅ Data filter function
-  const fetchProjects = React.useCallback((tab: string) => {
-    if (tab === "all") return dummyProjects;
-    if (tab === "ai")
-      return dummyProjects.filter((p) => p.pillar === "AI Governance");
-    if (tab === "data")
-      return dummyProjects.filter((p) => p.pillar === "Data Governance");
-    if (tab === "privacy")
-      return dummyProjects.filter((p) => p.pillar === "Privacy/PDPL");
-    return [];
-  }, []);
 
-
-  React.useEffect(() => {
-    setProjects(fetchProjects(activeTab));
-  }, [activeTab, fetchProjects]);
 
   return (
     <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
@@ -230,6 +214,11 @@ const AllProjectsTable: React.FC = () => {
             serverSide
             variant="projects"
           />
+          {loading && (
+            <div className="flex justify-center py-8">
+              <div className="text-sm text-gray-500">Loading projects...</div>
+            </div>
+          )}
         </Card>
       </CardContent>
     </Card>

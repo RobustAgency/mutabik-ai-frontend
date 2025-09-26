@@ -1,5 +1,5 @@
 import ProjectContainer from "@/components/app/projects/create/projectContainer/ProjectContainer";
-import MembersAdd from "@/components/app/projects/create/MembersAdd";
+import MembersAdd from "@/components/app/projects/create/ProjectMembersTable";
 import React from "react";
 
 interface PageProps {

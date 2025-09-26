@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { formatRole } from "@/utils/formatRole";
 
 interface MembersProps {
   name: string;
@@ -13,10 +14,11 @@ const Members: React.FC<MembersProps> = ({ name, email, role }) => {
       <div className="flex items-center gap-3">
         <div>
           <Image
-            src="/projects/Avatar.jpg"
+            src="/placeholders/user_placeholder.png"
             width={44}
             height={44}
             alt="Member avatar"
+            className="rounded-full"
           />
         </div>
         <div>
@@ -29,7 +31,7 @@ const Members: React.FC<MembersProps> = ({ name, email, role }) => {
         </div>
       </div>
       <div className="px-2.5 py-0.5 rounded-full bg-[#F2F4F7] opacity-100 font-sans font-medium text-sm leading-5 tracking-normal text-center text-[#344054]">
-        {role}
+        {formatRole(role)}
       </div>
     </div>
   );
