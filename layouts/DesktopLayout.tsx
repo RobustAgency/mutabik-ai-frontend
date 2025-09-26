@@ -9,7 +9,7 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
                 </div>
             </aside>
 
-            <main className="flex-1 ml-68 min-h-screen pr-5">
+            <main className="flex-1 ml-72 min-h-screen pr-5">
                 <div className="py-10">
                     {children}
                 </div>

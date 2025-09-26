@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'bnaoagrgcucuesuchppb.supabase.co',
+      'mutabiq.robustapps.net',
     ],
   },
 };

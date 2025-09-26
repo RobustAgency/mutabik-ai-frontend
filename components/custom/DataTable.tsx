@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ColumnDef,
   flexRender,
@@ -40,6 +41,9 @@ interface DataTableProps<TData, TValue> {
   loading?: boolean;
   showRowSelector?: boolean;
   serverSide?: boolean;
+  variant?: "default" | "projects" | "compact" | "striped";
+  className?: string;
+  onRowClick?: (data: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -53,6 +57,9 @@ export function DataTable<TData, TValue>({
   showRowSelector = false,
   loading = false,
   serverSide = false,
+  variant,
+  className,
+  onRowClick
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -65,6 +72,7 @@ export function DataTable<TData, TValue>({
 
   // State to manage selected rows
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const pathname = usePathname();
 
   // Toggle row selection
   const handleRowCheckboxChange = (rowId: string) => {
@@ -147,41 +155,42 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       <div className="overflow-x-auto w-full mt-4">
-        <Table className="w-full text-left">
-          <TableHeader className="bg-gray-50 transition">
+        <Table className={`w-full text-left ${className}`}>
+          <TableHeader className={`${ variant === "projects"? "bg-white" : "bg-gray-50 transition"}`}>
             <TableRow className="">
               {showRowSelector && (
-                <TableHead
-                  className="py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200"
-                  style={{ textAlign: "left" }}
-                ></TableHead>
-              )}
-              {table.getHeaderGroups()[0].headers.map((header, index) => (
-                <TableHead
-                  key={header.id}
-                  className={`py-3 bg-[#FAFAFA] transition text-[#0A0A0A] text-sm font-semibold border-b border-gray-200 ${index === 0 ? "pl-8" : ""
-                    }`}
-                  style={{ textAlign: "left" }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                <TableHead className={`py-3  transition ${ variant === "projects"? "bg-white" : "bg-gray-50 transition"}  text-[#0A0A0A] text-sm font-semibold ${className}`} style={{ textAlign: "left" }}>
                 </TableHead>
-              ))}
+              )}
+              {table.getHeaderGroups()[0].headers.map(
+                (header, index) => (
+                  (
+                    <TableHead
+                      key={header.id}
+                      className={`py-3 ${ variant === "projects"? "bg-white" : "bg-gray-50 transition"} transition text-[#0A0A0A] text-sm font-semibold  ${index === 0 ? "pl-8" : ""} ${className}`}
+                      style={{ textAlign: "left" }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    </TableHead>
+                  )
+                )
+              )}
             </TableRow>
           </TableHeader>
           <TableBody className="relative ">
             {loading ? (
-              <TableRow className="border-b">
+              <TableRow className={` ${className}`}>
                 <TableCell
                   colSpan={columns.length + 1}
                   className="h-24 text-center "
                 >
                   <div className="flex items-center justify-center gap-2 ">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
+                    <div className={`h-5 w-5 animate-spin rounded-full   ${className}`} />
                   </div>
                 </TableCell>
               </TableRow>
@@ -189,8 +198,8 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  className={`${index % 2 === 0 ? "bg-white" : "bg-[#FAFAFA]"
-                    } `}
+                  className={`${index % 2 === 0   || variant === "projects" ?  "bg-white" : "bg-[#FAFAFA]"} ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}`}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {/* Checkbox cell at the start of each row */}
                   {showRowSelector && (
@@ -198,7 +207,7 @@ export function DataTable<TData, TValue>({
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row.id)}
-                        className="text-[#FFFFFF] border border-[#D4D4D4] rounded-[4px] h-[16px]"
+                        className="text-[#FFFFFF]   rounded-[4px] h-[16px]"
                         onChange={() => handleRowCheckboxChange(row.id)}
                       />
                     </TableCell>
