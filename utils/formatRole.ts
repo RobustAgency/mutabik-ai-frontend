@@ -1,6 +1,8 @@
 import { Role } from '@/interfaces/Roles';
 
-export const formatRole = (role: string): string => {
+export const formatRole = (role: string | undefined | null): string => {
+    if (!role) return 'Member';
+    
     return role
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())

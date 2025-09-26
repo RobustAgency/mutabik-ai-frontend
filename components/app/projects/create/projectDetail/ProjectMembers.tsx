@@ -24,7 +24,7 @@ const ProjectMembers = ({ project }: ProjectMembersProps) => {
             key={user.id}
             name={user.name}
             email={user.email}
-            role={user.pivot?.role || user.role || 'Member'}
+            role={user.project_user_role || 'Member'}
           />
         ))
       ) : (

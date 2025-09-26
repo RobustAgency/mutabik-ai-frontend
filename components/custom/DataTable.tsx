@@ -42,7 +42,8 @@ interface DataTableProps<TData, TValue> {
   showRowSelector?: boolean;
   serverSide?: boolean;
   variant?: "default" | "projects" | "compact" | "striped";
-  className?: string
+  className?: string;
+  onRowClick?: (data: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -57,7 +58,8 @@ export function DataTable<TData, TValue>({
   loading = false,
   serverSide = false,
   variant,
-  className
+  className,
+  onRowClick
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -196,7 +198,8 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  className={`${index % 2 === 0   || variant === "projects" ?  "bg-white" : "bg-[#FAFAFA]"} `}
+                  className={`${index % 2 === 0   || variant === "projects" ?  "bg-white" : "bg-[#FAFAFA]"} ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}`}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {/* Checkbox cell at the start of each row */}
                   {showRowSelector && (

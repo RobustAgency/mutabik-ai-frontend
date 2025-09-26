@@ -1,7 +1,7 @@
 import ProjectsTable from '@/components/app/projects/ProjectsTable'
 import React from 'react'
 
-const page = () => {
+const ProjectsPage = () => {
   return (
     <React.Fragment>
       <ProjectsTable />
@@ -9,4 +9,4 @@ const page = () => {
   )
 }
 
-export default page
+export default ProjectsPage

@@ -4,6 +4,7 @@ import { User } from '@/interfaces/User';
 export interface Member extends User {
   organization_id: number;
   is_organization_active: boolean;
+  project_user_role: string;
 }
 
 export interface UpdateMemberData {

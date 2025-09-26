@@ -31,6 +31,7 @@ export interface ProjectUser {
     name: string;
     email: string;
     role: string;
+    project_user_role: string;
     pivot: {
         role: string;
     };

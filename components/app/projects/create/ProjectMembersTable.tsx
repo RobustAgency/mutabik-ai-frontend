@@ -5,14 +5,6 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import AddProjectMember from "@/components/app/projects/create/AddProjectMember";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import {
@@ -31,6 +23,7 @@ export interface ProjectMemberData {
   name: string;
   email: string;
   role: string;
+  project_user_role: string;
   actionPerform: string;
 }
 
@@ -46,24 +39,21 @@ const MembersAdd = () => {
   const { addMember, loading: projectLoading, fetchProject, currentProject } = useProjects();
 
   useEffect(() => {
-    // Fetch organization members for the add member modal
     fetchMembers();
-
-    // Fetch project details to get current project members
     if (projectId) {
       fetchProject(parseInt(projectId));
     }
   }, [fetchMembers, fetchProject, projectId]);
 
   useEffect(() => {
-    // Update project members when project data is loaded
     if (currentProject?.users) {
       setProjectMembers(currentProject.users.map(user => ({
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.pivot?.role || user.role,
-        supabase_id: '', // Will be populated from backend if needed
+        role: user.pivot?.role || user.role || 'member',
+        project_user_role: user.pivot?.role || user.role || 'member',
+        supabase_id: '',
         is_approved: true,
         created_at: '',
         updated_at: '',
@@ -92,7 +82,8 @@ const MembersAdd = () => {
       // Add the new member to the project members list
       const newProjectMember: Member = {
         ...member,
-        role: role
+        role: role,
+        project_user_role: role
       };
       setProjectMembers(prev => [...prev, newProjectMember]);
       setOpen(false);
@@ -134,8 +125,9 @@ const MembersAdd = () => {
         </div>
       ),
       cell: ({ row }) => {
+        const role = row.original.project_user_role || row.original.role || 'member';
         return (
-          <p>{formatRole(row.original.role)}</p>
+          <p>{formatRole(role)}</p>
         );
       },
     },

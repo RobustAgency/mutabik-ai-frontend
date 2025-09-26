@@ -60,6 +60,10 @@ const ProjectsTable: React.FC = () => {
     }
   };
 
+  const handleRowClick = (project: Project) => {
+    router.push(`/projects/${project.id}/details`);
+  };
+
   const columns: ColumnDef<Project>[] = [
     {
       accessorKey: "name",
@@ -211,6 +215,7 @@ const ProjectsTable: React.FC = () => {
             data={projects}
             serverSide
             variant="projects"
+            onRowClick={handleRowClick}
           />
           {loading && (
             <div className="flex justify-center py-8">
