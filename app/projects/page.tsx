@@ -1,12 +1,12 @@
-import AllProjectsTable from '@/components/app/projects/AllProjectsTable'
+import ProjectsTable from '@/components/app/projects/ProjectsTable'
 import React from 'react'
 
-const page = () => {
+const ProjectsPage = () => {
   return (
     <React.Fragment>
-      <AllProjectsTable />
+      <ProjectsTable />
     </React.Fragment>
   )
 }
 
-export default page
+export default ProjectsPage

@@ -15,17 +15,14 @@ const ProjectContainer = ({ step, title, description }: ProjectContainerProps) =
             {title}
           </h1>
           <p className="font-sans text-center sm:text-start font-normal text-sm leading-5 tracking-normal text-[#667085]">
-           {description}
+            {description}
           </p>
         </div>
-        {step &&  <p className="font-sans font-medium not-italic text-sm leading-5 tracking-normal">
+        {step && <p className="font-sans font-medium not-italic text-sm leading-5 tracking-normal">
           Step {step}/3
-        </p> }
-       
+        </p>}
       </div>
-
       {/* Step value server component se CreateProject ko pass karo */}
-      
     </div>
   );
 };

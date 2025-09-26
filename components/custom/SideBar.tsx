@@ -54,8 +54,8 @@ const adminRoutes: RouteItem[] = [
 ];
 
 const userRoutes: RouteItem[] = [
-  { href: "/plans", label: "Plans", icon: CreditCard },
   { href: "/projects", label: "Projects", icon: Box },
+  { href: "/plans", label: "Plans", icon: CreditCard },
 ];
 
 // --- Component ---
@@ -101,11 +101,10 @@ export function Sidebar({
                 <Link
                   href={item.href || "#"}
                   onClick={onNavigate}
-                  className={`relative flex items-center rounded-md gap-2 px-3 py-2 text-sm transition-colors ${
-                    isActive
+                  className={`relative flex items-center rounded-md gap-2 px-3 py-2 text-sm transition-colors ${isActive
                       ? "bg-primary/10 text-primary border-primary"
                       : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
-                  }`}
+                    }`}
                 >
                   {item.icon ? (
                     <item.icon
@@ -115,9 +114,8 @@ export function Sidebar({
                   ) : null}
                   {!collapsed && (
                     <span
-                      className={`whitespace-nowrap text-sm font-medium ${
-                        isActive ? "text-primary" : "text-[#404040]"
-                      }`}
+                      className={`whitespace-nowrap text-sm font-medium ${isActive ? "text-primary" : "text-[#404040]"
+                        }`}
                     >
                       {item.label}
                     </span>

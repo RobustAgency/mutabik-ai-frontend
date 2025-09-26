@@ -1,15 +1,15 @@
 import React from 'react'
 import { Card } from "@/components/ui/card";
 
-interface ProjectMatricesProps {
+interface ProjectMetricesProps {
   icon: React.ReactNode;
   label: string;
   value: string | number;
 }
-const Matrics: React.FC<ProjectMatricesProps> = ({
-    icon,
-    label,
-    value
+const Metrics: React.FC<ProjectMetricesProps> = ({
+  icon,
+  label,
+  value
 }) => {
   return (
     <Card className="w-full flex-1 opacity-100 rounded-2xl border border-[#E4E7EC] p-6">
@@ -26,4 +26,4 @@ const Matrics: React.FC<ProjectMatricesProps> = ({
   )
 }
 
-export default Matrics
+export default Metrics

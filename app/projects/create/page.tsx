@@ -4,12 +4,13 @@ import React from "react";
 import CreateProject from "@/components/app/projects/create/CreateProject";
 
 interface PageProps {
-  searchParams: { step?: string }; // Next.js automatically pass karega
+  searchParams: Promise<{ step?: string }>; // Next.js automatically pass karega
 }
 
-const Page = ({ searchParams }: PageProps) => {
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
   // string ko number me convert kar liya
-  const step = searchParams.step ? Number(searchParams.step) : 2;
+  const step = params.step ? Number(params.step) : 2;
 
   return (
     <>

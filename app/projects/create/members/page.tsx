@@ -1,14 +1,14 @@
 import ProjectContainer from "@/components/app/projects/create/projectContainer/ProjectContainer";
-import MembersAdd from "@/components/app/projects/create/MembersAdd";
+import MembersAdd from "@/components/app/projects/create/ProjectMembersTable";
 import React from "react";
 
 interface PageProps {
-  searchParams: { step?: string }; // Next.js automatically pass karega
+  searchParams: Promise<{ step?: string }>;
 }
 
-const Page = ({ searchParams }: PageProps) => {
-  // string ko number me convert kar liya
-  const step = searchParams.step ? Number(searchParams.step) : 2;
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+  const step = params.step ? Number(params.step) : 2;
 
   return (
     <>

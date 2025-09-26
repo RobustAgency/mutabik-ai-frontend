@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Project } from "@/service/app/projects";
+import { formatDate } from "@/utils/formatDate";
 
 // Type for project details
 interface ProjectDetail {
@@ -9,14 +11,9 @@ interface ProjectDetail {
   value: string;
 }
 
-const projectDetails: ProjectDetail[] = [
-  { label: "ID", value: "30029" },
-  { label: "Pillar", value: "AI Governance" },
-  { label: "Owner", value: "Ahmad Raza" },
-  { label: "My Role", value: "Reviewer" },
-  { label: "Created", value: "2025-06-01 11:34" },
-  { label: "Last Activity", value: "2025-08-22 10:22" },
-];
+interface ProjectDetailCardProps {
+  project: Project;
+}
 
 // Reusable component
 const DetailItem: React.FC<ProjectDetail> = ({ label, value }) => (
@@ -26,7 +23,15 @@ const DetailItem: React.FC<ProjectDetail> = ({ label, value }) => (
   </div>
 );
 
-const ProjectDetailCard: React.FC = () => {
+const ProjectDetailCard: React.FC<ProjectDetailCardProps> = ({ project }) => {
+  const projectDetails: ProjectDetail[] = [
+    { label: "ID", value: project.id.toString() },
+    { label: "Pillar", value: project.governance_pillar.replace('_', ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') },
+    { label: "Owner", value: project.users?.find(user => user.pivot?.role === 'owner' || user.role === 'owner')?.name || 'N/A' },
+    { label: "My Role", value: "Member" }, // You might need to determine this based on current user
+    { label: "Created", value: formatDate(project.created_at) },
+    { label: "Last Activity", value: formatDate(project.updated_at) },
+  ];
   return (
     <div className="">
       <Card className="w-full rounded-2xl p-0 border border-[#E4E7EC] bg-white gap-0">
