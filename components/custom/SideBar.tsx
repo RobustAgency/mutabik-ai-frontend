@@ -101,9 +101,9 @@ export function Sidebar({
                 <Link
                   href={item.href || "#"}
                   onClick={onNavigate}
-                  className={`relative flex items-center rounded-md gap-2 px-3 py-2 text-sm transition-colors ${isActive
-                      ? "bg-primary/10 text-primary border-primary"
-                      : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
+                  className={`relative flex items-center rounded-md gap-3 px-3 py-2 text-sm transition-colors ${isActive
+                    ? "bg-primary/10 text-primary border-primary"
+                    : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
                     }`}
                 >
                   {item.icon ? (
@@ -129,7 +129,6 @@ export function Sidebar({
                     label={item.label}
                     items={item.children}
                     icon={item.icon}
-                    isParentActive={isActive}
                     pathname={pathname}
                   />
                 </div>
