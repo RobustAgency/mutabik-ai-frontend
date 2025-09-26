@@ -28,7 +28,7 @@ export interface ProjectData {
   progress: string;
 }
 
-const AllProjectsTable: React.FC = () => {
+const ProjectsTable: React.FC = () => {
   const tabsData: TabData[] = [
     { value: "all", label: "All Projects" },
     { value: "ai", label: "AI Governance" },
@@ -38,7 +38,7 @@ const AllProjectsTable: React.FC = () => {
 
   const [activeTab, setActiveTab] = React.useState<string>("all");
   const router = useRouter();
-  
+
   const { projects, loading, fetchProjects } = useProjects();
 
   React.useEffect(() => {
@@ -71,7 +71,7 @@ const AllProjectsTable: React.FC = () => {
       cell: ({ getValue }) => {
         return (
           <div
-            className={`font-sans font-medium text-sm leading-5 tracking-normal  `}
+            className={`pl-4 font-sans font-medium text-sm leading-5 tracking-normal  `}
           >
             {getValue() as string}
           </div>
@@ -109,11 +109,11 @@ const AllProjectsTable: React.FC = () => {
           <div className="flex gap-2">
             {frameworks.slice(0, 3).map((framework, idx) => (
               <Image
-                key={idx} 
+                key={idx}
                 src="/projects/fraemwork-logo.png" // Default framework logo
                 alt={framework.name}
-                width={20} 
-                height={20} 
+                width={20}
+                height={20}
                 className="rounded"
                 title={framework.name}
               />
@@ -187,10 +187,8 @@ const AllProjectsTable: React.FC = () => {
   return (
     <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
       <CardContent className="flex flex-col flex-1 gap-4">
- 
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <Tab tabsData={tabsData} activeTab={activeTab} setActiveTab={setActiveTab} />
-
           <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
             <Button
               variant="outline"
@@ -225,4 +223,4 @@ const AllProjectsTable: React.FC = () => {
   );
 };
 
-export default AllProjectsTable;
+export default ProjectsTable;

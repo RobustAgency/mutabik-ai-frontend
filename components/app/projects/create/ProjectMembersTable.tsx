@@ -103,7 +103,7 @@ const MembersAdd = () => {
     {
       accessorKey: "name",
       header: () => (
-        <div className="font-sans font-medium text-xs leading-4 text-[#667085] px-0 py-1 rounded">
+        <div className="pl-4 font-sans font-medium text-xs leading-4 text-[#667085] px-0 py-1 rounded">
           Name
         </div>
       ),

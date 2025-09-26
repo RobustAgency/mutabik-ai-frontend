@@ -2,15 +2,17 @@ import ProjectDetails from '@/components/app/projects/create/projectDetail/Proje
 import React from 'react'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-const page = ({ params }: PageProps) => {
+const page = async ({ params }: PageProps) => {
+  const { id } = await params;
+  
   return (
     <React.Fragment>
-      <ProjectDetails projectId={params.id} />
+      <ProjectDetails projectId={id} />
     </React.Fragment>
   )
 }
