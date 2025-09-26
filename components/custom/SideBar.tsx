@@ -1,15 +1,14 @@
-"use client"
+"use client";
 import Link from "next/link";
 import {
-  // Settings as SettingsIcon,
   LayoutGrid,
   House,
-  // LogOut,
   CreditCard,
   LucideIcon,
   Users2,
+  Box,
+  Landmark,
 } from "lucide-react";
-import { Landmark } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -33,7 +32,11 @@ const adminRoutes: RouteItem[] = [
     label: "Compliance Library",
     icon: Landmark,
     children: [
-      { href: "/admin/compliance-library/frameworks", label: "Frameworks", icon: House },
+      {
+        href: "/admin/compliance-library/frameworks",
+        label: "Frameworks",
+        icon: House,
+      },
       { href: "/admin/compliance-library/requirements", label: "Requirements" },
       { href: "/admin/compliance-library/tags", label: "Tags" },
       { href: "/admin/compliance-library/controls", label: "Controls" },
@@ -50,17 +53,10 @@ const adminRoutes: RouteItem[] = [
   },
 ];
 
-const userRoutes = [
-  // { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+const userRoutes: RouteItem[] = [
   { href: "/plans", label: "Plans", icon: CreditCard },
-  // { href: "/invoices", label: "Invoices", icon: FileChartColumnIncreasing },
+  { href: "/projects", label: "Projects", icon: Box },
 ];
-
-
-// const baseRoutes: RouteItem[] = [
-//   { href: "/settings", label: "Settings", icon: SettingsIcon },
-//   { href: "/logout", label: "Logout", icon: LogOut },
-// ];
 
 // --- Component ---
 export function Sidebar({
@@ -76,29 +72,29 @@ export function Sidebar({
 
   const navigationRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
 
-  // Helper function to check if a route is active
-  const isRouteActive = (href: string, children?: RouteItem[]) => {
-    if (href && pathname === href) return true;
-    if (children) {
-      return children.some(child => pathname === child.href || pathname.startsWith(child.href + '/'));
-    }
-    return false;
-  };
-
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="flex flex-col overflow-hidden  w-full">
       {/* Logo for mobile */}
-      <div aria-details="logo" className="flex items-center justify-between md:hidden">
+      <div
+        aria-details="logo"
+        className="flex items-center justify-between md:hidden"
+      >
         <Link href="/" className="pl-5 pt-2">
-          <Image src="/auth/dashboard-logo.svg" alt="logo" width={120} height={56} />
+          <Image
+            src="/auth/dashboard-logo.svg"
+            alt="logo"
+            width={120}
+            height={56}
+          />
         </Link>
       </div>
 
       {/* Sidebar Navigation */}
       <div className="flex flex-col gap-1 p-2 md:p-3 mt-6">
         {navigationRoutes.map((item) => {
-          const isActive = isRouteActive(item.href, item.children);
-          
+
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+
           return (
             <div key={item.label}>
               {item.href !== "" && (
@@ -106,21 +102,23 @@ export function Sidebar({
                   href={item.href || "#"}
                   onClick={onNavigate}
                   className={`relative flex items-center rounded-md gap-2 px-3 py-2 text-sm transition-colors ${
-                    isActive 
-                      ? "bg-primary/10 text-primary border-primary" 
+                    isActive
+                      ? "bg-primary/10 text-primary border-primary"
                       : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
                   }`}
                 >
                   {item.icon ? (
-                    <item.icon 
-                      className="shrink-0 size-6" 
-                      color={isActive ? "currentColor" : "#737373"} 
+                    <item.icon
+                      className="shrink-0 size-6"
+                      color={isActive ? "currentColor" : "#737373"}
                     />
                   ) : null}
                   {!collapsed && (
-                    <span className={`whitespace-nowrap text-sm font-medium ${
-                      isActive ? "text-primary" : "text-[#404040]"
-                    }`}>
+                    <span
+                      className={`whitespace-nowrap text-sm font-medium ${
+                        isActive ? "text-primary" : "text-[#404040]"
+                      }`}
+                    >
                       {item.label}
                     </span>
                   )}
@@ -129,9 +127,9 @@ export function Sidebar({
 
               {item.children && item.icon && (
                 <div>
-                  <Accordian 
-                    label={item.label} 
-                    items={item.children} 
+                  <Accordian
+                    label={item.label}
+                    items={item.children}
                     icon={item.icon}
                     isParentActive={isActive}
                     pathname={pathname}
@@ -139,7 +137,7 @@ export function Sidebar({
                 </div>
               )}
             </div>
-          )
+          );
         })}
       </div>
     </div>

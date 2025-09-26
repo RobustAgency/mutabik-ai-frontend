@@ -6,26 +6,26 @@ import DesktopLayout from "@/layouts/DesktopLayout";
 import MobileLayout from "@/layouts/MobileLayout";
 
 type MainLayoutProps = {
-    children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default function MainLayout({ children }: MainLayoutProps) {
-    const { isLoading } = useAuth();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isLoading } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    if (isLoading) return <Spinner />
-
+  if (isLoading)
     return (
-        <div className="!bg-[#FAFAFA] text-foreground">
-            <MobileLayout
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}>
-                {children}
-            </MobileLayout>
-            <DesktopLayout>
-                {children}
-            </DesktopLayout>
-
-        </div>
+      <div className="w-full min-h-screen flex justify-center items-center">
+        <Spinner size="lg" />
+      </div>
     );
+
+  return (
+    <div className="!bg-[#FAFAFA] text-foreground">
+      <MobileLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+        {children}
+      </MobileLayout>
+      <DesktopLayout>{children}</DesktopLayout>
+    </div>
+  );
 }
