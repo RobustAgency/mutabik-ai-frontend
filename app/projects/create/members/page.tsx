@@ -3,12 +3,11 @@ import MembersAdd from "@/components/app/projects/create/ProjectMembersTable";
 import React from "react";
 
 interface PageProps {
-  searchParams: Promise<{ step?: string }>; // Next.js automatically pass karega
+  searchParams: Promise<{ step?: string }>;
 }
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
-  // string ko number me convert kar liya
   const step = params.step ? Number(params.step) : 2;
 
   return (

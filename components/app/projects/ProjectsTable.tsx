@@ -75,7 +75,7 @@ const ProjectsTable: React.FC = () => {
       cell: ({ getValue }) => {
         return (
           <div
-            className={`pl-4 font-sans font-medium text-sm leading-5 tracking-normal  `}
+            className={`pl-6 font-sans font-medium text-sm leading-5 tracking-normal  `}
           >
             {getValue() as string}
           </div>

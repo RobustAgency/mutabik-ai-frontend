@@ -52,7 +52,7 @@ const MembersAdd = () => {
         name: user.name,
         email: user.email,
         role: user.pivot?.role || user.role || 'member',
-        project_user_role: user.pivot?.role || user.role || 'member',
+        project_user_role: user.project_user_role || 'member',
         supabase_id: '',
         is_approved: true,
         created_at: '',
@@ -94,12 +94,12 @@ const MembersAdd = () => {
     {
       accessorKey: "name",
       header: () => (
-        <div className="pl-4 font-sans font-medium text-xs leading-4 text-[#667085] px-0 py-1 rounded">
+        <div className="font-sans font-medium text-xs leading-4 text-[#667085] px-0 py-1 rounded">
           Name
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="font-sans font-medium text-sm leading-5 text-[#344054]">
+        <div className="pl-4 font-sans font-medium text-sm leading-5 text-[#344054]">
           {getValue() as string}
         </div>
       ),
@@ -125,7 +125,7 @@ const MembersAdd = () => {
         </div>
       ),
       cell: ({ row }) => {
-        const role = row.original.project_user_role || row.original.role || 'member';
+        const role = row.original.project_user_role;
         return (
           <p>{formatRole(role)}</p>
         );

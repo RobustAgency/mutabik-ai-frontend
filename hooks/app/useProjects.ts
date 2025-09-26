@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
-import { 
-  projectService, 
-  type Project, 
-  type CreateProjectData, 
-  type AddMemberData, 
+import {
+  projectService,
+  type Project,
+  type CreateProjectData,
+  type AddMemberData,
   type AddFrameworksData,
   type ProjectFilters
 } from '@/service/app/projects';
@@ -20,7 +20,7 @@ export const useProjects = () => {
       setLoading(true);
       setError(null);
       const response = await projectService.getProjects(filters);
-      
+
       if (!response.error) {
         setProjects(response.data.data);
       } else {
@@ -41,7 +41,7 @@ export const useProjects = () => {
       setLoading(true);
       setError(null);
       const response = await projectService.getProject(id);
-      
+
       if (!response.error) {
         setCurrentProject(response.data);
         return response.data;
@@ -63,20 +63,23 @@ export const useProjects = () => {
       setLoading(true);
       setError(null);
       const response = await projectService.createProject(data);
-      
+      console.log("response", response)
+
       if (!response.error) {
         toast.success('Project created successfully');
-        return true;
+        // Set the current project to the newly created project
+        setCurrentProject(response.data);
+        return response.data;
       } else {
         setError(response.message || 'Failed to create project');
         toast.error(response.message || 'Failed to create project');
-        return false;
+        return null;
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create project';
       setError(errorMessage);
       toast.error(errorMessage);
-      return false;
+      return null;
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ export const useProjects = () => {
       setLoading(true);
       setError(null);
       const response = await projectService.addMember(projectId, data);
-      
+
       if (!response.error) {
         toast.success('Member added successfully');
         return true;
@@ -111,7 +114,7 @@ export const useProjects = () => {
       setLoading(true);
       setError(null);
       const response = await projectService.addFrameworks(projectId, data);
-      
+
       if (!response.error) {
         toast.success('Frameworks added successfully');
         return true;

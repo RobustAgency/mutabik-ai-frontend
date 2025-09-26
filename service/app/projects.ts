@@ -74,7 +74,7 @@ export class ProjectService {
         return api.get(`/projects/${id}`);
     }
 
-    async createProject(data: CreateProjectData): Promise<ApiResponse<null>> {
+    async createProject(data: CreateProjectData): Promise<ApiResponse<Project>> {
         return api.post('/projects', data);
     }
 

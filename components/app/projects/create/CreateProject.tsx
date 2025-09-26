@@ -20,7 +20,7 @@ import { GovernancePillar } from "@/utils/governancePillar";
 const CreateProject = () => {
   const router = useRouter();
   const { createProject, loading } = useProjects();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -46,11 +46,9 @@ const CreateProject = () => {
       governance_pillar: formData.governance_pillar as GovernancePillar
     };
 
-    const success = await createProject(projectData);
-    if (success) {
-      // For now, we'll pass a placeholder project ID. In a real scenario, 
-      // the API would return the created project ID
-      router.push(`/projects/create/members?step=2&project_id=1`);
+    const createdProject = await createProject(projectData);
+    if (createdProject) {
+      router.push(`/projects/create/members?step=2&project_id=${createdProject.id}`);
     }
   };
   return (
@@ -113,7 +111,7 @@ const CreateProject = () => {
               Choose governance pillar
             </Label>
             <Select value={formData.governance_pillar} onValueChange={(value) => handleInputChange('governance_pillar', value)}>
-              <SelectTrigger className="w-full cursor-pointer h-[50px] rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
+              <SelectTrigger className="w-full cursor-pointer min-h-[44px] h-[44px] rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
                 <SelectValue
                   placeholder="Select governance pillar"
                   className="font-normal text-sm text-[#1D2939]"
