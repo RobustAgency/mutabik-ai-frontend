@@ -172,7 +172,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = ({
                             onChange={(e) => handleInputChange('email', e.target.value)}
                             className={`mt-1 ${errors.email ? 'border-red-500' : ''}`}
                             placeholder="Enter email address"
-                            disabled={saving}
+                            disabled={true}
                         />
                         {errors.email && (
                             <p className="mt-1 text-sm text-red-600">{errors.email}</p>
