@@ -1,5 +1,5 @@
 import React from 'react'
-import ProjectSetting from '@/components/app/projects/setup/ProjectSetting'
+import ProjectSetting from '@/components/app/projects/setup/setting/ProjectSetting'
 
 const page = () => {
   return (
