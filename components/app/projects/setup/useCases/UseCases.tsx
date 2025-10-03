@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
+import { useUseCases } from '@/hooks/app/useUseCases';
 
 interface UseCase {
   id: string;
@@ -18,6 +19,7 @@ interface UseCase {
 }
 
 const UseCases: React.FC = () => {
+  const { useCases, fetchUseCases, } = useUseCases();
   const router = useRouter();
   const data: UseCase[] = [
     {
@@ -31,6 +33,9 @@ const UseCases: React.FC = () => {
     },
   ];
 
+  React.useEffect(() => {
+    fetchUseCases();
+  }, [fetchUseCases])
   const columns: ColumnDef<UseCase>[] = [
     {
       accessorKey: "id",
@@ -115,6 +120,8 @@ const UseCases: React.FC = () => {
     },
   ];
 
+  
+
   return (
     <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
       <CardContent className="flex flex-col flex-1">
@@ -128,7 +135,7 @@ const UseCases: React.FC = () => {
           </Button>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
-          <DataTable columns={columns} data={data} variant="projects" />
+          <DataTable columns={columns} data={useCases} variant="projects" />
         </Card>
       </CardContent>
     </Card>

@@ -1,4 +1,4 @@
-import CraeteUseCases from '@/components/app/projects/setup/useCases/create/CraeteUseCases'
+import CraeteUseCases from '@/components/app/projects/setup/useCases/create/CreateUseCases'
 import React from 'react'
 
 const page = () => {
