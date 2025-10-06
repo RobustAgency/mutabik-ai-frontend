@@ -53,7 +53,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setExpectedRoiInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, expected_roi: Number(expectedRoiInput) }))}
               placeholder="20%"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] no-spin"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -66,7 +66,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setImplementationCostInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, implementation_cost: Number(implementationCostInput) }))}
               placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -79,7 +79,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setReductionInTimeInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, reduction_in_time: Number(reductionInTimeInput) }))}
               placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setReductionInCostInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, reduction_in_cost: Number(reductionInCostInput) }))}
               placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -108,7 +108,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setIncreaseInRevenueInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, increase_in_revenue: Number(increaseInRevenueInput) }))}
               placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -121,7 +121,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setRiskAvoidanceInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, risk_avoidance: Number(riskAvoidanceInput) }))}
               placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -134,7 +134,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
               onChange={(e) => setFteCapacityInput(Number(e.target.value))}
               onBlur={() => setFormData((prev) => ({ ...prev, fte_capacity_saved: Number(fteCapacityInput) }))}
               placeholder="30"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
         </div>

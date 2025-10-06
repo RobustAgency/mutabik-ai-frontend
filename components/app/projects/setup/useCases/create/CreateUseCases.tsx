@@ -27,7 +27,7 @@ export interface FormDataType {
   business_objective: string;
   business_owner_email: string;
   technical_owner_email: string;
-  regulatory_scope: string[]; // ✅ always array
+  regulatory_scope: string[]; 
   data_sensitivity: "public" | "internal" | "confidential" | "restricted";
   go_live_date: string | null;
 
@@ -45,8 +45,8 @@ export interface FormDataType {
   overall_risk_score: number | null;
   risk_level: "low" | "medium" | "high" | "critical";
   human_oversight_mode: string;
-  dpia: boolean | null;
-  aia: boolean | null;
+  dpia: boolean ;
+  aia: boolean ;
 
   data_availability_status: string;
   data_readiness_level: string;
@@ -61,7 +61,7 @@ const initialFormData: FormDataType = {
   business_objective: "",
   business_owner_email: "",
   technical_owner_email: "",
-  regulatory_scope: [], // ✅ fixed empty array
+  regulatory_scope: [], 
   data_sensitivity: "public",
   go_live_date: null,
 
@@ -79,8 +79,8 @@ const initialFormData: FormDataType = {
   overall_risk_score: null,
   risk_level: "medium",
   human_oversight_mode: "",
-  dpia: null,
-  aia: null,
+  dpia: false,
+  aia: false,
 
   data_availability_status: "",
   data_readiness_level: "",
@@ -100,7 +100,6 @@ const CraeteUseCases: React.FC = () => {
         formData.business_domain &&
         formData.data_sensitivity
       ) {
-        // ✅ ensure regulatory_scope is cleaned array
         const payload = {
           ...formData,
           regulatory_scope: formData.regulatory_scope
@@ -110,7 +109,6 @@ const CraeteUseCases: React.FC = () => {
 
         const response = await createUseCase(payload);
         if (response) {
-          alert("Use case created successfully!");
           setFormData(initialFormData);
         }
       }
@@ -123,7 +121,7 @@ const CraeteUseCases: React.FC = () => {
     <div className="max-w-7xl mx-auto">
       <form onSubmit={handleSave}>
         <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start gap-3  justify-start sm:justify-between">
             <div>
               <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                 New use case
@@ -134,7 +132,7 @@ const CraeteUseCases: React.FC = () => {
             </div>
             <Button
               type="submit"
-              className="flex items-center justify-center gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100"
+              className="flex  gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100"
               disabled={!!loading}
             >
               {loading ? "Saving..." : "Save new use case"}

@@ -167,7 +167,7 @@ export function DataTable<TData, TValue>({
                   (
                     <TableHead
                       key={header.id}
-                      className={`py-3 ${ variant === "projects"? "bg-white" : "bg-gray-50 transition"} transition text-[#0A0A0A] text-sm font-semibold  ${index === 0 ? "pl-8" : ""} ${className}`}
+                      className={`py-3  ${ variant === "projects"? "bg-white" : "bg-gray-50 transition"} transition text-[#0A0A0A] text-sm font-semibold  ${index === 0 ? "pl-4" : ""} ${className}`}
                       style={{ textAlign: "left" }}
                     >
                       {header.isPlaceholder
@@ -198,7 +198,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
-                  className={`${index % 2 === 0   || variant === "projects" ?  "bg-white" : "bg-[#FAFAFA]"} ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}`}
+                  className={` ${index % 2 === 0   || variant === "projects" ?  "bg-white" : "bg-[#FAFAFA]"} ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}`}
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {/* Checkbox cell at the start of each row */}

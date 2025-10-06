@@ -7,35 +7,28 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useUseCases } from '@/hooks/app/useUseCases';
+import { UseCase } from "@/service/app/useCases";
 
-interface UseCase {
-  id: string;
-  name: string;
-  riskLevel: string;
-  businessDomain: string;
-  dataSensitivity: string;
-  targetDate: string;
-  status: string;
-}
+// Optional: define date formatter (e.g., "Oct 6, 2025")
+const formatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
 
 const UseCases: React.FC = () => {
-  const { useCases, fetchUseCases, } = useUseCases();
+  const { useCases, fetchUseCases } = useUseCases();
   const router = useRouter();
-  const data: UseCase[] = [
-    {
-      id: "UC-20240223-44",
-      name: "Retail Credit Risk Scoring",
-      riskLevel: "High",
-      businessDomain: "Risk Management",
-      dataSensitivity: "Risk Confidential",
-      targetDate: "2025-10-15",
-      status: "Active",
-    },
-  ];
 
   React.useEffect(() => {
     fetchUseCases();
-  }, [fetchUseCases])
+  }, [fetchUseCases]);
+
   const columns: ColumnDef<UseCase>[] = [
     {
       accessorKey: "id",
@@ -51,7 +44,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "name",
+      accessorKey: "title",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">Name</div>
       ),
@@ -62,7 +55,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "riskLevel",
+      accessorKey: "risk_level",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Risk Level
@@ -73,7 +66,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "businessDomain",
+      accessorKey: "business_domain",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Business Domain
@@ -84,7 +77,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "dataSensitivity",
+      accessorKey: "data_sensitivity",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Data Sensitivity
@@ -95,15 +88,22 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "targetDate",
+      accessorKey: "go_live_date",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Target Go Live Date
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">{getValue() as string}</div>
-      ),
+      // ✅ Format date here
+      cell: ({ getValue }) => {
+        const rawDate = getValue() as string;
+        const formatted = formatDate(rawDate);
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {formatted}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -113,14 +113,12 @@ const UseCases: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="w-[60px] h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium">
+        <div className="h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium">
           {getValue() as string}
         </div>
       ),
     },
   ];
-
-  
 
   return (
     <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
@@ -135,7 +133,7 @@ const UseCases: React.FC = () => {
           </Button>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
-          <DataTable columns={columns} data={useCases} variant="projects" />
+          <DataTable columns={columns} data={useCases ?? []} variant="projects" />
         </Card>
       </CardContent>
     </Card>
@@ -143,4 +141,3 @@ const UseCases: React.FC = () => {
 };
 
 export default UseCases;
-

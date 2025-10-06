@@ -22,31 +22,37 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
   formData,
   setFormData,
 }) => {
-  // ✅ Local state for smooth typing
   const [overallRiskScoreInput, setOverallRiskScoreInput] = useState(
     formData.overall_risk_score ?? ""
   );
 
-  // Sync local state when formData resets
   useEffect(() => {
     setOverallRiskScoreInput(formData.overall_risk_score ?? "");
   }, [formData.overall_risk_score]);
 
   return (
     <div className="space-y-6">
-      {/* Title */}
-      <div className="flex flex-col gap-2">
-        <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
+      {/* Header */}
+      <div>
+        <h2 className="font-semibold text-[#039855] text-sm">
           Governance & risk
         </h2>
-        <hr className="border-gray-200" />
       </div>
 
-      {/* Form Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Responsive Grid */}
+      <div
+        className="
+          grid 
+          grid-cols-1
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-5 
+          gap-6
+        "
+      >
         {/* Overall Risk Score */}
-        <div className="flex flex-col gap-2">
-          <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
+        <div className="flex flex-col gap-1">
+          <Label className="text-sm text-[#344054] font-medium">
             Overall risk score
           </Label>
           <Input
@@ -59,14 +65,14 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
                 overall_risk_score: Number(overallRiskScoreInput),
               }))
             }
-            className="h-[44px] gap-2 opacity-100 px-4 py-[22px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] placeholder:text-[#98A2B3] font-sans font-normal text-sm leading-5 tracking-normal"
             placeholder="20,000"
+            className="h-[44px] rounded-md border border-[#D0D5DD] text-sm text-[#101828] placeholder:text-[#98A2B3] focus-visible:ring-0 focus-visible:border-[#D0D5DD]"
           />
         </div>
 
         {/* Risk Level */}
-        <div className="flex flex-col gap-2">
-          <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
+        <div className="flex flex-col gap-1">
+          <Label className="text-sm text-[#344054] font-medium">
             Risk level
           </Label>
           <Select
@@ -90,9 +96,9 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
           </Select>
         </div>
 
-        {/* Human Oversight */}
-        <div className="flex flex-col gap-2">
-          <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
+        {/* Human Oversight Mode */}
+        <div className="flex flex-col gap-1">
+          <Label className="text-sm text-[#344054] font-medium">
             Human oversight mode
           </Label>
           <Select
@@ -108,63 +114,50 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
               <SelectValue placeholder="HITL" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hitl">HITL</SelectItem>
-              <SelectItem value="nohitl">No HITL</SelectItem>
+              <SelectItem value="HITL">HITL</SelectItem>
+              <SelectItem value="NO_HITL">No HITL</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* DPIA & AIA */}
-        <div className="flex flex-wrap lg:flex-nowrap gap-6">
-          {/* DPIA */}
-          <div className="flex flex-col gap-2">
-            <Label className="text-[#344054]" id="dpia">
-              DPIA
-            </Label>
-            <div className="flex items-center gap-3">
-              <Checkbox
-                checked={formData.dpia || false}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    dpia: checked === true,
-                  }))
-                }
-                className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
-                id="dpia"
-              />
-              <Label htmlFor="dpia" className="text-sm text-[#344054]">
-                Required?
-              </Label>
-            </div>
-            <p className="text-xs text-[#475467]">AI impact Assessment</p>
+        {/* DPIA */}
+        <div className="flex flex-col">
+          <Label className="text-sm text-[#344054] font-medium">DPIA</Label>
+          <div className="flex items-center mt-2 gap-2">
+            <Checkbox
+              checked={formData.dpia || false}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  dpia: checked === true,
+                }))
+              }
+              className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
+            />
+            <Label className="text-sm text-[#344054]">Required?</Label>
           </div>
+          <p className="text-xs text-[#475467] mt-1">
+            Data Processing Impact Assessment
+          </p>
+        </div>
 
-          {/* AIA */}
-          <div className="flex flex-col gap-2">
-            <Label className="text-[#344054]" id="aia">
-              AIA
-            </Label>
-            <div className="flex items-center gap-3">
-              <Checkbox
-                checked={formData.aia || false}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    aia: checked === true,
-                  }))
-                }
-                className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
-                id="aia"
-              />
-              <Label htmlFor="aia" className="text-sm text-[#344054]">
-                Required?
-              </Label>
-            </div>
-            <p className="text-xs text-[#475467]">
-              Data Processing Impact Assessment
-            </p>
+        {/* AIA */}
+        <div className="flex flex-col">
+          <Label className="text-sm text-[#344054] font-medium">AIA</Label>
+          <div className="flex items-center mt-2 gap-2">
+            <Checkbox
+              checked={formData.aia || false}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  aia: checked === true,
+                }))
+              }
+              className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
+            />
+            <Label className="text-sm text-[#344054]">Required?</Label>
           </div>
+          <p className="text-xs text-[#475467] mt-1">AI impact Assessment</p>
         </div>
       </div>
     </div>

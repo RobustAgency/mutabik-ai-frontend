@@ -1,9 +1,8 @@
 import { api, ApiResponse } from '@/lib/api';
 
-// 🔹 Backend keys-based Use Case data interface
 export interface UseCase {
   id: number;
-  title: string; // previously "name"
+  title: string; 
   description: string | null;
   status:
     | "draft"
@@ -88,7 +87,7 @@ export interface CreateUseCaseData {
   data_freshness: string;
 }
 
-// 🔹 Optional filters for listing use cases
+
 export interface UseCaseFilters {
   search?: string;
   use_case_type?: string;
@@ -100,12 +99,12 @@ export interface UseCaseFilters {
 export class UseCaseService {
  
 
-  async getUseCases(): Promise<ApiResponse<UseCase[]>> {
-    return api.get("/ai-model-use-cases");
-  }
+ async getUseCases(): Promise<ApiResponse<{ data: UseCase[] }>> {
+  return api.get("/use-cases");
+}
 
   async createUseCase(data: CreateUseCaseData): Promise<ApiResponse<UseCase>> {
-    return api.post("/ai-model-use-casess", data);
+    return api.post("/use-cases", data);
   }
 
   async updateUseCase(
