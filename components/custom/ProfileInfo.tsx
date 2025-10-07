@@ -1,55 +1,3 @@
-// import { useAuth } from '@/providers/AuthProvider'
-// import Image from 'next/image'
-// import React, { useEffect } from 'react'
-// import {
-//     DropdownMenu,
-//     DropdownMenuTrigger,
-//     DropdownMenuContent,
-//     DropdownMenuItem,
-// } from '@/components/ui/dropdown-menu'
-// import { useRouter } from 'next/navigation'
-
-// const ProfileInfo = () => {
-//     const { profile, fetchProfile, } = useAuth();
-//     const avatarUrl = profile?.avatar_url || "/profile-logo.png"
-//     // const avatarUrl = profile?.avatar_url
-//     // const displayName = profile?.full_name ?? "User"
-//     // const role = user?.user_metadata?.role ?? "user"
-//     useEffect(() => {
-//         if (!profile) {
-//             fetchProfile()
-//         }
-//     }, [profile, fetchProfile])
-
-//     const router = useRouter();
-//     return (
-//         <div className="flex items-center gap-3 justify-end px-4">
-//             <DropdownMenu>
-//                 <DropdownMenuTrigger asChild>
-//                     <button
-//                         className="relative h-10 w-10 overflow-hidden rounded-full bg-muted focus:outline-none "
-//                         aria-label="Open profile menu"
-//                     >
-//                         {avatarUrl && (
-//                             <Image src={avatarUrl} alt="Profile" fill sizes="40px" className="object-cover cursor-pointer" unoptimized />
-//                         )}
-//                     </button>
-                    
-//                 </DropdownMenuTrigger>
-//                 <DropdownMenuContent align="end" className="w-40 ">
-//                     <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/settings')}>
-//                         Settings
-//                     </DropdownMenuItem>
-//                     <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/logout')}>
-//                         Logout
-//                     </DropdownMenuItem>
-//                 </DropdownMenuContent>
-//             </DropdownMenu>
-//         </div>
-//     )
-// }
-
-// export default ProfileInfo
 "use client";
 
 import { useAuth } from "@/providers/AuthProvider";
@@ -62,11 +10,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react"; // ✅ Import dropdown icon
+import { ChevronDown } from "lucide-react";
 
 const ProfileInfo = () => {
   const { profile, fetchProfile } = useAuth();
   const avatarUrl = profile?.avatar_url || "/profile-logo.png";
+  const router = useRouter();
 
   useEffect(() => {
     if (!profile) {
@@ -74,37 +23,45 @@ const ProfileInfo = () => {
     }
   }, [profile, fetchProfile]);
 
-  const router = useRouter();
-
   return (
-    <div className="flex items-center gap-3 justify-end px-4">
-        <div>
-<Image src={avatarUrl} alt="Profile"  width={44} height={42} className="cursor-pointer" />
-        </div>
-        
-      <DropdownMenu>
-        <DropdownMenuTrigger className="cursor-pointer" asChild>
-          <div className="flex items-center gap-1">
-            <p className=" font-medium text-sm text-[#344054] ">Ai-Noor Holdings</p>
-            <ChevronDown color="#667085" className="w-4  " />
-          </div>
-        </DropdownMenuTrigger>
+    <div className="flex items-center gap-2 sm:gap-3 justify-end sm:px-3 md:px-4">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Avatar */}
+        <Image
+          src={avatarUrl}
+          alt="Profile"
+          width={40}
+          height={40}
+          className="w-9 h-9 sm:w-[44px] sm:h-[44px] rounded-full object-cover cursor-pointer"
+        />
 
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => router.push("/settings")}
-          >
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => router.push("/logout")}
-          >
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        {/* Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="cursor-pointer" asChild>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <p className="font-medium text-sm sm:text-base text-[#344054] truncate max-w-[120px] sm:max-w-[160px]">
+                Ai-Noor Holdings
+              </p>
+              <ChevronDown color="#667085" className="w-4 h-4" />
+            </div>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => router.push("/settings")}
+            >
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => router.push("/logout")}
+            >
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 };
