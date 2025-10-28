@@ -25,15 +25,16 @@ export function Sidebar({
     const isActive = item.href && (pathname === item.href || pathname.startsWith(item.href + "/"));
     const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
-    // If it has children and NO href, render as Accordion only
-    if (hasChildren && !item.href) {
+    // If it has children (with or without href), render as Accordion
+    if (hasChildren) {
       return (
-        <div key={item.label} className={depth > 0 ? "ml-4" : ""}>
+        <div key={item.label + (item.href || '')} className={depth > 0 ? "ml-4" : ""}>
           <Accordian
             label={item.label}
             items={item.children ?? []}
             icon={item.icon ?? (() => null)}
             pathname={pathname}
+            href={item.href} // Pass href even if empty - Accordion will handle it
             onNavigate={onNavigate}
             collapsed={collapsed}
             depth={depth}
@@ -42,55 +43,29 @@ export function Sidebar({
       );
     }
 
-    // If it has children AND href, render as Accordion (parent is clickable to expand)
-    if (hasChildren && item.href) {
-      return (
-        <div key={item.label + item.href} className={depth > 0 ? "ml-4" : ""}>
-          <Accordian
-            label={item.label}
-            items={item.children ?? []}
-            icon={item.icon ?? (() => null)}
-            pathname={pathname}
-            href={item.href}
-            onNavigate={onNavigate}
-            collapsed={collapsed}
-            depth={depth}
-          />
-        </div>
-      );
-    }
-
-    // Regular link item (no children)
-    const linkContent = (
-      <div className="flex items-center">
-        {item.icon && (
-          <item.icon
-            className="shrink-0 size-5"
-            color={isActive ? "currentColor" : "#737373"}
-          />
-        )}
-        {!collapsed && (
-          <span
-            className={`ml-2 whitespace-nowrap text-sm font-medium ${isActive ? "text-primary" : "text-[#404040]"
-              }`}
-          >
-            {item.label}
-          </span>
-        )}
-      </div>
-    );
-
+    // Regular link item (no children) - this should rarely happen now
+    // since most routes have children
     return (
       <div key={item.label + item.href} className={depth > 0 ? "ml-4" : ""}>
         <Link
           href={item.href}
           onClick={onNavigate}
-          className={`relative flex items-center rounded-md gap-3 px-3 py-2 text-sm transition-colors ${isActive
-            ? "bg-primary/10 text-primary border-primary"
-            : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
+          className={`relative flex items-center rounded-lg gap-2 px-3 py-2 text-sm font-medium transition-colors ${isActive
+              ? "bg-primary/10 text-primary"
+              : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
             }`}
         >
-          {linkContent}
+          {item.icon && (
+            <item.icon
+              className="shrink-0 size-5"
+              color={isActive ? "currentColor" : "#737373"}
+            />
+          )}
+          {!collapsed && (
+            <span className="whitespace-nowrap">
+              {item.label}
+            </span>
+          )}
         </Link>
       </div>
     );
@@ -98,7 +73,7 @@ export function Sidebar({
 
   return (
     <div className="flex flex-col overflow-hidden w-full p-5">
-      {/* Logo for mobile */}
+      {/* Logo */}
       <div
         aria-details="logo"
         className="flex items-center justify-between !mb-9"
