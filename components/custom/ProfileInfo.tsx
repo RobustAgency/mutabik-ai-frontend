@@ -14,7 +14,7 @@ import { ChevronDown } from "lucide-react";
 
 const ProfileInfo = () => {
   const { profile, fetchProfile } = useAuth();
-  const avatarUrl = profile?.avatar_url || "/profile-logo.png";
+  const avatarUrl = profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || "User"}&background=random&size=128`;
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const ProfileInfo = () => {
           <DropdownMenuTrigger className="cursor-pointer" asChild>
             <div className="flex items-center gap-1 sm:gap-2">
               <p className="font-medium text-sm sm:text-base text-[#344054] truncate max-w-[120px] sm:max-w-[160px]">
-                Ai-Noor Holdings
+                {profile?.full_name || "User"}
               </p>
               <ChevronDown color="#667085" className="w-4 h-4" />
             </div>
