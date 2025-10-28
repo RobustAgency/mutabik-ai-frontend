@@ -39,6 +39,7 @@ const ProjectsTable: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>("all");
   const router = useRouter();
 
+
   const { projects, loading, fetchProjects } = useProjects();
 
   React.useEffect(() => {

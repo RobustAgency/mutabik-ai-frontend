@@ -121,7 +121,7 @@ const MembersAdd = () => {
       accessorKey: "role",
       header: () => (
         <div className="font-sans font-medium text-xs leading-4 text-[#667085] py-1 rounded">
-          Project Role
+          Role
         </div>
       ),
       cell: ({ row }) => {
@@ -131,52 +131,6 @@ const MembersAdd = () => {
         );
       },
     },
-    // {
-    //   accessorKey: "role",
-    //   header: () => (
-    //     <div className="font-sans font-medium text-xs leading-4 text-[#667085] py-1 rounded">
-    //       Project Role
-    //     </div>
-    //   ),
-    //   cell: ({ row }) => {
-    //     const currentRole = row.original.role;
-    //     const handleRoleChange = (newRole: string) => {
-    //       // Update the role in the local state
-    //       setProjectMembers(prev =>
-    //         prev.map(member =>
-    //           member.id === row.original.id
-    //             ? { ...member, role: newRole }
-    //             : member
-    //         )
-    //       );
-    //       // TODO: You might want to call an API to update the member role in the project
-    //     };
-
-    //     return (
-    //       <Select value={currentRole} onValueChange={handleRoleChange}>
-    //         <SelectTrigger className="w-[93px] h-[36px] gap-2 pt-[6px] pr-[10px] pb-[6px] pl-[12px] font-sans font-normal text-sm leading-5 tracking-normal  rounded-lg border border-[#D0D5DD] bg-white opacity-100 shadow-[0_1px_2px_0_#1018280D] cursor-pointer">
-    //           <SelectValue placeholder={currentRole} />
-    //         </SelectTrigger>
-    //         <SelectContent>
-    //           <SelectGroup>
-    //             <SelectItem className="cursor-pointer" value="owner">
-    //               Owner
-    //             </SelectItem>
-    //             <SelectItem className="cursor-pointer" value="editor">
-    //               Editor
-    //             </SelectItem>
-    //             <SelectItem className="cursor-pointer" value="reviewer">
-    //               Reviewer
-    //             </SelectItem>
-    //             <SelectItem className="cursor-pointer" value="auditor">
-    //               Auditor
-    //             </SelectItem>
-    //           </SelectGroup>
-    //         </SelectContent>
-    //       </Select>
-    //     );
-    //   },
-    // },
     {
       id: "actions",
       header: () => (
@@ -212,7 +166,7 @@ const MembersAdd = () => {
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white  flex flex-col justify-start mx-0 gap-0 px-4 sm:px-6 py-4">
         <CardHeader className="flex items-center justify-between">
           <CardTitle className="text-base sm:text-lg font-medium">
-            Project Settings
+            Project Members
           </CardTitle>
           <Button
             onClick={() => setOpen(true)}

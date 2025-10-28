@@ -1,49 +1,83 @@
-import { cn } from '@/lib/utils'
-import { Button } from '../ui/button'
-import { ChevronLeft } from 'lucide-react'
-import { DrawerTrigger } from '../ui/drawer'
-import ProfileInfo from './ProfileInfo'
-import SearchBar from './SearchBar'
-import Image from 'next/image'
-import Link from 'next/link'
+"use client";
+
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { ChevronLeft, ArrowLeft } from "lucide-react";
+import { DrawerTrigger } from "../ui/drawer";
+import ProfileInfo from "./ProfileInfo";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Header = () => {
-    const headerGridClass = cn(
-        "grid w-full min-h-14 sticky top-0 z-30 border-b bg-background/80 backdrop-blur py-1 bg-[#FFFFFF]",
-        // Mobile: content + profile columns
-        "grid-cols-[minmax(0,1fr)_auto]",
-        // Desktop: first column reserved for sidebar width
-        "md:grid-cols-[200px_minmax(0,1fr)]"
-    )
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const step = searchParams.get("step");
 
-    return (
-        <header className={headerGridClass}>
-            <div className="h-full w-full flex items-center justify-between px-0 xs:px-4">
-                <div className="w-full flex items-center justify-start md:justify-between gap-0 md:gap-2">
-                    <div aria-details="logo" className='pl-2'>
-                        <Link href="/" className='hidden md:block'>
-                            <Image src="/auth/dashboard-logo.svg" alt="logo" width={120} height={56} />
-                        </Link>
-                    </div>
-                    <DrawerTrigger className="md:hidden" asChild>
-                        <Button
-                            variant="outline"
-                            className="size-8"
-                            size="icon"
-                            aria-label="Open sidebar"
-                        >
-                            <ChevronLeft className="size-4 rotate-180" />
-                        </Button>
-                    </DrawerTrigger>
-                </div>
+  const headerGridClass = cn(
+    "grid w-full sticky top-1.5 z-30 bg-[#FAFAFA] backdrop-blur-md py-2",
+    // default design same (2 columns)
+    "grid-cols-[minmax(0,2fr)_auto] md:grid-cols-[300px_minmax(0,1fr)]",
+    // mobile devices: convert to column layout
+    "max-sm:flex max-sm:flex-col max-sm:gap-2"
+  );
+
+  return (
+    <header className={headerGridClass}>
+      <div className="flex items-center justify-between w-full px-3 sm:px-4 md:px-6">
+        <div className="flex items-center justify-between md:justify-start w-full gap-2 sm:gap-3">
+          <div className="pl-1">
+            <Link href="/" className="hidden md:block">
+              <Image
+                src="/auth/dashboard-logo.svg"
+                alt="logo"
+                width={120}
+                height={56}
+                priority
+                className="w-[90px] sm:w-[110px] md:w-[120px] h-auto"
+              />
+            </Link>
+          </div>
+          <DrawerTrigger className="md:hidden" asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8 sm:size-9"
+              aria-label="Open sidebar"
+            >
+              <ChevronLeft className="size-4 rotate-180" />
+            </Button>
+          </DrawerTrigger>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
+        {!step ? (
+          <p className="font-semibold text-base sm:text-lg md:text-xl text-[#1E1E1E]">
+            Projects
+          </p>
+        ) : (
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+            <div
+              onClick={() => router.push("/projects")}
+              className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 cursor-pointer flex justify-center items-center p-1 border border-[#E4E7EC] rounded-lg"
+            >
+              <ArrowLeft
+                color="#757575"
+                className="w-4 h-4 sm:w-[11px] sm:h-[11px]"
+              />
             </div>
-            <div className='flex items-center justify-end gap-0.5'>
-                {/* <SearchBar /> */}
-                <ProfileInfo />
-            </div>
+            <p
+              onClick={() => router.push("/projects")}
+              className="font-normal text-sm sm:text-base text-[#757575] cursor-pointer whitespace-nowrap"
+            >
+              Back to Projects
+            </p>
+          </div>
+        )}
+        <ProfileInfo />
+      </div>
+    </header>
+  );
+};
 
-        </header>
-    )
-}
-
-export default Header
+export default Header;
