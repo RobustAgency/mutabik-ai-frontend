@@ -24,6 +24,7 @@ import { ChevronsUpDown } from "lucide-react";
 interface BasicInfoProps {
   formData: FormDataType;
   setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
+  errors?: Record<string, string[]>;
 }
 
 const regulatoryOptions = [
@@ -37,7 +38,7 @@ const regulatoryOptions = [
   "PCI_DSS",
 ];
 
-const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
+const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {} }) => {
   const [titleInput, setTitleInput] = useState(formData.title);
   const [descriptionInput, setDescriptionInput] = useState(formData.description || "");
   const [businessObjectiveInput, setBusinessObjectiveInput] = useState(formData.business_objective || "");
@@ -61,6 +62,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
     });
   };
 
+  // Helper to check if field has error
+  const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
+  const getError = (fieldName: string) => errors[fieldName]?.[0];
+
   return (
     <div className="space-y-6 w-full">
       {/* Section Title */}
@@ -75,15 +80,21 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
         {/* Title + Status */}
         <div className="flex flex-col md:flex-row w-full gap-6">
           <div className="flex flex-col gap-2 w-full">
-            <Label>Title</Label>
+            <Label>
+              Title <span className="text-red-500">*</span>
+            </Label>
             <Input
               required
               value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)} // smooth typing
+              onChange={(e) => setTitleInput(e.target.value)}
               onBlur={() => setFormData((prev) => ({ ...prev, title: titleInput }))}
               placeholder="Retail Credit Risk Scoring"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("title") ? "border-red-500" : "border-[#D0D5DD]"
+                } focus:border-[#D0D5DD] focus:-ring-0`}
             />
+            {hasError("title") && (
+              <p className="text-sm text-red-500">{getError("title")}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -118,7 +129,6 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
           <div className="flex flex-col gap-2 w-full">
             <Label>Description</Label>
             <Textarea
-              required
               value={descriptionInput}
               onChange={(e) => setDescriptionInput(e.target.value)}
               onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
@@ -142,12 +152,15 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
         {/* Domain + Emails */}
         <div className="flex flex-col md:flex-row w-full gap-6">
           <div className="flex flex-col gap-2 w-full">
-            <Label>Business Domain</Label>
+            <Label>
+              Business Domain <span className="text-red-500">*</span>
+            </Label>
             <Select
               value={formData.business_domain}
               onValueChange={(value) => setFormData((prev) => ({ ...prev, business_domain: value }))}
             >
-              <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0">
+              <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("business_domain") ? "border-red-500" : "border-[#D0D5DD]"
+                } bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0`}>
                 <SelectValue placeholder="Customer Service" />
               </SelectTrigger>
               <SelectContent>
@@ -156,41 +169,60 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
                 <SelectItem value="Operations">Operations</SelectItem>
               </SelectContent>
             </Select>
+            {hasError("business_domain") && (
+              <p className="text-sm text-red-500">{getError("business_domain")}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <Label>Business Owner Email</Label>
+            <Label>
+              Business Owner Email <span className="text-red-500">*</span>
+            </Label>
             <Input
               required
+              type="email"
               value={formData.business_owner_email}
               onChange={(e) => setFormData((prev) => ({ ...prev, business_owner_email: e.target.value }))}
               placeholder="a.owner@business.com"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("business_owner_email") ? "border-red-500" : "border-[#D0D5DD]"
+                } focus:border-[#D0D5DD] focus:-ring-0`}
             />
+            {hasError("business_owner_email") && (
+              <p className="text-sm text-red-500">{getError("business_owner_email")}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <Label>Technical Owner Email</Label>
+            <Label>
+              Technical Owner Email <span className="text-red-500">*</span>
+            </Label>
             <Input
               required
+              type="email"
               value={formData.technical_owner_email}
               onChange={(e) => setFormData((prev) => ({ ...prev, technical_owner_email: e.target.value }))}
               placeholder="a.tech@example.com"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("technical_owner_email") ? "border-red-500" : "border-[#D0D5DD]"
+                } focus:border-[#D0D5DD] focus:-ring-0`}
             />
+            {hasError("technical_owner_email") && (
+              <p className="text-sm text-red-500">{getError("technical_owner_email")}</p>
+            )}
           </div>
         </div>
 
         {/* Regulatory Scope + Sensitivity + Go Live Date */}
         <div className="flex flex-col md:flex-row w-full gap-6">
-          {/* ✅ Multi-Select Regulatory Scope */}
           <div className="flex flex-col gap-2 w-full">
-            <Label>Regulatory Scope</Label>
+            <Label>
+              Regulatory Scope <span className="text-red-500">*</span>
+            </Label>
             <Popover open={openRegScope} onOpenChange={setOpenRegScope}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-between w-full h-[44px] border border-[#D0D5DD] text-left font-normal"
+                  className={`justify-between w-full h-[44px] border ${hasError("regulatory_scope") ? "border-red-500" : "border-[#D0D5DD]"
+                    } text-left font-normal`}
                 >
                   {selectedScopes.length > 0
                     ? selectedScopes.join(", ")
@@ -202,7 +234,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
                 {regulatoryOptions.map((option) => (
                   <div key={option} className="flex items-center space-x-2 py-1">
                     <Checkbox
-                    className="cursor-pointer"
+                      className="cursor-pointer"
                       id={option}
                       checked={selectedScopes.includes(option)}
                       onCheckedChange={() => toggleScope(option)}
@@ -217,6 +249,9 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
                 ))}
               </PopoverContent>
             </Popover>
+            {hasError("regulatory_scope") && (
+              <p className="text-sm text-red-500">{getError("regulatory_scope")}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 w-full">

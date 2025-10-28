@@ -3,55 +3,15 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import BasicInfo from "./BasicInfo";
 import Roi from "./Roi";
 import UseCaseClassification from "./UseCaseClassification";
 import GovernanceRisk from "./GovernanceRisk";
 import DataAssesment from "./DataAssesment";
-import { useUseCases } from "@/hooks/app/useUseCases";
-
-export interface FormDataType {
-  title: string;
-  description: string | null;
-  status:
-  | "draft"
-  | "under_review"
-  | "approved"
-  | "in_development"
-  | "testing"
-  | "staging"
-  | "active"
-  | "suspended"
-  | "deprecated";
-  business_domain: string;
-  business_objective: string;
-  business_owner_email: string;
-  technical_owner_email: string;
-  regulatory_scope: string[];
-  data_sensitivity: "public" | "internal" | "confidential" | "restricted";
-  go_live_date: string | null;
-
-  expected_roi: number | null;
-  implementation_cost: number | null;
-  reduction_in_time: number | null;
-  reduction_in_cost: number | null;
-  increase_in_revenue: number | null;
-  risk_avoidance: number | null;
-  fte_capacity_saved: number | null;
-
-  use_case_type: string;
-  value_driver: string;
-
-  overall_risk_score: number | null;
-  risk_level: "low" | "medium" | "high" | "critical";
-  human_oversight_mode: string;
-  dpia: boolean;
-  aia: boolean;
-
-  data_availability_status: string;
-  data_readiness_level: string;
-  data_freshness: string;
-}
+import { FormDataType } from "../types/useCaseTypes";
+import { useCreateUseCaseMutation } from "@/app/lib/features/useCasesApi";
 
 const initialFormData: FormDataType = {
   title: "",
@@ -87,33 +47,79 @@ const initialFormData: FormDataType = {
   data_freshness: "",
 };
 
-const CraeteUseCases: React.FC = () => {
+const CreateUseCases: React.FC = () => {
   const [formData, setFormData] = useState<FormDataType>(initialFormData);
-  const { createUseCase, loading } = useUseCases();
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [createUseCase, { isLoading }] = useCreateUseCaseMutation();
+
+  // Email validation helper
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Form validation
+  const validateForm = (): boolean => {
+    const errors: Record<string, string[]> = {};
+
+    // Required fields
+    if (!formData.title?.trim()) {
+      errors.title = ["Title is required"];
+    }
+
+    if (!formData.business_owner_email?.trim()) {
+      errors.business_owner_email = ["Business owner email is required"];
+    } else if (!isValidEmail(formData.business_owner_email)) {
+      errors.business_owner_email = ["Please enter a valid email address"];
+    }
+
+    if (!formData.technical_owner_email?.trim()) {
+      errors.technical_owner_email = ["Technical owner email is required"];
+    } else if (!isValidEmail(formData.technical_owner_email)) {
+      errors.technical_owner_email = ["Please enter a valid email address"];
+    }
+
+    if (!formData.regulatory_scope || formData.regulatory_scope.length === 0) {
+      errors.regulatory_scope = ["Please select at least one regulatory scope"];
+    }
+
+    if (!formData.business_domain?.trim()) {
+      errors.business_domain = ["Business domain is required"];
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (
-        formData.title &&
-        formData.status &&
-        formData.business_domain &&
-        formData.data_sensitivity
-      ) {
-        const payload = {
-          ...formData,
-          regulatory_scope: formData.regulatory_scope
-            .map((x) => x.trim())
-            .filter((x) => x !== ""),
-        };
+    setValidationErrors({});
 
-        const response = await createUseCase(payload);
-        if (response) {
-          setFormData(initialFormData);
-        }
+    // Client-side validation
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    try {
+      const payload = {
+        ...formData,
+        regulatory_scope: formData.regulatory_scope
+          .map((x) => x.trim())
+          .filter((x) => x !== ""),
+      };
+
+      await createUseCase(payload).unwrap();
+
+      // Reset form on success
+      setFormData(initialFormData);
+      setValidationErrors({});
+    } catch (err: any) {
+      // Handle backend validation errors
+      if (err?.data?.errors) {
+        setValidationErrors(err.data.errors);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    } catch (err) {
-      // Error is already handled in Redux slice with toast notification
     }
   };
 
@@ -121,7 +127,7 @@ const CraeteUseCases: React.FC = () => {
     <div className="max-w-7xl mx-auto">
       <form onSubmit={handleSave}>
         <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <div className="flex flex-col sm:flex-row items-start gap-3  justify-start sm:justify-between">
+          <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between">
             <div>
               <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                 New use case
@@ -132,15 +138,39 @@ const CraeteUseCases: React.FC = () => {
             </div>
             <Button
               type="submit"
-              className="flex  gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100"
-              disabled={!!loading}
+              className="flex gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100"
+              disabled={isLoading}
             >
-              {loading ? "Saving..." : "Save new use case"}
+              {isLoading ? "Saving..." : "Save new use case"}
             </Button>
           </div>
 
           <CardContent className="space-y-10 w-full">
-            <BasicInfo formData={formData} setFormData={setFormData} />
+            {/* Show validation errors */}
+            {Object.keys(validationErrors).length > 0 && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="font-semibold mb-2">Please fix the following errors:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {Object.entries(validationErrors).map(([field, errors]) => (
+                      <li key={field}>
+                        <span className="font-medium capitalize">
+                          {field.replace(/_/g, " ")}:
+                        </span>{" "}
+                        {errors[0]}
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <BasicInfo
+              formData={formData}
+              setFormData={setFormData}
+              errors={validationErrors}
+            />
             <Roi formData={formData} setFormData={setFormData} />
             <UseCaseClassification formData={formData} setFormData={setFormData} />
             <GovernanceRisk formData={formData} setFormData={setFormData} />
@@ -152,4 +182,4 @@ const CraeteUseCases: React.FC = () => {
   );
 };
 
-export default CraeteUseCases;
+export default CreateUseCases;

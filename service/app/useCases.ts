@@ -1,8 +1,8 @@
-import { api, ApiResponse } from '@/lib/api';
+import { api, ApiResponse } from "@/lib/api";
 
 export interface UseCase {
   id: number;
-  title: string; 
+  title: string;
   description: string | null;
   status:
     | "draft"
@@ -45,7 +45,7 @@ export interface UseCase {
 
 // 🔹 Data to create a new Use Case
 export interface CreateUseCaseData {
- title: string;
+  title: string;
   description: string | null;
   status:
     | "draft"
@@ -87,7 +87,6 @@ export interface CreateUseCaseData {
   data_freshness: string;
 }
 
-
 export interface UseCaseFilters {
   search?: string;
   use_case_type?: string;
@@ -97,11 +96,9 @@ export interface UseCaseFilters {
 
 // 🔹 Use Case Service
 export class UseCaseService {
- 
-
- async getUseCases(): Promise<ApiResponse<{ data: UseCase[] }>> {
-  return api.get("/use-cases");
-}
+  async getUseCases(): Promise<ApiResponse<{ data: UseCase[] }>> {
+    return api.get("/use-cases");
+  }
 
   async createUseCase(data: CreateUseCaseData): Promise<ApiResponse<UseCase>> {
     return api.post("/use-cases", data);
