@@ -90,7 +90,7 @@ export const userRoutes: RouteItem[] = [
     label: "Core Assets",
     icon: FileBox,
     children: [
-      { href: "/use", label: "AI Use Cases", icon: Brain },
+      { href: "/core-assets/ai-use-cases", label: "AI Use Cases", icon: Brain },
       {
         href: "/core-assets/ai-models",
         label: "AI Models",

@@ -14,20 +14,20 @@ export interface FormDataType {
   title: string;
   description: string | null;
   status:
-    | "draft"
-    | "under_review"
-    | "approved"
-    | "in_development"
-    | "testing"
-    | "staging"
-    | "active"
-    | "suspended"
-    | "deprecated";
+  | "draft"
+  | "under_review"
+  | "approved"
+  | "in_development"
+  | "testing"
+  | "staging"
+  | "active"
+  | "suspended"
+  | "deprecated";
   business_domain: string;
   business_objective: string;
   business_owner_email: string;
   technical_owner_email: string;
-  regulatory_scope: string[]; 
+  regulatory_scope: string[];
   data_sensitivity: "public" | "internal" | "confidential" | "restricted";
   go_live_date: string | null;
 
@@ -45,8 +45,8 @@ export interface FormDataType {
   overall_risk_score: number | null;
   risk_level: "low" | "medium" | "high" | "critical";
   human_oversight_mode: string;
-  dpia: boolean ;
-  aia: boolean ;
+  dpia: boolean;
+  aia: boolean;
 
   data_availability_status: string;
   data_readiness_level: string;
@@ -61,7 +61,7 @@ const initialFormData: FormDataType = {
   business_objective: "",
   business_owner_email: "",
   technical_owner_email: "",
-  regulatory_scope: [], 
+  regulatory_scope: [],
   data_sensitivity: "public",
   go_live_date: null,
 
@@ -113,7 +113,7 @@ const CraeteUseCases: React.FC = () => {
         }
       }
     } catch (err) {
-      console.error("Error creating use case:", err);
+      // Error is already handled in Redux slice with toast notification
     }
   };
 

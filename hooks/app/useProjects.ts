@@ -1,137 +1,76 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from "react";
 import {
-  projectService,
   type Project,
   type CreateProjectData,
   type AddMemberData,
   type AddFrameworksData,
-  type ProjectFilters
-} from '@/service/app/projects';
-import { toast } from 'react-toastify';
+  type ProjectFilters,
+} from "@/service/app/projects";
+import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
+import {
+  fetchProjects as fetchProjectsAction,
+  fetchProject as fetchProjectAction,
+  createProject as createProjectAction,
+  addMember as addMemberAction,
+  addFrameworks as addFrameworksAction,
+} from "@/app/lib/features/projectsSlice";
 
 export const useProjects = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
 
-  const fetchProjects = useCallback(async (filters?: ProjectFilters) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await projectService.getProjects(filters);
+  // Selectors
+  const projects = useAppSelector((state) => state.projects.projects);
+  const currentProject = useAppSelector(
+    (state) => state.projects.currentProject
+  );
+  const loading = useAppSelector((state) => state.projects.loading);
+  const error = useAppSelector((state) => state.projects.error);
 
-      if (!response.error) {
-        setProjects(response.data.data);
-      } else {
-        setError(response.message || 'Failed to fetch projects');
-        toast.error(response.message || 'Failed to fetch projects');
+  const fetchProjects = useCallback(
+    async (filters?: ProjectFilters) => {
+      const result = await dispatch(fetchProjectsAction(filters));
+      return result;
+    },
+    [dispatch]
+  );
+
+  const fetchProject = useCallback(
+    async (id: number) => {
+      const result = await dispatch(fetchProjectAction(id));
+      if (fetchProjectAction.fulfilled.match(result)) {
+        return result.payload as Project;
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch projects';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchProject = useCallback(async (id: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await projectService.getProject(id);
-
-      if (!response.error) {
-        setCurrentProject(response.data);
-        return response.data;
-      } else {
-        setError(response.message || 'Failed to fetch project');
-        toast.error(response.message || 'Failed to fetch project');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch project';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const createProject = useCallback(async (data: CreateProjectData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await projectService.createProject(data);
-      console.log("response", response)
-
-      if (!response.error) {
-        toast.success('Project created successfully');
-        // Set the current project to the newly created project
-        setCurrentProject(response.data);
-        return response.data;
-      } else {
-        setError(response.message || 'Failed to create project');
-        toast.error(response.message || 'Failed to create project');
-        return null;
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create project';
-      setError(errorMessage);
-      toast.error(errorMessage);
       return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [dispatch]
+  );
 
-  const addMember = useCallback(async (projectId: number, data: AddMemberData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await projectService.addMember(projectId, data);
-
-      if (!response.error) {
-        toast.success('Member added successfully');
-        return true;
-      } else {
-        setError(response.message || 'Failed to add member');
-        toast.error(response.message || 'Failed to add member');
-        return false;
+  const createProject = useCallback(
+    async (data: CreateProjectData) => {
+      const result = await dispatch(createProjectAction(data));
+      if (createProjectAction.fulfilled.match(result)) {
+        return result.payload as Project;
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add member';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return null;
+    },
+    [dispatch]
+  );
 
-  const addFrameworks = useCallback(async (projectId: number, data: AddFrameworksData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await projectService.addFrameworks(projectId, data);
+  const addMember = useCallback(
+    async (projectId: number, data: AddMemberData) => {
+      const result = await dispatch(addMemberAction({ projectId, data }));
+      return addMemberAction.fulfilled.match(result);
+    },
+    [dispatch]
+  );
 
-      if (!response.error) {
-        toast.success('Frameworks added successfully');
-        return true;
-      } else {
-        setError(response.message || 'Failed to add frameworks');
-        toast.error(response.message || 'Failed to add frameworks');
-        return false;
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add frameworks';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const addFrameworks = useCallback(
+    async (projectId: number, data: AddFrameworksData) => {
+      const result = await dispatch(addFrameworksAction({ projectId, data }));
+      return addFrameworksAction.fulfilled.match(result);
+    },
+    [dispatch]
+  );
 
   return {
     projects,

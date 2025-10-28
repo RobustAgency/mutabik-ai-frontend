@@ -1,10 +1,13 @@
 // lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
-// ... other slices
+import projectsReducer from "./features/projectsSlice";
+import useCasesReducer from "./features/useCasesSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      projects: projectsReducer,
+      useCases: useCasesReducer,
       // ... other reducers
     },
   });
