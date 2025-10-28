@@ -22,12 +22,8 @@ const formatDate = (dateString: string | null | undefined): string => {
 };
 
 const UseCases: React.FC = () => {
-  const { useCases, fetchUseCases } = useUseCases();
+  const { useCases, loading } = useUseCases();
   const router = useRouter();
-
-  React.useEffect(() => {
-    fetchUseCases();
-  }, [fetchUseCases]);
 
   const columns: ColumnDef<UseCase>[] = [
     {
@@ -126,14 +122,29 @@ const UseCases: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Use cases</h2>
           <Button
-            onClick={() => router.push("/projects/setup/use-cases/create")}
+            onClick={() => router.push("/core-assets/ai-use-cases/create")}
             className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
           >
             New use case
           </Button>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
-          <DataTable columns={columns} data={useCases ?? []} variant="projects" />
+          <DataTable
+            columns={columns}
+            data={useCases ?? []}
+            variant="projects"
+            loading={loading}
+            onRowClick={(row) => router.push(`/core-assets/ai-use-cases/${row.id}/details`)}
+            emptyState={{
+              title: "No use cases found",
+              description: "Get started by creating your first use case",
+              action: (
+                <Button onClick={() => router.push("/core-assets/ai-use-cases/create")}>
+                  Create Use Case
+                </Button>
+              )
+            }}
+          />
         </Card>
       </CardContent>
     </Card>

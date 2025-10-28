@@ -5,8 +5,6 @@ import { Button } from "../ui/button";
 import { ChevronLeft, ArrowLeft } from "lucide-react";
 import { DrawerTrigger } from "../ui/drawer";
 import ProfileInfo from "./ProfileInfo";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const Header = () => {
@@ -17,27 +15,15 @@ const Header = () => {
   const headerGridClass = cn(
     "grid w-full sticky top-1.5 z-30 bg-[#FAFAFA] backdrop-blur-md py-2",
     // default design same (2 columns)
-    "grid-cols-[minmax(0,2fr)_auto] md:grid-cols-[300px_minmax(0,1fr)]",
+    // "grid-cols-[minmax(0,2fr)_auto] md:grid-cols-[300px_minmax(0,1fr)]",
     // mobile devices: convert to column layout
-    "max-sm:flex max-sm:flex-col max-sm:gap-2"
+    "max-sm:flex max-sm:flex-col max-sm:gap-2 min-h-[76px]"
   );
 
   return (
     <header className={headerGridClass}>
-      <div className="flex items-center justify-between w-full px-3 sm:px-4 md:px-6">
+      {/* <div className="flex items-center justify-between w-full px-3 sm:px-4 md:px-6">
         <div className="flex items-center justify-between md:justify-start w-full gap-2 sm:gap-3">
-          <div className="pl-1">
-            <Link href="/" className="hidden md:block">
-              <Image
-                src="/auth/dashboard-logo.svg"
-                alt="logo"
-                width={120}
-                height={56}
-                priority
-                className="w-[90px] sm:w-[110px] md:w-[120px] h-auto"
-              />
-            </Link>
-          </div>
           <DrawerTrigger className="md:hidden" asChild>
             <Button
               variant="outline"
@@ -49,8 +35,8 @@ const Header = () => {
             </Button>
           </DrawerTrigger>
         </div>
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
+      </div> */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 md:px-6 w-full">
         {!step ? (
           <p className="font-semibold text-base sm:text-lg md:text-xl text-[#1E1E1E]">
             Projects

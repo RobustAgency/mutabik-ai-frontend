@@ -19,8 +19,7 @@ const MobileLayout = ({
   return (
     <>
       <Drawer open={sidebarOpen} onOpenChange={setSidebarOpen} direction="left">
-        <Header
-        />
+        <Header />
         <DrawerContent className="w-[80%] max-w-[200px] p-0 md:hidden">
           <DrawerHeader className="hidden">
             <DrawerTitle>Navigation</DrawerTitle>

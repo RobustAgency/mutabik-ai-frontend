@@ -3,20 +3,21 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/server";
 import AppShell from "@/layouts/AppShell";
 import ToastProvider from "@/providers/ToastProvider";
+import StoreProvider from "./providers/StoreProvider";
 
 export const runtime = 'edge';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let user = null;
   let initialProfile: { id: string; full_name?: string | null; avatar_url?: string | null } | null = null;
-  
+
   try {
     const supabase = await createClient();
     const { data: { user: authUser }, error } = await supabase.auth.getUser();
-    
+
     if (!error && authUser) {
       user = authUser;
-      
+
       try {
         const { data } = await supabase
           .from("profiles")
@@ -36,7 +37,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <AuthProvider initialUser={user} initialProfile={initialProfile}>
-          <AppShell>{children}</AppShell>
+          <StoreProvider>
+            <AppShell>{children}</AppShell>
+          </StoreProvider>
         </AuthProvider>
         <ToastProvider />
       </body>

@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   images: {
     domains: [
-      'bnaoagrgcucuesuchppb.supabase.co',
-      'mutabiq.robustapps.net',
+      "bnaoagrgcucuesuchppb.supabase.co",
+      "mutabiq.robustapps.net",
+      "ui-avatars.com",
     ],
   },
 };
