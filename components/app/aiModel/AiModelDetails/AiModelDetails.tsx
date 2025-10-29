@@ -101,7 +101,7 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
 
                 {/* Tab Contents */}
                 <TabsContent value="model-details">
-                    <div className="w-full">
+                    <div className="w-full mt-10">
                         <DetailsHeader aiModel={aiModel} />
                         {/* Basic Information */}
                         <BasicInfoModelDetails aiModel={aiModel} />
@@ -114,7 +114,9 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
                     </div>
                 </TabsContent>
                 <TabsContent value="linked-use-cases">
-                    <LinkedUseCases />
+                    <div className="w-full mt-10">
+                        <LinkedUseCases aiModelId={Number(aiModelId)} />
+                    </div>
                 </TabsContent>
             </Tabs>
         </Card>

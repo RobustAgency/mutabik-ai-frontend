@@ -67,7 +67,8 @@ export interface FormDataType {
     | "open_source_community"
     | "cloud_provider"
     | "partnership";
-  source_organization: string | null;
+  source_organization_id: string | null;
+  custodian_id: string | null;
+  vendor_id: string | null;
   current_owner: string | null;
-  vendor: string | null;
 }

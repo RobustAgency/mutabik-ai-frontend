@@ -10,6 +10,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { FormDataType } from "../types/aiModelTypes";
+import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
+import { useGetStakeholdersByTypeQuery } from "@/app/lib/features/stakeholdersApi";
 
 interface OwnershipGovernanceProps {
     formData: FormDataType;
@@ -22,19 +24,27 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
     setFormData,
     errors = {},
 }) => {
-    const [sourceOrgInput, setSourceOrgInput] = useState(formData.source_organization || "");
-    const [modelOwnerInput, setModelOwnerInput] = useState(formData.current_owner || "");
-    const [vendorInput, setVendorInput] = useState(formData.vendor || "");
+    const [sourceOrgInput, setSourceOrgInput] = useState(formData.source_organization_id || "");
+    const [modelOwnerInput, setModelOwnerInput] = useState(formData.custodian_id || "");
+    const [vendorInput, setVendorInput] = useState(formData.vendor_id || "none");
+
+    // Fetch data from APIs
+    const { data: vendors = [], isLoading: vendorsLoading, error: vendorsError } = useGetVendorsQuery();
+    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersByTypeQuery('vendor_org');
+    const { data: custodians = [], isLoading: custodiansLoading, error: custodiansError } = useGetStakeholdersByTypeQuery('person');
 
     useEffect(() => {
-        setSourceOrgInput(formData.source_organization || "");
-        setModelOwnerInput(formData.current_owner || "");
-        setVendorInput(formData.vendor || "");
+        setSourceOrgInput(formData.source_organization_id || "");
+        setModelOwnerInput(formData.custodian_id || "");
+        setVendorInput(formData.vendor_id || "none");
     }, [formData]);
 
     // Helper to check if field has error
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
     const getError = (fieldName: string) => errors[fieldName]?.[0];
+
+    // Helper to check if there's an API error
+    const hasApiError = (error: unknown) => error !== undefined;
 
     return (
         <div className="space-y-6 w-full">
@@ -176,22 +186,32 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         value={sourceOrgInput || ""}
                         onValueChange={(value) => {
                             setSourceOrgInput(value);
-                            setFormData((prev) => ({ ...prev, source_organization: value }));
+                            setFormData((prev) => ({ ...prev, source_organization_id: value }));
                         }}
+                        disabled={stakeholdersLoading}
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_organization") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Select stakeholder..." />
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_organization_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder={stakeholdersLoading ? "Loading..." : "Select stakeholder..."} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Internal - AI Team">Internal - AI Team</SelectItem>
-                            <SelectItem value="OpenAI">OpenAI</SelectItem>
-                            <SelectItem value="Anthropic">Anthropic</SelectItem>
-                            <SelectItem value="Hugging Face">Hugging Face</SelectItem>
-                            <SelectItem value="AWS">AWS</SelectItem>
+                            {stakeholders.length > 0 ? (
+                                stakeholders.map((stakeholder) => (
+                                    <SelectItem key={stakeholder.id} value={stakeholder.id}>
+                                        {stakeholder.name}
+                                    </SelectItem>
+                                ))
+                            ) : (
+                                <div className="px-2 py-1.5 text-sm text-gray-500">
+                                    No stakeholders available
+                                </div>
+                            )}
                         </SelectContent>
                     </Select>
-                    {hasError("source_organization") && (
-                        <p className="text-sm text-red-500">{getError("source_organization")}</p>
+                    {hasError("source_organization_id") && (
+                        <p className="text-sm text-red-500">{getError("source_organization_id")}</p>
+                    )}
+                    {hasApiError(stakeholdersError) && (
+                        <p className="text-sm text-red-500">Failed to load stakeholders</p>
                     )}
                 </div>
 
@@ -204,20 +224,32 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         value={modelOwnerInput || ""}
                         onValueChange={(value) => {
                             setModelOwnerInput(value);
-                            setFormData((prev) => ({ ...prev, current_owner: value }));
+                            setFormData((prev) => ({ ...prev, custodian_id: value }));
                         }}
+                        disabled={custodiansLoading}
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("current_owner") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Select owner..." />
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("custodian_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder={custodiansLoading ? "Loading..." : "Select owner..."} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Sarah Chen - AI Product Lead">Sarah Chen - AI Product Lead</SelectItem>
-                            <SelectItem value="Raj Kumar - ML Engineering Manager">Raj Kumar - ML Engineering Manager</SelectItem>
-                            <SelectItem value="Fatima Rahman - Data Science Director">Fatima Rahman - Data Science Director</SelectItem>
+                            {custodians.length > 0 ? (
+                                custodians.map((custodian) => (
+                                    <SelectItem key={custodian.id} value={custodian.id}>
+                                        {custodian.name} {custodian.role && `- ${custodian.role}`}
+                                    </SelectItem>
+                                ))
+                            ) : (
+                                <div className="px-2 py-1.5 text-sm text-gray-500">
+                                    No custodians available
+                                </div>
+                            )}
                         </SelectContent>
                     </Select>
-                    {hasError("current_owner") && (
-                        <p className="text-sm text-red-500">{getError("current_owner")}</p>
+                    {hasError("custodian_id") && (
+                        <p className="text-sm text-red-500">{getError("custodian_id")}</p>
+                    )}
+                    {hasApiError(custodiansError) && (
+                        <p className="text-sm text-red-500">Failed to load custodians</p>
                     )}
                 </div>
 
@@ -227,24 +259,37 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Vendor (if applicable)
                     </Label>
                     <Select
-                        value={vendorInput || ""}
+                        value={vendorInput || "none"}
                         onValueChange={(value) => {
                             setVendorInput(value);
-                            setFormData((prev) => ({ ...prev, vendor: value }));
+                            setFormData((prev) => ({
+                                ...prev,
+                                vendor_id: value === "none" ? null : value
+                            }));
                         }}
+                        disabled={vendorsLoading}
                     >
                         <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                            <SelectValue placeholder="None / Internal" />
+                            <SelectValue placeholder={vendorsLoading ? "Loading..." : "None / Internal"} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="None / Internal">None / Internal</SelectItem>
-                            <SelectItem value="OpenAI">OpenAI</SelectItem>
-                            <SelectItem value="Anthropic">Anthropic</SelectItem>
-                            <SelectItem value="AWS">AWS</SelectItem>
-                            <SelectItem value="Google Cloud">Google Cloud</SelectItem>
-                            <SelectItem value="Microsoft Azure">Microsoft Azure</SelectItem>
+                            <SelectItem value="none">None / Internal</SelectItem>
+                            {vendors.length > 0 ? (
+                                vendors.map((vendor) => (
+                                    <SelectItem key={vendor.id} value={vendor.id}>
+                                        {vendor.name}
+                                    </SelectItem>
+                                ))
+                            ) : (
+                                <div className="px-2 py-1.5 text-sm text-gray-500">
+                                    No vendors available
+                                </div>
+                            )}
                         </SelectContent>
                     </Select>
+                    {hasApiError(vendorsError) && (
+                        <p className="text-sm text-red-500">Failed to load vendors</p>
+                    )}
                 </div>
             </div>
         </div>
