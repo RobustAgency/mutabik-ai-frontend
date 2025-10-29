@@ -10,10 +10,10 @@ import {
 
 interface SelectFieldProps {
   selectData: string[];
-  className?: string; 
+  className?: string;
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({ selectData, className }) => {
+const SelectField: React.FC<SelectFieldProps> = ({ selectData }) => {
   return (
     <Select>
       <SelectTrigger className={`w-full gap-2  rotate-0 opacity-100 pt-[10px] pr-4 pb-[10px] pl-4 py-5 rounded-lg border border-[#D0D5DD] `}>

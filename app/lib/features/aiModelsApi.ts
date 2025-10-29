@@ -1,7 +1,7 @@
 import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import type { AiModel, CreateAiModelData } from "@/service/app/aiModels";
-import { apiClient, type ApiError } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
 
 // Custom base query using existing Axios client
@@ -47,6 +47,17 @@ const axiosBaseQuery =
       };
     }
   };
+
+// Type for RTK Query mutation errors
+interface MutationError {
+  error?: {
+    status: number;
+    data?: {
+      message?: string;
+      errors?: Record<string, string[]>;
+    };
+  };
+}
 
 export const aiModelsApi = createApi({
   reducerPath: "aiModelsApi",
@@ -94,7 +105,7 @@ export const aiModelsApi = createApi({
         if (response.data) {
           return response.data;
         }
-        return response as any;
+        return response as unknown as AiModel;
       },
     }),
 
@@ -109,12 +120,14 @@ export const aiModelsApi = createApi({
         try {
           await queryFulfilled;
           toast.success("AI model created successfully");
-        } catch (error: any) {
+        } catch (error) {
+          const mutationError = error as MutationError;
           // Don't show toast here - let component handle validation errors
           // Only show toast for unexpected errors
-          if (!error?.error?.data?.errors) {
+          if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              error?.error?.data?.message || "Failed to create AI model";
+              mutationError?.error?.data?.message ||
+              "Failed to create AI model";
             toast.error(errorMessage);
           }
         }
@@ -138,10 +151,12 @@ export const aiModelsApi = createApi({
         try {
           await queryFulfilled;
           toast.success("AI model updated successfully");
-        } catch (error: any) {
-          if (!error?.error?.data?.errors) {
+        } catch (error) {
+          const mutationError = error as MutationError;
+          if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              error?.error?.data?.message || "Failed to update AI model";
+              mutationError?.error?.data?.message ||
+              "Failed to update AI model";
             toast.error(errorMessage);
           }
         }
@@ -161,9 +176,10 @@ export const aiModelsApi = createApi({
         try {
           await queryFulfilled;
           toast.success("AI model deleted successfully");
-        } catch (error: any) {
+        } catch (error) {
+          const mutationError = error as MutationError;
           const errorMessage =
-            error?.error?.data?.message || "Failed to delete AI model";
+            mutationError?.error?.data?.message || "Failed to delete AI model";
           toast.error(errorMessage);
         }
       },

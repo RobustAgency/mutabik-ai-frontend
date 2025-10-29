@@ -1,7 +1,6 @@
 import {
   LayoutGrid,
   House,
-  CreditCard,
   LucideIcon,
   Users2,
   Box,
@@ -12,7 +11,6 @@ import {
   FolderKanban,
   Users,
   ShieldCheck,
-  Scale,
   FileCheck2,
   Building2,
   ScrollText,

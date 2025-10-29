@@ -18,7 +18,7 @@ export const useFrameworks = () => {
       console.log("🚀 ~ useFrameworks ~ response:", response);
 
       if (!response.error) {
-        setFrameworks(response.data);
+        setFrameworks(response.data.data);
       } else {
         setError(response.message || "Failed to fetch frameworks");
         toast.error(response.message || "Failed to fetch frameworks");

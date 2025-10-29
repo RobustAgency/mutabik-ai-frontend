@@ -1,7 +1,7 @@
 import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
-import { apiClient, type ApiError } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
 
 // Custom base query using existing Axios client

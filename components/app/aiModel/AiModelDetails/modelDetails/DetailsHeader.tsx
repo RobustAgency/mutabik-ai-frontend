@@ -3,7 +3,7 @@
 // import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ArrowLeft, Edit, Eye, Trash2 } from 'lucide-react'
+import { Edit, Eye, Trash2 } from 'lucide-react'
 import React from 'react'
 
 interface DetailsHeaderProps {

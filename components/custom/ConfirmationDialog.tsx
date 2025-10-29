@@ -3,7 +3,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle, CheckCircle, Info } from "lucide-react"
-import Spinner from "@/components/ui/spinner"
 
 export type ConfirmationType = "danger" | "warning" | "info" | "success"
 

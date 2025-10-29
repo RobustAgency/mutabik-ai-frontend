@@ -4,7 +4,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
-import Link from 'next/link';
 import { toast } from 'react-toastify';
 import type { User } from '@supabase/supabase-js';
 

@@ -28,7 +28,7 @@ export const useProjects = () => {
 
   const fetchProjects = useCallback(
     async (filters?: ProjectFilters) => {
-      const result = await dispatch(fetchProjectsAction(filters));
+      const result = await dispatch(fetchProjectsAction({ filters }));
       return result;
     },
     [dispatch]

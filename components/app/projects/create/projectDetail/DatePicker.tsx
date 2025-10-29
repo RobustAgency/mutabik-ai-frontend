@@ -4,8 +4,6 @@ import * as React from "react"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { DateRange } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -16,8 +14,8 @@ import {
 
 export function DatePicker() {
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2025, 1, 5), 
-    to: new Date(2025, 2, 6),   
+    from: new Date(2025, 1, 5),
+    to: new Date(2025, 2, 6),
   })
 
   return (
@@ -47,7 +45,7 @@ export function DatePicker() {
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 cursor-pointer" align="start">
           <Calendar
-        
+
             initialFocus
             mode="range"
             defaultMonth={date?.from}

@@ -1,9 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { ChevronLeft, ArrowLeft } from "lucide-react";
-import { DrawerTrigger } from "../ui/drawer";
+import { ArrowLeft } from "lucide-react";
 import ProfileInfo from "./ProfileInfo";
 import { useRouter, useSearchParams } from "next/navigation";
 

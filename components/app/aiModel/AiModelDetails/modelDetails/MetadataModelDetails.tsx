@@ -19,11 +19,11 @@ const MetadataModelDetails: React.FC<MetadataModelDetailsProps> = ({ aiModel }) 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <p className="font-sans font-medium text-xs text-[#667085] mb-2">Created</p>
-                        <p className="font-sans text-sm text-[#667085]">{formatDate(aiModel.created_at)}</p>
+                        <p className="font-sans text-sm text-[#667085]">{aiModel.created_at ? formatDate(aiModel.created_at) : '-'}</p>
                     </div>
                     <div>
                         <p className="font-sans font-medium text-xs text-[#667085] mb-2">Last Updated</p>
-                        <p className="font-sans text-sm text-[#667085]">{formatDate(aiModel.updated_at)}</p>
+                        <p className="font-sans text-sm text-[#667085]">{aiModel.updated_at ? formatDate(aiModel.updated_at) : '-'}</p>
                     </div>
                 </div>
             </CardContent>

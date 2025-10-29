@@ -2,13 +2,15 @@ import AiModelDetails from '@/components/app/aiModel/AiModelDetails/AiModelDetai
 import React from 'react'
 
 interface PageProps {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }
 
-const Page = ({ params }: PageProps) => {
+const Page = async ({ params }: PageProps) => {
+    const { id } = await params
+
     return (
         <div>
-            <AiModelDetails aiModelId={params.id} />
+            <AiModelDetails aiModelId={id} />
         </div>
     )
 }
