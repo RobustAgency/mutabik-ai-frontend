@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
     const router = useRouter();
     const { data: aiModel, isLoading, error } = useGetAiModelQuery(Number(aiModelId));
 
-    // Helper function to format values for display
     const formatValue = (value: string | null): string => {
         if (!value) return "Not provided";
         return value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -80,15 +78,15 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
         if (isNaN(date.getTime())) return "Not provided";
         return date.toLocaleDateString("en-US", {
             year: "numeric",
-            month: "long",
+            month: "short",
             day: "2-digit",
         });
     };
 
     if (isLoading) {
         return (
-            <div className="max-w-4xl mx-auto p-6">
-                <Card>
+            <div className="w-full p-6">
+                <Card className="rounded-2xl border border-[#E4E7EC]">
                     <CardContent className="p-6">
                         <div className="animate-pulse">
                             <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -106,15 +104,18 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
 
     if (error || !aiModel) {
         return (
-            <div className="max-w-4xl mx-auto p-6">
-                <Card>
+            <div className="w-full p-6">
+                <Card className="rounded-2xl border border-[#E4E7EC]">
                     <CardContent className="p-6">
                         <div className="text-center">
-                            <h2 className="text-xl font-semibold text-gray-900 mb-2">AI Model Not Found</h2>
-                            <p className="text-gray-600 mb-4">
+                            <h2 className="font-sans font-semibold text-xl text-[#1D2939] mb-2">AI Model Not Found</h2>
+                            <p className="font-sans text-sm text-[#667085] mb-4">
                                 The AI model you're looking for doesn't exist or has been removed.
                             </p>
-                            <Button onClick={() => router.push("/core-assets/ai-models")}>
+                            <Button
+                                onClick={() => router.push("/core-assets/ai-models")}
+                                className="bg-[#4FD58F] text-white hover:bg-[#45c180]"
+                            >
                                 Back to AI Models
                             </Button>
                         </div>
@@ -125,131 +126,177 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <div className="w-full p-4 sm:p-6 space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.push("/core-assets/ai-models")}
-                        className="flex items-center gap-2"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{aiModel.name}</h1>
-                        <p className="text-sm text-gray-500">AI Model ID: {aiModel.id}</p>
+            <Card className="rounded-2xl border border-[#E4E7EC] bg-white">
+                <CardContent className="p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => router.push("/core-assets/ai-models")}
+                                className="flex items-center gap-2 text-[#667085] hover:text-[#1D2939]"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                <span className="font-sans text-sm font-medium">Back</span>
+                            </Button>
+                            <div>
+                                <h1 className="font-sans font-semibold text-xl sm:text-2xl text-[#1D2939]">{aiModel.name}</h1>
+                                <p className="font-sans text-xs sm:text-sm text-[#667085] mt-1">AI Model ID: {aiModel.id}</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2 border-[#E4E7EC] text-[#667085] hover:bg-gray-50"
+                            >
+                                <Eye className="w-4 h-4" />
+                                <span className="font-sans text-sm">View Versions</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2 border-[#E4E7EC] text-[#667085] hover:bg-gray-50"
+                            >
+                                <Edit className="w-4 h-4" />
+                                <span className="font-sans text-sm">Edit</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2 border-[#E4E7EC] text-red-600 hover:bg-red-50"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                <span className="font-sans text-sm">Delete</span>
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
-                        View Versions
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Edit className="w-4 h-4" />
-                        Edit
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2 text-red-600 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                        Delete
-                    </Button>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
 
             {/* Basic Information */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
+            <Card className="rounded-2xl border border-[#E4E7EC] bg-white">
+                <CardHeader className="px-6 py-4 border-b border-[#E4E7EC]">
+                    <CardTitle className="font-sans font-medium text-sm text-[#000000]">Basic Information</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-6">
+                <CardContent className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Model Name</p>
-                            <p className="text-lg font-semibold text-gray-900">{aiModel.name}</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Model Name</p>
+                            <p className="font-sans font-medium text-sm text-[#1D2939]">{aiModel.name}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Primary Category</p>
-                            <Badge variant="secondary">{formatValue(aiModel.primary_category)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Primary Category</p>
+                            <Badge variant="light" className="bg-gray-100 text-gray-800 font-sans text-xs">
+                                {formatValue(aiModel.primary_category)}
+                            </Badge>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Model Type</p>
-                            <Badge variant="outline">{formatValue(aiModel.model_type)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Type</p>
+                            <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                {formatValue(aiModel.type)}
+                            </Badge>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Domain Specialization</p>
-                            <Badge variant="outline">{formatValue(aiModel.domain_specialization)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Domain Specialization</p>
+                            <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                {formatValue(aiModel.domain_specialization)}
+                            </Badge>
+                        </div>
+                        <div>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Total Versions</p>
+                            <p className="font-sans text-sm text-[#667085]">{aiModel.total_versions || 0}</p>
+                        </div>
+                        <div>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Strategic Importance</p>
+                            <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                {formatValue(aiModel.strategic_importance)}
+                            </Badge>
                         </div>
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Description</p>
-                        <p className="text-gray-700">{aiModel.description || "No description provided"}</p>
+                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Description</p>
+                        <p className="font-sans text-sm text-[#667085] leading-5">
+                            {aiModel.description || "No description provided"}
+                        </p>
                     </div>
                 </CardContent>
             </Card>
 
             {/* Status & Classification */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Status & Classification</CardTitle>
+            <Card className="rounded-2xl border border-[#E4E7EC] bg-white">
+                <CardHeader className="px-6 py-4 border-b border-[#E4E7EC]">
+                    <CardTitle className="font-sans font-medium text-sm text-[#000000]">Status & Classification</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-6">
+                <CardContent className="p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Business Status</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Business Status</p>
                             <span className={getStatusBadge(aiModel.business_status, 'business')}>
                                 {formatValue(aiModel.business_status)}
                             </span>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Operational Status</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Operational Status</p>
                             <span className={getStatusBadge(aiModel.operational_status, 'operational')}>
                                 {formatValue(aiModel.operational_status)}
                             </span>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Regulatory Classification</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Regulatory Classification</p>
                             <span className={getRiskBadge(aiModel.regulatory_classification)}>
                                 {formatValue(aiModel.regulatory_classification)}
                             </span>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Organizational Role</p>
-                            <Badge variant="outline">{formatValue(aiModel.organizational_role)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Organizational Role</p>
+                            <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                {formatValue(aiModel.organizational_role)}
+                            </Badge>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
             {/* Ownership & Governance */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Ownership & Governance</CardTitle>
+            <Card className="rounded-2xl border border-[#E4E7EC] bg-white">
+                <CardHeader className="px-6 py-4 border-b border-[#E4E7EC]">
+                    <CardTitle className="font-sans font-medium text-sm text-[#000000]">Ownership & Governance</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-6">
+                <CardContent className="p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Ownership Type</p>
-                            <Badge variant="secondary">{formatValue(aiModel.ownership_type)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Ownership Type</p>
+                            <Badge variant="light" className="bg-gray-100 text-gray-800 font-sans text-xs">
+                                {formatValue(aiModel.ownership_type)}
+                            </Badge>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Development Source</p>
-                            <Badge variant="outline">{formatValue(aiModel.development_source)}</Badge>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Development Source</p>
+                            <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                {formatValue(aiModel.development_source)}
+                            </Badge>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Source Organization</p>
-                            <p className="text-gray-700">{aiModel.source_organization || "Not specified"}</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Source Organization</p>
+                            <p className="font-sans text-sm text-[#667085]">
+                                {aiModel.source_organization || "Not specified"}
+                            </p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Model Owner</p>
-                            <p className="text-gray-700">{aiModel.model_owner || "Not specified"}</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Model Owner</p>
+                            <p className="font-sans text-sm text-[#667085]">
+                                {aiModel.model_owner || "Not specified"}
+                            </p>
                         </div>
                         {aiModel.vendor_id && (
                             <div>
-                                <p className="text-sm font-medium text-gray-500 mb-1">Vendor</p>
-                                <Badge variant="outline">{formatValue(aiModel.vendor_id)}</Badge>
+                                <p className="font-sans font-medium text-xs text-[#667085] mb-2">Vendor</p>
+                                <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
+                                    {formatValue(aiModel.vendor_id)}
+                                </Badge>
                             </div>
                         )}
                     </div>
@@ -257,19 +304,19 @@ const AiModelDetails: React.FC<AiModelDetailsProps> = ({ aiModelId }) => {
             </Card>
 
             {/* Metadata */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Metadata</CardTitle>
+            <Card className="rounded-2xl border border-[#E4E7EC] bg-white">
+                <CardHeader className="px-6 py-4 border-b border-[#E4E7EC]">
+                    <CardTitle className="font-sans font-medium text-sm text-[#000000]">Metadata</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-6">
+                <CardContent className="p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Created</p>
-                            <p className="text-gray-700">{formatDate(aiModel.created_at)}</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Created</p>
+                            <p className="font-sans text-sm text-[#667085]">{formatDate(aiModel.created_at)}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Last Updated</p>
-                            <p className="text-gray-700">{formatDate(aiModel.updated_at)}</p>
+                            <p className="font-sans font-medium text-xs text-[#667085] mb-2">Last Updated</p>
+                            <p className="font-sans text-sm text-[#667085]">{formatDate(aiModel.updated_at)}</p>
                         </div>
                     </div>
                 </CardContent>

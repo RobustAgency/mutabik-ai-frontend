@@ -116,9 +116,9 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             Model Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
-                            value={formData.model_type}
+                            value={formData.type}
                             onValueChange={(value) =>
-                                setFormData((prev) => ({ ...prev, model_type: value as FormDataType["model_type"] }))
+                                setFormData((prev) => ({ ...prev, type: value as FormDataType["type"] }))
                             }
                         >
                             <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("model_type") ? "border-red-500" : "border-[#D0D5DD]"
@@ -138,8 +138,8 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                                 <SelectItem value="forecasting">Forecasting</SelectItem>
                             </SelectContent>
                         </Select>
-                        {hasError("model_type") && (
-                            <p className="text-sm text-red-500">{getError("model_type")}</p>
+                        {hasError("type") && (
+                            <p className="text-sm text-red-500">{getError("type")}</p>
                         )}
                     </div>
                 </div>

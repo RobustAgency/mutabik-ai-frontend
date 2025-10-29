@@ -24,13 +24,13 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
     errors = {},
 }) => {
     const [sourceOrgInput, setSourceOrgInput] = useState(formData.source_organization || "");
-    const [modelOwnerInput, setModelOwnerInput] = useState(formData.model_owner || "");
-    const [vendorInput, setVendorInput] = useState(formData.vendor_id || "");
+    const [modelOwnerInput, setModelOwnerInput] = useState(formData.current_owner || "");
+    const [vendorInput, setVendorInput] = useState(formData.vendor || "");
 
     useEffect(() => {
         setSourceOrgInput(formData.source_organization || "");
-        setModelOwnerInput(formData.model_owner || "");
-        setVendorInput(formData.vendor_id || "");
+        setModelOwnerInput(formData.current_owner || "");
+        setVendorInput(formData.vendor || "");
     }, [formData]);
 
     // Helper to check if field has error
@@ -48,7 +48,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
             </div>
 
             {/* Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {/* Organizational Role */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
@@ -133,6 +133,11 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                     </Select>
                 </div>
 
+
+            </div>
+
+            {/* Additional Fields Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Development Source */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
@@ -163,55 +168,58 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         <p className="text-sm text-red-500">{getError("development_source")}</p>
                     )}
                 </div>
-
-                {/* Source Organization */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Source Organization
-                    </Label>
-                    <Select
-                        value="internal"
-                        onValueChange={() => { }}
-                    >
-                        <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                            <SelectValue placeholder="Internal" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="internal">Internal</SelectItem>
-                            <SelectItem value="external">External</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
-
-            {/* Additional Fields Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {/* Source Organization / Stakeholder */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Source Organization / Stakeholder
+                        Source Organization / Stakeholder <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                        value={sourceOrgInput}
-                        onChange={(e) => setSourceOrgInput(e.target.value)}
-                        onBlur={() => setFormData((prev) => ({ ...prev, source_organization: sourceOrgInput }))}
-                        placeholder="e.g., Internal AI Team, OpenAI, AWS"
-                        className="h-[44px] rounded-md border border-[#D0D5DD] text-sm text-[#101828] placeholder:text-[#98A2B3] focus-visible:ring-0 focus-visible:border-[#D0D5DD]"
-                    />
+                    <Select
+                        value={sourceOrgInput || ""}
+                        onValueChange={(value) => {
+                            setSourceOrgInput(value);
+                            setFormData((prev) => ({ ...prev, source_organization: value }));
+                        }}
+                    >
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_organization") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder="Select stakeholder..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Internal - AI Team">Internal - AI Team</SelectItem>
+                            <SelectItem value="OpenAI">OpenAI</SelectItem>
+                            <SelectItem value="Anthropic">Anthropic</SelectItem>
+                            <SelectItem value="Hugging Face">Hugging Face</SelectItem>
+                            <SelectItem value="AWS">AWS</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {hasError("source_organization") && (
+                        <p className="text-sm text-red-500">{getError("source_organization")}</p>
+                    )}
                 </div>
 
-                {/* Model Owner / Custodian */}
+                {/* Current Owner / Custodian */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Model Owner / Custodian
+                        Model Owner / Custodian <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                        value={modelOwnerInput}
-                        onChange={(e) => setModelOwnerInput(e.target.value)}
-                        onBlur={() => setFormData((prev) => ({ ...prev, model_owner: modelOwnerInput }))}
-                        placeholder="e.g., Sarah Chen - AI Product Lead"
-                        className="h-[44px] rounded-md border border-[#D0D5DD] text-sm text-[#101828] placeholder:text-[#98A2B3] focus-visible:ring-0 focus-visible:border-[#D0D5DD]"
-                    />
+                    <Select
+                        value={modelOwnerInput || ""}
+                        onValueChange={(value) => {
+                            setModelOwnerInput(value);
+                            setFormData((prev) => ({ ...prev, current_owner: value }));
+                        }}
+                    >
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("current_owner") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder="Select owner..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Sarah Chen - AI Product Lead">Sarah Chen - AI Product Lead</SelectItem>
+                            <SelectItem value="Raj Kumar - ML Engineering Manager">Raj Kumar - ML Engineering Manager</SelectItem>
+                            <SelectItem value="Fatima Rahman - Data Science Director">Fatima Rahman - Data Science Director</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {hasError("current_owner") && (
+                        <p className="text-sm text-red-500">{getError("current_owner")}</p>
+                    )}
                 </div>
 
                 {/* Vendor */}
@@ -219,13 +227,25 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                     <Label className="text-sm text-[#344054] font-medium">
                         Vendor (if applicable)
                     </Label>
-                    <Input
-                        value={vendorInput}
-                        onChange={(e) => setVendorInput(e.target.value)}
-                        onBlur={() => setFormData((prev) => ({ ...prev, vendor_id: vendorInput }))}
-                        placeholder="e.g., OpenAI, AWS, Google Cloud"
-                        className="h-[44px] rounded-md border border-[#D0D5DD] text-sm text-[#101828] placeholder:text-[#98A2B3] focus-visible:ring-0 focus-visible:border-[#D0D5DD]"
-                    />
+                    <Select
+                        value={vendorInput || ""}
+                        onValueChange={(value) => {
+                            setVendorInput(value);
+                            setFormData((prev) => ({ ...prev, vendor: value }));
+                        }}
+                    >
+                        <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
+                            <SelectValue placeholder="None / Internal" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="None / Internal">None / Internal</SelectItem>
+                            <SelectItem value="OpenAI">OpenAI</SelectItem>
+                            <SelectItem value="Anthropic">Anthropic</SelectItem>
+                            <SelectItem value="AWS">AWS</SelectItem>
+                            <SelectItem value="Google Cloud">Google Cloud</SelectItem>
+                            <SelectItem value="Microsoft Azure">Microsoft Azure</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </div>

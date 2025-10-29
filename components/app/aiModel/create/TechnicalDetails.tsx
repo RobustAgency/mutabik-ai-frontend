@@ -104,8 +104,13 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                         Strategic Importance
                     </Label>
                     <Select
-                        value="high"
-                        onValueChange={() => { }}
+                        value={formData.strategic_importance || "medium"}
+                        onValueChange={(value) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                strategic_importance: value as NonNullable<FormDataType["strategic_importance"]>,
+                            }))
+                        }
                     >
                         <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
                             <SelectValue placeholder="High" />
@@ -125,15 +130,15 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                         Risk Classification <span className="text-red-500">*</span>
                     </Label>
                     <Select
-                        value={formData.regulatory_classification}
+                        value={formData.regulatory_risk_classification}
                         onValueChange={(value) =>
                             setFormData((prev) => ({
                                 ...prev,
-                                regulatory_classification: value as FormDataType["regulatory_classification"],
+                                regulatory_risk_classification: value as FormDataType["regulatory_risk_classification"],
                             }))
                         }
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("regulatory_classification") ? "border-red-500" : "border-[#D0D5DD]"
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("regulatory_risk_classification") ? "border-red-500" : "border-[#D0D5DD]"
                             } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
                             <SelectValue placeholder="Limited Risk" />
                         </SelectTrigger>
@@ -145,8 +150,8 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                             <SelectItem value="sector_specific">Sector Specific</SelectItem>
                         </SelectContent>
                     </Select>
-                    {hasError("regulatory_classification") && (
-                        <p className="text-sm text-red-500">{getError("regulatory_classification")}</p>
+                    {hasError("regulatory_risk_classification") && (
+                        <p className="text-sm text-red-500">{getError("regulatory_risk_classification")}</p>
                     )}
                 </div>
             </div>

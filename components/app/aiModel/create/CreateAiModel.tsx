@@ -10,28 +10,31 @@ import { FormDataType } from "../types/aiModelTypes";
 import BasicInfo from "./BasicInfo";
 import TechnicalDetails from "./TechnicalDetails";
 import OwnershipGovernance from "./OwnershipGovernance";
+import { useRouter } from "next/navigation";
 
 const initialFormData: FormDataType = {
     name: "",
     description: null,
     primary_category: "traditional_ml",
-    model_type: "classification",
+    type: "classification",
     domain_specialization: "general",
     business_status: "planned",
     operational_status: "not_deployed",
-    regulatory_classification: "minimal_risk",
+    strategic_importance: "medium",
+    regulatory_risk_classification: "minimal_risk",
     organizational_role: "developer",
     ownership_type: "internal",
     development_source: "internal_development",
     source_organization: null,
-    model_owner: null,
-    vendor_id: null,
+    current_owner: null,
+    vendor: null,
 };
 
 const CreateAiModel: React.FC = () => {
     const [formData, setFormData] = useState<FormDataType>(initialFormData);
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
     const [createAiModel, { isLoading }] = useCreateAiModelMutation();
+    const router = useRouter();
 
     // Form validation
     const validateForm = (): boolean => {
@@ -50,8 +53,8 @@ const CreateAiModel: React.FC = () => {
             errors.primary_category = ["Primary category is required"];
         }
 
-        if (!formData.model_type) {
-            errors.model_type = ["Model type is required"];
+        if (!formData.type) {
+            errors.type = ["Model type is required"];
         }
 
         if (!formData.domain_specialization) {
@@ -66,8 +69,8 @@ const CreateAiModel: React.FC = () => {
             errors.operational_status = ["Operational status is required"];
         }
 
-        if (!formData.regulatory_classification) {
-            errors.regulatory_classification = ["Regulatory classification is required"];
+        if (!formData.regulatory_risk_classification) {
+            errors.regulatory_risk_classification = ["Regulatory classification is required"];
         }
 
         if (!formData.organizational_role) {
@@ -102,6 +105,7 @@ const CreateAiModel: React.FC = () => {
             // Reset form on success
             setFormData(initialFormData);
             setValidationErrors({});
+            router.push("/core-assets/ai-models");
         } catch (err: any) {
             // Handle backend validation errors
             if (err?.data?.errors) {

@@ -1,12 +1,16 @@
 import AiModelDetails from '@/components/app/aiModel/AiModelDetails/AiModelDetails'
 import React from 'react'
 
-const page = () => {
+interface PageProps {
+    params: { id: string }
+}
+
+const Page = ({ params }: PageProps) => {
     return (
         <div>
-            <AiModelDetails />
+            <AiModelDetails aiModelId={params.id} />
         </div>
     )
 }
 
-export default page
+export default Page

@@ -21,9 +21,10 @@ const formatDate = (dateString: string | null | undefined): string => {
     });
 };
 
-// Helper function to format category names
-const formatCategory = (category: string): string => {
-    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+// Helper function to format category names safely
+const formatCategory = (value: unknown): string => {
+    if (typeof value !== 'string' || value.length === 0) return "-";
+    return value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
 // Helper function to format status with colors
@@ -102,7 +103,7 @@ const AiModels: React.FC = () => {
             ),
         },
         {
-            accessorKey: "model_type",
+            accessorKey: "type",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
                     Type
@@ -110,7 +111,7 @@ const AiModels: React.FC = () => {
             ),
             cell: ({ getValue }) => (
                 <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {formatCategory(getValue() as string)}
+                    {formatCategory(getValue())}
                 </div>
             ),
         },
@@ -154,14 +155,14 @@ const AiModels: React.FC = () => {
             ),
         },
         {
-            accessorKey: "regulatory_classification",
+            accessorKey: "regulatory_risk_classification",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
                     Regulatory Risk
                 </div>
             ),
             cell: ({ getValue }) => {
-                const classification = getValue() as string;
+                const classification = (typeof getValue() === 'string' ? (getValue() as string) : "");
                 const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
                 let badgeClasses = baseClasses;
 

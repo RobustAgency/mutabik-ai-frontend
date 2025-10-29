@@ -10,7 +10,7 @@ export interface FormDataType {
     | "specialized_ai"
     | "foundation_models"
     | "multimodal_ai";
-  model_type:
+  type:
     | "classification"
     | "regression"
     | "clustering"
@@ -38,7 +38,8 @@ export interface FormDataType {
   // Technical Details
   business_status: "planned" | "active" | "deprecated" | "retired";
   operational_status: "not_deployed" | "development" | "testing" | "production";
-  regulatory_classification:
+  strategic_importance?: "low" | "medium" | "high" | "critical";
+  regulatory_risk_classification:
     | "minimal_risk"
     | "limited_risk"
     | "high_risk"
@@ -67,6 +68,6 @@ export interface FormDataType {
     | "cloud_provider"
     | "partnership";
   source_organization: string | null;
-  model_owner: string | null;
-  vendor_id: string | null;
+  current_owner: string | null;
+  vendor: string | null;
 }

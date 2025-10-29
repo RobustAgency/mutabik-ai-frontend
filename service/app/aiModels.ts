@@ -12,7 +12,7 @@ export interface AiModel {
     | "specialized_ai"
     | "foundation_models"
     | "multimodal_ai";
-  model_type:
+  type:
     | "classification"
     | "regression"
     | "clustering"
@@ -58,15 +58,16 @@ export interface AiModel {
     | "partnership";
   business_status: "planned" | "active" | "deprecated" | "retired";
   operational_status: "not_deployed" | "development" | "testing" | "production";
-  regulatory_classification:
+  strategic_importance?: "low" | "medium" | "high" | "critical";
+  regulatory_risk_classification:
     | "minimal_risk"
     | "limited_risk"
     | "high_risk"
     | "unacceptable_risk"
     | "sector_specific";
   source_organization: string | null;
-  model_owner: string | null;
-  vendor_id: string | null;
+  current_owner: string | null;
+  vendor: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -83,7 +84,7 @@ export interface CreateAiModelData {
     | "specialized_ai"
     | "foundation_models"
     | "multimodal_ai";
-  model_type:
+  type:
     | "classification"
     | "regression"
     | "clustering"
@@ -129,15 +130,16 @@ export interface CreateAiModelData {
     | "partnership";
   business_status: "planned" | "active" | "deprecated" | "retired";
   operational_status: "not_deployed" | "development" | "testing" | "production";
-  regulatory_classification:
+  strategic_importance?: "low" | "medium" | "high" | "critical";
+  regulatory_risk_classification:
     | "minimal_risk"
     | "limited_risk"
     | "high_risk"
     | "unacceptable_risk"
     | "sector_specific";
   source_organization: string | null;
-  model_owner: string | null;
-  vendor_id: string | null;
+  current_owner: string | null;
+  vendor: string | null;
 }
 
 export interface AiModelFilters {
