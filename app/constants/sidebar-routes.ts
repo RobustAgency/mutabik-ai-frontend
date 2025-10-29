@@ -84,7 +84,7 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/core-assets",
+    href: "/core-assets/ai-use-cases",
     label: "Core Assets",
     icon: FileBox,
     children: [
