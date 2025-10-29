@@ -70,6 +70,9 @@ export interface AiModel {
   vendor: string | null;
   created_at: string;
   updated_at: string;
+  total_versions: number | null;
+  model_owner?: string | null;
+  regulatory_classification?: string | null;
 }
 
 // Data to create a new AI Model
