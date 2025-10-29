@@ -6,23 +6,37 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 // Types for stakeholders
 export interface Stakeholder {
   id: string;
-  name: string;
-  type: 'person' | 'vendor_org';
-  email?: string;
-  role?: string;
-  department?: string;
-  organization?: string;
+  type: string;
+  display_name: string;
+  legal_name: string;
+  org_unit: string;
+  email: string;
+  phone: string;
+  vendor_id: string;
+  role_tags: string[];
+  timezone: string;
+  classification: string;
+  country: string;
+  external_ref: string;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
 
 export interface CreateStakeholderData {
-  name: string;
-  type: 'person' | 'vendor_org';
-  email?: string;
-  role?: string;
-  department?: string;
-  organization?: string;
+  type: string;
+  display_name: string;
+  legal_name: string;
+  org_unit: string;
+  email: string;
+  phone: string;
+  vendor_id: string;
+  role_tags: string[];
+  timezone: string;
+  classification: string;
+  country: string;
+  external_ref: string;
+  active: boolean;
 }
 
 // Custom base query using existing Axios client
@@ -113,7 +127,10 @@ export const stakeholdersApi = createApi({
       },
     }),
 
-    getStakeholdersByType: builder.query<Stakeholder[], 'person' | 'vendor_org'>({
+    getStakeholdersByType: builder.query<
+      Stakeholder[],
+      "person" | "vendor_org"
+    >({
       query: (type) => ({
         url: `/stakeholders?type=${type}`,
         method: "GET",
@@ -227,7 +244,8 @@ export const stakeholdersApi = createApi({
         } catch (error) {
           const mutationError = error as MutationError;
           const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete stakeholder";
+            mutationError?.error?.data?.message ||
+            "Failed to delete stakeholder";
           toast.error(errorMessage);
         }
       },
