@@ -1,8 +1,11 @@
+import AiModelVersions from '@/components/app/aiModel/versions/AiModelVersions'
 import React from 'react'
 
 const page = () => {
     return (
-        <div>page</div>
+        <div>
+            <AiModelVersions />
+        </div>
     )
 }
 

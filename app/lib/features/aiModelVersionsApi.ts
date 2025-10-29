@@ -2,42 +2,11 @@ import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
-
-// Type for AI Model Version
-export interface AiModelVersion {
-  id: number;
-  version: string;
-  ai_model_id: number;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Type for AI Model Versions response
-export interface AiModelVersionsResponse {
-  data: {
-    current_page: number;
-    data: AiModelVersion[];
-    first_page_url: string;
-    from: number;
-    last_page: number;
-    last_page_url: string;
-    links: Array<{
-      url: string | null;
-      label: string;
-      page: number | null;
-      active: boolean;
-    }>;
-    next_page_url: string | null;
-    path: string;
-    per_page: number;
-    prev_page_url: string | null;
-    to: number;
-    total: number;
-  };
-  error: boolean;
-  message: string;
-}
+import type {
+  AiModelVersion,
+  CreateAiModelVersionData,
+  AiModelVersionFilters,
+} from "@/service/app/aiModelVersions";
 
 // Custom base query using existing Axios client
 const axiosBaseQuery =
@@ -99,30 +68,155 @@ export const aiModelVersionsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiModelVersion"],
   endpoints: (builder) => ({
-    getAiModelVersions: builder.query<AiModelVersion[], number>({
-      query: (aiModelId) => ({
+    getAiModelVersions: builder.query<
+      AiModelVersion[],
+      AiModelVersionFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/ai-model-versions",
         method: "GET",
-        params: { ai_model_id: aiModelId },
+        params: filters,
       }),
-      providesTags: (result, error, aiModelId) =>
+      providesTags: (result) =>
         result
           ? [
               ...result.map(({ id }) => ({
                 type: "AiModelVersion" as const,
                 id,
               })),
-              { type: "AiModelVersion", id: `LIST-${aiModelId}` },
+              { type: "AiModelVersion", id: "LIST" },
             ]
-          : [{ type: "AiModelVersion", id: `LIST-${aiModelId}` }],
-      transformResponse: (response: AiModelVersionsResponse) => {
+          : [{ type: "AiModelVersion", id: "LIST" }],
+      transformResponse: (response: {
+        data: { data: AiModelVersion[] };
+        error?: boolean;
+        message?: string;
+      }) => {
         if (response.data?.data) {
           return response.data.data;
         }
+        if (Array.isArray(response.data)) {
+          return response.data;
+        }
         return [];
+      },
+    }),
+
+    getAiModelVersion: builder.query<AiModelVersion, number>({
+      query: (id) => ({
+        url: `/ai-model-versions/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "AiModelVersion", id }],
+      transformResponse: (response: {
+        data: AiModelVersion;
+        error?: boolean;
+        message?: string;
+      }) => {
+        if (response.data) {
+          return response.data;
+        }
+        return response as unknown as AiModelVersion;
+      },
+    }),
+
+    createAiModelVersion: builder.mutation<
+      AiModelVersion,
+      CreateAiModelVersionData
+    >({
+      query: (data) => ({
+        url: "/ai-model-versions",
+        method: "POST",
+        data,
+      }),
+      invalidatesTags: [{ type: "AiModelVersion", id: "LIST" }],
+      transformResponse: (response: {
+        data: AiModelVersion;
+        error?: boolean;
+        message?: string;
+      }) => {
+        if (response.data) {
+          return response.data;
+        }
+        return response as unknown as AiModelVersion;
+      },
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          toast.success("AI Model Version created successfully!");
+        } catch (error) {
+          const err = error as MutationError;
+          const message =
+            err.error?.data?.message || "Failed to create AI Model Version";
+          toast.error(message);
+        }
+      },
+    }),
+
+    updateAiModelVersion: builder.mutation<
+      AiModelVersion,
+      { id: number; data: Partial<CreateAiModelVersionData> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/ai-model-versions/${id}`,
+        method: "POST",
+        data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "AiModelVersion", id },
+        { type: "AiModelVersion", id: "LIST" },
+      ],
+      transformResponse: (response: {
+        data: AiModelVersion;
+        error?: boolean;
+        message?: string;
+      }) => {
+        if (response.data) {
+          return response.data;
+        }
+        return response as unknown as AiModelVersion;
+      },
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          toast.success("AI Model Version updated successfully!");
+        } catch (error) {
+          const err = error as MutationError;
+          const message =
+            err.error?.data?.message || "Failed to update AI Model Version";
+          toast.error(message);
+        }
+      },
+    }),
+
+    deleteAiModelVersion: builder.mutation<null, number>({
+      query: (id) => ({
+        url: `/ai-model-versions/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "AiModelVersion", id },
+        { type: "AiModelVersion", id: "LIST" },
+      ],
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          toast.success("AI Model Version deleted successfully!");
+        } catch (error) {
+          const err = error as MutationError;
+          const message =
+            err.error?.data?.message || "Failed to delete AI Model Version";
+          toast.error(message);
+        }
       },
     }),
   }),
 });
 
-export const { useGetAiModelVersionsQuery } = aiModelVersionsApi;
+export const {
+  useGetAiModelVersionsQuery,
+  useGetAiModelVersionQuery,
+  useCreateAiModelVersionMutation,
+  useUpdateAiModelVersionMutation,
+  useDeleteAiModelVersionMutation,
+} = aiModelVersionsApi;

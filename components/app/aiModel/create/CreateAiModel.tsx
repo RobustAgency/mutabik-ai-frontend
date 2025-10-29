@@ -25,9 +25,10 @@ const initialFormData: FormDataType = {
     organizational_role: "developer",
     ownership_type: "internal",
     development_source: "internal_development",
-    source_organization: null,
+    source_organization_id: null,
+    custodian_id: null,
+    vendor_id: null,
     current_owner: null,
-    vendor: null,
 };
 
 const CreateAiModel: React.FC = () => {
