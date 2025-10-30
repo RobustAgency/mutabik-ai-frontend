@@ -24,6 +24,11 @@ const PdpProcessingRegisterPage: React.FC = () => {
   const [deleteRegister, { isLoading: isDeleting }] = useDeletePdpProcessingRegisterMutation();
   const { data: registers, isLoading } = useGetPdpProcessingRegistersQuery();
 
+  const handleEditClick = (e: React.MouseEvent, register: PdpProcessingRegister) => {
+    e.stopPropagation();
+    router.push(`/privacy/pdp-register/${register.id}/edit`);
+  };
+
   const handleDeleteClick = (e: React.MouseEvent, register: PdpProcessingRegister) => {
     e.stopPropagation();
     setDeleteDialogState({
@@ -145,6 +150,13 @@ const PdpProcessingRegisterPage: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
+              onClick={(e) => handleEditClick(e, row.original)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
               onClick={(e) => handleDeleteClick(e, row.original)}
             >
               Remove
@@ -181,6 +193,7 @@ const PdpProcessingRegisterPage: React.FC = () => {
                 title: "No processing registers found",
                 description: "Processing register links datasets and AI use cases to declared processing purposes",
               }}
+              onRowClick={(register) => router.push(`/privacy/pdp-register/${register.id}`)}
             />
           </Card>
         </CardContent>

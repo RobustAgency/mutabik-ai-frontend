@@ -156,6 +156,35 @@ export const datasetSnapshotsApi = createApi({
       },
     }),
 
+    updateDatasetSnapshot: builder.mutation<
+      DatasetSnapshot,
+      { id: string; data: Partial<CreateDatasetSnapshotData> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/dataset-snapshots/${id}`,
+        method: "POST",
+        data: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "DatasetSnapshot", id },
+        { type: "DatasetSnapshot", id: "LIST" },
+      ],
+      async onQueryStarted(_, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          toast.success("Dataset snapshot updated successfully");
+        } catch (error) {
+          const mutationError = error as MutationError;
+          if (!mutationError?.error?.data?.errors) {
+            const errorMessage =
+              mutationError?.error?.data?.message ||
+              "Failed to update dataset snapshot";
+            toast.error(errorMessage);
+          }
+        }
+      },
+    }),
+
     deleteDatasetSnapshot: builder.mutation<void, string>({
       query: (id) => ({
         url: `/dataset-snapshots/${id}`,
@@ -185,6 +214,7 @@ export const {
   useGetDatasetSnapshotsQuery,
   useGetDatasetSnapshotQuery,
   useCreateDatasetSnapshotMutation,
+  useUpdateDatasetSnapshotMutation,
   useDeleteDatasetSnapshotMutation,
 } = datasetSnapshotsApi;
 

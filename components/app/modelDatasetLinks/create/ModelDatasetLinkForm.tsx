@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateModelDatasetLinkData } from "@/app/lib/features/modelDatasetLinksApi";
+import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
+import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
+import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
 
 interface ModelDatasetLinkFormProps {
   formData: CreateModelDatasetLinkData;
@@ -18,6 +21,15 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const { data: models = [], isLoading: isLoadingModels, isError: isModelsError } = useGetAiModelsQuery();
+  const { data: datasets = [], isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const { data: snapshots = [], isLoading: isLoadingSnapshots, isError: isSnapshotsError } = useGetDatasetSnapshotsQuery();
+
+  const filteredSnapshots = React.useMemo(() => {
+    if (!formData.dataset_id) return snapshots;
+    return snapshots.filter((s: any) => String(s.dataset_id) === String(formData.dataset_id));
+  }, [snapshots, formData.dataset_id]);
+
   return (
     <div className="space-y-6 pt-6">
       {/* Link Identification */}
@@ -25,49 +37,113 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Link Identification</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="model_id">Model ID *</Label>
-            <Input
-              id="model_id"
-              value={formData.model_id}
-              onChange={(e) => handleChange("model_id", e.target.value)}
-              placeholder="e.g., model_12345"
-              className={errors.model_id ? "border-red-500" : ""}
-            />
-            {errors.model_id && <p className="text-sm text-red-500">{errors.model_id[0]}</p>}
+            <Label htmlFor="ai_model_id">Model *</Label>
+            <Select
+              value={formData.ai_model_id || undefined}
+              onValueChange={(value) => handleChange("ai_model_id", value)}
+              disabled={isLoadingModels || isModelsError}
+            >
+              <SelectTrigger id="ai_model_id" className={`w-full ${errors.ai_model_id ? "border-red-500" : ""}`}>
+                <SelectValue
+                  placeholder={
+                    isLoadingModels
+                      ? "Loading models..."
+                      : isModelsError
+                        ? "Failed to load models"
+                        : "Select a model"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {models.map((m: any) => (
+                  <SelectItem key={m.id} value={String(m.id)}>
+                    {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.ai_model_id && <p className="text-sm text-red-500">{errors.ai_model_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="model_version_id">Model Version ID *</Label>
+            <Label htmlFor="ai_model_version_id">Model Version ID *</Label>
             <Input
-              id="model_version_id"
-              value={formData.model_version_id}
-              onChange={(e) => handleChange("model_version_id", e.target.value)}
-              placeholder="e.g., v1.0.0"
-              className={errors.model_version_id ? "border-red-500" : ""}
+              type="number"
+              id="ai_model_version_id"
+              value={formData.ai_model_version_id}
+              onChange={(e) => handleChange("ai_model_version_id", e.target.value)}
+              placeholder="1"
+              className={errors.ai_model_version_id ? "border-red-500" : ""}
             />
-            {errors.model_version_id && <p className="text-sm text-red-500">{errors.model_version_id[0]}</p>}
+            {errors.ai_model_version_id && <p className="text-sm text-red-500">{errors.ai_model_version_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="snapshot_id">Snapshot ID * (Required for AC-05)</Label>
-            <Input
-              id="snapshot_id"
-              value={formData.snapshot_id}
-              onChange={(e) => handleChange("snapshot_id", e.target.value)}
-              placeholder="e.g., snap_12345"
-              className={errors.snapshot_id ? "border-red-500" : ""}
-            />
-            {errors.snapshot_id && <p className="text-sm text-red-500">{errors.snapshot_id[0]}</p>}
+            <Label htmlFor="dataset_snapshot_id">Snapshot * (Required for AC-05)</Label>
+            <Select
+              value={formData.dataset_snapshot_id || undefined}
+              onValueChange={(value) => handleChange("dataset_snapshot_id", value)}
+              disabled={isLoadingSnapshots || isSnapshotsError}
+            >
+              <SelectTrigger id="dataset_snapshot_id" className={`w-full ${errors.dataset_snapshot_id ? "border-red-500" : ""}`}>
+                <SelectValue
+                  placeholder={
+                    isLoadingSnapshots
+                      ? "Loading snapshots..."
+                      : isSnapshotsError
+                        ? "Failed to load snapshots"
+                        : filteredSnapshots.length === 0 && formData.dataset_id
+                          ? "No snapshots for selected dataset"
+                          : "Select a snapshot"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredSnapshots.map((s: any) => (
+                  <SelectItem key={s.id} value={String(s.id)}>
+                    {s.version_tag} {s.dataset_id ? ` (ds ${s.dataset_id})` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.dataset_snapshot_id && <p className="text-sm text-red-500">{errors.dataset_snapshot_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset ID (optional)</Label>
-            <Input
-              id="dataset_id"
-              value={formData.dataset_id || ""}
-              onChange={(e) => handleChange("dataset_id", e.target.value)}
-              placeholder="e.g., ds_12345"
-            />
+            <Label htmlFor="dataset_id">Dataset (optional)</Label>
+            <Select
+              value={formData.dataset_id || undefined}
+              onValueChange={(value) => {
+                // Reset snapshot if it doesn't belong to newly selected dataset
+                const willFilterTo = value;
+                const currentSnapshotStillValid = snapshots.some((s: any) => String(s.id) === String(formData.dataset_snapshot_id) && (!willFilterTo || String(s.dataset_id) === String(willFilterTo)));
+                setFormData((prev) => ({
+                  ...prev,
+                  dataset_id: value,
+                  dataset_snapshot_id: currentSnapshotStillValid ? prev.dataset_snapshot_id : "",
+                }));
+              }}
+              disabled={isLoadingDatasets || isDatasetsError}
+            >
+              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
+                <SelectValue
+                  placeholder={
+                    isLoadingDatasets
+                      ? "Loading datasets..."
+                      : isDatasetsError
+                        ? "Failed to load datasets"
+                        : "Select a dataset (optional)"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {datasets.map((d: any) => (
+                  <SelectItem key={d.id} value={String(d.id)}>
+                    {d.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -79,7 +155,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="role">Role *</Label>
             <Select value={formData.role} onValueChange={(value) => handleChange("role", value)}>
-              <SelectTrigger className={errors.role ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +195,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="eligibility_status">Eligibility Status</Label>
             <Select value={formData.eligibility_status || ""} onValueChange={(value) => handleChange("eligibility_status", value)}>
-              <SelectTrigger>
+              <SelectTrigger className={`w-full ${errors.eligibility_status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select eligibility" />
               </SelectTrigger>
               <SelectContent>

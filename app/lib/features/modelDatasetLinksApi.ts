@@ -5,10 +5,10 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 
 export interface ModelDatasetLink {
   id: string;
-  model_id: string;
-  model_version_id: string;
+  ai_model_id: string;
+  ai_model_version_id: number;
   dataset_id: string | null;
-  snapshot_id: string;
+  dataset_snapshot_id: string;
   role: string;
   access_path: string | null;
   transform_pack_link: string | null;
@@ -21,10 +21,10 @@ export interface ModelDatasetLink {
 }
 
 export interface CreateModelDatasetLinkData {
-  model_id: string;
-  model_version_id: string;
+  ai_model_id: string;
+  ai_model_version_id: number;
   dataset_id?: string;
-  snapshot_id: string;
+  dataset_snapshot_id: string;
   role: string;
   access_path?: string;
   transform_pack_link?: string;
@@ -95,13 +95,16 @@ export const modelDatasetLinksApi = createApi({
   endpoints: (builder) => ({
     getModelDatasetLinks: builder.query<ModelDatasetLink[], void>({
       query: () => ({
-        url: "/model-dataset-links",
+        url: "/ai-model-datasets",
         method: "GET",
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "ModelDatasetLink" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "ModelDatasetLink" as const,
+                id,
+              })),
               { type: "ModelDatasetLink", id: "LIST" },
             ]
           : [{ type: "ModelDatasetLink", id: "LIST" }],
@@ -119,13 +122,11 @@ export const modelDatasetLinksApi = createApi({
 
     getModelDatasetLink: builder.query<ModelDatasetLink, string>({
       query: (id) => ({
-        url: `/model-dataset-links/${id}`,
+        url: `/ai-model-datasets/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "ModelDatasetLink", id }],
-      transformResponse: (response: {
-        data: ModelDatasetLink;
-      }) => {
+      transformResponse: (response: { data: ModelDatasetLink }) => {
         if (response.data) {
           return response.data;
         }
@@ -133,9 +134,12 @@ export const modelDatasetLinksApi = createApi({
       },
     }),
 
-    createModelDatasetLink: builder.mutation<ModelDatasetLink, CreateModelDatasetLinkData>({
+    createModelDatasetLink: builder.mutation<
+      ModelDatasetLink,
+      CreateModelDatasetLinkData
+    >({
       query: (data) => ({
-        url: "/model-dataset-links",
+        url: "/ai-model-datasets",
         method: "POST",
         data: data,
       }),
@@ -161,7 +165,7 @@ export const modelDatasetLinksApi = createApi({
       { id: string; data: Partial<CreateModelDatasetLinkData> }
     >({
       query: ({ id, data }) => ({
-        url: `/model-dataset-links/${id}`,
+        url: `/ai-model-datasets/${id}`,
         method: "PUT",
         data: data,
       }),
@@ -187,7 +191,7 @@ export const modelDatasetLinksApi = createApi({
 
     deleteModelDatasetLink: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/model-dataset-links/${id}`,
+        url: `/ai-model-datasets/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -217,4 +221,3 @@ export const {
   useUpdateModelDatasetLinkMutation,
   useDeleteModelDatasetLinkMutation,
 } = modelDatasetLinksApi;
-

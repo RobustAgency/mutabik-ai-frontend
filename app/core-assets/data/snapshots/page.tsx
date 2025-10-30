@@ -169,6 +169,7 @@ const DatasetSnapshotsPage: React.FC = () => {
               data={snapshots ?? []}
               variant="projects"
               loading={isLoading}
+              onRowClick={(row) => router.push(`/core-assets/data/snapshots/${row.id}`)}
               emptyState={{
                 title: "No snapshots found",
                 description: "Snapshots are created automatically when datasets are versioned",

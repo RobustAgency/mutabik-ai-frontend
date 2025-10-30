@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreatePdpProcessingRegisterData } from "@/app/lib/features/pdpProcessingRegisterApi";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface PdpProcessingRegisterFormProps {
   formData: CreatePdpProcessingRegisterData;
@@ -17,6 +18,33 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
   const handleChange = (field: keyof CreatePdpProcessingRegisterData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const dataSubjectCategories = [
+    { value: "Customers", label: "Customers" },
+    { value: "Prospects", label: "Prospects" },
+    { value: "Employees", label: "Employees" },
+    { value: "Vendors", label: "Vendors" },
+    { value: "Minors", label: "Minors" },
+  ];
+
+  const personalDataCategories = [
+    { value: "Identifiers", label: "Identifiers" },
+    { value: "Contact Information", label: "Contact Information" },
+    { value: "Financial Data", label: "Financial Data" },
+    { value: "Behavioral Data", label: "Behavioral Data" },
+    { value: "Location Data", label: "Location Data" },
+    { value: "Biometric Data", label: "Biometric Data" },
+    { value: "Health Data", label: "Health Data" },
+  ];
+
+  const recipientOptions = [
+    { value: "Internal Teams", label: "Internal Teams" },
+    { value: "Third Party Vendors", label: "Third Party Vendors" },
+    { value: "Cloud Service Providers", label: "Cloud Service Providers" },
+    { value: "Data Processors", label: "Data Processors" },
+    { value: "Regulatory Authorities", label: "Regulatory Authorities" },
+    { value: "Business Partners", label: "Business Partners" },
+  ];
 
   return (
     <div className="space-y-6 pt-6">
@@ -32,7 +60,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           <div className="space-y-2">
             <Label htmlFor="controller_role">Controller Role *</Label>
             <Select value={formData.controller_role} onValueChange={(value) => handleChange("controller_role", value)}>
-              <SelectTrigger className={errors.controller_role ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.controller_role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
@@ -49,6 +77,30 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
             <Input id="owner_team" value={formData.owner_team} onChange={(e) => handleChange("owner_team", e.target.value)} placeholder="e.g., Data Governance" className={errors.owner_team ? "border-red-500" : ""} />
             {errors.owner_team && <p className="text-sm text-red-500">{errors.owner_team[0]}</p>}
           </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="data_subject_categories">Data Subject Categories *</Label>
+            <CustomMultiSelect
+              options={dataSubjectCategories}
+              value={formData.data_subject_categories}
+              onChange={(value) => handleChange("data_subject_categories", value)}
+              placeholder="Select data subject categories"
+              className={errors.data_subject_categories ? "border-red-500" : ""}
+            />
+            {errors.data_subject_categories && <p className="text-sm text-red-500">{errors.data_subject_categories[0]}</p>}
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="personal_data_categories">Personal Data Categories *</Label>
+            <CustomMultiSelect
+              options={personalDataCategories}
+              value={formData.personal_data_categories}
+              onChange={(value) => handleChange("personal_data_categories", value)}
+              placeholder="Select personal data categories"
+              className={errors.personal_data_categories ? "border-red-500" : ""}
+            />
+            {errors.personal_data_categories && <p className="text-sm text-red-500">{errors.personal_data_categories[0]}</p>}
+          </div>
         </div>
       </div>
 
@@ -58,7 +110,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           <div className="space-y-2">
             <Label htmlFor="lawful_basis">Lawful Basis *</Label>
             <Select value={formData.lawful_basis} onValueChange={(value) => handleChange("lawful_basis", value)}>
-              <SelectTrigger className={errors.lawful_basis ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.lawful_basis ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select basis" />
               </SelectTrigger>
               <SelectContent>
@@ -86,7 +138,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           <div className="space-y-2">
             <Label htmlFor="dpia_required_flag">DPIA Required</Label>
             <Select value={formData.dpia_required_flag || ""} onValueChange={(value) => handleChange("dpia_required_flag", value)}>
-              <SelectTrigger>
+              <SelectTrigger className={`w-full ${errors.dpia_required_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +151,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           <div className="space-y-2">
             <Label htmlFor="status">Status *</Label>
             <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
-              <SelectTrigger className={errors.status ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
@@ -119,6 +171,17 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           <div className="space-y-2">
             <Label htmlFor="international_transfer_ref">International Transfer Reference</Label>
             <Input id="international_transfer_ref" value={formData.international_transfer_ref || ""} onChange={(e) => handleChange("international_transfer_ref", e.target.value)} placeholder="Adequacy, SCCs, etc." />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="recipients">Recipients</Label>
+            <CustomMultiSelect
+              options={recipientOptions}
+              value={formData.recipients || []}
+              onChange={(value) => handleChange("recipients", value)}
+              placeholder="Select recipients"
+            />
+            {errors.recipients && <p className="text-sm text-red-500">{errors.recipients[0]}</p>}
           </div>
 
           <div className="space-y-2">

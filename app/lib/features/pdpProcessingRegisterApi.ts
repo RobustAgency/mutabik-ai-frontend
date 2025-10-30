@@ -108,7 +108,10 @@ export const pdpProcessingRegisterApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "PdpProcessingRegister" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "PdpProcessingRegister" as const,
+                id,
+              })),
               { type: "PdpProcessingRegister", id: "LIST" },
             ]
           : [{ type: "PdpProcessingRegister", id: "LIST" }],
@@ -129,10 +132,10 @@ export const pdpProcessingRegisterApi = createApi({
         url: `/pdp-processing-registers/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "PdpProcessingRegister", id }],
-      transformResponse: (response: {
-        data: PdpProcessingRegister;
-      }) => {
+      providesTags: (result, error, id) => [
+        { type: "PdpProcessingRegister", id },
+      ],
+      transformResponse: (response: { data: PdpProcessingRegister }) => {
         if (response.data) {
           return response.data;
         }
@@ -140,7 +143,10 @@ export const pdpProcessingRegisterApi = createApi({
       },
     }),
 
-    createPdpProcessingRegister: builder.mutation<PdpProcessingRegister, CreatePdpProcessingRegisterData>({
+    createPdpProcessingRegister: builder.mutation<
+      PdpProcessingRegister,
+      CreatePdpProcessingRegisterData
+    >({
       query: (data) => ({
         url: "/pdp-processing-registers",
         method: "POST",
@@ -169,7 +175,7 @@ export const pdpProcessingRegisterApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/pdp-processing-registers/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -224,4 +230,3 @@ export const {
   useUpdatePdpProcessingRegisterMutation,
   useDeletePdpProcessingRegisterMutation,
 } = pdpProcessingRegisterApi;
-

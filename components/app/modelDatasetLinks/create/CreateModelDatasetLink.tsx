@@ -12,10 +12,10 @@ import ModelDatasetLinkForm from "./ModelDatasetLinkForm";
 const CreateModelDatasetLink: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<CreateModelDatasetLinkData>({
-    model_id: "",
-    model_version_id: "",
+    ai_model_id: "",
+    ai_model_version_id: 1,
     dataset_id: "",
-    snapshot_id: "",
+    dataset_snapshot_id: "",
     role: "",
     access_path: "",
     transform_pack_link: "",
@@ -32,15 +32,15 @@ const CreateModelDatasetLink: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: Record<string, string[]> = {};
 
-    if (!formData.model_id?.trim()) errors.model_id = ["Model ID is required"];
-    if (!formData.model_version_id?.trim()) errors.model_version_id = ["Model version ID is required"];
-    if (!formData.snapshot_id?.trim()) errors.snapshot_id = ["Snapshot ID is required (AC-05)"];
+    if (!formData.ai_model_id?.trim()) errors.ai_model_id = ["Model is required"];
+    if (!formData.ai_model_version_id) errors.ai_model_version_id = ["Model version is required"];
+    if (!formData.dataset_snapshot_id?.trim()) errors.dataset_snapshot_id = ["Snapshot is required (AC-05)"];
     if (!formData.role?.trim()) errors.role = ["Role is required"];
     if (!formData.created_by?.trim()) errors.created_by = ["Created by is required"];
 
     const trainRoles = ["train", "validation", "test", "eval_benchmark"];
-    if (trainRoles.includes(formData.role) && !formData.snapshot_id?.trim()) {
-      errors.snapshot_id = ["Snapshot ID is required for train/val/test/eval roles (AC-05)"];
+    if (trainRoles.includes(formData.role) && !formData.dataset_snapshot_id?.trim()) {
+      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles (AC-05)"];
     }
 
     setValidationErrors(errors);
