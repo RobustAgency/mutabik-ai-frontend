@@ -89,7 +89,10 @@ export const consentScopesApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "ConsentScope" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "ConsentScope" as const,
+                id,
+              })),
               { type: "ConsentScope", id: "LIST" },
             ]
           : [{ type: "ConsentScope", id: "LIST" }],
@@ -111,9 +114,7 @@ export const consentScopesApi = createApi({
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "ConsentScope", id }],
-      transformResponse: (response: {
-        data: ConsentScope;
-      }) => {
+      transformResponse: (response: { data: ConsentScope }) => {
         if (response.data) {
           return response.data;
         }
@@ -150,7 +151,7 @@ export const consentScopesApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/consent-scopes/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -205,4 +206,3 @@ export const {
   useUpdateConsentScopeMutation,
   useDeleteConsentScopeMutation,
 } = consentScopesApi;
-

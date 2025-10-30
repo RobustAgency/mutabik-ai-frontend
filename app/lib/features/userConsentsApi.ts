@@ -122,9 +122,7 @@ export const userConsentsApi = createApi({
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "UserConsent", id }],
-      transformResponse: (response: {
-        data: UserConsent;
-      }) => {
+      transformResponse: (response: { data: UserConsent }) => {
         if (response.data) {
           return response.data;
         }
@@ -161,7 +159,7 @@ export const userConsentsApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/user-consents/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -216,4 +214,3 @@ export const {
   useUpdateUserConsentMutation,
   useDeleteUserConsentMutation,
 } = userConsentsApi;
-

@@ -189,7 +189,7 @@ export const aiModelUseCasesApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/ai-model-use-cases/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [

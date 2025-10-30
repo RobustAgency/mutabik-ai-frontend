@@ -95,7 +95,10 @@ export const consentCoverageApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "ConsentCoverage" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "ConsentCoverage" as const,
+                id,
+              })),
               { type: "ConsentCoverage", id: "LIST" },
             ]
           : [{ type: "ConsentCoverage", id: "LIST" }],
@@ -117,9 +120,7 @@ export const consentCoverageApi = createApi({
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "ConsentCoverage", id }],
-      transformResponse: (response: {
-        data: ConsentCoverage;
-      }) => {
+      transformResponse: (response: { data: ConsentCoverage }) => {
         if (response.data) {
           return response.data;
         }
@@ -127,7 +128,10 @@ export const consentCoverageApi = createApi({
       },
     }),
 
-    createConsentCoverage: builder.mutation<ConsentCoverage, CreateConsentCoverageData>({
+    createConsentCoverage: builder.mutation<
+      ConsentCoverage,
+      CreateConsentCoverageData
+    >({
       query: (data) => ({
         url: "/consent-coverage",
         method: "POST",
@@ -156,7 +160,7 @@ export const consentCoverageApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/consent-coverage/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -211,4 +215,3 @@ export const {
   useUpdateConsentCoverageMutation,
   useDeleteConsentCoverageMutation,
 } = consentCoverageApi;
-

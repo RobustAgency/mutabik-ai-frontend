@@ -166,7 +166,7 @@ export const modelDatasetLinksApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/ai-model-datasets/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
