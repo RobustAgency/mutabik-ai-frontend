@@ -6,18 +6,10 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetStakeholdersQuery, useDeleteStakeholderMutation } from "@/app/lib/features/stakeholdersApi";
 import { Stakeholder } from "@/app/lib/features/stakeholdersApi";
 import Tab from "@/components/app/projects/Tab"
-import { MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 const Stakeholders: React.FC = () => {
   const router = useRouter();
@@ -36,6 +28,59 @@ const Stakeholders: React.FC = () => {
   type TabValue = TabData["value"];
   const [activeTab, setActiveTab] = React.useState<string>("all");
   const [searchTerm, setSearchTerm] = React.useState<string>("");
+  const [deleteDialogState, setDeleteDialogState] = React.useState<{
+    isOpen: boolean;
+    stakeholderId: string | null;
+    stakeholderName: string;
+  }>({
+    isOpen: false,
+    stakeholderId: null,
+    stakeholderName: "",
+  });
+
+  const [deleteStakeholder, { isLoading: isDeleting }] = useDeleteStakeholderMutation();
+
+  const handleEditClick = (e: React.MouseEvent, stakeholder: Stakeholder) => {
+    e.stopPropagation(); // Prevent row click navigation
+    router.push(`/core-assets/stakeholders/${stakeholder.id}/edit`);
+  };
+
+  // Handler for delete button click
+  const handleDeleteClick = (e: React.MouseEvent, stakeholder: Stakeholder) => {
+    e.stopPropagation(); // Prevent row click navigation
+    setDeleteDialogState({
+      isOpen: true,
+      stakeholderId: stakeholder.id,
+      stakeholderName: stakeholder.display_name,
+    });
+  };
+
+  // Handler for confirm delete
+  const handleConfirmDelete = async () => {
+    if (deleteDialogState.stakeholderId) {
+      try {
+        await deleteStakeholder(deleteDialogState.stakeholderId).unwrap();
+        setDeleteDialogState({
+          isOpen: false,
+          stakeholderId: null,
+          stakeholderName: "",
+        });
+      } catch (error) {
+        console.error("Failed to delete stakeholder:", error);
+      }
+    }
+  };
+
+  // Handler for cancel delete
+  const handleCancelDelete = () => {
+    if (!isDeleting) {
+      setDeleteDialogState({
+        isOpen: false,
+        stakeholderId: null,
+        stakeholderName: "",
+      });
+    }
+  };
 
   // Map UI tab to API types
   const mapTabToApiType = (tab: TabValue) => {
@@ -174,94 +219,94 @@ const Stakeholders: React.FC = () => {
         </div>
       ),
       cell: ({ row }) => {
-        const stakeholder = row.original;
-
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(stakeholder.id)}
-              >
-                Copy ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-2">
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
+              onClick={(e) => handleEditClick(e, row.original)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
+              onClick={(e) => handleDeleteClick(e, row.original)}
+            >
+              Remove
+            </Button>
+          </div>
         );
       },
     },
   ];
 
   return (
-    <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
-      <CardContent className="flex flex-col flex-1">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
-          <div>
-            <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Stakeholders</h2>
-            <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Authoritative registry referenced across the platform</p>
+    <>
+      <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
+        <CardContent className="flex flex-col flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+            <div>
+              <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Stakeholders</h2>
+              <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Authoritative registry referenced across the platform</p>
+            </div>
+            <Button
+              onClick={() => router.push("/core-assets/stakeholders/create")}
+              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+            >
+              New Stakeholder
+            </Button>
           </div>
-          <Button
-            onClick={() => router.push("/core-assets/stakeholders/create")}
-            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-          >
-            New Stakeholder
-          </Button>
-        </div>
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4">
-          <Tab
-            tabsData={tabsData}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-        </div>
-        <Card className="bg-white w-full rounded-xl border-0 py-0">
-          <DataTable
-            columns={columns}
-            data={stakeholders ?? []}
-            // serverSide
-            // searchKey="display_name"
-            // onSearch={(term) => setSearchTerm(term)}
-            variant="projects"
-            loading={isLoading}
-            onRowClick={(row) =>
-              router.push(`/core-assets/stakeholders/${row.id}/details`)
-            }
-            emptyState={{
-              title: "No stakeholders found",
-              description: "Get started by creating your first stakeholder",
-              action: (
-                <Button
-                  onClick={() =>
-                    router.push("/core-assets/stakeholders/create")
-                  }
-                >
-                  Create Stakeholder
-                </Button>
-              ),
-            }}
-          />
-        </Card>
-      </CardContent>
-    </Card>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4">
+            <Tab
+              tabsData={tabsData}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+          <Card className="bg-white w-full rounded-xl border-0 py-0">
+            <DataTable
+              columns={columns}
+              data={stakeholders ?? []}
+              // serverSide
+              // searchKey="display_name"
+              // onSearch={(term) => setSearchTerm(term)}
+              variant="projects"
+              loading={isLoading}
+              onRowClick={(row) =>
+                router.push(`/core-assets/stakeholders/${row.id}/details`)
+              }
+              emptyState={{
+                title: "No stakeholders found",
+                description: "Get started by creating your first stakeholder",
+                action: (
+                  <Button
+                    onClick={() =>
+                      router.push("/core-assets/stakeholders/create")
+                    }
+                  >
+                    Create Stakeholder
+                  </Button>
+                ),
+              }}
+            />
+          </Card>
+        </CardContent>
+      </Card>
+
+      <ConfirmationDialog
+        isOpen={deleteDialogState.isOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Stakeholder"
+        description={`Are you sure you want to delete "${deleteDialogState.stakeholderName}"? This action cannot be undone and will remove the stakeholder from the system permanently.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={isDeleting}
+        loadingText="Deleting..."
+      />
+    </>
   );
 };
 

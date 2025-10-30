@@ -12,7 +12,7 @@ export interface Stakeholder {
   org_unit: string;
   email: string;
   phone: string;
-  vendor_id: string;
+  vendor_id: string | null;
   role_tags: string[];
   timezone: string;
   classification: string;
@@ -37,7 +37,13 @@ export interface StakeholderFilters {
 }
 
 export interface CreateStakeholderData {
-  type: "person" | "team" | "committee" | "vendor" | "regulator";
+  type:
+    | "person"
+    | "team"
+    | "vendor_org"
+    | "regulator"
+    | "customer_group"
+    | "committee_secretariat";
   display_name: string;
   legal_name: string;
   org_unit: string;
@@ -219,7 +225,7 @@ export const stakeholdersApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/stakeholders/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [

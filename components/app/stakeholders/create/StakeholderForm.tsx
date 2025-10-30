@@ -88,9 +88,10 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
               <SelectContent>
                 <SelectItem value="person">Person</SelectItem>
                 <SelectItem value="team">Team</SelectItem>
-                <SelectItem value="committee">Committee</SelectItem>
-                <SelectItem value="vendor">Vendor</SelectItem>
+                <SelectItem value="vendor_org">Vendor</SelectItem>
                 <SelectItem value="regulator">Regulator</SelectItem>
+                <SelectItem value="customer_group">Customer Group</SelectItem>
+                <SelectItem value="committee_secretariat">Committee Secretariat</SelectItem>
               </SelectContent>
             </Select>
             {errors.type && (

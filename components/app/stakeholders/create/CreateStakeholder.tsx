@@ -72,10 +72,6 @@ const CreateStakeholder: React.FC = () => {
       errors.phone = ["Phone is required"];
     }
 
-    // if (!formData.vendor_id?.trim()) {
-    //   errors.vendor_id = ["Vendor ID is required"];
-    // }
-
     if (!formData.timezone?.trim()) {
       errors.timezone = ["Timezone is required"];
     }
