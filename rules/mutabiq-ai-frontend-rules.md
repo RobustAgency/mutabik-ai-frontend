@@ -9,6 +9,87 @@
   \*/
 
 // ============================================================================
+// 0. BUILD-SAFETY RULES (ENFORCED) – Prevent recurrent build/lint errors
+// ============================================================================
+
+/\*\*
+
+- RULE 0.1: Next.js Client vs Server Component Contracts
+- - Do NOT declare Client Components (files starting with "use client") as async
+- - Client entry functions MUST be sync, no `await params`
+- - If a page needs `params` as Promise (Next PageProps), make it a Server Component (no "use client") and use `async ({ params }) => { const { id } = await params }`
+- - Example (Server Component): params: Promise<{ id: string }>
+    \*/
+    const NEXT_COMPONENT_CONTRACTS = {
+    clientComponents: 'No async functions; do not await params',
+    serverPages: 'May be async and await params Promise<PageParams>',
+    paramsExamples: ['Client: params: { id: string }', 'Server: params: Promise<{ id: string }>']
+    };
+
+/\*\*
+
+- RULE 0.2: RTK Query Hook Parameter Types
+- - Always pass objects that match the hook’s expected filter type
+- - Example: useGetAiModelVersionsQuery expects AiModelVersionFilters | void
+- - CORRECT: useGetAiModelVersionsQuery({ ai_model_id })
+- - INCORRECT: useGetAiModelVersionsQuery(ai_model_id)
+    \*/
+    const RTK_QUERY_PARAM_SAFETY = {
+    exampleCorrect: 'useGetAiModelVersionsQuery({ ai_model_id: modelId })',
+    exampleWrong: 'useGetAiModelVersionsQuery(modelId)'
+    };
+
+/\*\*
+
+- RULE 0.3: API Payload Mapping (FormData -> CreateData)
+- - Map UI form state to API create types explicitly; align field names
+- - Example: AI Models
+- - Form: source_organization_id, vendor_id, current_owner
+- - API: source_organization (string|null), vendor (string|null), current_owner (string|null)
+- - Ensure payload matches `CreateAiModelData` keys
+    \*/
+    const API_PAYLOAD_MAPPING = {
+    aiModels: {
+    form: ['source_organization_id', 'vendor_id', 'current_owner'],
+    api: ['source_organization', 'vendor', 'current_owner']
+    }
+    };
+
+/\*\*
+
+- RULE 0.4: Domain Types – Stakeholder fields
+- - Use Stakeholder.display_name for UI labels; `name` is not present
+- - Do not reference non-existent fields like `role` unless typed
+    \*/
+    const DOMAIN_TYPE_GUARDS = {
+    stakeholder: 'Use display_name, not name; check interfaces before rendering'
+    };
+
+/\*\*
+
+- RULE 0.5: Optional Arrays – Safe Updates
+- - Treat optional arrays as [] when updating to avoid iterator/type errors
+- - Pattern:
+- const current = (prev[field] ?? []) as string[];
+- const next = checked ? (current.includes(v) ? current : [...current, v]) : current.filter(x => x !== v);
+  \*/
+  const OPTIONAL_ARRAY_UPDATES = {
+  pattern: 'Normalize optional arrays with ?? [] before spread/filter'
+  };
+
+/\*\*
+
+- RULE 0.6: Lint Cleanliness – Unused Imports/Vars
+- - Remove unused imports and variables immediately
+- - Do not destructure unused values from hooks (e.g., error) unless used
+- - Keep imports minimal and accurate to usage
+    \*/
+    const LINT_HYGIENE = {
+    imports: 'Only import what is used',
+    vars: 'No unused variables; remove unused destructured fields'
+    };
+
+// ============================================================================
 // 1. COMPONENT STRUCTURE RULES
 // ============================================================================
 

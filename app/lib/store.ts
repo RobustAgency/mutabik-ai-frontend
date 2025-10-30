@@ -7,6 +7,7 @@ import { aiModelVersionsApi } from "./features/aiModelVersionsApi";
 import { aiModelUseCasesApi } from "./features/aiModelUseCasesApi";
 import { vendorsApi } from "./features/vendorsApi";
 import { stakeholdersApi } from "./features/stakeholdersApi";
+import { aiModelCardsApi } from "./features/aiModelCardsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -18,6 +19,7 @@ export const makeStore = () => {
       [aiModelUseCasesApi.reducerPath]: aiModelUseCasesApi.reducer,
       [vendorsApi.reducerPath]: vendorsApi.reducer,
       [stakeholdersApi.reducerPath]: stakeholdersApi.reducer,
+      [aiModelCardsApi.reducerPath]: aiModelCardsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -27,7 +29,8 @@ export const makeStore = () => {
         aiModelVersionsApi.middleware,
         aiModelUseCasesApi.middleware,
         vendorsApi.middleware,
-        stakeholdersApi.middleware
+        stakeholdersApi.middleware,
+        aiModelCardsApi.middleware
       ),
   });
 };
