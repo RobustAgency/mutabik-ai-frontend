@@ -30,7 +30,10 @@ const initialState: ProjectsState = {
 // Async thunks
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
-  async (filters?: ProjectFilters, { rejectWithValue }) => {
+  async (
+    { filters }: { filters?: ProjectFilters } = {},
+    { rejectWithValue }
+  ) => {
     try {
       const response = await projectService.getProjects(filters);
       if (!response.error) {

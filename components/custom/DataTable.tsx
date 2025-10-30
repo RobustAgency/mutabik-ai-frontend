@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   ColumnDef,
   flexRender,
@@ -85,8 +84,6 @@ export function DataTable<TData, TValue>({
 
   // State to manage selected rows
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
-  const pathname = usePathname();
-
   // Toggle row selection
   const handleRowCheckboxChange = (rowId: string) => {
     setSelectedRows((prev) =>
@@ -257,8 +254,8 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     className={`${index % 2 === 0 || variant === "projects"
-                        ? "bg-white"
-                        : "bg-[#FAFAFA]"
+                      ? "bg-white"
+                      : "bg-[#FAFAFA]"
                       } ${onRowClick ? "cursor-pointer hover:bg-gray-50" : ""
                       }`}
                     onClick={() => onRowClick?.(row.original)}

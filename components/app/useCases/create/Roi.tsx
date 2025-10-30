@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormDataType } from "./CreateUseCases";
+import { FormDataType } from "../types/useCaseTypes";
 
 interface RoiProps {
   formData: FormDataType;

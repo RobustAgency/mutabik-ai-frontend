@@ -1,7 +1,6 @@
 import {
   LayoutGrid,
   House,
-  CreditCard,
   LucideIcon,
   Users2,
   Box,
@@ -12,7 +11,6 @@ import {
   FolderKanban,
   Users,
   ShieldCheck,
-  Scale,
   FileCheck2,
   Building2,
   ScrollText,
@@ -86,7 +84,7 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/core-assets",
+    href: "/core-assets/ai-use-cases",
     label: "Core Assets",
     icon: FileBox,
     children: [

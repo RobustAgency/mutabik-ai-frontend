@@ -163,7 +163,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                 setPreview(framework.framework_logo_url);
             }
         }
-    }, [framework?.id, isEditing]); // Only re-run when framework ID changes or editing mode changes
+    }, [framework, framework?.id, isEditing]); // Only re-run when framework ID changes or editing mode changes
 
     // File Upload Handler
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

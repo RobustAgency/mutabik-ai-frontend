@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Outfit } from "next/font/google";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/server";
 import AppShell from "@/layouts/AppShell";
@@ -7,6 +8,22 @@ import StoreProvider from "./providers/StoreProvider";
 
 export const runtime = 'edge';
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-outfit",
+  weight: [
+    "100",
+    "200",
+    "300",
+    "400",
+    "500",
+    "600",
+    "700",
+    "800",
+    "900",
+  ],
+});
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let user = null;
   let initialProfile: { id: string; full_name?: string | null; avatar_url?: string | null } | null = null;
@@ -35,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>
+      <body className={outfit.variable} suppressHydrationWarning={true}>
         <AuthProvider initialUser={user} initialProfile={initialProfile}>
           <StoreProvider>
             <AppShell>{children}</AppShell>

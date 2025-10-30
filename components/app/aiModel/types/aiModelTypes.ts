@@ -1,0 +1,74 @@
+export interface FormDataType {
+  // Basic Info
+  name: string;
+  description: string | null;
+  primary_category:
+    | "traditional_ml"
+    | "deep_learning"
+    | "generative_ai"
+    | "ai_agents"
+    | "specialized_ai"
+    | "foundation_models"
+    | "multimodal_ai";
+  type:
+    | "classification"
+    | "regression"
+    | "clustering"
+    | "generation"
+    | "translation"
+    | "summarization"
+    | "question_answering"
+    | "recommendation"
+    | "optimization"
+    | "forecasting";
+  domain_specialization:
+    | "general"
+    | "healthcare"
+    | "finance"
+    | "legal"
+    | "marketing"
+    | "hr"
+    | "manufacturing"
+    | "retail"
+    | "automotive"
+    | "energy"
+    | "telecom"
+    | "education";
+
+  // Technical Details
+  business_status: "planned" | "active" | "deprecated" | "retired";
+  operational_status: "not_deployed" | "development" | "testing" | "production";
+  strategic_importance?: "low" | "medium" | "high" | "critical";
+  regulatory_risk_classification:
+    | "minimal_risk"
+    | "limited_risk"
+    | "high_risk"
+    | "unacceptable_risk"
+    | "sector_specific";
+
+  // Ownership & Governance
+  organizational_role:
+    | "developer"
+    | "importer"
+    | "deployer"
+    | "integrator"
+    | "consumer"
+    | "collaborator";
+  ownership_type:
+    | "internal"
+    | "external"
+    | "joint"
+    | "licensed"
+    | "open_source"
+    | "saas";
+  development_source:
+    | "internal_development"
+    | "external_vendor"
+    | "open_source_community"
+    | "cloud_provider"
+    | "partnership";
+  source_organization_id: string | null;
+  custodian_id: string | null;
+  vendor_id: string | null;
+  current_owner: string | null;
+}

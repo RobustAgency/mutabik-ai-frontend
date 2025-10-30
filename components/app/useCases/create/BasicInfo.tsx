@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { FormDataType } from "./CreateUseCases";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +19,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown } from "lucide-react";
+import { FormDataType } from "../types/useCaseTypes";
 
 interface BasicInfoProps {
   formData: FormDataType;

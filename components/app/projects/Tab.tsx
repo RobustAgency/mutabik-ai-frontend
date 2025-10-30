@@ -21,15 +21,15 @@ const ProjectTabs: React.FC<ProjectTabsProps> = ({
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className="w-full lg:w-auto"
+      className="w-full"
     >
-      <div className="w-full overflow-x-auto">
-        <TabsList className="flex w-max sm:w-full px-[2px] py-[2px] sm:flex-wrap lg:flex-nowrap rounded-md bg-[#F2F4F7]">
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <TabsList className="inline-flex w-full sm:w-auto px-[2px] py-[2px] rounded-md bg-[#F2F4F7]">
           {tabsData.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="min-w-[120px] cursor-pointer h-[33px] text-sm font-medium 
+              className="flex-shrink-0 px-4 cursor-pointer h-[33px] text-sm font-medium 
                 data-[state=active]:bg-white  
                 data-[state=active]:rounded-md 
                 data-[state=active]:text-[#101828] 
