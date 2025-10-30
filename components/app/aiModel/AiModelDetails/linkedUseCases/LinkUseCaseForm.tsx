@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useGetAiModelVersionsQuery } from '@/app/lib/features/aiModelVersionsApi'
 import { useGetUseCasesQuery } from '@/app/lib/features/useCasesApi'
 import { useCreateAiModelUseCaseMutation } from '@/app/lib/features/aiModelUseCasesApi'
@@ -20,7 +20,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     })
 
     // Fetch AI model versions
-    const { data: versions = [], isLoading: versionsLoading } = useGetAiModelVersionsQuery(aiModelId)
+    const { data: versions = [], isLoading: versionsLoading } = useGetAiModelVersionsQuery({ ai_model_id: aiModelId })
 
     // Fetch use cases
     const { data: useCases = [], isLoading: useCasesLoading } = useGetUseCasesQuery()

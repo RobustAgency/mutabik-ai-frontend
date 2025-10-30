@@ -47,14 +47,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
     }));
   };
 
-  const handleRoleTagKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const input = e.target as HTMLInputElement;
-      handleRoleTagAdd(input.value);
-      input.value = "";
-    }
-  };
+  // Removed unused key press handler
 
   const ROLE_TAG_OPTIONS = [
     { value: "model_owner", label: "Model Owner" },

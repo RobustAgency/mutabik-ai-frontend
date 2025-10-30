@@ -71,7 +71,7 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                         <p className="text-sm font-medium text-gray-500">Input Modalities</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                             {inputModalities.map((modality, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
+                                <Badge key={index} variant="light" className="text-xs">
                                     {formatCategory(modality)}
                                 </Badge>
                             ))}
@@ -81,7 +81,7 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                         <p className="text-sm font-medium text-gray-500">Output Modalities</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                             {outputModalities.map((modality, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
+                                <Badge key={index} variant="light" className="text-xs">
                                     {formatCategory(modality)}
                                 </Badge>
                             ))}

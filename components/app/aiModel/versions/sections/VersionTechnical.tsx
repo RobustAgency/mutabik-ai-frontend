@@ -15,10 +15,16 @@ interface Props {
 
 const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) => {
   const handleArrayChange = (field: 'input_modalities' | 'output_modalities', value: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: checked ? [...prev[field], value] : prev[field].filter(v => v !== value),
-    }));
+    setFormData(prev => {
+      const current = (prev[field] ?? []) as string[];
+      const next = checked
+        ? (current.includes(value) ? current : [...current, value])
+        : current.filter(v => v !== value);
+      return {
+        ...prev,
+        [field]: next,
+      };
+    });
   };
 
   return (

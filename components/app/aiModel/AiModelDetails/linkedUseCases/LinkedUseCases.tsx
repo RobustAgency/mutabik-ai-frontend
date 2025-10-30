@@ -19,7 +19,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
     const [dialogOpen, setDialogOpen] = useState(false)
 
     // Fetch linked use cases
-    const { data: linkedUseCases = [], isLoading, error } = useGetAiModelUseCasesQuery(aiModelId)
+    const { data: linkedUseCases = [], isLoading } = useGetAiModelUseCasesQuery(aiModelId)
 
     // Delete mutation
     const [deleteLink] = useDeleteAiModelUseCaseMutation()

@@ -197,7 +197,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                             {stakeholders.length > 0 ? (
                                 stakeholders.map((stakeholder) => (
                                     <SelectItem key={stakeholder.id} value={stakeholder.id}>
-                                        {stakeholder.name}
+                                        {stakeholder.display_name}
                                     </SelectItem>
                                 ))
                             ) : (
@@ -235,7 +235,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                             {custodians.length > 0 ? (
                                 custodians.map((custodian) => (
                                     <SelectItem key={custodian.id} value={custodian.id}>
-                                        {custodian.name} {custodian.role && `- ${custodian.role}`}
+                                        {custodian.display_name}
                                     </SelectItem>
                                 ))
                             ) : (

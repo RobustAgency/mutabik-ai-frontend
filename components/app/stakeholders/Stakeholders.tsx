@@ -27,7 +27,6 @@ const Stakeholders: React.FC = () => {
 
   type TabValue = TabData["value"];
   const [activeTab, setActiveTab] = React.useState<string>("all");
-  const [searchTerm, setSearchTerm] = React.useState<string>("");
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     stakeholderId: string | null;
@@ -101,10 +100,10 @@ const Stakeholders: React.FC = () => {
   };
 
   const apiType = mapTabToApiType(activeTab);
-  const { data: stakeholders, isLoading, error } = useGetStakeholdersQuery(
+  const { data: stakeholders, isLoading } = useGetStakeholdersQuery(
     React.useMemo(
-      () => ({ type: apiType, search: searchTerm || undefined }),
-      [apiType, searchTerm]
+      () => ({ type: apiType }),
+      [apiType]
     )
   );
 
@@ -268,9 +267,7 @@ const Stakeholders: React.FC = () => {
             <DataTable
               columns={columns}
               data={stakeholders ?? []}
-              // serverSide
-              // searchKey="display_name"
-              // onSearch={(term) => setSearchTerm(term)}
+
               variant="projects"
               loading={isLoading}
               onRowClick={(row) =>

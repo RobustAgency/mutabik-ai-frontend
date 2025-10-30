@@ -101,7 +101,26 @@ const CreateAiModel: React.FC = () => {
         }
 
         try {
-            await createAiModel(formData).unwrap();
+            const payload = {
+                name: formData.name,
+                description: formData.description,
+                primary_category: formData.primary_category,
+                type: formData.type,
+                domain_specialization: formData.domain_specialization,
+                organizational_role: formData.organizational_role,
+                ownership_type: formData.ownership_type,
+                development_source: formData.development_source,
+                business_status: formData.business_status,
+                operational_status: formData.operational_status,
+                strategic_importance: formData.strategic_importance,
+                regulatory_risk_classification: formData.regulatory_risk_classification,
+                // Map IDs to API fields that expect strings
+                source_organization: formData.source_organization_id,
+                current_owner: formData.current_owner,
+                vendor: formData.vendor_id,
+            };
+
+            await createAiModel(payload as any).unwrap();
 
             // Reset form on success
             setFormData(initialFormData);

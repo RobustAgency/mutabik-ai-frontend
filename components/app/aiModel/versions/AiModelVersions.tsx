@@ -8,8 +8,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
 import { AiModelVersion } from "@/service/app/aiModelVersions";
-import { formatDate, getStatusBadge } from "@/lib/helpers/ui";
-import { Package, Eye, Edit, Trash2 } from "lucide-react";
+import { formatDate } from "@/lib/helpers/ui";
 import {
     Dialog,
     DialogContent,
@@ -31,10 +30,7 @@ const AiModelVersions: React.FC = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [versionToDelete, setVersionToDelete] = React.useState<AiModelVersion | null>(null);
 
-    const handleDeleteClick = (version: AiModelVersion) => {
-        setVersionToDelete(version);
-        setDeleteDialogOpen(true);
-    };
+    // Removed unused handler
 
     const handleDeleteConfirm = async () => {
         if (versionToDelete) {

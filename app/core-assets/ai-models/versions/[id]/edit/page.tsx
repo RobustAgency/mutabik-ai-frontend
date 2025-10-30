@@ -2,15 +2,14 @@ import EditAiModelVersion from '@/components/app/aiModel/versions/EditAiModelVer
 import React from 'react'
 
 interface PageProps {
-    params: {
-        id: string
-    }
+    params: Promise<{ id: string }>
 }
 
-const page = ({ params }: PageProps) => {
+const page = async ({ params }: PageProps) => {
+    const { id } = await params
     return (
         <div>
-            <EditAiModelVersion versionId={parseInt(params.id)} />
+            <EditAiModelVersion versionId={parseInt(id)} />
         </div>
     )
 }

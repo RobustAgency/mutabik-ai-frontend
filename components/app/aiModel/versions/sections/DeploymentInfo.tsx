@@ -98,7 +98,7 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
                         <p className="text-sm font-medium text-gray-500">Deployment Environments</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                             {deploymentEnvironments.map((env, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
+                                <Badge key={index} variant="outlined" className="text-xs">
                                     {formatCategory(env)}
                                 </Badge>
                             ))}
@@ -129,7 +129,7 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
                 {complianceStatus && (
                     <div>
                         <p className="text-sm font-medium text-gray-500">Compliance Status</p>
-                        <Badge variant="outline">
+                        <Badge variant="outlined">
                             {formatCategory(complianceStatus)}
                         </Badge>
                     </div>
