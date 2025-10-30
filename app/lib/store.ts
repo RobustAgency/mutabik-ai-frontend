@@ -17,6 +17,7 @@ import { userConsentsApi } from "./features/userConsentsApi";
 import { consentScopesApi } from "./features/consentScopesApi";
 import { consentCoverageApi } from "./features/consentCoverageApi";
 import { pdpProcessingRegisterApi } from "./features/pdpProcessingRegisterApi";
+import { datasetSubjectPopulationApi } from "./features/datasetSubjectPopulationApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -38,6 +39,7 @@ export const makeStore = () => {
       [consentScopesApi.reducerPath]: consentScopesApi.reducer,
       [consentCoverageApi.reducerPath]: consentCoverageApi.reducer,
       [pdpProcessingRegisterApi.reducerPath]: pdpProcessingRegisterApi.reducer,
+      [datasetSubjectPopulationApi.reducerPath]: datasetSubjectPopulationApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -57,7 +59,8 @@ export const makeStore = () => {
         userConsentsApi.middleware,
         consentScopesApi.middleware,
         consentCoverageApi.middleware,
-        pdpProcessingRegisterApi.middleware
+        pdpProcessingRegisterApi.middleware,
+        datasetSubjectPopulationApi.middleware
       ),
   });
 };

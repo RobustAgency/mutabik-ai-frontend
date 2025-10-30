@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateUserConsentData } from "@/app/lib/features/userConsentsApi";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface UserConsentFormProps {
   formData: CreateUserConsentData;
@@ -17,13 +18,16 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handlePurposeChange = (value: string) => {
-    const currentPurposes = formData.consent_purpose || [];
-    const newPurposes = currentPurposes.includes(value)
-      ? currentPurposes.filter((p) => p !== value)
-      : [...currentPurposes, value];
-    handleChange("consent_purpose", newPurposes);
-  };
+  const consentPurposeOptions = [
+    { value: "marketing", label: "marketing" },
+    { value: "analytics", label: "analytics" },
+    { value: "personalization", label: "personalization" },
+    { value: "training_ai", label: "training_ai" },
+    { value: "service_operations", label: "service_operations" },
+    { value: "support", label: "support" },
+    { value: "research", label: "research" },
+    { value: "other", label: "other" },
+  ];
 
   return (
     <div className="space-y-6 pt-6">
@@ -113,6 +117,18 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
               </SelectContent>
             </Select>
             {errors.legal_basis && <p className="text-sm text-red-500">{errors.legal_basis[0]}</p>}
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="consent_purpose">Consent Purpose *</Label>
+            <CustomMultiSelect
+              options={consentPurposeOptions}
+              value={formData.consent_purpose || []}
+              onChange={(value) => handleChange("consent_purpose", value)}
+              placeholder="Select consent purposes"
+              className={errors.consent_purpose ? "border-red-500" : ""}
+            />
+            {errors.consent_purpose && <p className="text-sm text-red-500">{errors.consent_purpose[0]}</p>}
           </div>
 
           <div className="space-y-2">

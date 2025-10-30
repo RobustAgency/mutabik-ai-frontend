@@ -89,7 +89,7 @@ export const consentCoverageApi = createApi({
   endpoints: (builder) => ({
     getConsentCoverages: builder.query<ConsentCoverage[], void>({
       query: () => ({
-        url: "/consent-coverage",
+        url: "/consent-coverages",
         method: "GET",
       }),
       providesTags: (result) =>
@@ -116,7 +116,7 @@ export const consentCoverageApi = createApi({
 
     getConsentCoverage: builder.query<ConsentCoverage, string>({
       query: (id) => ({
-        url: `/consent-coverage/${id}`,
+        url: `/consent-coverages/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "ConsentCoverage", id }],
@@ -133,7 +133,7 @@ export const consentCoverageApi = createApi({
       CreateConsentCoverageData
     >({
       query: (data) => ({
-        url: "/consent-coverage",
+        url: "/consent-coverages",
         method: "POST",
         data: data,
       }),
@@ -159,7 +159,7 @@ export const consentCoverageApi = createApi({
       { id: string; data: Partial<CreateConsentCoverageData> }
     >({
       query: ({ id, data }) => ({
-        url: `/consent-coverage/${id}`,
+        url: `/consent-coverages/${id}`,
         method: "POST",
         data: data,
       }),
@@ -185,7 +185,7 @@ export const consentCoverageApi = createApi({
 
     deleteConsentCoverage: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/consent-coverage/${id}`,
+        url: `/consent-coverages/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [

@@ -141,6 +141,11 @@ export const userRoutes: RouteItem[] = [
             label: "Model-Dataset Links",
             icon: Network,
           },
+          {
+            href: "/core-assets/data/subject-population",
+            label: "Subject Population",
+            icon: Users,
+          },
         ],
       },
       {
