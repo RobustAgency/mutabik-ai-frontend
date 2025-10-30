@@ -11,7 +11,7 @@ import { CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
 import StakeholderForm from "./StakeholderForm";
 
 const initialFormData: CreateStakeholderData = {
-  type: "",
+  type: "person",
   display_name: "",
   legal_name: "",
   org_unit: "",
@@ -20,7 +20,7 @@ const initialFormData: CreateStakeholderData = {
   vendor_id: "",
   role_tags: [],
   timezone: "",
-  classification: "",
+  classification: "internal",
   country: "",
   external_ref: "",
   active: true,
@@ -72,9 +72,9 @@ const CreateStakeholder: React.FC = () => {
       errors.phone = ["Phone is required"];
     }
 
-    if (!formData.vendor_id?.trim()) {
-      errors.vendor_id = ["Vendor ID is required"];
-    }
+    // if (!formData.vendor_id?.trim()) {
+    //   errors.vendor_id = ["Vendor ID is required"];
+    // }
 
     if (!formData.timezone?.trim()) {
       errors.timezone = ["Timezone is required"];
@@ -124,7 +124,7 @@ const CreateStakeholder: React.FC = () => {
                 New stakeholder
               </h1>
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
-                Fill all the details below of your stakeholder
+                Create stakeholder registry which can be referenced across the platform
               </p>
             </div>
             <Button

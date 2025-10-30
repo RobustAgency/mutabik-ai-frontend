@@ -3,12 +3,13 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
+import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
+import { CountryDropdown } from "react-country-region-selector";
 
 interface StakeholderFormProps {
   formData: CreateStakeholderData;
@@ -21,6 +22,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
   setFormData,
   errors,
 }) => {
+  const { data: vendors = [], isLoading: isVendorsLoading } = useGetVendorsQuery();
+  const noVendorsAvailable = !isVendorsLoading && vendors.length === 0;
   const handleInputChange = (field: keyof CreateStakeholderData, value: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -53,27 +56,41 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
     }
   };
 
+  const ROLE_TAG_OPTIONS = [
+    { value: "model_owner", label: "Model Owner" },
+    { value: "risk_analyst", label: "Risk Analyst" },
+    { value: "IC", label: "Individual Contributor" },
+    { value: "DS", label: "Data Scientist" },
+    { value: "security_IR", label: "Security IR" },
+  ];
+
+  const getRoleTagLabel = (value: string): string => {
+    const found = ROLE_TAG_OPTIONS.find((opt) => opt.value === value);
+    return found ? found.label : value;
+  };
+
   return (
     <div className="space-y-6">
       {/* Basic Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Basic Information</h3>
-        
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Basic Information</h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <Label htmlFor="type">Type *</Label>
             <Select
               value={formData.type}
               onValueChange={(value) => handleInputChange("type", value)}
             >
-              <SelectTrigger className={errors.type ? "border-destructive" : ""}>
+              <SelectTrigger className={errors.type ? "border-destructive w-full" : "w-full"}>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="person">Person</SelectItem>
-                <SelectItem value="vendor_org">Vendor Organization</SelectItem>
-                <SelectItem value="internal_org">Internal Organization</SelectItem>
-                <SelectItem value="external_org">External Organization</SelectItem>
+                <SelectItem value="team">Team</SelectItem>
+                <SelectItem value="committee">Committee</SelectItem>
+                <SelectItem value="vendor">Vendor</SelectItem>
+                <SelectItem value="regulator">Regulator</SelectItem>
               </SelectContent>
             </Select>
             {errors.type && (
@@ -127,8 +144,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
       {/* Contact Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Contact Information</h3>
-        
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Contact Information</h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email *</Label>
@@ -163,18 +180,31 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
       {/* Organization Details */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Organization Details</h3>
-        
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Organization Details</h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="vendor_id">Vendor ID *</Label>
-            <Input
-              id="vendor_id"
+            <Label htmlFor="vendor_id">Link Vendor</Label>
+            <Select
               value={formData.vendor_id}
-              onChange={(e) => handleInputChange("vendor_id", e.target.value)}
-              className={errors.vendor_id ? "border-destructive" : ""}
-              placeholder="Enter vendor ID"
-            />
+              onValueChange={(value) => handleInputChange("vendor_id", value)}
+              disabled={isVendorsLoading}
+            >
+              <SelectTrigger className={errors.vendor_id ? "border-destructive w-full" : "w-full"}>
+                <SelectValue placeholder={isVendorsLoading ? "Loading vendors..." : "Select vendor"} />
+              </SelectTrigger>
+              <SelectContent>
+                {noVendorsAvailable ? (
+                  <SelectItem disabled value="__no_vendors__">No vendors found</SelectItem>
+                ) : (
+                  vendors.map((v: any) => (
+                    <SelectItem key={v.id} value={String(v.id)}>
+                      {v.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
             {errors.vendor_id && (
               <p className="text-sm text-destructive">{errors.vendor_id[0]}</p>
             )}
@@ -186,16 +216,12 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
               value={formData.classification}
               onValueChange={(value) => handleInputChange("classification", value)}
             >
-              <SelectTrigger className={errors.classification ? "border-destructive" : ""}>
+              <SelectTrigger className={errors.classification ? "border-destructive w-full" : "w-full"}>
                 <SelectValue placeholder="Select classification" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="internal">Internal</SelectItem>
                 <SelectItem value="external">External</SelectItem>
-                <SelectItem value="vendor">Vendor</SelectItem>
-                <SelectItem value="partner">Partner</SelectItem>
-                <SelectItem value="customer">Customer</SelectItem>
-                <SelectItem value="supplier">Supplier</SelectItem>
               </SelectContent>
             </Select>
             {errors.classification && (
@@ -205,27 +231,15 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="country">Country *</Label>
-            <Select
-              value={formData.country}
-              onValueChange={(value) => handleInputChange("country", value)}
-            >
-              <SelectTrigger className={errors.country ? "border-destructive" : ""}>
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="US">United States</SelectItem>
-                <SelectItem value="CA">Canada</SelectItem>
-                <SelectItem value="UK">United Kingdom</SelectItem>
-                <SelectItem value="DE">Germany</SelectItem>
-                <SelectItem value="FR">France</SelectItem>
-                <SelectItem value="AU">Australia</SelectItem>
-                <SelectItem value="JP">Japan</SelectItem>
-                <SelectItem value="IN">India</SelectItem>
-                <SelectItem value="BR">Brazil</SelectItem>
-                <SelectItem value="MX">Mexico</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className={errors.country ? "border-destructive rounded-md" : ""}>
+              <CountryDropdown
+                valueType="short"
+                value={formData.country}
+                onChange={(val) => handleInputChange("country", val)}
+                aria-label="Select country"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
             {errors.country && (
               <p className="text-sm text-destructive">{errors.country[0]}</p>
             )}
@@ -237,7 +251,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
               value={formData.timezone}
               onValueChange={(value) => handleInputChange("timezone", value)}
             >
-              <SelectTrigger className={errors.timezone ? "border-destructive" : ""}>
+              <SelectTrigger className={errors.timezone ? "border-destructive w-full" : "w-full"}>
                 <SelectValue placeholder="Select timezone" />
               </SelectTrigger>
               <SelectContent>
@@ -262,25 +276,32 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
       {/* Role Tags */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Role Tags</h3>
-        
-        <div className="space-y-2">
-          <Label htmlFor="role_tags">Add Role Tags</Label>
-          <Input
-            id="role_tags"
-            placeholder="Type a role tag and press Enter"
-            onKeyPress={handleRoleTagKeyPress}
-          />
-          <p className="text-sm text-muted-foreground">
-            Press Enter to add a role tag
-          </p>
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Role Tags</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="role_tags_picker">Select role tag</Label>
+            <Select onValueChange={(value) => handleRoleTagAdd(value)}>
+              <SelectTrigger id="role_tags_picker" className="w-full">
+                <SelectValue placeholder="Choose a role tag" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLE_TAG_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">Selected tags appear below. Click x to remove.</p>
+          </div>
         </div>
 
         {formData.role_tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {formData.role_tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                {tag}
+              <Badge key={index} variant="light" className="flex items-center gap-1">
+                {getRoleTagLabel(tag)}
                 <button
                   type="button"
                   onClick={() => handleRoleTagRemove(tag)}
@@ -296,8 +317,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
       {/* Additional Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Additional Information</h3>
-        
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Additional Information</h3>
+
         <div className="space-y-2">
           <Label htmlFor="external_ref">External Reference</Label>
           <Input
@@ -311,17 +332,19 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="active"
-            checked={formData.active}
-            onCheckedChange={(checked) => handleInputChange("active", checked)}
-          />
-          <Label htmlFor="active">Active Stakeholder</Label>
+        <div className="space-y-2 w-full md:w-1/2">
+          <Label htmlFor="active">Active</Label>
+          <div className="flex items-center gap-3">
+            <Switch
+              id="active"
+              checked={formData.active}
+              onCheckedChange={(checked) => handleInputChange("active", checked)}
+            />
+            <span className="text-sm text-muted-foreground">
+              {formData.active ? "Active" : "Inactive"}
+            </span>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Inactive stakeholders will not appear in active lists but will be retained for historical purposes.
-        </p>
       </div>
     </div>
   );

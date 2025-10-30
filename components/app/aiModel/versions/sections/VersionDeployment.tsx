@@ -37,7 +37,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             value={formData.deployment_status}
             onValueChange={(value) => setFormData(prev => ({ ...prev, deployment_status: value as any }))}
           >
-            <SelectTrigger className={errors.deployment_status ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.deployment_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -57,7 +57,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             value={formData.lifecycle_stage}
             onValueChange={(value) => setFormData(prev => ({ ...prev, lifecycle_stage: value as any }))}
           >
-            <SelectTrigger className={errors.lifecycle_stage ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.lifecycle_stage ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -77,7 +77,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             value={formData.compliance_check_status || 'compliant'}
             onValueChange={(value) => setFormData(prev => ({ ...prev, compliance_check_status: value as any }))}
           >
-            <SelectTrigger className={errors.compliance_check_status ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.compliance_check_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -97,7 +97,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             value={formData.validation_status || 'not_validated'}
             onValueChange={(value) => setFormData(prev => ({ ...prev, validation_status: value as any }))}
           >
-            <SelectTrigger className={errors.validation_status ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.validation_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -32,7 +32,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
           value={formData.ai_model_id ? String(formData.ai_model_id) : "0"}
           onValueChange={(value) => setFormData(prev => ({ ...prev, ai_model_id: parseInt(value) }))}
         >
-          <SelectTrigger className={errors.ai_model_id ? "border-red-500 focus:border-red-500" : ""}>
+          <SelectTrigger className={errors.ai_model_id ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
             <SelectValue placeholder="Select a model..." />
           </SelectTrigger>
           <SelectContent>
@@ -58,7 +58,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
             value={formData.version_number}
             onChange={(e) => setFormData(prev => ({ ...prev, version_number: e.target.value }))}
             placeholder="v2.1.3"
-            className={`w-full ${errors.version_number ? "border-red-500 focus:border-red-500" : ""}`}
+            className={`w-full ${errors.version_number ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />
           <p className="text-xs text-gray-500 mt-1">Semantic versioning (major.minor.patch)</p>
           {errors.version_number && (
@@ -74,7 +74,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
             value={formData.version_type}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_type: value as any }))}
           >
-            <SelectTrigger className={errors.version_type ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.version_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

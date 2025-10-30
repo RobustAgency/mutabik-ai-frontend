@@ -35,7 +35,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             value={formData.architecture_type}
             onChange={(e) => setFormData(prev => ({ ...prev, architecture_type: e.target.value }))}
             placeholder="transformer, cnn, rnn, etc."
-            className={`w-full ${errors.architecture_type ? "border-red-500 focus:border-red-500" : ""}`}
+            className={`w-full ${errors.architecture_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />
           {errors.architecture_type && (
             <p className="text-xs text-red-600 mt-1">{errors.architecture_type[0]}</p>
@@ -47,12 +47,12 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             value={formData.complexity_level}
             onValueChange={(value) => setFormData(prev => ({ ...prev, complexity_level: value as any }))}
           >
-            <SelectTrigger className={errors.complexity_level ? "border-red-500 focus:border-red-500" : ""}>
+            <SelectTrigger className={errors.complexity_level ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['simple','moderate','complex','massive'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_',' ')}</SelectItem>
+              {['simple', 'moderate', 'complex', 'massive'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -80,7 +80,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             value={formData.model_file_size_gb ?? ''}
             onChange={(e) => setFormData(prev => ({ ...prev, model_file_size_gb: e.target.value ? parseFloat(e.target.value) : 0 }))}
             placeholder="2.5"
-            className={`w-full ${errors.model_file_size_gb ? "border-red-500 focus:border-red-500" : ""}`}
+            className={`w-full ${errors.model_file_size_gb ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />
           {errors.model_file_size_gb && (
             <p className="text-xs text-red-600 mt-1">{errors.model_file_size_gb[0]}</p>
@@ -101,14 +101,14 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2">Input Modalities</Label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {['text','image','audio','video','structured_data','time_series'].map(mod => (
+          {['text', 'image', 'audio', 'video', 'structured_data', 'time_series'].map(mod => (
             <div key={mod} className="flex items-center space-x-2">
               <Checkbox
                 id={`input_${mod}`}
-                checked={formData.input_modalities.includes(mod)}
+                checked={formData.input_modalities?.includes(mod) ?? false}
                 onCheckedChange={(checked) => handleArrayChange('input_modalities', mod, checked as boolean)}
               />
-              <Label htmlFor={`input_${mod}`} className="text-sm text-gray-700">{mod.replace('_',' ')}</Label>
+              <Label htmlFor={`input_${mod}`} className="text-sm text-gray-700">{mod.replace('_', ' ')}</Label>
             </div>
           ))}
         </div>
@@ -117,14 +117,14 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2">Output Modalities</Label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {['text','image','audio','classification','regression','embedding','structured_data'].map(mod => (
+          {['text', 'image', 'audio', 'classification', 'regression', 'embedding', 'structured_data'].map(mod => (
             <div key={mod} className="flex items-center space-x-2">
               <Checkbox
                 id={`output_${mod}`}
-                checked={formData.output_modalities.includes(mod)}
+                checked={formData.output_modalities?.includes(mod) ?? false}
                 onCheckedChange={(checked) => handleArrayChange('output_modalities', mod, checked as boolean)}
               />
-              <Label htmlFor={`output_${mod}`} className="text-sm text-gray-700">{mod.replace('_',' ')}</Label>
+              <Label htmlFor={`output_${mod}`} className="text-sm text-gray-700">{mod.replace('_', ' ')}</Label>
             </div>
           ))}
         </div>

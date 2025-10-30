@@ -23,8 +23,21 @@ export interface Stakeholder {
   updated_at: string;
 }
 
+export interface StakeholderFilters {
+  type?:
+    | "person"
+    | "team"
+    | "vendor_org"
+    | "regulator"
+    | "customer_group"
+    | "committee_secretariat";
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
 export interface CreateStakeholderData {
-  type: string;
+  type: "person" | "team" | "committee" | "vendor" | "regulator";
   display_name: string;
   legal_name: string;
   org_unit: string;
@@ -33,8 +46,8 @@ export interface CreateStakeholderData {
   vendor_id: string;
   role_tags: string[];
   timezone: string;
-  classification: string;
-  country: string;
+  classification: "internal" | "external";
+  country: string; // ISO alpha-2
   external_ref: string;
   active: boolean;
 }
@@ -99,10 +112,11 @@ export const stakeholdersApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["Stakeholder"],
   endpoints: (builder) => ({
-    getStakeholders: builder.query<Stakeholder[], void>({
-      query: () => ({
+    getStakeholders: builder.query<Stakeholder[], StakeholderFilters | void>({
+      query: (filters) => ({
         url: "/stakeholders",
         method: "GET",
+        params: filters ?? undefined,
       }),
       providesTags: (result) =>
         result
