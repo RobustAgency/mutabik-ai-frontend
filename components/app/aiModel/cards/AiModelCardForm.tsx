@@ -60,8 +60,8 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
 
     const validate = (): boolean => {
         const next: Record<string, string[]> = {};
-        if (!formData.ai_model_id?.trim()) next.ai_model_id = ["Parent model is required"];
-        if (!formData.ai_model_version_id?.trim()) next.ai_model_version_id = ["Model version is required"];
+        if (!formData.ai_model_id || String(formData.ai_model_id).trim() === "") next.ai_model_id = ["Parent model is required"];
+        if (!formData.ai_model_version_id || String(formData.ai_model_version_id).trim() === "") next.ai_model_version_id = ["Model version is required"];
         if (!formData.title?.trim()) next.title = ["Title is required"];
         if (!formData.owner_email?.trim()) next.owner_email = ["Owner email is required"];
         if (formData.completeness_score < 0 || formData.completeness_score > 100) next.completeness_score = ["Completeness must be 0-100"];

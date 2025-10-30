@@ -136,7 +136,7 @@ export const useCasesApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/use-cases/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data, // ✅ Fixed: Changed from 'body' to 'data'
       }),
       invalidatesTags: (result, error, { id }) => [

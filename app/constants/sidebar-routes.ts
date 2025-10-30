@@ -131,6 +131,21 @@ export const userRoutes: RouteItem[] = [
             label: "Data Elements",
             icon: Files,
           },
+          {
+            href: "/core-assets/data/snapshots",
+            label: "Dataset Snapshots",
+            icon: Layers3,
+          },
+          {
+            href: "/core-assets/data/model-links",
+            label: "Model-Dataset Links",
+            icon: Network,
+          },
+          {
+            href: "/core-assets/data/subject-population",
+            label: "Subject Population",
+            icon: Users,
+          },
         ],
       },
       {
@@ -214,9 +229,31 @@ export const userRoutes: RouteItem[] = [
         icon: FileSearch,
       },
       {
+        href: "/privacy/pdp-register",
+        label: "PDP Processing Register",
+        icon: FileCheck2,
+      },
+      {
         href: "/privacy/consent",
         label: "Consent Management",
         icon: CheckCircle2,
+        children: [
+          {
+            href: "/privacy/consent/consents",
+            label: "User Consents",
+            icon: Users,
+          },
+          {
+            href: "/privacy/consent/scopes",
+            label: "Consent Scopes",
+            icon: SlidersHorizontal,
+          },
+          {
+            href: "/privacy/consent/coverage",
+            label: "Consent Coverage",
+            icon: BarChart3,
+          },
+        ],
       },
       { href: "/privacy/dsar", label: "DSAR Log", icon: FileBarChart },
       { href: "/privacy/tia", label: "Cross-Border TIA", icon: GlobeLock },

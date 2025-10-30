@@ -8,6 +8,16 @@ import { aiModelUseCasesApi } from "./features/aiModelUseCasesApi";
 import { vendorsApi } from "./features/vendorsApi";
 import { stakeholdersApi } from "./features/stakeholdersApi";
 import { aiModelCardsApi } from "./features/aiModelCardsApi";
+import { dataSourcesApi } from "./features/dataSourcesApi";
+import { datasetsApi } from "./features/datasetsApi";
+import { dataElementsApi } from "./features/dataElementsApi";
+import { datasetSnapshotsApi } from "./features/datasetSnapshotsApi";
+import { modelDatasetLinksApi } from "./features/modelDatasetLinksApi";
+import { userConsentsApi } from "./features/userConsentsApi";
+import { consentScopesApi } from "./features/consentScopesApi";
+import { consentCoverageApi } from "./features/consentCoverageApi";
+import { pdpProcessingRegisterApi } from "./features/pdpProcessingRegisterApi";
+import { datasetSubjectPopulationApi } from "./features/datasetSubjectPopulationApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -20,6 +30,16 @@ export const makeStore = () => {
       [vendorsApi.reducerPath]: vendorsApi.reducer,
       [stakeholdersApi.reducerPath]: stakeholdersApi.reducer,
       [aiModelCardsApi.reducerPath]: aiModelCardsApi.reducer,
+      [dataSourcesApi.reducerPath]: dataSourcesApi.reducer,
+      [datasetsApi.reducerPath]: datasetsApi.reducer,
+      [dataElementsApi.reducerPath]: dataElementsApi.reducer,
+      [datasetSnapshotsApi.reducerPath]: datasetSnapshotsApi.reducer,
+      [modelDatasetLinksApi.reducerPath]: modelDatasetLinksApi.reducer,
+      [userConsentsApi.reducerPath]: userConsentsApi.reducer,
+      [consentScopesApi.reducerPath]: consentScopesApi.reducer,
+      [consentCoverageApi.reducerPath]: consentCoverageApi.reducer,
+      [pdpProcessingRegisterApi.reducerPath]: pdpProcessingRegisterApi.reducer,
+      [datasetSubjectPopulationApi.reducerPath]: datasetSubjectPopulationApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -30,7 +50,17 @@ export const makeStore = () => {
         aiModelUseCasesApi.middleware,
         vendorsApi.middleware,
         stakeholdersApi.middleware,
-        aiModelCardsApi.middleware
+        aiModelCardsApi.middleware,
+        dataSourcesApi.middleware,
+        datasetsApi.middleware,
+        dataElementsApi.middleware,
+        datasetSnapshotsApi.middleware,
+        modelDatasetLinksApi.middleware,
+        userConsentsApi.middleware,
+        consentScopesApi.middleware,
+        consentCoverageApi.middleware,
+        pdpProcessingRegisterApi.middleware,
+        datasetSubjectPopulationApi.middleware
       ),
   });
 };

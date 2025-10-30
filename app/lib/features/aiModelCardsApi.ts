@@ -2,7 +2,10 @@ import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 import { apiClient } from "@/lib/api";
-import type { AiModelCard, CreateAiModelCardData } from "@/service/app/aiModelCards";
+import type {
+  AiModelCard,
+  CreateAiModelCardData,
+} from "@/service/app/aiModelCards";
 
 const axiosBaseQuery =
   (): BaseQueryFn<
@@ -20,11 +23,16 @@ const axiosBaseQuery =
       const result = await apiClient({ url, method, data, params });
       return { data: result.data };
     } catch (axiosError) {
-      const err = axiosError as AxiosError<{ message?: string; errors?: Record<string, string[]> }>; 
+      const err = axiosError as AxiosError<{
+        message?: string;
+        errors?: Record<string, string[]>;
+      }>;
       return {
         error: {
           status: err.response?.status || 500,
-          data: err.response?.data || { message: err.message || "Request failed" },
+          data: err.response?.data || {
+            message: err.message || "Request failed",
+          },
         },
       };
     }
@@ -44,7 +52,9 @@ export const aiModelCardsApi = createApi({
               { type: "AiModelCard" as const, id: "LIST" },
             ]
           : [{ type: "AiModelCard" as const, id: "LIST" }],
-      transformResponse: (response: { data: { data: AiModelCard[] } | AiModelCard[] }) => {
+      transformResponse: (response: {
+        data: { data: AiModelCard[] } | AiModelCard[];
+      }) => {
         if (Array.isArray(response?.data)) return response.data;
         if ((response?.data as any)?.data) return (response.data as any).data;
         return [];
@@ -65,13 +75,21 @@ export const aiModelCardsApi = createApi({
           await queryFulfilled;
           toast.success("Model card created");
         } catch (error: any) {
-          if (!error?.error?.data?.errors) toast.error(error?.error?.data?.message || "Create failed");
+          if (!error?.error?.data?.errors)
+            toast.error(error?.error?.data?.message || "Create failed");
         }
       },
     }),
 
-    updateAiModelCard: builder.mutation<AiModelCard, { id: number | string; data: Partial<CreateAiModelCardData> }>({
-      query: ({ id, data }) => ({ url: `/ai-model-cards/${id}`, method: "PUT", data }),
+    updateAiModelCard: builder.mutation<
+      AiModelCard,
+      { id: number | string; data: Partial<CreateAiModelCardData> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/ai-model-cards/${id}`,
+        method: "POST",
+        data,
+      }),
       invalidatesTags: (_r, _e, { id }) => [
         { type: "AiModelCard", id },
         { type: "AiModelCard", id: "LIST" },
@@ -81,7 +99,8 @@ export const aiModelCardsApi = createApi({
           await queryFulfilled;
           toast.success("Model card updated");
         } catch (error: any) {
-          if (!error?.error?.data?.errors) toast.error(error?.error?.data?.message || "Update failed");
+          if (!error?.error?.data?.errors)
+            toast.error(error?.error?.data?.message || "Update failed");
         }
       },
     }),
@@ -94,5 +113,3 @@ export const {
   useCreateAiModelCardMutation,
   useUpdateAiModelCardMutation,
 } = aiModelCardsApi;
-
-

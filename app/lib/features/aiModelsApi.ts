@@ -140,7 +140,7 @@ export const aiModelsApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/ai-models/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [

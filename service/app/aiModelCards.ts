@@ -1,7 +1,7 @@
 export interface AiModelCard {
   id: number;
-  ai_model_id: string;
-  ai_model_version_id: string;
+  ai_model_id: string | number;
+  ai_model_version_id: string | number;
   // Optional fields to align with governance schema
   card_id?: string;
   version_id?: string | number;
