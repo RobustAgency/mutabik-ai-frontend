@@ -15,6 +15,10 @@ export interface ConsentCoverage {
   coverage_pct: number;
   evidence_ref: string;
   created_at: string;
+  // Optional denormalized fields from backend responses for convenience in UI
+  updated_at?: string;
+  dataset_name?: string;
+  snapshot_version_tag?: string;
 }
 
 export interface CreateConsentCoverageData {

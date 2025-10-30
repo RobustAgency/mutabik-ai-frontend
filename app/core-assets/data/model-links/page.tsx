@@ -29,7 +29,7 @@ const ModelDatasetLinksPage: React.FC = () => {
     setDeleteDialogState({
       isOpen: true,
       linkId: link.id,
-      linkName: `${link.model_id} - ${link.role}`,
+      linkName: `${link.ai_model_version_id} - ${link.role}`,
     });
   };
 

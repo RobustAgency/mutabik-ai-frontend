@@ -85,7 +85,7 @@ const ConsentScopeDetails: React.FC<ConsentScopeDetailsProps> = ({ scopeId }) =>
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleDelete}
         title="Delete Consent Scope"
-        description={`Are you sure you want to delete this consent scope for dataset "${scope.dataset?.name || scope.dataset_id}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete this consent scope for dataset "${scope.dataset_id}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

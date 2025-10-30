@@ -2,11 +2,11 @@ import React from "react";
 import EditDatasetSnapshot from "@/components/app/datasetSnapshots/edit/EditDatasetSnapshot";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>
 }
 
 const EditSnapshotPage = async ({ params }: PageProps) => {
-  const { id } = params;
+  const { id } = await params;
   return <EditDatasetSnapshot snapshotId={id} />;
 };
 

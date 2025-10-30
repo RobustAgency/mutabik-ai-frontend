@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { ConsentCoverage } from "@/app/lib/features/consentCoverageApi";
 import { Progress } from "@/components/ui/progress";
 
@@ -33,9 +32,9 @@ const ConsentCoverageFormReadOnly: React.FC<ConsentCoverageFormReadOnlyProps> = 
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Dataset & Snapshot Context</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ReadOnlyField label="Dataset ID" value={coverage.dataset_id} />
-          {coverage.dataset && <ReadOnlyField label="Dataset Name" value={coverage.dataset.name} />}
+          {coverage.dataset_name && <ReadOnlyField label="Dataset Name" value={coverage.dataset_name} />}
           {coverage.snapshot_id && <ReadOnlyField label="Snapshot ID" value={coverage.snapshot_id} />}
-          {coverage.snapshot && <ReadOnlyField label="Snapshot Version" value={coverage.snapshot.version_tag} />}
+          {coverage.snapshot_version_tag && <ReadOnlyField label="Snapshot Version" value={coverage.snapshot_version_tag} />}
         </div>
       </div>
 
@@ -43,7 +42,7 @@ const ConsentCoverageFormReadOnly: React.FC<ConsentCoverageFormReadOnlyProps> = 
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Policy Context</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ReadOnlyField label="Purpose" value={coverage.purpose} />
+          <ReadOnlyField label="Purpose" value={coverage.purpose?.join(", ")} />
           <ReadOnlyField label="Jurisdiction" value={coverage.jurisdiction} />
           <ReadOnlyField label="As Of Date" value={new Date(coverage.as_of).toLocaleString()} />
         </div>
@@ -52,7 +51,7 @@ const ConsentCoverageFormReadOnly: React.FC<ConsentCoverageFormReadOnlyProps> = 
       {/* Coverage Metrics */}
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Coverage Metrics</h3>
-        
+
         {/* Coverage Percentage - Prominent Display */}
         <div className="p-4 bg-gradient-to-r from-[#F9FAFB] to-white border border-[#E4E7EC] rounded-lg">
           <div className="flex items-center justify-between mb-2">
@@ -67,9 +66,9 @@ const ConsentCoverageFormReadOnly: React.FC<ConsentCoverageFormReadOnlyProps> = 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ReadOnlyField label="Total Subjects" value={coverage.subjects_total.toLocaleString()} />
           <ReadOnlyField label="Subjects with Valid Consent" value={coverage.subjects_with_valid_consent.toLocaleString()} />
-          <ReadOnlyField 
-            label="Subjects without Consent" 
-            value={(coverage.subjects_total - coverage.subjects_with_valid_consent).toLocaleString()} 
+          <ReadOnlyField
+            label="Subjects without Consent"
+            value={(coverage.subjects_total - coverage.subjects_with_valid_consent).toLocaleString()}
           />
         </div>
 
@@ -81,7 +80,10 @@ const ConsentCoverageFormReadOnly: React.FC<ConsentCoverageFormReadOnlyProps> = 
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Metadata</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ReadOnlyField label="Created At" value={new Date(coverage.created_at).toLocaleString()} />
-          <ReadOnlyField label="Updated At" value={new Date(coverage.updated_at).toLocaleString()} />
+          <ReadOnlyField
+            label="Updated At"
+            value={coverage.updated_at ? new Date(coverage.updated_at).toLocaleString() : undefined}
+          />
         </div>
       </div>
     </div>

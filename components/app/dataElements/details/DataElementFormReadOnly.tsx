@@ -40,7 +40,7 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <div className="space-y-2">
             <Label className="text-[#667085]">Sensitivity</Label>
             <div className="flex gap-2">
-              <Badge variant={element.sensitivity === "Restricted" || element.sensitivity === "Confidential" ? "destructive" : "light"}>
+              <Badge variant={element.sensitivity === "Restricted" || element.sensitivity === "Confidential" ? "filled" : "light"}>
                 {element.sensitivity}
               </Badge>
             </div>
@@ -49,7 +49,7 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <div className="space-y-2">
             <Label className="text-[#667085]">PII Flag</Label>
             <div className="flex gap-2">
-              <Badge variant={element.pii_flag === "Yes" ? "destructive" : "light"}>
+              <Badge variant={element.pii_flag === "Yes" ? "filled" : "light"}>
                 {element.pii_flag}
               </Badge>
             </div>
@@ -62,7 +62,7 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <div className="space-y-2">
             <Label className="text-[#667085]">Special Category Flag</Label>
             <div className="flex gap-2">
-              <Badge variant={element.special_category_flag === "Yes" ? "destructive" : "light"}>
+              <Badge variant={element.special_category_flag === "Yes" ? "filled" : "light"}>
                 {element.special_category_flag}
               </Badge>
             </div>
@@ -77,7 +77,7 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <div className="space-y-2">
             <Label className="text-[#667085]">CDE Flag</Label>
             <div className="flex gap-2">
-              <Badge variant={element.cde_flag === "Yes" ? "default" : "light"}>
+              <Badge variant={element.cde_flag === "Yes" ? "filled" : "light"}>
                 {element.cde_flag}
               </Badge>
             </div>

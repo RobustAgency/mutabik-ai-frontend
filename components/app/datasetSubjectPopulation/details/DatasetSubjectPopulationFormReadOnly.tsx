@@ -46,7 +46,7 @@ const DatasetSubjectPopulationFormReadOnly: React.FC<DatasetSubjectPopulationFor
           <div className="space-y-2">
             <Label className="text-[#667085]">Jurisdiction</Label>
             <div className="flex gap-2">
-              <Badge variant="outline">{population.jurisdiction}</Badge>
+              <Badge variant="outlined">{population.jurisdiction}</Badge>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@ const DatasetSubjectPopulationFormReadOnly: React.FC<DatasetSubjectPopulationFor
       {/* Population Metrics */}
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Population Metrics</h3>
-        
+
         {/* Total Subjects - Prominent Display */}
         <div className="p-4 bg-gradient-to-r from-[#ECFDF3] to-white border border-[#039855] rounded-lg">
           <div className="flex items-center justify-between">
