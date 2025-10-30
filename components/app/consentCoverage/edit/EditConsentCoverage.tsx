@@ -18,7 +18,7 @@ const EditConsentCoverage: React.FC<EditConsentCoverageProps> = ({ coverageId })
   const [formData, setFormData] = useState<CreateConsentCoverageData>({
     dataset_id: "",
     snapshot_id: "",
-    purpose: "",
+    purpose: [],
     jurisdiction: "",
     as_of: "",
     subjects_total: 0,
@@ -51,7 +51,7 @@ const EditConsentCoverage: React.FC<EditConsentCoverageProps> = ({ coverageId })
     const errors: Record<string, string[]> = {};
 
     if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
-    if (!formData.purpose?.trim()) errors.purpose = ["Purpose is required"];
+    if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
     if (!formData.as_of?.trim()) errors.as_of = ["As of date is required"];
     if (formData.subjects_total < 0) errors.subjects_total = ["Subjects total must be non-negative"];

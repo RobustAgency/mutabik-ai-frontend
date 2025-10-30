@@ -24,12 +24,17 @@ const ConsentScopesPage: React.FC = () => {
   const [deleteScope, { isLoading: isDeleting }] = useDeleteConsentScopeMutation();
   const { data: scopes, isLoading } = useGetConsentScopesQuery();
 
+  const handleEditClick = (e: React.MouseEvent, scope: ConsentScope) => {
+    e.stopPropagation();
+    router.push(`/privacy/consent/scopes/${scope.id}/edit`);
+  };
+
   const handleDeleteClick = (e: React.MouseEvent, scope: ConsentScope) => {
     e.stopPropagation();
     setDeleteDialogState({
       isOpen: true,
       scopeId: scope.id,
-      scopeName: `${scope.purpose} - ${scope.dataset_id}`,
+      scopeName: `${scope.purpose.join(', ')} - ${scope.dataset_id}`,
     });
   };
 
@@ -79,11 +84,18 @@ const ConsentScopesPage: React.FC = () => {
           Purpose
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ getValue }) => {
+        const purposes = getValue() as string[];
+        return (
+          <div className="flex flex-wrap gap-1">
+            {purposes.map((purpose, idx) => (
+              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#F9FAFB] text-[#667085] border border-[#E4E7EC]">
+                {purpose}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "subject_realm",
@@ -137,6 +149,13 @@ const ConsentScopesPage: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
+              onClick={(e) => handleEditClick(e, row.original)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
               onClick={(e) => handleDeleteClick(e, row.original)}
             >
               Remove
@@ -169,6 +188,7 @@ const ConsentScopesPage: React.FC = () => {
               data={scopes ?? []}
               variant="projects"
               loading={isLoading}
+              onRowClick={(scope) => router.push(`/privacy/consent/scopes/${scope.id}/details`)}
               emptyState={{
                 title: "No consent scopes found",
                 description: "Scopes define which consents matter for each dataset/purpose/jurisdiction",

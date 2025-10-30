@@ -5,6 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateConsentCoverageData } from "@/app/lib/features/consentCoverageApi";
+import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
+import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface ConsentCoverageFormProps {
   formData: CreateConsentCoverageData;
@@ -13,6 +16,28 @@ interface ConsentCoverageFormProps {
 }
 
 const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, setFormData, errors }) => {
+  const { data: datasetsData } = useGetDatasetsQuery();
+  const { data: snapshotsData } = useGetDatasetSnapshotsQuery();
+
+  const datasets = datasetsData || [];
+  const snapshots = snapshotsData || [];
+
+  const purposeOptions = [
+    { value: "marketing", label: "Marketing" },
+    { value: "analytics", label: "Analytics" },
+    { value: "personalization", label: "Personalization" },
+    { value: "training_ai", label: "Training AI" },
+    { value: "service_operations", label: "Service Operations" },
+    { value: "support", label: "Support" },
+    { value: "research", label: "Research" },
+    { value: "other", label: "Other" },
+  ];
+
+  // Filter snapshots based on selected dataset
+  const filteredSnapshots = formData.dataset_id
+    ? snapshots.filter((s) => String(s.dataset_id) === formData.dataset_id)
+    : [];
+
   const handleChange = (field: keyof CreateConsentCoverageData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -23,26 +48,61 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Coverage Identification</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset ID *</Label>
-            <Input id="dataset_id" value={formData.dataset_id} onChange={(e) => handleChange("dataset_id", e.target.value)} placeholder="e.g., ds_12345" className={errors.dataset_id ? "border-red-500" : ""} />
+            <Label htmlFor="dataset_id">
+              Dataset <span className="text-red-500">*</span>
+            </Label>
+            <Select value={formData.dataset_id} onValueChange={(value) => {
+              handleChange("dataset_id", value);
+              // Clear snapshot when dataset changes
+              handleChange("snapshot_id", "");
+            }}>
+              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select dataset" />
+              </SelectTrigger>
+              <SelectContent>
+                {datasets.map((dataset) => (
+                  <SelectItem key={dataset.id} value={String(dataset.id)}>
+                    {dataset.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="snapshot_id">Snapshot ID (optional)</Label>
-            <Input id="snapshot_id" value={formData.snapshot_id || ""} onChange={(e) => handleChange("snapshot_id", e.target.value)} placeholder="e.g., snap_12345" />
+            <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
+            <Select value={formData.snapshot_id || undefined} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
+              <SelectTrigger id="snapshot_id" className={`w-full ${errors.snapshot_id ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select snapshot (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredSnapshots.map((snapshot) => (
+                  <SelectItem key={snapshot.id} value={String(snapshot.id)}>
+                    {snapshot.version_tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.snapshot_id && <p className="text-sm text-red-500">{errors.snapshot_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="purpose">Purpose *</Label>
-            <Input id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="e.g., training_ai" className={errors.purpose ? "border-red-500" : ""} />
+            <CustomMultiSelect
+              options={purposeOptions}
+              value={formData.purpose}
+              onChange={(value) => handleChange("purpose", value)}
+              placeholder="Select purposes"
+              className={errors.purpose ? "border-red-500" : ""}
+            />
             {errors.purpose && <p className="text-sm text-red-500">{errors.purpose[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="jurisdiction">Jurisdiction *</Label>
             <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
-              <SelectTrigger className={errors.jurisdiction ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>
               <SelectContent>

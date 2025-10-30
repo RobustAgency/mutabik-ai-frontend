@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateConsentScopeData } from "@/app/lib/features/consentScopesApi";
+import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface ConsentScopeFormProps {
   formData: CreateConsentScopeData;
@@ -13,6 +15,20 @@ interface ConsentScopeFormProps {
 }
 
 const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormData, errors }) => {
+  const { data: datasetsData } = useGetDatasetsQuery();
+  const datasets = datasetsData || [];
+
+  const purposeOptions = [
+    { value: "marketing", label: "Marketing" },
+    { value: "analytics", label: "Analytics" },
+    { value: "personalization", label: "Personalization" },
+    { value: "training_ai", label: "Training AI" },
+    { value: "service_operations", label: "Service Operations" },
+    { value: "support", label: "Support" },
+    { value: "research", label: "Research" },
+    { value: "other", label: "Other" },
+  ];
+
   const handleChange = (field: keyof CreateConsentScopeData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -23,21 +39,40 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Scope Definition</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset ID *</Label>
-            <Input id="dataset_id" value={formData.dataset_id} onChange={(e) => handleChange("dataset_id", e.target.value)} placeholder="e.g., ds_12345" className={errors.dataset_id ? "border-red-500" : ""} />
+            <Label htmlFor="dataset_id">
+              Dataset <span className="text-red-500">*</span>
+            </Label>
+            <Select value={formData.dataset_id} onValueChange={(value) => handleChange("dataset_id", value)}>
+              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select dataset" />
+              </SelectTrigger>
+              <SelectContent>
+                {datasets.map((dataset) => (
+                  <SelectItem key={dataset.id} value={String(dataset.id)}>
+                    {dataset.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="purpose">Purpose *</Label>
-            <Input id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="e.g., training_ai, analytics" className={errors.purpose ? "border-red-500" : ""} />
+            <CustomMultiSelect
+              options={purposeOptions}
+              value={formData.purpose}
+              onChange={(value) => handleChange("purpose", value)}
+              placeholder="Select purposes"
+              className={errors.purpose ? "border-red-500" : ""}
+            />
             {errors.purpose && <p className="text-sm text-red-500">{errors.purpose[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="subject_realm">Subject Realm *</Label>
             <Select value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
-              <SelectTrigger className={errors.subject_realm ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select realm" />
               </SelectTrigger>
               <SelectContent>
@@ -54,7 +89,7 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
           <div className="space-y-2">
             <Label htmlFor="jurisdiction">Jurisdiction *</Label>
             <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
-              <SelectTrigger className={errors.jurisdiction ? "border-red-500" : ""}>
+              <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>
               <SelectContent>

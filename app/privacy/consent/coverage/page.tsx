@@ -24,12 +24,17 @@ const ConsentCoveragePage: React.FC = () => {
   const [deleteCoverage, { isLoading: isDeleting }] = useDeleteConsentCoverageMutation();
   const { data: coverages, isLoading } = useGetConsentCoveragesQuery();
 
+  const handleEditClick = (e: React.MouseEvent, coverage: ConsentCoverage) => {
+    e.stopPropagation();
+    router.push(`/privacy/consent/coverage/${coverage.id}/edit`);
+  };
+
   const handleDeleteClick = (e: React.MouseEvent, coverage: ConsentCoverage) => {
     e.stopPropagation();
     setDeleteDialogState({
       isOpen: true,
       coverageId: coverage.id,
-      coverageName: `${coverage.purpose} - ${coverage.dataset_id}`,
+      coverageName: `${coverage.purpose.join(', ')} - ${coverage.dataset_id}`,
     });
   };
 
@@ -79,11 +84,18 @@ const ConsentCoveragePage: React.FC = () => {
           Purpose
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ getValue }) => {
+        const purposes = getValue() as string[];
+        return (
+          <div className="flex flex-wrap gap-1">
+            {purposes.map((purpose, idx) => (
+              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#F9FAFB] text-[#667085] border border-[#E4E7EC]">
+                {purpose}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "jurisdiction",
@@ -167,6 +179,13 @@ const ConsentCoveragePage: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
+              onClick={(e) => handleEditClick(e, row.original)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
               onClick={(e) => handleDeleteClick(e, row.original)}
             >
               Remove
@@ -199,6 +218,7 @@ const ConsentCoveragePage: React.FC = () => {
               data={coverages ?? []}
               variant="projects"
               loading={isLoading}
+              onRowClick={(coverage) => router.push(`/privacy/consent/coverage/${coverage.id}/details`)}
               emptyState={{
                 title: "No consent coverage found",
                 description: "Coverage metrics are computed from consent scopes and user consents",

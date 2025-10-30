@@ -17,7 +17,7 @@ const EditConsentScope: React.FC<EditConsentScopeProps> = ({ scopeId }) => {
   const router = useRouter();
   const [formData, setFormData] = useState<CreateConsentScopeData>({
     dataset_id: "",
-    purpose: "",
+    purpose: [],
     subject_realm: "",
     jurisdiction: "",
     effective_from: "",
@@ -45,7 +45,7 @@ const EditConsentScope: React.FC<EditConsentScopeProps> = ({ scopeId }) => {
     const errors: Record<string, string[]> = {};
 
     if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
-    if (!formData.purpose?.trim()) errors.purpose = ["Purpose is required"];
+    if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
     if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];

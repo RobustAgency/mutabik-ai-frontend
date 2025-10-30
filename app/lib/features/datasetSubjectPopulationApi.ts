@@ -119,6 +119,7 @@ export const datasetSubjectPopulationApi = createApi({
         url: `/dataset-subject-populations?page=${page}&per_page=${per_page}`,
         method: "GET",
       }),
+      transformResponse: (response: any) => response.data,
       providesTags: (result) =>
         result
           ? [
@@ -139,6 +140,7 @@ export const datasetSubjectPopulationApi = createApi({
         url: `/dataset-subject-populations/${id}`,
         method: "GET",
       }),
+      transformResponse: (response: any) => response.data,
       providesTags: (result, error, id) => [
         { type: "DatasetSubjectPopulation", id },
       ],
@@ -153,6 +155,7 @@ export const datasetSubjectPopulationApi = createApi({
         method: "POST",
         data,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: [{ type: "DatasetSubjectPopulation", id: "LIST" }],
       async onQueryStarted(_, { queryFulfilled }) {
         try {
@@ -176,9 +179,10 @@ export const datasetSubjectPopulationApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/dataset-subject-populations/${id}`,
-        method: "PUT",
+        method: "POST",
         data,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: (result, error, { id }) => [
         { type: "DatasetSubjectPopulation", id },
         { type: "DatasetSubjectPopulation", id: "LIST" },

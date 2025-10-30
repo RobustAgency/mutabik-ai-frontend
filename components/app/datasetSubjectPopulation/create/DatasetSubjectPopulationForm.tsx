@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,11 +18,11 @@ const SUBJECT_REALMS = ["customer", "prospect", "employee", "vendor", "other"];
 const JURISDICTIONS = ["AE", "EU", "KSA", "US", "UK", "QA", "JO", "MA", "BH", "Other"];
 
 const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> = ({ formData, setFormData, errors }) => {
-  const { data: datasetsData } = useGetDatasetsQuery({ page: 1, per_page: 1000 });
-  const { data: snapshotsData } = useGetDatasetSnapshotsQuery({ page: 1, per_page: 1000 });
+  const { data: datasetsData } = useGetDatasetsQuery();
+  const { data: snapshotsData } = useGetDatasetSnapshotsQuery();
 
-  const datasets = datasetsData?.data || [];
-  const snapshots = snapshotsData?.data || [];
+  const datasets = datasetsData || [];
+  const snapshots = snapshotsData || [];
 
   // Filter snapshots based on selected dataset
   const filteredSnapshots = formData.dataset_id
@@ -48,7 +48,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
               // Clear snapshot when dataset changes
               handleChange("snapshot_id", "");
             }}>
-              <SelectTrigger id="dataset_id" className={errors.dataset_id ? "border-red-500" : ""}>
+              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select dataset" />
               </SelectTrigger>
               <SelectContent>
@@ -64,12 +64,11 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
 
           <div className="space-y-2">
             <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
-            <Select value={formData.snapshot_id} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
-              <SelectTrigger id="snapshot_id" className={errors.snapshot_id ? "border-red-500" : ""}>
+            <Select value={formData.snapshot_id || undefined} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
+              <SelectTrigger id="snapshot_id" className={`w-full ${errors.snapshot_id ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select snapshot (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
                 {filteredSnapshots.map((snapshot) => (
                   <SelectItem key={snapshot.id} value={String(snapshot.id)}>
                     {snapshot.version_tag}
@@ -91,7 +90,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
               Subject Realm <span className="text-red-500">*</span>
             </Label>
             <Select value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
-              <SelectTrigger id="subject_realm" className={errors.subject_realm ? "border-red-500" : ""}>
+              <SelectTrigger id="subject_realm" className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select subject realm" />
               </SelectTrigger>
               <SelectContent>
@@ -110,7 +109,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
               Jurisdiction <span className="text-red-500">*</span>
             </Label>
             <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
-              <SelectTrigger id="jurisdiction" className={errors.jurisdiction ? "border-red-500" : ""}>
+              <SelectTrigger id="jurisdiction" className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>
               <SelectContent>

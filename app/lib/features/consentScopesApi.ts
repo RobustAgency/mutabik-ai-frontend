@@ -6,7 +6,7 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 export interface ConsentScope {
   id: string;
   dataset_id: string;
-  purpose: string;
+  purpose: string[];
   subject_realm: string;
   jurisdiction: string;
   effective_from: string;
@@ -16,7 +16,7 @@ export interface ConsentScope {
 
 export interface CreateConsentScopeData {
   dataset_id: string;
-  purpose: string;
+  purpose: string[];
   subject_realm: string;
   jurisdiction: string;
   effective_from: string;
