@@ -55,7 +55,6 @@
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "react": "19.1.0",
-    "react-apexcharts": "^1.7.0",
     "react-country-region-selector": "^4.0.3",
     "react-day-picker": "^9.11.0",
     "react-dom": "19.1.0",
@@ -65,8 +64,8 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@eslint/eslintrc": "^3",
+    "@opennextjs/cloudflare": "^1.11.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
