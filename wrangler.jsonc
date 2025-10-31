@@ -11,17 +11,5 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "mutabiq-ai"
-    }
-  ],
-  "r2_buckets": [
-    // Uncomment and configure when you want to use R2 for caching
-    // {
-    //   "binding": "NEXT_INC_CACHE_R2_BUCKET",
-    //   "bucket_name": "<BUCKET_NAME>"
-    // }
-  ]
+  "r2_buckets": []
 }
