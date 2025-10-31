@@ -112,7 +112,7 @@ export const userRoutes: RouteItem[] = [
         icon: Users,
       },
       {
-        href: "/core-assets/data",
+        href: "/core-assets/data/registry",
         label: "Datasets & Data Sources",
         icon: Database,
         children: [
