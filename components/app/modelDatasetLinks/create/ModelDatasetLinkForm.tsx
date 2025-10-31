@@ -159,16 +159,16 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pretrain">pretrain</SelectItem>
-                <SelectItem value="train">train</SelectItem>
-                <SelectItem value="fine_tune">fine_tune</SelectItem>
-                <SelectItem value="align_rlhf">align_rlhf</SelectItem>
-                <SelectItem value="validation">validation</SelectItem>
-                <SelectItem value="test">test</SelectItem>
-                <SelectItem value="eval_benchmark">eval_benchmark</SelectItem>
-                <SelectItem value="rag_corpus">rag_corpus</SelectItem>
-                <SelectItem value="drift_baseline">drift_baseline</SelectItem>
-                <SelectItem value="online_feedback">online_feedback</SelectItem>
+                <SelectItem value="pretrain">Pretrain</SelectItem>
+                <SelectItem value="train">Train</SelectItem>
+                <SelectItem value="fine_tune">Fine tune</SelectItem>
+                <SelectItem value="align_rlhf">Align RLHF</SelectItem>
+                <SelectItem value="validation">Validation</SelectItem>
+                <SelectItem value="test">Test</SelectItem>
+                <SelectItem value="eval_benchmark">Eval benchmark</SelectItem>
+                <SelectItem value="rag_corpus">RAG corpus</SelectItem>
+                <SelectItem value="drift_baseline">Drift baseline</SelectItem>
+                <SelectItem value="online_feedback">Online feedback</SelectItem>
               </SelectContent>
             </Select>
             {errors.role && <p className="text-sm text-red-500">{errors.role[0]}</p>}
@@ -199,9 +199,9 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 <SelectValue placeholder="Select eligibility" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eligible">eligible</SelectItem>
-                <SelectItem value="eligible_with_conditions">eligible_with_conditions</SelectItem>
-                <SelectItem value="not_eligible">not_eligible</SelectItem>
+                <SelectItem value="eligible">Eligible</SelectItem>
+                <SelectItem value="eligible_with_conditions">Eligible with conditions</SelectItem>
+                <SelectItem value="not_eligible">Not eligible</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -230,11 +230,12 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
             <Label htmlFor="country">Country *</Label>
             <div className={errors.country ? "border-destructive rounded-md" : ""}>
               <CountryDropdown
+                id="country"
                 valueType="short"
                 value={formData.country}
                 onChange={(val) => handleInputChange("country", val)}
                 aria-label="Select country"
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-[36px] text-gray-500 rounded-md border border-input bg-background px-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             {errors.country && (
