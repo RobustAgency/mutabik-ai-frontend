@@ -1,12 +1,13 @@
 name = "mutabiq-ai-worker"
-main = ".open-next/worker.js"
+main = ".open-next/server-functions/default/index.js"
 compatibility_date = "2024-10-01"
 
 [build]
 command = "npm run opennext:build"
 
-[site]
+[[assets]]
 bucket = ".open-next/assets"
+binding = "ASSETS"
 
 [vars]
 NODE_ENV = "production"
