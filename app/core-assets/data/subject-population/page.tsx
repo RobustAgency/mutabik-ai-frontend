@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import DatasetSubjectPopulationList from "@/components/app/datasetSubjectPopulation/DatasetSubjectPopulationList";
 

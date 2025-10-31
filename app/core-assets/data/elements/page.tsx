@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import DataElements from '@/components/app/dataElements/DataElements'
 import React from 'react'

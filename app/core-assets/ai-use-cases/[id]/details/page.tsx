@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import UseCaseDetails from '@/components/app/useCases/useCaseDetails/useCaseDetails'
 import React from 'react'

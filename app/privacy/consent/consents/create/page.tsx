@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import CreateUserConsent from "@/components/app/userConsents/create/CreateUserConsent";
 

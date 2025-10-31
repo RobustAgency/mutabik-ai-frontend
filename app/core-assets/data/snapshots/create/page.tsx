@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import CreateDatasetSnapshot from "@/components/app/datasetSnapshots/create/CreateDatasetSnapshot";
 

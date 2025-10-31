@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import EditDataSource from "@/components/app/dataSources/edit/EditDataSource";
 

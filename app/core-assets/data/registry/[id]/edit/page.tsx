@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import EditDataset from "@/components/app/datasets/edit/EditDataset";
 

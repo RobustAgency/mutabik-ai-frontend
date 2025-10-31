@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import React from "react";
 import DatasetSnapshotDetails from "@/components/app/datasetSnapshots/details/DatasetSnapshotDetails";

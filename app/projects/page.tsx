@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import ProjectsTable from '@/components/app/projects/ProjectsTable'
 import React from 'react'

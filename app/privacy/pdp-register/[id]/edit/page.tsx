@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import EditPdpProcessingRegister from "@/components/app/pdpProcessingRegister/edit/EditPdpProcessingRegister";
 

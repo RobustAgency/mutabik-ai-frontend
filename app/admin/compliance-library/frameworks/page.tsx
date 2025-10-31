@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import React from 'react';
 import FrameworkTable from '@/components/admin/frameworks/createFramework/FrameworkTable';

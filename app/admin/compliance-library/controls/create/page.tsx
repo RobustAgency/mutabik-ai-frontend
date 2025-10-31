@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import ControlForm from '@/components/admin/controls/ControlForm/ControlForm';
 import Breadcrumbs from '@/components/custom/Breadcrumbs'

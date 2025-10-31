@@ -6,7 +6,7 @@ import AppShell from "@/layouts/AppShell";
 import ToastProvider from "@/providers/ToastProvider";
 import StoreProvider from "./providers/StoreProvider";
 
-// export const runtime = 'edge';
+// 
 
 const outfit = Outfit({
   subsets: ["latin"],

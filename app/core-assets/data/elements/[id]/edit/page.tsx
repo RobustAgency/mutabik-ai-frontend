@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import EditDataElement from "@/components/app/dataElements/edit/EditDataElement";
 

@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import CreateModelDatasetLink from "@/components/app/modelDatasetLinks/create/CreateModelDatasetLink";
 

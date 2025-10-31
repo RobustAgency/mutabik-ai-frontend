@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import ProjectContainer from "@/components/app/projects/create/projectContainer/ProjectContainer";
 
