@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import { use } from "react";
 import UserConsentDetails from "@/components/app/userConsents/details/UserConsentDetails";
 

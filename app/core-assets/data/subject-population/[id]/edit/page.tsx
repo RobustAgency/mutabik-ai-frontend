@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import { use } from "react";
 import EditDatasetSubjectPopulation from "@/components/app/datasetSubjectPopulation/edit/EditDatasetSubjectPopulation";
 

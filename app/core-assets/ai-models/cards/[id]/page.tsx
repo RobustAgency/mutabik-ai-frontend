@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import AiModelCardForm from '@/components/app/aiModel/cards/AiModelCardForm'

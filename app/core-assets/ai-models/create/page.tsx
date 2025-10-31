@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import CreateAiModel from '@/components/app/aiModel/create/CreateAiModel'
 import React from 'react'
 

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import ProjectDetails from '@/components/app/projects/create/projectDetail/ProjectDetail'
 import React from 'react'
 

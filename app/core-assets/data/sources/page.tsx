@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import DataSources from '@/components/app/dataSources/DataSources'
 import React from 'react'
 

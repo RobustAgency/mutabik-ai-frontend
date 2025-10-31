@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import AiModelVersionDetails from '@/components/app/aiModel/versions/AiModelVersionDetails'
 import React from 'react'
 

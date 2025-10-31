@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import CreateStakeholder from '@/components/app/stakeholders/create/CreateStakeholder'
 import React from 'react'
 

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import EditStakeholder from "@/components/app/stakeholders/edit/EditStakeholder";
 
 interface StakeholderEditPageProps {

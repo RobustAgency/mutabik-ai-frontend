@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import { use } from "react";
 import PdpProcessingRegisterDetails from "@/components/app/pdpProcessingRegister/details/PdpProcessingRegisterDetails";
 
