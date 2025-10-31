@@ -7,6 +7,7 @@ import ToastProvider from "@/providers/ToastProvider";
 import StoreProvider from "./providers/StoreProvider";
 
 // 
+export const dynamic = 'force-dynamic'
 
 const outfit = Outfit({
   subsets: ["latin"],
