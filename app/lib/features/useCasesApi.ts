@@ -100,17 +100,10 @@ export const useCasesApi = createApi({
 
     createUseCase: builder.mutation<UseCase, CreateUseCaseData>({
       query: (data) => {
-        const payload: CreateUseCaseData = {
-          ...data,
-          regulatory_scope: Array.isArray(data.regulatory_scope)
-            ? data.regulatory_scope.filter((x) => x.trim() !== "")
-            : [],
-        };
-
         return {
           url: "/use-cases",
           method: "POST",
-          data: payload,
+          data: data,
         };
       },
       invalidatesTags: [{ type: "UseCase", id: "LIST" }],

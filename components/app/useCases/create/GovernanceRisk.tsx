@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,21 +22,17 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
   formData,
   setFormData,
 }) => {
-  const [overallRiskScoreInput, setOverallRiskScoreInput] = useState(
-    formData.overall_risk_score ?? ""
-  );
-
-  useEffect(() => {
-    setOverallRiskScoreInput(formData.overall_risk_score ?? "");
-  }, [formData.overall_risk_score]);
+  // No local state needed for the new boolean assessment fields
+  // They can be directly updated in formData
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="font-semibold text-[#039855] text-sm">
+      <div className="flex flex-col gap-2">
+        <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
           Governance & risk
         </h2>
+        <hr className="border-gray-200" />
       </div>
 
       {/* Responsive Grid */}
@@ -47,34 +42,14 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
           grid-cols-1
           sm:grid-cols-2 
           md:grid-cols-3 
-          lg:grid-cols-5 
+          lg:grid-cols-4 
           gap-6
         "
       >
-        {/* Overall Risk Score */}
-        <div className="flex flex-col gap-1">
-          <Label className="text-sm text-[#344054] font-medium">
-            Overall risk score
-          </Label>
-          <Input
-            type="number"
-            value={overallRiskScoreInput}
-            onChange={(e) => setOverallRiskScoreInput(Number(e.target.value))}
-            onBlur={() =>
-              setFormData((prev) => ({
-                ...prev,
-                overall_risk_score: Number(overallRiskScoreInput),
-              }))
-            }
-            placeholder="20,000"
-            className="h-[44px] rounded-md border border-[#D0D5DD] text-sm text-[#101828] placeholder:text-[#98A2B3] focus-visible:ring-0 focus-visible:border-[#D0D5DD]"
-          />
-        </div>
-
         {/* Risk Level */}
         <div className="flex flex-col gap-1">
           <Label className="text-sm text-[#344054] font-medium">
-            Risk level
+            Risk Level
           </Label>
           <Select
             value={formData.risk_level}
@@ -97,68 +72,67 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
           </Select>
         </div>
 
-        {/* Human Oversight Mode */}
-        <div className="flex flex-col gap-1">
-          <Label className="text-sm text-[#344054] font-medium">
-            Human oversight mode
-          </Label>
-          <Select
-            value={formData.human_oversight_mode}
-            onValueChange={(value) =>
-              setFormData((prev) => ({
-                ...prev,
-                human_oversight_mode: value,
-              }))
-            }
-          >
-            <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="HITL" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="HITL">HITL</SelectItem>
-              <SelectItem value="NO_HITL">No HITL</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* DPIA */}
+        {/* ROI Assessment */}
         <div className="flex flex-col">
-          <Label className="text-sm text-[#344054] font-medium">DPIA</Label>
+          <Label className="text-sm text-[#344054] font-medium">ROI Assessment</Label>
           <div className="flex items-center mt-2 gap-2">
             <Checkbox
-              checked={formData.dpia || false}
+              checked={formData.roi_assessment}
               onCheckedChange={(checked) =>
                 setFormData((prev) => ({
                   ...prev,
-                  dpia: checked === true,
+                  roi_assessment: checked === true,
                 }))
               }
               className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
             />
-            <Label className="text-sm text-[#344054]">Required?</Label>
+            <Label className="text-sm text-[#344054]">Completed?</Label>
           </div>
           <p className="text-xs text-[#475467] mt-1">
-            Data Processing Impact Assessment
+            Return on Investment assessment status
           </p>
         </div>
 
-        {/* AIA */}
+        {/* Risk Assessment */}
         <div className="flex flex-col">
-          <Label className="text-sm text-[#344054] font-medium">AIA</Label>
+          <Label className="text-sm text-[#344054] font-medium">Risk Assessment</Label>
           <div className="flex items-center mt-2 gap-2">
             <Checkbox
-              checked={formData.aia || false}
+              checked={formData.risk_assessment}
               onCheckedChange={(checked) =>
                 setFormData((prev) => ({
                   ...prev,
-                  aia: checked === true,
+                  risk_assessment: checked === true,
                 }))
               }
               className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
             />
-            <Label className="text-sm text-[#344054]">Required?</Label>
+            <Label className="text-sm text-[#344054]">Completed?</Label>
           </div>
-          <p className="text-xs text-[#475467] mt-1">AI impact Assessment</p>
+          <p className="text-xs text-[#475467] mt-1">
+            Risk assessment status
+          </p>
+        </div>
+
+        {/* Data Assessment */}
+        <div className="flex flex-col">
+          <Label className="text-sm text-[#344054] font-medium">Data Assessment</Label>
+          <div className="flex items-center mt-2 gap-2">
+            <Checkbox
+              checked={formData.data_assessment}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  data_assessment: checked === true,
+                }))
+              }
+              className="data-[state=checked]:bg-[#465FFF] data-[state=checked]:border-0"
+            />
+            <Label className="text-sm text-[#344054]">Completed?</Label>
+          </div>
+          <p className="text-xs text-[#475467] mt-1">
+            Data assessment status
+          </p>
         </div>
       </div>
     </div>

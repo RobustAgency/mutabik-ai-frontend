@@ -12,39 +12,48 @@ import GovernanceRisk from "./GovernanceRisk";
 import DataAssesment from "./DataAssesment";
 import { FormDataType } from "../types/useCaseTypes";
 import { useCreateUseCaseMutation } from "@/app/lib/features/useCasesApi";
+import { CreateUseCaseData } from "@/service/app/useCases";
 
 const initialFormData: FormDataType = {
-  title: "",
+  // Core fields
+  name: "",
   description: null,
-  status: "draft",
-  business_domain: "",
   business_objective: "",
-  business_owner_email: "",
-  technical_owner_email: "",
-  regulatory_scope: [],
-  data_sensitivity: "public",
-  go_live_date: null,
+  business_owner_id: null,
+  technical_owner_id: null,
+  business_domain: "",
 
-  expected_roi: null,
-  implementation_cost: null,
-  reduction_in_time: null,
-  reduction_in_cost: null,
-  increase_in_revenue: null,
-  risk_avoidance: null,
-  fte_capacity_saved: null,
-
-  use_case_type: "",
-  value_driver: "",
-
-  overall_risk_score: null,
+  // Classification and Priority
+  roi_classification: "",
+  priority: "",
   risk_level: "medium",
-  human_oversight_mode: "",
-  dpia: false,
-  aia: false,
+  data_sensitivity: "public",
 
+  // Financial and Timeline
+  expected_roi_percentage: null,
+  budget_allocated: null,
+  target_go_live_date: null,
+
+  // Status and Tracking
+  status: "draft",
+  created_by: "", // This should be populated with current user email
+  updated_by: null,
+
+  // Assessment Flags
+  roi_assessment: false,
+  risk_assessment: false,
+  data_assessment: false,
+
+  // Estimated Values
+  estimated_implementation_cost: null,
+  estimated_reduction_in_time: null,
+  estimated_reduction_in_cost: null,
+  estimated_revenue_increase: null,
+  estimated_fte_capacity_saving: null,
+
+  // Data Status
   data_availability_status: "",
-  data_readiness_level: "",
-  data_freshness: "",
+  data_readiness: "",
 };
 
 const CreateUseCases: React.FC = () => {
@@ -52,7 +61,7 @@ const CreateUseCases: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const [createUseCase, { isLoading }] = useCreateUseCaseMutation();
 
-  // Email validation helper
+  // Email validation helper (keeping for potential future use)
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -62,29 +71,52 @@ const CreateUseCases: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: Record<string, string[]> = {};
 
-    // Required fields
-    if (!formData.title?.trim()) {
-      errors.title = ["Title is required"];
+    // Required fields based on new schema
+    if (!formData.name?.trim()) {
+      errors.name = ["Use case name is required (5-255 characters)"];
+    } else if (formData.name.trim().length < 5 || formData.name.trim().length > 255) {
+      errors.name = ["Use case name must be between 5-255 characters"];
     }
 
-    if (!formData.business_owner_email?.trim()) {
-      errors.business_owner_email = ["Business owner email is required"];
-    } else if (!isValidEmail(formData.business_owner_email)) {
-      errors.business_owner_email = ["Please enter a valid email address"];
+    if (!formData.description?.trim()) {
+      errors.description = ["Use case description is required (100-5000 characters)"];
+    } else if (formData.description.trim().length < 100 || formData.description.trim().length > 5000) {
+      errors.description = ["Use case description must be between 100-5000 characters"];
     }
 
-    if (!formData.technical_owner_email?.trim()) {
-      errors.technical_owner_email = ["Technical owner email is required"];
-    } else if (!isValidEmail(formData.technical_owner_email)) {
-      errors.technical_owner_email = ["Please enter a valid email address"];
-    }
-
-    if (!formData.regulatory_scope || formData.regulatory_scope.length === 0) {
-      errors.regulatory_scope = ["Please select at least one regulatory scope"];
+    if (!formData.business_objective?.trim()) {
+      errors.business_objective = ["Business objective is required (50-2000 characters)"];
+    } else if (formData.business_objective.trim().length < 50 || formData.business_objective.trim().length > 2000) {
+      errors.business_objective = ["Business objective must be between 50-2000 characters"];
     }
 
     if (!formData.business_domain?.trim()) {
       errors.business_domain = ["Business domain is required"];
+    }
+
+    if (!formData.created_by?.trim()) {
+      errors.created_by = ["Creator email is required"];
+    } else if (!isValidEmail(formData.created_by)) {
+      errors.created_by = ["Please enter a valid creator email address"];
+    }
+
+    // Optional stakeholder validation - can be added if needed
+    // if (!formData.business_owner_id) {
+    //   errors.business_owner_id = ["Business owner is required"];
+    // }
+    // if (!formData.technical_owner_id) {
+    //   errors.technical_owner_id = ["Technical owner is required"];
+    // }
+
+    // Validate ROI percentage if provided
+    if (formData.expected_roi_percentage !== null &&
+      (formData.expected_roi_percentage < 0 || formData.expected_roi_percentage > 999.99)) {
+      errors.expected_roi_percentage = ["Expected ROI percentage must be between 0.00-999.99"];
+    }
+
+    // Validate budget if provided
+    if (formData.budget_allocated !== null && formData.budget_allocated < 0) {
+      errors.budget_allocated = ["Budget allocated must be greater than or equal to 0"];
     }
 
     setValidationErrors(errors);
@@ -104,9 +136,12 @@ const CreateUseCases: React.FC = () => {
     try {
       const payload = {
         ...formData,
-        regulatory_scope: formData.regulatory_scope
-          .map((x) => x.trim())
-          .filter((x) => x !== ""),
+        // Ensure required fields are properly formatted
+        name: formData.name.trim(),
+        description: formData.description?.trim() || null,
+        business_objective: formData.business_objective.trim(),
+        business_domain: formData.business_domain.trim() as CreateUseCaseData["business_domain"],
+        created_by: formData.created_by.trim(),
       };
 
       await createUseCase(payload).unwrap();

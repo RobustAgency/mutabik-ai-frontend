@@ -11,24 +11,24 @@ interface RoiProps {
 }
 
 const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
-  // ✅ Local states for smooth typing
-  const [expectedRoiInput, setExpectedRoiInput] = useState(formData.expected_roi ?? "");
-  const [implementationCostInput, setImplementationCostInput] = useState(formData.implementation_cost ?? "");
-  const [reductionInTimeInput, setReductionInTimeInput] = useState(formData.reduction_in_time ?? "");
-  const [reductionInCostInput, setReductionInCostInput] = useState(formData.reduction_in_cost ?? "");
-  const [increaseInRevenueInput, setIncreaseInRevenueInput] = useState(formData.increase_in_revenue ?? "");
-  const [riskAvoidanceInput, setRiskAvoidanceInput] = useState(formData.risk_avoidance ?? "");
-  const [fteCapacityInput, setFteCapacityInput] = useState(formData.fte_capacity_saved ?? "");
+  // ✅ Local states for smooth typing - Updated for new schema
+  const [expectedRoiPercentageInput, setExpectedRoiPercentageInput] = useState(formData.expected_roi_percentage ?? "");
+  const [budgetAllocatedInput, setBudgetAllocatedInput] = useState(formData.budget_allocated ?? "");
+  const [estimatedImplementationCostInput, setEstimatedImplementationCostInput] = useState(formData.estimated_implementation_cost ?? "");
+  const [estimatedReductionInTimeInput, setEstimatedReductionInTimeInput] = useState(formData.estimated_reduction_in_time ?? "");
+  const [estimatedReductionInCostInput, setEstimatedReductionInCostInput] = useState(formData.estimated_reduction_in_cost ?? "");
+  const [estimatedRevenueIncreaseInput, setEstimatedRevenueIncreaseInput] = useState(formData.estimated_revenue_increase ?? "");
+  const [estimatedFteCapacitySavingInput, setEstimatedFteCapacitySavingInput] = useState(formData.estimated_fte_capacity_saving ?? "");
 
   // Sync local state when formData resets
   useEffect(() => {
-    setExpectedRoiInput(formData.expected_roi ?? "");
-    setImplementationCostInput(formData.implementation_cost ?? "");
-    setReductionInTimeInput(formData.reduction_in_time ?? "");
-    setReductionInCostInput(formData.reduction_in_cost ?? "");
-    setIncreaseInRevenueInput(formData.increase_in_revenue ?? "");
-    setRiskAvoidanceInput(formData.risk_avoidance ?? "");
-    setFteCapacityInput(formData.fte_capacity_saved ?? "");
+    setExpectedRoiPercentageInput(formData.expected_roi_percentage ?? "");
+    setBudgetAllocatedInput(formData.budget_allocated ?? "");
+    setEstimatedImplementationCostInput(formData.estimated_implementation_cost ?? "");
+    setEstimatedReductionInTimeInput(formData.estimated_reduction_in_time ?? "");
+    setEstimatedReductionInCostInput(formData.estimated_reduction_in_cost ?? "");
+    setEstimatedRevenueIncreaseInput(formData.estimated_revenue_increase ?? "");
+    setEstimatedFteCapacitySavingInput(formData.estimated_fte_capacity_saving ?? "");
   }, [formData]);
 
   return (
@@ -42,98 +42,102 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData }) => {
       </div>
 
       <div className="flex flex-col gap-6">
-        {/* Row 1 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-          {/* Expected ROI */}
+        {/* Row 1 - Core Financial Fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+          {/* Expected ROI Percentage */}
           <div className="flex flex-col gap-2 w-full">
-            <Label>Expected ROI (%)</Label>
+            <Label>Expected ROI Percentage (%)</Label>
             <Input
               type="number"
-              value={expectedRoiInput}
-              onChange={(e) => setExpectedRoiInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, expected_roi: Number(expectedRoiInput) }))}
-              placeholder="20%"
+              step="0.01"
+              min="0"
+              max="999.99"
+              value={expectedRoiPercentageInput}
+              onChange={(e) => setExpectedRoiPercentageInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, expected_roi_percentage: Number(expectedRoiPercentageInput) }))}
+              placeholder="25.50 (0.00-999.99)"
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
-          {/* Implementation Cost */}
+          {/* Budget Allocated */}
           <div className="flex flex-col gap-2 w-full">
-            <Label>Implementation Cost</Label>
+            <Label>Budget Allocated</Label>
             <Input
               type="number"
-              value={implementationCostInput}
-              onChange={(e) => setImplementationCostInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, implementation_cost: Number(implementationCostInput) }))}
-              placeholder="20,000"
+              min="0"
+              value={budgetAllocatedInput}
+              onChange={(e) => setBudgetAllocatedInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, budget_allocated: Number(budgetAllocatedInput) }))}
+              placeholder="100,000"
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
-          {/* Reduction in Time */}
+          {/* Estimated Implementation Cost */}
           <div className="flex flex-col gap-2 w-full">
-            <Label>Reduction in time (x)</Label>
+            <Label>Estimated Implementation Cost</Label>
             <Input
               type="number"
-              value={reductionInTimeInput}
-              onChange={(e) => setReductionInTimeInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, reduction_in_time: Number(reductionInTimeInput) }))}
-              placeholder="20,000"
+              value={estimatedImplementationCostInput}
+              onChange={(e) => setEstimatedImplementationCostInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, estimated_implementation_cost: Number(estimatedImplementationCostInput) }))}
+              placeholder="75,000"
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
         </div>
 
-        {/* Row 2 */}
+        {/* Row 2 - Estimated Benefits */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-          {/* Reduction in Cost */}
+          {/* Estimated Reduction in Time */}
           <div className="flex flex-col gap-2 w-full">
-            <Label>Reduction in cost (per year)</Label>
+            <Label>Estimated Reduction in Time (%)</Label>
             <Input
               type="number"
-              value={reductionInCostInput}
-              onChange={(e) => setReductionInCostInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, reduction_in_cost: Number(reductionInCostInput) }))}
-              placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
-            />
-          </div>
-
-          {/* Increase in Revenue */}
-          <div className="flex flex-col gap-2 w-full">
-            <Label>Increase in revenue (per year)</Label>
-            <Input
-              type="number"
-              value={increaseInRevenueInput}
-              onChange={(e) => setIncreaseInRevenueInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, increase_in_revenue: Number(increaseInRevenueInput) }))}
-              placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
-            />
-          </div>
-
-          {/* Risk Avoidance */}
-          <div className="flex flex-col gap-2 w-full">
-            <Label>Risk avoidance (per year)</Label>
-            <Input
-              type="number"
-              value={riskAvoidanceInput}
-              onChange={(e) => setRiskAvoidanceInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, risk_avoidance: Number(riskAvoidanceInput) }))}
-              placeholder="20,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
-            />
-          </div>
-
-          {/* FTE Capacity */}
-          <div className="flex flex-col gap-2 w-full">
-            <Label>FTE capacity saved (count)</Label>
-            <Input
-              type="number"
-              value={fteCapacityInput}
-              onChange={(e) => setFteCapacityInput(Number(e.target.value))}
-              onBlur={() => setFormData((prev) => ({ ...prev, fte_capacity_saved: Number(fteCapacityInput) }))}
+              value={estimatedReductionInTimeInput}
+              onChange={(e) => setEstimatedReductionInTimeInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, estimated_reduction_in_time: Number(estimatedReductionInTimeInput) }))}
               placeholder="30"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            />
+          </div>
+
+          {/* Estimated Reduction in Cost */}
+          <div className="flex flex-col gap-2 w-full">
+            <Label>Estimated Reduction in Cost</Label>
+            <Input
+              type="number"
+              value={estimatedReductionInCostInput}
+              onChange={(e) => setEstimatedReductionInCostInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, estimated_reduction_in_cost: Number(estimatedReductionInCostInput) }))}
+              placeholder="50,000"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            />
+          </div>
+
+          {/* Estimated Revenue Increase */}
+          <div className="flex flex-col gap-2 w-full">
+            <Label>Estimated Revenue Increase</Label>
+            <Input
+              type="number"
+              value={estimatedRevenueIncreaseInput}
+              onChange={(e) => setEstimatedRevenueIncreaseInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, estimated_revenue_increase: Number(estimatedRevenueIncreaseInput) }))}
+              placeholder="200,000"
+              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            />
+          </div>
+
+          {/* Estimated FTE Capacity Saving */}
+          <div className="flex flex-col gap-2 w-full">
+            <Label>Estimated FTE Capacity Saving</Label>
+            <Input
+              type="number"
+              value={estimatedFteCapacitySavingInput}
+              onChange={(e) => setEstimatedFteCapacitySavingInput(Number(e.target.value))}
+              onBlur={() => setFormData((prev) => ({ ...prev, estimated_fte_capacity_saving: Number(estimatedFteCapacitySavingInput) }))}
+              placeholder="5"
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>

@@ -30,63 +30,44 @@ const DataAssesment: React.FC<DataAssesmentProps> = ({ formData, setFormData }) 
         <hr className="border-gray-200" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Data Availability Status */}
         <div className="flex flex-col gap-2">
           <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Data availability status
+            Data Availability Status
           </Label>
           <Select
             value={formData.data_availability_status}
             onValueChange={(value) => handleChange("data_availability_status", value)}
           >
             <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="Partially Available" />
+              <SelectValue placeholder="Select Availability Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="partially">Partially Available</SelectItem>
-              <SelectItem value="not">Not Available</SelectItem>
+              <SelectItem value="partially_available">Partially Available</SelectItem>
+              <SelectItem value="not_available">Not Available</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Data readiness level */}
+        {/* Data Readiness */}
         <div className="flex flex-col gap-2">
           <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Data readiness level
+            Data Readiness
           </Label>
           <Select
-            value={formData.data_readiness_level}
-            onValueChange={(value) => handleChange("data_readiness_level", value)}
+            value={formData.data_readiness}
+            onValueChange={(value) => handleChange("data_readiness", value)}
           >
             <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="D3 - Cleaned" />
+              <SelectValue placeholder="Select Data Readiness Level" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="d1">D1 - Raw</SelectItem>
-              <SelectItem value="d2">D2 - Processed</SelectItem>
-              <SelectItem value="d3">D3 - Cleaned</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Data freshness */}
-        <div className="flex flex-col gap-2">
-          <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Data freshness
-          </Label>
-          <Select
-            value={formData.data_freshness}
-            onValueChange={(value) => handleChange("data_freshness", value)}
-          >
-            <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="Weekly" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="D1">D1 - Raw Data</SelectItem>
+              <SelectItem value="D2">D2 - Processed Data</SelectItem>
+              <SelectItem value="D3">D3 - Cleaned Data</SelectItem>
+              <SelectItem value="D4">D4 - Analysis-Ready Data</SelectItem>
             </SelectContent>
           </Select>
         </div>

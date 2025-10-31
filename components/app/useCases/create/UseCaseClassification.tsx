@@ -37,42 +37,42 @@ const UseCaseClassification: React.FC<UseCaseClassificationProps> = ({
 
       {/* Grid layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Use case type */}
+        {/* ROI Classification */}
         <div className="flex flex-col gap-2">
           <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Use case type
+            ROI Classification
           </Label>
           <Select
-            value={formData.use_case_type}
-            onValueChange={(value) => handleChange("use_case_type", value)}
+            value={formData.roi_classification}
+            onValueChange={(value) => handleChange("roi_classification", value)}
           >
             <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="Regulatory" />
+              <SelectValue placeholder="Select ROI Classification" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="regulatory">Regulatory</SelectItem>
-              <SelectItem value="strategic">Strategic</SelectItem>
-              <SelectItem value="operational">Operational</SelectItem>
+              <SelectItem value="High">High</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Value driver */}
+        {/* Priority */}
         <div className="flex flex-col gap-2">
           <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Value driver
+            Priority
           </Label>
           <Select
-            value={formData.value_driver}
-            onValueChange={(value) => handleChange("value_driver", value)}
+            value={formData.priority}
+            onValueChange={(value) => handleChange("priority", value)}
           >
             <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer">
-              <SelectValue placeholder="Cost" />
+              <SelectValue placeholder="Select Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="cost">Cost</SelectItem>
-              <SelectItem value="efficiency">Efficiency</SelectItem>
-              <SelectItem value="compliance">Compliance</SelectItem>
+              <SelectItem value="High">High</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
             </SelectContent>
           </Select>
         </div>
