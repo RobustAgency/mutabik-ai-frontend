@@ -72,7 +72,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="type">Type *</Label>
             <Select
-              value={formData.type}
+              key={`type-${formData.type || 'empty'}`}
+              value={formData.type || ""}
               onValueChange={(value) => handleInputChange("type", value)}
             >
               <SelectTrigger className={errors.type ? "border-destructive w-full" : "w-full"}>
@@ -180,7 +181,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="vendor_id">Link Vendor</Label>
             <Select
-              value={formData.vendor_id}
+              key={`vendor_id-${formData.vendor_id || 'empty'}`}
+              value={formData.vendor_id || ""}
               onValueChange={(value) => handleInputChange("vendor_id", value)}
               disabled={isVendorsLoading}
             >
@@ -207,7 +209,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="classification">Classification *</Label>
             <Select
-              value={formData.classification}
+              key={`classification-${formData.classification || 'empty'}`}
+              value={formData.classification || ""}
               onValueChange={(value) => handleInputChange("classification", value)}
             >
               <SelectTrigger className={errors.classification ? "border-destructive w-full" : "w-full"}>
@@ -242,7 +245,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="timezone">Timezone *</Label>
             <Select
-              value={formData.timezone}
+              key={`timezone-${formData.timezone || 'empty'}`}
+              value={formData.timezone || ""}
               onValueChange={(value) => handleInputChange("timezone", value)}
             >
               <SelectTrigger className={errors.timezone ? "border-destructive w-full" : "w-full"}>

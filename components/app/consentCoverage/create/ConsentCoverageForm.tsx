@@ -51,7 +51,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
             <Label htmlFor="dataset_id">
               Dataset <span className="text-red-500">*</span>
             </Label>
-            <Select value={formData.dataset_id} onValueChange={(value) => {
+            <Select key={`dataset_id-${formData.dataset_id || 'empty'}`} value={formData.dataset_id || ""} onValueChange={(value) => {
               handleChange("dataset_id", value);
               // Clear snapshot when dataset changes
               handleChange("snapshot_id", "");
@@ -72,7 +72,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
 
           <div className="space-y-2">
             <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
-            <Select value={formData.snapshot_id || undefined} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
+            <Select key={`snapshot_id-${formData.snapshot_id || 'empty'}`} value={formData.snapshot_id || ""} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
               <SelectTrigger id="snapshot_id" className={`w-full ${errors.snapshot_id ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select snapshot (optional)" />
               </SelectTrigger>
@@ -101,7 +101,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
 
           <div className="space-y-2">
             <Label htmlFor="jurisdiction">Jurisdiction *</Label>
-            <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
+            <Select key={`jurisdiction-${formData.jurisdiction || 'empty'}`} value={formData.jurisdiction || ""} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>

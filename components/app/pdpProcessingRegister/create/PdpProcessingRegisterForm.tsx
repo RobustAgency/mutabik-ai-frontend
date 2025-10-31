@@ -59,7 +59,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
 
           <div className="space-y-2">
             <Label htmlFor="controller_role">Controller Role *</Label>
-            <Select value={formData.controller_role} onValueChange={(value) => handleChange("controller_role", value)}>
+            <Select key={`controller_role-${formData.controller_role || 'empty'}`} value={formData.controller_role || ""} onValueChange={(value) => handleChange("controller_role", value)}>
               <SelectTrigger className={`w-full ${errors.controller_role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -109,7 +109,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="lawful_basis">Lawful Basis *</Label>
-            <Select value={formData.lawful_basis} onValueChange={(value) => handleChange("lawful_basis", value)}>
+            <Select key={`lawful_basis-${formData.lawful_basis || 'empty'}`} value={formData.lawful_basis || ""} onValueChange={(value) => handleChange("lawful_basis", value)}>
               <SelectTrigger className={`w-full ${errors.lawful_basis ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select basis" />
               </SelectTrigger>
@@ -137,7 +137,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="dpia_required_flag">DPIA Required</Label>
-            <Select value={formData.dpia_required_flag || ""} onValueChange={(value) => handleChange("dpia_required_flag", value)}>
+            <Select key={`dpia_required_flag-${formData.dpia_required_flag || 'empty'}`} value={formData.dpia_required_flag || ""} onValueChange={(value) => handleChange("dpia_required_flag", value)}>
               <SelectTrigger className={`w-full ${errors.dpia_required_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
@@ -150,7 +150,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
 
           <div className="space-y-2">
             <Label htmlFor="status">Status *</Label>
-            <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
+            <Select key={`status-${formData.status || 'empty'}`} value={formData.status || ""} onValueChange={(value) => handleChange("status", value)}>
               <SelectTrigger className={`w-full ${errors.status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>

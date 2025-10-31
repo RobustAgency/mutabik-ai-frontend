@@ -42,7 +42,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="subject_realm">Subject Realm *</Label>
-            <Select value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
+            <Select key={`subject_realm-${formData.subject_realm || 'empty'}`} value={formData.subject_realm || ""} onValueChange={(value) => handleChange("subject_realm", value)}>
               <SelectTrigger className={errors.subject_realm ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select realm" />
               </SelectTrigger>
@@ -59,7 +59,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="jurisdiction">Jurisdiction *</Label>
-            <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
+            <Select key={`jurisdiction-${formData.jurisdiction || 'empty'}`} value={formData.jurisdiction || ""} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger className={errors.jurisdiction ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>
@@ -86,7 +86,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="consent_status">Consent Status *</Label>
-            <Select value={formData.consent_status} onValueChange={(value) => handleChange("consent_status", value)}>
+            <Select key={`consent_status-${formData.consent_status || 'empty'}`} value={formData.consent_status || ""} onValueChange={(value) => handleChange("consent_status", value)}>
               <SelectTrigger className={errors.consent_status ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -103,7 +103,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="legal_basis">Legal Basis *</Label>
-            <Select value={formData.legal_basis} onValueChange={(value) => handleChange("legal_basis", value)}>
+            <Select key={`legal_basis-${formData.legal_basis || 'empty'}`} value={formData.legal_basis || ""} onValueChange={(value) => handleChange("legal_basis", value)}>
               <SelectTrigger className={errors.legal_basis ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select legal basis" />
               </SelectTrigger>

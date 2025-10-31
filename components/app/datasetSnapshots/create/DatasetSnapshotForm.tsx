@@ -148,7 +148,7 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="residency_zone">Residency Zone *</Label>
-            <Select value={formData.residency_zone} onValueChange={(value) => handleChange("residency_zone", value)}>
+            <Select key={`residency_zone-${formData.residency_zone || 'empty'}`} value={formData.residency_zone || ""} onValueChange={(value) => handleChange("residency_zone", value)}>
               <SelectTrigger className={`w-full ${errors.residency_zone ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select residency zone" />
               </SelectTrigger>

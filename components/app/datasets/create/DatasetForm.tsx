@@ -21,6 +21,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     setFormData,
     errors,
 }) => {
+    console.log("🚀 ~ DatasetForm ~ formData:", formData)
     const { data: dataSources = [], isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
 
     const handleInputChange = (field: keyof CreateDatasetData, value: any) => {
@@ -54,6 +55,9 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     // Show lawful basis when contains_pii is "Yes"
     const showLawfulBasis = formData.contains_pii === "Yes";
 
+    console.log(formData.purpose, 'formData.purpose');
+
+
     return (
         <div className="space-y-6">
             {/* Basic Information */}
@@ -78,7 +82,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="purpose">Purpose *</Label>
                         <Select
-                            value={formData.purpose}
+                            key={`purpose-${formData.purpose || 'empty'}`}
+                            value={formData.purpose || ""}
                             onValueChange={(value) => handleInputChange("purpose", value)}
                         >
                             <SelectTrigger className={errors.purpose ? "border-destructive w-full" : "w-full"}>
@@ -175,7 +180,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="sensitivity">Sensitivity *</Label>
                         <Select
-                            value={formData.sensitivity}
+                            key={`sensitivity-${formData.sensitivity || 'empty'}`}
+                            value={formData.sensitivity || ""}
                             onValueChange={(value) => handleInputChange("sensitivity", value)}
                         >
                             <SelectTrigger className={errors.sensitivity ? "border-destructive w-full" : "w-full"}>
@@ -196,7 +202,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="contains_pii">Contains PII *</Label>
                         <Select
-                            value={formData.contains_pii}
+                            key={`contains_pii-${formData.contains_pii || 'empty'}`}
+                            value={formData.contains_pii || ""}
                             onValueChange={(value) => handleInputChange("contains_pii", value)}
                         >
                             <SelectTrigger className={errors.contains_pii ? "border-destructive w-full" : "w-full"}>
@@ -215,7 +222,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="controller_role">Controller Role *</Label>
                         <Select
-                            value={formData.controller_role}
+                            key={`controller_role-${formData.controller_role || 'empty'}`}
+                            value={formData.controller_role || ""}
                             onValueChange={(value) => handleInputChange("controller_role", value)}
                         >
                             <SelectTrigger className={errors.controller_role ? "border-destructive w-full" : "w-full"}>
@@ -281,6 +289,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                         <div className="space-y-2 w-full">
                             <Label htmlFor="lawful_basis">Lawful Basis *</Label>
                             <Select
+                                key={`lawful_basis-${formData.lawful_basis || 'empty'}`}
                                 value={formData.lawful_basis || ""}
                                 onValueChange={(value) => handleInputChange("lawful_basis", value)}
                             >
@@ -377,6 +386,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="license_type">License Type</Label>
                         <Select
+                            key={`license_type-${formData.license_type || 'empty'}`}
                             value={formData.license_type || ""}
                             onValueChange={(value) => handleInputChange("license_type", value)}
                         >
@@ -403,7 +413,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="data_structure">Data Structure *</Label>
                         <Select
-                            value={formData.data_structure}
+                            key={`data_structure-${formData.data_structure || 'empty'}`}
+                            value={formData.data_structure || ""}
                             onValueChange={(value) => handleInputChange("data_structure", value)}
                         >
                             <SelectTrigger className={errors.data_structure ? "border-destructive w-full" : "w-full"}>
@@ -423,7 +434,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="storage_format">Storage Format *</Label>
                         <Select
-                            value={formData.storage_format}
+                            key={`storage_format-${formData.storage_format || 'empty'}`}
+                            value={formData.storage_format || ""}
                             onValueChange={(value) => handleInputChange("storage_format", value)}
                         >
                             <SelectTrigger className={errors.storage_format ? "border-destructive w-full" : "w-full"}>
@@ -452,7 +464,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     <div className="space-y-2 w-full">
                         <Label htmlFor="cross_border_transfer">Cross-Border Transfer *</Label>
                         <Select
-                            value={formData.cross_border_transfer}
+                            key={`cross_border_transfer-${formData.cross_border_transfer || 'empty'}`}
+                            value={formData.cross_border_transfer || ""}
                             onValueChange={(value) => handleInputChange("cross_border_transfer", value)}
                         >
                             <SelectTrigger className={errors.cross_border_transfer ? "border-destructive w-full" : "w-full"}>

@@ -38,7 +38,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="data_type">Data Type *</Label>
-            <Select value={formData.data_type} onValueChange={(value) => handleChange("data_type", value)}>
+            <Select key={`data_type-${formData.data_type || 'empty'}`} value={formData.data_type || ""} onValueChange={(value) => handleChange("data_type", value)}>
               <SelectTrigger className={`w-full ${errors.data_type ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select data type" />
               </SelectTrigger>
@@ -102,7 +102,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="sensitivity">Sensitivity *</Label>
-            <Select value={formData.sensitivity} onValueChange={(value) => handleChange("sensitivity", value)}>
+            <Select key={`sensitivity-${formData.sensitivity || 'empty'}`} value={formData.sensitivity || ""} onValueChange={(value) => handleChange("sensitivity", value)}>
               <SelectTrigger className={`w-full ${errors.sensitivity ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select sensitivity" />
               </SelectTrigger>
@@ -118,7 +118,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="pii_flag">PII Flag *</Label>
-            <Select value={formData.pii_flag} onValueChange={(value) => handleChange("pii_flag", value)}>
+            <Select key={`pii_flag-${formData.pii_flag || 'empty'}`} value={formData.pii_flag || ""} onValueChange={(value) => handleChange("pii_flag", value)}>
               <SelectTrigger className={`w-full ${errors.pii_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select PII flag" />
               </SelectTrigger>
@@ -133,7 +133,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
           {formData.pii_flag === "Yes" && (
             <div className="space-y-2">
               <Label htmlFor="personal_data_category">Personal Data Category *</Label>
-              <Select value={formData.personal_data_category || ""} onValueChange={(value) => handleChange("personal_data_category", value)}>
+              <Select key={`personal_data_category-${formData.personal_data_category || 'empty'}`} value={formData.personal_data_category || ""} onValueChange={(value) => handleChange("personal_data_category", value)}>
                 <SelectTrigger className={`w-full ${errors.personal_data_category ? "border-red-500" : ""}`}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -154,7 +154,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="special_category_flag">Special Category Flag *</Label>
-            <Select value={formData.special_category_flag} onValueChange={(value) => handleChange("special_category_flag", value)}>
+            <Select key={`special_category_flag-${formData.special_category_flag || 'empty'}`} value={formData.special_category_flag || ""} onValueChange={(value) => handleChange("special_category_flag", value)}>
               <SelectTrigger className={`w-full ${errors.special_category_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select flag" />
               </SelectTrigger>
@@ -174,7 +174,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="cde_flag">CDE Flag *</Label>
-            <Select value={formData.cde_flag} onValueChange={(value) => handleChange("cde_flag", value)}>
+            <Select key={`cde_flag-${formData.cde_flag || 'empty'}`} value={formData.cde_flag || ""} onValueChange={(value) => handleChange("cde_flag", value)}>
               <SelectTrigger className={`w-full ${errors.cde_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select CDE flag" />
               </SelectTrigger>
@@ -189,7 +189,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
           {formData.cde_flag === "Yes" && (
             <div className="space-y-2">
               <Label htmlFor="cde_category">CDE Category *</Label>
-              <Select value={formData.cde_category || ""} onValueChange={(value) => handleChange("cde_category", value)}>
+              <Select key={`cde_category-${formData.cde_category || 'empty'}`} value={formData.cde_category || ""} onValueChange={(value) => handleChange("cde_category", value)}>
                 <SelectTrigger className={`w-full ${errors.cde_category ? "border-red-500" : ""}`}>
                   <SelectValue placeholder="Select CDE category" />
                 </SelectTrigger>

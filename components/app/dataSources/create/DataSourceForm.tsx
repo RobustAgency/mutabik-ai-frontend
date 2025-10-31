@@ -80,7 +80,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="system_type">System Type *</Label>
             <Select
-              value={formData.system_type}
+              key={`system_type-${formData.system_type || 'empty'}`}
+              value={formData.system_type || ""}
               onValueChange={(value) => handleInputChange("system_type", value)}
             >
               <SelectTrigger className={errors.system_type ? "border-destructive w-full" : "w-full"}>
@@ -118,7 +119,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="access_method">Access Method *</Label>
             <Select
-              value={formData.access_method}
+              key={`access_method-${formData.access_method || 'empty'}`}
+              value={formData.access_method || ""}
               onValueChange={(value) => handleInputChange("access_method", value)}
             >
               <SelectTrigger className={errors.access_method ? "border-destructive w-full" : "w-full"}>
@@ -191,7 +193,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="residency">Residency *</Label>
             <Select
-              value={formData.residency}
+              key={`residency-${formData.residency || 'empty'}`}
+              value={formData.residency || ""}
               onValueChange={(value) => handleInputChange("residency", value)}
             >
               <SelectTrigger className={errors.residency ? "border-destructive w-full" : "w-full"}>
@@ -218,7 +221,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="classification">Classification *</Label>
             <Select
-              value={formData.classification}
+              key={`classification-${formData.classification || 'empty'}`}
+              value={formData.classification || ""}
               onValueChange={(value) => handleInputChange("classification", value)}
             >
               <SelectTrigger className={errors.classification ? "border-destructive w-full" : "w-full"}>
@@ -246,7 +250,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="hosting_model">Hosting Model *</Label>
             <Select
-              value={formData.hosting_model}
+              key={`hosting_model-${formData.hosting_model || 'empty'}`}
+              value={formData.hosting_model || ""}
               onValueChange={(value) => handleInputChange("hosting_model", value)}
             >
               <SelectTrigger className={errors.hosting_model ? "border-destructive w-full" : "w-full"}>
@@ -266,7 +271,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="service_model">Service Model *</Label>
             <Select
-              value={formData.service_model}
+              key={`service_model-${formData.service_model || 'empty'}`}
+              value={formData.service_model || ""}
               onValueChange={(value) => handleInputChange("service_model", value)}
             >
               <SelectTrigger className={errors.service_model ? "border-destructive w-full" : "w-full"}>
@@ -287,7 +293,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           <div className="space-y-2 w-full">
             <Label htmlFor="cloud_provider">Cloud Provider *</Label>
             <Select
-              value={formData.cloud_provider}
+              key={`cloud_provider-${formData.cloud_provider || 'empty'}`}
+              value={formData.cloud_provider || ""}
               onValueChange={(value) => handleInputChange("cloud_provider", value)}
             >
               <SelectTrigger className={errors.cloud_provider ? "border-destructive w-full" : "w-full"}>

@@ -34,7 +34,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({ aiModel }) => {
                             <p className="font-sans text-xs sm:text-sm text-[#667085] mt-1">AI Model ID: {aiModel.id}</p>
                         </div>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                    {/* <div className="flex gap-2 flex-wrap">
                         <Button
                             variant="outline"
                             size="sm"
@@ -59,7 +59,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({ aiModel }) => {
                             <Trash2 className="w-4 h-4" />
                             <span className="font-sans text-sm">Delete</span>
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             </CardContent>
         </Card>
