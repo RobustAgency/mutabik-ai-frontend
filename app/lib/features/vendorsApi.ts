@@ -7,7 +7,7 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 export interface Vendor {
   id: string;
   name: string;
-  type: 'vendor_org';
+  type: "vendor_org";
   description?: string;
   website?: string;
   contact_email?: string;
@@ -143,8 +143,7 @@ export const vendorsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create vendor";
+              mutationError?.error?.data?.message || "Failed to create vendor";
             toast.error(errorMessage);
           }
         }
@@ -157,7 +156,7 @@ export const vendorsApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/vendors/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -172,8 +171,7 @@ export const vendorsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update vendor";
+              mutationError?.error?.data?.message || "Failed to update vendor";
             toast.error(errorMessage);
           }
         }
