@@ -53,7 +53,7 @@ const Page = () => {
                                                     {card.title}
                                                 </h3>
                                                 <p className="text-sm text-[#667085] mt-1">
-                                                    {card.organizational_context || 'N/A'} • {card.version}
+                                                    {Array.isArray(card.organizational_context) ? card.organizational_context.join(', ') : card.organizational_context || 'N/A'} • {card.version_id}
                                                 </p>
                                             </div>
                                             <span className="px-2.5 py-0.5 rounded-md bg-[#EFF8FF] text-[#175CD3] text-xs font-medium">
@@ -69,9 +69,9 @@ const Page = () => {
                                         {/* Dates */}
                                         <div className="flex items-center justify-between gap-4 text-sm">
                                             <div className="flex flex-col">
-                                                <span className="text-[#667085] text-xs">Latest Performance Date</span>
+                                                <span className="text-[#667085] text-xs">Last Review Date</span>
                                                 <span className="text-[#101828] font-medium mt-1">
-                                                    {formatDate(card.latest_performance_date)}
+                                                    {formatDate(card.last_review_date)}
                                                 </span>
                                             </div>
                                             <div className="flex flex-col text-right">
@@ -85,14 +85,8 @@ const Page = () => {
                                         {/* Completeness Score */}
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-[#344054] font-medium">COMPLETENESS SCORE</span>
-                                                <span className="text-sm text-[#344054] font-semibold">{card.completeness_score}%</span>
-                                            </div>
-                                            <div className="w-full h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-[#17B26A] rounded-full transition-all duration-300"
-                                                    style={{ width: `${card.completeness_score}%` }}
-                                                />
+                                                <span className="text-sm text-[#344054] font-medium">STATUS</span>
+                                                <span className="text-sm text-[#344054] font-semibold">{getStatusLabel(card.status)}</span>
                                             </div>
                                         </div>
 
