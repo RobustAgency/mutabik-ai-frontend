@@ -29,6 +29,11 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         release_date: null,
         release_notes: '',
 
+        // Version metadata
+        version_role: 'original_development',
+        version_source: 'internal_development',
+        our_involvement: 'full_development',
+
         // Technical characteristics
         architecture_type: 'transformer',
         model_file_size_gb: 0,
@@ -43,14 +48,10 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         // Deployment / lifecycle / compliance
         deployment_status: 'not_deployed',
         lifecycle_stage: 'development',
-        compliance_check_status: 'compliant',
-        validation_status: 'not_validated',
         deployment_environments: [],
 
         // Flags
-        rollback_available: false,
         has_performance_data: false,
-        performance_baseline_established: false,
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -67,6 +68,11 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
                 release_date: aiModelVersion.release_date,
                 release_notes: aiModelVersion.release_notes || '',
 
+                // Version metadata
+                version_role: aiModelVersion.version_role,
+                version_source: aiModelVersion.version_source,
+                our_involvement: aiModelVersion.our_involvement,
+
                 // Technical characteristics
                 architecture_type: aiModelVersion.architecture_type,
                 model_file_size_gb: aiModelVersion.model_file_size_gb || 0,
@@ -81,14 +87,10 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
                 // Deployment / lifecycle / compliance
                 deployment_status: aiModelVersion.deployment_status,
                 lifecycle_stage: aiModelVersion.lifecycle_stage,
-                compliance_check_status: aiModelVersion.compliance_check_status || 'compliant',
-                validation_status: (aiModelVersion as any).validation_status || 'not_validated',
                 deployment_environments: aiModelVersion.deployment_environments,
 
                 // Flags
-                rollback_available: (aiModelVersion as any).rollback_available || false,
                 has_performance_data: aiModelVersion.has_performance_data,
-                performance_baseline_established: aiModelVersion.performance_baseline_established,
             });
         }
     }, [aiModelVersion]);
@@ -125,12 +127,6 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         if (!formData.lifecycle_stage) {
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
-        if (!formData.compliance_check_status) {
-            errors.compliance_check_status = ["Compliance check status is required"];
-        }
-        if (!formData.validation_status) {
-            errors.validation_status = ["Validation status is required"];
-        }
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
@@ -140,8 +136,6 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
     const mapServerErrorsToFormFields = (serverErrors: Record<string, string[]>) => {
         const fieldMapping: Record<string, string> = {
             'version_number': 'version_number',
-            'compliance_check_status': 'compliance_check_status',
-            'validation_status': 'validation_status',
             'model_file_size_gb': 'model_file_size_gb',
             'architecture_type': 'architecture_type',
             'complexity_level': 'complexity_level',
