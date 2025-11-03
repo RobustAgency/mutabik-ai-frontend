@@ -21,11 +21,7 @@ export default function DatesReviewsSection({ formData, setFormData }: DatesRevi
                 </h2>
                 <hr className="border-gray-200" />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                    <Label>Latest Performance Date</Label>
-                    <Input type="date" placeholder="YYYY-MM-DD" value={formData.latest_performance_date || ""} onChange={set("latest_performance_date")} />
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label>Publication Date</Label>
                     <Input type="date" placeholder="YYYY-MM-DD" value={formData.publication_date || ""} onChange={set("publication_date")} />

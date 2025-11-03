@@ -38,7 +38,6 @@ export interface FormDataType {
   // Technical Details
   business_status: "planned" | "active" | "deprecated" | "retired";
   operational_status: "not_deployed" | "development" | "testing" | "production";
-  strategic_importance?: "low" | "medium" | "high" | "critical";
   regulatory_risk_classification:
     | "minimal_risk"
     | "limited_risk"
@@ -47,13 +46,6 @@ export interface FormDataType {
     | "sector_specific";
 
   // Ownership & Governance
-  organizational_role:
-    | "developer"
-    | "importer"
-    | "deployer"
-    | "integrator"
-    | "consumer"
-    | "collaborator";
   ownership_type:
     | "internal"
     | "external"
@@ -67,8 +59,8 @@ export interface FormDataType {
     | "open_source_community"
     | "cloud_provider"
     | "partnership";
-  source_organization_id: string | null;
-  custodian_id: string | null;
+  source_org_stakeholder_id: string | null;
+  owner_stakeholder_id: string | null;
   vendor_id: string | null;
   current_owner: string | null;
 }

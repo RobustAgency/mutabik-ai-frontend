@@ -23,22 +23,14 @@ interface AiModelCardFormProps {
 }
 
 const defaultState: CreateAiModelCardData = {
-    ai_model_id: "",
-    ai_model_version_id: "",
+    version_id: "",
     title: "",
-    version: "",
     creator_role: "",
-    owner_email: "",
-    access_level: "public",
     format: "",
     status: "draft",
-    workflow_stage: "creation",
-    technical_review_status: "pending",
-    ethics_review_status: "pending",
-    compliance_review_status: "pending",
     publication_status: "internal",
-    completeness_score: 0,
-    organizational_context: "",
+    owner_stakeholder_id: "",
+    organizational_context: [] as any,
     intended_use: "",
     training_data_overview: "",
     bias_evaluation_methods: "",
@@ -46,7 +38,6 @@ const defaultState: CreateAiModelCardData = {
     ethical_considerations: "",
     risk_summary: "",
     performance_summary: "",
-    latest_performance_date: "",
     publication_date: "",
     last_review_date: "",
     next_review_date: "",
@@ -60,11 +51,8 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
 
     const validate = (): boolean => {
         const next: Record<string, string[]> = {};
-        if (!formData.ai_model_id || String(formData.ai_model_id).trim() === "") next.ai_model_id = ["Parent model is required"];
-        if (!formData.ai_model_version_id || String(formData.ai_model_version_id).trim() === "") next.ai_model_version_id = ["Model version is required"];
+        if (!formData.version_id || String(formData.version_id).trim() === "") next.version_id = ["Model version is required"];
         if (!formData.title?.trim()) next.title = ["Title is required"];
-        if (!formData.owner_email?.trim()) next.owner_email = ["Owner email is required"];
-        if (formData.completeness_score < 0 || formData.completeness_score > 100) next.completeness_score = ["Completeness must be 0-100"];
         setErrors(next);
         return Object.keys(next).length === 0;
     };
@@ -77,11 +65,7 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
 
     const { data: versions = [] } = useGetAiModelVersionsQuery({ per_page: 100 });
     const { data: models = [] } = useGetAiModelsQuery();
-    const modelOptions = models.map((m: any) => ({ id: m.id, label: m.name ?? `Model ${m.id}` }));
-    const versionOptions = (formData.ai_model_id
-        ? versions.filter((v: any) => String(v.ai_model_id) === String(formData.ai_model_id))
-        : versions
-    ).map((v: any) => ({
+    const versionOptions = versions.map((v: any) => ({
         id: v.id,
         label: `${v.ai_model?.name ?? "Model"} • v${v.version_number ?? v.version ?? v.id}`,
     }));
@@ -123,7 +107,7 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
                     )}
 
                     <CardContent className="space-y-8">
-                        <BasicInfoSection formData={formData} setFormData={setForm} versionOptions={versionOptions} modelOptions={modelOptions} />
+                        <BasicInfoSection formData={formData} setFormData={setForm} versionOptions={versionOptions} errors={errors} />
                         <WorkflowStatusSection formData={formData} setFormData={setForm} />
                         <CoreContentSection formData={formData} setFormData={setForm} />
                         <DatesReviewsSection formData={formData} setFormData={setForm} />

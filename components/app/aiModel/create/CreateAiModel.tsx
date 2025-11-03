@@ -20,13 +20,11 @@ const initialFormData: FormDataType = {
     domain_specialization: "general",
     business_status: "planned",
     operational_status: "not_deployed",
-    strategic_importance: "medium",
     regulatory_risk_classification: "minimal_risk",
-    organizational_role: "developer",
     ownership_type: "internal",
     development_source: "internal_development",
-    source_organization_id: null,
-    custodian_id: null,
+    source_org_stakeholder_id: null,
+    owner_stakeholder_id: null,
     vendor_id: null,
     current_owner: null,
 };
@@ -70,18 +68,6 @@ const CreateAiModel: React.FC = () => {
             errors.operational_status = ["Operational status is required"];
         }
 
-        if (!formData.regulatory_risk_classification) {
-            errors.regulatory_risk_classification = ["Regulatory classification is required"];
-        }
-
-        if (!formData.organizational_role) {
-            errors.organizational_role = ["Organizational role is required"];
-        }
-
-        if (!formData.ownership_type) {
-            errors.ownership_type = ["Ownership type is required"];
-        }
-
         if (!formData.development_source) {
             errors.development_source = ["Development source is required"];
         }
@@ -107,16 +93,15 @@ const CreateAiModel: React.FC = () => {
                 primary_category: formData.primary_category,
                 type: formData.type,
                 domain_specialization: formData.domain_specialization,
-                organizational_role: formData.organizational_role,
                 ownership_type: formData.ownership_type,
                 development_source: formData.development_source,
                 business_status: formData.business_status,
                 operational_status: formData.operational_status,
-                strategic_importance: formData.strategic_importance,
                 regulatory_risk_classification: formData.regulatory_risk_classification,
                 // Map IDs to API fields that expect strings
-                source_organization: formData.source_organization_id,
+                source_org_stakeholder_id: formData.source_org_stakeholder_id,
                 current_owner: formData.current_owner,
+                owner_stakeholder_id: formData.owner_stakeholder_id,
                 vendor: formData.vendor_id,
             };
 

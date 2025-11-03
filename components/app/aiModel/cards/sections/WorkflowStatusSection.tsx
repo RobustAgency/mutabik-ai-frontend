@@ -51,20 +51,6 @@ export default function WorkflowStatusSection({ formData, setFormData }: Workflo
                         </SelectContent>
                     </Select>
                 </div>
-
-                <div className="space-y-2">
-                    <Label>Workflow Stage</Label>
-                    <Select value={formData.workflow_stage || ""} onValueChange={(v) => setFormData({ workflow_stage: v })}>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Creation/Review/etc." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {["creation", "technical_review", "ethics_review"].map((x) => (
-                                <SelectItem key={x} value={x}>{x}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
             </div>
         </div>
     );

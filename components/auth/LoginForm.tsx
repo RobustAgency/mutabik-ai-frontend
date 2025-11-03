@@ -38,6 +38,8 @@ export function LoginForm() {
     const router = useRouter();
     const formRef = useRef<HTMLFormElement | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [state, formAction] = useActionState(
         async (_prev: LoginState, formData: FormData) => {
             const result = await login(formData);
@@ -50,7 +52,6 @@ export function LoginForm() {
         if (!state) return;
         if (state.success) {
             setIsProcessing(true);
-            formRef.current?.reset();
 
             const userRole = state.data?.user_metadata?.role;
 
@@ -148,6 +149,8 @@ export function LoginForm() {
                             type="email"
                             placeholder="Enter your email"
                             className="mt-1 border-gray-300"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
@@ -161,6 +164,8 @@ export function LoginForm() {
                             name="password"
                             placeholder="hello123"
                             className="mt-1 border-gray-300"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>

@@ -3,6 +3,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import type { CreateAiModelCardData } from "@/service/app/aiModelCards";
 
 interface CoreContentSectionProps {
@@ -11,7 +12,37 @@ interface CoreContentSectionProps {
 }
 
 export default function CoreContentSection({ formData, setFormData }: CoreContentSectionProps) {
+    const [organizationalContextInput, setOrganizationalContextInput] = React.useState('');
+    
     const set = (k: keyof CreateAiModelCardData) => (e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ [k]: e.target.value } as any);
+
+    const handleOrgContextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOrganizationalContextInput(e.target.value);
+    };
+
+    const handleOrgContextKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const newContext = organizationalContextInput.trim();
+
+            if (newContext.length > 0) {
+                setFormData({
+                    organizational_context: [
+                        ...(Array.isArray(formData.organizational_context) ? formData.organizational_context : []),
+                        newContext
+                    ]
+                });
+                // Clear input for next entry
+                setOrganizationalContextInput('');
+            }
+        }
+    };
+
+    const removeOrgContext = (index: number) => {
+        setFormData({
+            organizational_context: (Array.isArray(formData.organizational_context) ? formData.organizational_context : []).filter((_, i) => i !== index)
+        });
+    };
     return (
         <div className="space-y-4">
             {/* Section Title */}
@@ -23,8 +54,32 @@ export default function CoreContentSection({ formData, setFormData }: CoreConten
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label>Organizational Context (JSON or narrative)</Label>
-                    <Textarea value={formData.organizational_context || ""} onChange={set("organizational_context")} placeholder="Enter description..." />
+                    <Label>Organizational Context</Label>
+                    <Input
+                        type="text"
+                        value={organizationalContextInput}
+                        onChange={handleOrgContextInputChange}
+                        onKeyPress={handleOrgContextKeyPress}
+                        placeholder='Type context and press Enter'
+                        className="w-full"
+                    />
+                    <div className="flex flex-wrap gap-2 mt-3">
+                        {(Array.isArray(formData.organizational_context) ? formData.organizational_context : []).map((context, index) => (
+                            <div
+                                key={index}
+                                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                            >
+                                {context}
+                                <button
+                                    type="button"
+                                    onClick={() => removeOrgContext(index)}
+                                    className="text-blue-600 hover:text-blue-800 font-semibold"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="space-y-2">
                     <Label>Intended Use</Label>

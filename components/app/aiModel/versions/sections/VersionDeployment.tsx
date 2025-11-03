@@ -14,12 +14,44 @@ interface Props {
 }
 
 const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) => {
+  const [customizationInput, setCustomizationInput] = React.useState('');
+
   const handleEnvChange = (value: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
       deployment_environments: checked
         ? [...(prev.deployment_environments || []), value]
         : (prev.deployment_environments || []).filter(v => v !== value),
+    }));
+  };
+
+  const handleCustomizationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomizationInput(e.target.value);
+  };
+
+  const handleCustomizationKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newCustomization = customizationInput.trim();
+
+      if (newCustomization.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          customizations_applied: [
+            ...(prev.customizations_applied || []),
+            newCustomization
+          ]
+        }));
+        // Clear input for next entry
+        setCustomizationInput('');
+      }
+    }
+  };
+
+  const removeCustomization = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      customizations_applied: (prev.customizations_applied || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -30,7 +62,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
         <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Deployment status, lifecycle and compliance</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2">Deployment Status <span className="text-red-500">*</span></Label>
           <Select
@@ -70,46 +102,6 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             <p className="text-xs text-red-600 mt-1">{errors.lifecycle_stage[0]}</p>
           )}
         </div>
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Compliance Check Status <span className="text-red-500">*</span></Label>
-          <Select
-            value={formData.compliance_check_status || 'compliant'}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, compliance_check_status: value as any }))}
-          >
-            <SelectTrigger className={errors.compliance_check_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {['compliant', 'non_compliant', 'under_review', 'not_checked'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.compliance_check_status && (
-            <p className="text-xs text-red-600 mt-1">{errors.compliance_check_status[0]}</p>
-          )}
-        </div>
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Validation Status <span className="text-red-500">*</span></Label>
-          <Select
-            value={formData.validation_status || 'not_validated'}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, validation_status: value as any }))}
-          >
-            <SelectTrigger className={errors.validation_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {['not_validated', 'in_progress', 'passed', 'failed'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.validation_status && (
-            <p className="text-xs text-red-600 mt-1">{errors.validation_status[0]}</p>
-          )}
-        </div>
       </div>
 
       <div>
@@ -128,40 +120,33 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Release Date</Label>
-          <Input
-            type="date"
-            value={formData.release_date || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, release_date: e.target.value || null }))}
-          />
-        </div>
-        <div className="flex items-center gap-3 mt-6 sm:mt-0">
-          <Checkbox
-            id="has_performance_data"
-            checked={formData.has_performance_data}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, has_performance_data: checked as boolean }))}
-          />
-          <Label htmlFor="has_performance_data" className="text-sm text-gray-700">Has Performance Data?</Label>
-        </div>
-        <div className="flex items-center gap-3 mt-6 sm:mt-0">
-          <Checkbox
-            id="performance_baseline_established"
-            checked={formData.performance_baseline_established}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, performance_baseline_established: checked as boolean }))}
-          />
-          <Label htmlFor="performance_baseline_established" className="text-sm text-gray-700">Performance Baseline Established</Label>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <Checkbox
-          id="rollback_available"
-          checked={formData.rollback_available || false}
-          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, rollback_available: checked as boolean }))}
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2">Customizations Applied</Label>
+        <Input
+          type="text"
+          value={customizationInput}
+          onChange={handleCustomizationInputChange}
+          onKeyPress={handleCustomizationKeyPress}
+          placeholder='Type customization and press Enter'
+          className="w-full"
         />
-        <Label htmlFor="rollback_available" className="text-sm text-gray-700">Rollback Available</Label>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {(formData.customizations_applied || []).map((customization, index) => (
+            <div
+              key={index}
+              className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+            >
+              {customization}
+              <button
+                type="button"
+                onClick={() => removeCustomization(index)}
+                className="text-blue-600 hover:text-blue-800 font-semibold"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

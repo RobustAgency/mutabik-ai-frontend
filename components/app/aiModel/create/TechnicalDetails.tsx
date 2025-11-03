@@ -37,7 +37,7 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
             </div>
 
             {/* Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Operational Status */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
@@ -96,32 +96,6 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                     {hasError("business_status") && (
                         <p className="text-sm text-red-500">{getError("business_status")}</p>
                     )}
-                </div>
-
-                {/* Strategic Importance */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Strategic Importance
-                    </Label>
-                    <Select
-                        value={formData.strategic_importance || "medium"}
-                        onValueChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                strategic_importance: value as NonNullable<FormDataType["strategic_importance"]>,
-                            }))
-                        }
-                    >
-                        <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                            <SelectValue placeholder="High" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
-                            <SelectItem value="critical">Critical</SelectItem>
-                        </SelectContent>
-                    </Select>
                 </div>
 
                 {/* Risk Classification */}

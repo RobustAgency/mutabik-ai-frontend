@@ -34,6 +34,66 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
         <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Architecture, complexity and modalities</p>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Version Role <span className="text-red-500">*</span></Label>
+          <Select
+            value={formData.version_role}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, version_role: value as any }))}
+          >
+            <SelectTrigger className={errors.version_role ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['original_development', 'imported_version', 'customized_version', 'fine_tuned_version', 'deployed_version'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.version_role && (
+            <p className="text-xs text-red-600 mt-1">{errors.version_role[0]}</p>
+          )}
+        </div>
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Version Source <span className="text-red-500">*</span></Label>
+          <Select
+            value={formData.version_source}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, version_source: value as any }))}
+          >
+            <SelectTrigger className={errors.version_source ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['internal_development', 'vendor_update', 'community_release', 'custom_modification', 'fine_tuning'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.version_source && (
+            <p className="text-xs text-red-600 mt-1">{errors.version_source[0]}</p>
+          )}
+        </div>
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Our Involvement <span className="text-red-500">*</span></Label>
+          <Select
+            value={formData.our_involvement}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, our_involvement: value as any }))}
+          >
+            <SelectTrigger className={errors.our_involvement ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['full_development', 'co_development', 'customization', 'integration_only', 'consumption_only'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.our_involvement && (
+            <p className="text-xs text-red-600 mt-1">{errors.our_involvement[0]}</p>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2">Architecture Type <span className="text-red-500">*</span></Label>

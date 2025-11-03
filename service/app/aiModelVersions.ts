@@ -46,6 +46,11 @@ export interface CreateAiModelVersionData {
   release_date?: string | null;
   release_notes?: string | null;
 
+  // Version metadata
+  version_role: "original_development" | "imported_version" | "customized_version" | "fine_tuned_version" | "deployed_version";
+  version_source: "internal_development" | "vendor_update" | "community_release" | "custom_modification" | "fine_tuning";
+  our_involvement: "full_development" | "co_development" | "customization" | "integration_only" | "consumption_only";
+
   // Technical characteristics
   architecture_type: string;
   model_file_size_gb: number;
@@ -60,14 +65,11 @@ export interface CreateAiModelVersionData {
   // Deployment / lifecycle / compliance
   deployment_status: "not_deployed" | "deploying" | "deployed" | "failed" | "rollback";
   lifecycle_stage: "development" | "testing" | "staging" | "production" | "deprecated" | "retired";
-  compliance_check_status: "compliant" | "non_compliant" | "under_review" | "not_checked";
-  validation_status: "not_validated" | "in_progress" | "passed" | "failed";
   deployment_environments?: string[];
+  customizations_applied?: any[];
 
   // Flags
-  rollback_available?: boolean;
   has_performance_data?: boolean;
-  performance_baseline_established?: boolean;
 }
 
 export interface AiModelVersionFilters {

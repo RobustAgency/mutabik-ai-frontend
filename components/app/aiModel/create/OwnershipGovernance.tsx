@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { FormDataType } from "../types/aiModelTypes";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
-import { useGetStakeholdersByTypeQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetStakeholdersByTypeQuery, useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
 
 interface OwnershipGovernanceProps {
     formData: FormDataType;
@@ -24,20 +24,15 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
     setFormData,
     errors = {},
 }) => {
-    const [sourceOrgInput, setSourceOrgInput] = useState(formData.source_organization_id || "");
-    const [modelOwnerInput, setModelOwnerInput] = useState(formData.custodian_id || "");
     const [vendorInput, setVendorInput] = useState(formData.vendor_id || "none");
 
     // Fetch data from APIs
     const { data: vendors = [], isLoading: vendorsLoading, error: vendorsError } = useGetVendorsQuery();
-    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersByTypeQuery('vendor_org');
-    const { data: custodians = [], isLoading: custodiansLoading, error: custodiansError } = useGetStakeholdersByTypeQuery('person');
+    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersQuery();
 
     useEffect(() => {
-        setSourceOrgInput(formData.source_organization_id || "");
-        setModelOwnerInput(formData.custodian_id || "");
         setVendorInput(formData.vendor_id || "none");
-    }, [formData]);
+    }, [formData.vendor_id]);
 
     // Helper to check if field has error
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
@@ -57,39 +52,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
             </div>
 
             {/* Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {/* Organizational Role */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Organizational Role <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                        value={formData.organizational_role}
-                        onValueChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                organizational_role: value as FormDataType["organizational_role"],
-                            }))
-                        }
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("organizational_role") ? "border-red-500" : "border-[#D0D5DD]"
-                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Developer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="developer">Developer</SelectItem>
-                            <SelectItem value="importer">Importer</SelectItem>
-                            <SelectItem value="deployer">Deployer</SelectItem>
-                            <SelectItem value="integrator">Integrator</SelectItem>
-                            <SelectItem value="consumer">Consumer</SelectItem>
-                            <SelectItem value="collaborator">Collaborator</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {hasError("organizational_role") && (
-                        <p className="text-sm text-red-500">{getError("organizational_role")}</p>
-                    )}
-                </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Ownership Type */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
@@ -141,8 +104,6 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         </SelectContent>
                     </Select>
                 </div>
-
-
             </div>
 
             {/* Additional Fields Row */}
@@ -183,35 +144,44 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Source Organization / Stakeholder <span className="text-red-500">*</span>
                     </Label>
                     <Select
-                        value={sourceOrgInput || ""}
+                        value={String(formData.source_org_stakeholder_id || "")}
                         onValueChange={(value) => {
-                            setSourceOrgInput(value);
-                            setFormData((prev) => ({ ...prev, source_organization_id: value }));
+                            setFormData((prev) => ({ ...prev, source_org_stakeholder_id: value }));
                         }}
-                        disabled={stakeholdersLoading}
+                        disabled={stakeholdersLoading || stakeholders.length === 0}
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_organization_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder={stakeholdersLoading ? "Loading..." : "Select stakeholder..."} />
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_org_stakeholder_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder={
+                                stakeholdersLoading 
+                                    ? "Loading stakeholders..." 
+                                    : stakeholdersError
+                                    ? "Error loading stakeholders"
+                                    : stakeholders.length === 0
+                                    ? "No stakeholders available"
+                                    : formData.source_org_stakeholder_id
+                                    ? stakeholders.find((s) => String(s.id) === String(formData.source_org_stakeholder_id))?.display_name || "Select stakeholder..."
+                                    : "Select stakeholder..."
+                            } />
                         </SelectTrigger>
                         <SelectContent>
                             {stakeholders.length > 0 ? (
                                 stakeholders.map((stakeholder) => (
-                                    <SelectItem key={stakeholder.id} value={stakeholder.id}>
+                                    <SelectItem key={stakeholder.id} value={String(stakeholder.id)}>
                                         {stakeholder.display_name}
                                     </SelectItem>
                                 ))
                             ) : (
                                 <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    No stakeholders available
+                                    {stakeholdersError ? "Failed to load stakeholders" : "No stakeholders available"}
                                 </div>
                             )}
                         </SelectContent>
                     </Select>
-                    {hasError("source_organization_id") && (
-                        <p className="text-sm text-red-500">{getError("source_organization_id")}</p>
+                    {hasError("source_org_stakeholder_id") && (
+                        <p className="text-sm text-red-500">{getError("source_org_stakeholder_id")}</p>
                     )}
                     {hasApiError(stakeholdersError) && (
-                        <p className="text-sm text-red-500">Failed to load stakeholders</p>
+                        <p className="text-sm text-red-500">Failed to load stakeholders. Check API connection.</p>
                     )}
                 </div>
 
@@ -221,35 +191,44 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Model Owner / Custodian <span className="text-red-500">*</span>
                     </Label>
                     <Select
-                        value={modelOwnerInput || ""}
+                        value={String(formData.owner_stakeholder_id || "")}
                         onValueChange={(value) => {
-                            setModelOwnerInput(value);
-                            setFormData((prev) => ({ ...prev, custodian_id: value }));
+                            setFormData((prev) => ({ ...prev, owner_stakeholder_id: value }));
                         }}
-                        disabled={custodiansLoading}
+                        disabled={stakeholdersLoading || stakeholders.length === 0}
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("custodian_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder={custodiansLoading ? "Loading..." : "Select owner..."} />
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("owner_stakeholder_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder={
+                                stakeholdersLoading 
+                                    ? "Loading custodians..." 
+                                    : stakeholdersError
+                                    ? "Error loading custodians"
+                                    : stakeholders.length === 0
+                                    ? "No custodians available"
+                                    : formData.owner_stakeholder_id
+                                    ? stakeholders.find((s) => String(s.id) === String(formData.owner_stakeholder_id))?.display_name || "Select owner..."
+                                    : "Select owner..."
+                            } />
                         </SelectTrigger>
                         <SelectContent>
-                            {custodians.length > 0 ? (
-                                custodians.map((custodian) => (
-                                    <SelectItem key={custodian.id} value={custodian.id}>
+                            {stakeholders.length > 0 ? (
+                                stakeholders.map((custodian) => (
+                                    <SelectItem key={custodian.id} value={String(custodian.id)}>
                                         {custodian.display_name}
                                     </SelectItem>
                                 ))
                             ) : (
                                 <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    No custodians available
+                                    {stakeholdersError ? "Failed to load custodians" : "No custodians available"}
                                 </div>
                             )}
                         </SelectContent>
                     </Select>
-                    {hasError("custodian_id") && (
-                        <p className="text-sm text-red-500">{getError("custodian_id")}</p>
+                    {hasError("owner_stakeholder_id") && (
+                        <p className="text-sm text-red-500">{getError("owner_stakeholder_id")}</p>
                     )}
-                    {hasApiError(custodiansError) && (
-                        <p className="text-sm text-red-500">Failed to load custodians</p>
+                    {hasApiError(stakeholdersError) && (
+                        <p className="text-sm text-red-500">Failed to load custodians. Check API connection.</p>
                     )}
                 </div>
 
