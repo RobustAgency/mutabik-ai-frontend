@@ -16,6 +16,8 @@ const initialFormData: FormDataType = {
     description: null,
     primary_category: "traditional_ml",
     type: "classification",
+    creator_email: "",
+    organizational_role: "developer",
     domain_specialization: "general",
     business_status: "planned",
     operational_status: "not_deployed",

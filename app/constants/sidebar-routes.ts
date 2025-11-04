@@ -107,7 +107,7 @@ export const userRoutes: RouteItem[] = [
           {
             href: "/core-assets/ai-models/artifacts",
             label: "Model Artifacts",
-            icon: FileCog,
+            icon: Layers3,
           },
         ],
       },
