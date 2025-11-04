@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDataType } from "../types/useCaseTypes";
-import StakeholderSelector from "./StakeholderSelector";
+import StakeholderSelectorWithInline from "./StakeholderSelectorWithInline";
 
 interface BasicInfoProps {
   formData: FormDataType;
@@ -176,7 +176,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
             )}
           </div>
 
-          <StakeholderSelector
+          <StakeholderSelectorWithInline
             label="Business Owner"
             value={formData.business_owner_id}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, business_owner_id: value }))}
@@ -186,7 +186,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
             error={hasError("business_owner_id") ? getError("business_owner_id") : undefined}
           />
 
-          <StakeholderSelector
+          <StakeholderSelectorWithInline
             label="Technical Owner"
             value={formData.technical_owner_id}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, technical_owner_id: value }))}

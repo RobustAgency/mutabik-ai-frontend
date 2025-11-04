@@ -16,6 +16,8 @@ import { AlertCircle } from "lucide-react";
 import { useGetAgreementQuery, useUpdateAgreementMutation } from "@/app/lib/features/agreementsApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
 import { cn } from "@/lib/utils";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
 
 const EditAgreement: React.FC = () => {
   const router = useRouter();
@@ -230,23 +232,25 @@ const EditAgreement: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Vendor <span className="text-red-500">*</span></Label>
-                      <Select
+                      <SelectWithInlineCreate
                         key={`vendor_id-${form.vendor_id ?? 'none'}`}
                         value={form.vendor_id}
                         onValueChange={(v) => setForm((p) => ({ ...p, vendor_id: v }))}
-                        disabled={isLoadingVendors}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={isLoadingVendors ? "Loading vendors..." : "Select vendor"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {vendorsData?.data?.map((vendor) => (
-                            <SelectItem key={vendor.id} value={String(vendor.id)}>
-                              {vendor.vendor_name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        options={vendorsData?.data?.map((vendor) => ({
+                          id: vendor.id,
+                          label: vendor.vendor_name,
+                          value: String(vendor.id),
+                        })) || []}
+                        isLoading={isLoadingVendors}
+                        isEmpty={!isLoadingVendors && (!vendorsData?.data || vendorsData.data.length === 0)}
+                        entityName="Vendor"
+                        modalForm={VendorModalForm}
+                        placeholder="Select vendor"
+                        error={!!validationErrors.vendor_id}
+                      />
+                      {validationErrors.vendor_id && (
+                        <p className="text-sm text-destructive">{validationErrors.vendor_id[0]}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">

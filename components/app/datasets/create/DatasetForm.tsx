@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import { useGetDataSourcesQuery } from "@/app/lib/features/dataSourcesApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DataSourceModalForm from "@/components/app/dataSources/create/DataSourceModalForm";
 
 interface DatasetFormProps {
     formData: CreateDatasetData;
@@ -22,7 +24,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     errors,
 }) => {
     console.log("🚀 ~ DatasetForm ~ formData:", formData)
-    const { data: dataSources = [], isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
+    const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
+    const dataSources = dataSourcesData || [];
 
     const handleInputChange = (field: keyof CreateDatasetData, value: any) => {
         setFormData((prev) => ({
@@ -134,18 +137,21 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                 <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Data Sources *</h3>
                 <div className="space-y-2">
                     <Label htmlFor="source_ids_picker">Select data source</Label>
-                    <Select onValueChange={(value) => handleArrayAdd("source_ids", value)} disabled={isDataSourcesLoading}>
-                        <SelectTrigger id="source_ids_picker" className="w-full">
-                            <SelectValue placeholder={isDataSourcesLoading ? "Loading sources..." : "Choose a data source"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {dataSources.map((source) => (
-                                <SelectItem key={source.id} value={source.id}>
-                                    {source.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <SelectWithInlineCreate
+                        value=""
+                        onValueChange={(value) => handleArrayAdd("source_ids", value)}
+                        options={dataSources.map((source) => ({
+                            id: source.id,
+                            label: source.name,
+                            value: source.id,
+                        }))}
+                        isLoading={isDataSourcesLoading}
+                        isEmpty={!isDataSourcesLoading && dataSources.length === 0}
+                        entityName="Data Source"
+                        modalForm={DataSourceModalForm}
+                        placeholder={isDataSourcesLoading ? "Loading sources..." : "Choose a data source"}
+                        error={!!errors.source_ids}
+                    />
                     {errors.source_ids && (
                         <p className="text-sm text-destructive">{errors.source_ids[0]}</p>
                     )}

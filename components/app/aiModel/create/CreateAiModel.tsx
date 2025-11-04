@@ -27,6 +27,8 @@ const initialFormData: FormDataType = {
     owner_stakeholder_id: null,
     vendor_id: null,
     current_owner: null,
+    creator_email: "",
+    organizational_role: "developer",
 };
 
 const CreateAiModel: React.FC = () => {
@@ -72,6 +74,16 @@ const CreateAiModel: React.FC = () => {
             errors.development_source = ["Development source is required"];
         }
 
+        if (!formData.creator_email?.trim()) {
+            errors.creator_email = ["Creator email is required"];
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.creator_email)) {
+            errors.creator_email = ["Please enter a valid email address"];
+        }
+
+        if (!formData.organizational_role) {
+            errors.organizational_role = ["Organizational role is required"];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -103,6 +115,8 @@ const CreateAiModel: React.FC = () => {
                 current_owner: formData.current_owner,
                 owner_stakeholder_id: formData.owner_stakeholder_id,
                 vendor: formData.vendor_id,
+                creator_email: formData.creator_email,
+                organizational_role: formData.organizational_role,
             };
 
             await createAiModel(payload as any).unwrap();

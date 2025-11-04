@@ -11,6 +11,8 @@ import { X, Plus } from "lucide-react";
 import { CreateVendorData } from "@/app/lib/features/vendorsApi";
 import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
 import { CountryDropdown } from "react-country-region-selector";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
 
 interface VendorFormProps {
   formData: CreateVendorData;
@@ -205,23 +207,22 @@ const VendorForm: React.FC<VendorFormProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="stakeholder_id">Stakeholder <span className="text-red-500">*</span></Label>
-            <Select
+            <SelectWithInlineCreate
               key={`stakeholder_id-${formData.stakeholder_id ?? 'none'}`}
               value={formData.stakeholder_id ? String(formData.stakeholder_id) : undefined}
               onValueChange={(value) => handleInputChange("stakeholder_id", Number(value))}
-              disabled={isStakeholdersLoading}
-            >
-              <SelectTrigger className={errors.stakeholder_id ? "border-destructive w-full" : "w-full"}>
-                <SelectValue placeholder={isStakeholdersLoading ? "Loading stakeholders..." : "Select stakeholder"} />
-              </SelectTrigger>
-              <SelectContent>
-                {stakeholders.map((stakeholder) => (
-                  <SelectItem key={stakeholder.id} value={String(stakeholder.id)}>
-                    {stakeholder.display_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={stakeholders.map((stakeholder) => ({
+                id: stakeholder.id,
+                label: stakeholder.display_name,
+                value: String(stakeholder.id),
+              }))}
+              isLoading={isStakeholdersLoading}
+              isEmpty={!isStakeholdersLoading && stakeholders.length === 0}
+              entityName="Stakeholder"
+              modalForm={StakeholderModalForm}
+              placeholder="Select stakeholder"
+              error={!!errors.stakeholder_id}
+            />
             {getError("stakeholder_id") && (
               <p className="text-sm text-destructive">{getError("stakeholder_id")}</p>
             )}

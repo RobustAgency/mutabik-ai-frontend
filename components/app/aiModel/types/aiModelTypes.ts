@@ -63,4 +63,12 @@ export interface FormDataType {
   owner_stakeholder_id: string | null;
   vendor_id: string | null;
   current_owner: string | null;
+  creator_email: string;
+  organizational_role:
+    | "developer"
+    | "importer"
+    | "deployer"
+    | "integrator"
+    | "consumer"
+    | "collaborator";
 }

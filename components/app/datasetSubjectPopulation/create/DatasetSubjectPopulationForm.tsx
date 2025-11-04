@@ -7,6 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CreateDatasetSubjectPopulationData } from "@/app/lib/features/datasetSubjectPopulationApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
 import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DatasetModalForm from "@/components/app/datasets/create/DatasetModalForm";
+import DatasetSnapshotModalForm from "@/components/app/datasetSnapshots/create/DatasetSnapshotModalForm";
 
 interface DatasetSubjectPopulationFormProps {
   formData: CreateDatasetSubjectPopulationData;
@@ -43,39 +46,46 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
             <Label htmlFor="dataset_id">
               Dataset <span className="text-red-500">*</span>
             </Label>
-            <Select value={formData.dataset_id} onValueChange={(value) => {
-              handleChange("dataset_id", value);
-              // Clear snapshot when dataset changes
-              handleChange("snapshot_id", "");
-            }}>
-              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
-                <SelectValue placeholder="Select dataset" />
-              </SelectTrigger>
-              <SelectContent>
-                {datasets.map((dataset) => (
-                  <SelectItem key={dataset.id} value={String(dataset.id)}>
-                    {dataset.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SelectWithInlineCreate
+              value={formData.dataset_id}
+              onValueChange={(value) => {
+                handleChange("dataset_id", value);
+                // Clear snapshot when dataset changes
+                handleChange("snapshot_id", "");
+              }}
+              options={datasets.map((dataset) => ({
+                id: dataset.id,
+                label: dataset.name,
+                value: String(dataset.id),
+              }))}
+              isLoading={false}
+              isEmpty={datasets.length === 0}
+              entityName="Dataset"
+              modalForm={DatasetModalForm}
+              placeholder="Select dataset"
+              error={!!errors.dataset_id}
+            />
             {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
-            <Select value={formData.snapshot_id || undefined} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
-              <SelectTrigger id="snapshot_id" className={`w-full ${errors.snapshot_id ? "border-red-500" : ""}`}>
-                <SelectValue placeholder="Select snapshot (optional)" />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredSnapshots.map((snapshot) => (
-                  <SelectItem key={snapshot.id} value={String(snapshot.id)}>
-                    {snapshot.version_tag}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SelectWithInlineCreate
+              value={formData.snapshot_id || undefined}
+              onValueChange={(value) => handleChange("snapshot_id", value)}
+              options={filteredSnapshots.map((snapshot) => ({
+                id: snapshot.id,
+                label: snapshot.version_tag,
+                value: String(snapshot.id),
+              }))}
+              isLoading={false}
+              isEmpty={filteredSnapshots.length === 0}
+              entityName="Snapshot"
+              modalForm={DatasetSnapshotModalForm}
+              placeholder="Select snapshot (optional)"
+              error={!!errors.snapshot_id}
+              disabled={!formData.dataset_id}
+            />
             {errors.snapshot_id && <p className="text-sm text-red-500">{errors.snapshot_id[0]}</p>}
           </div>
         </div>

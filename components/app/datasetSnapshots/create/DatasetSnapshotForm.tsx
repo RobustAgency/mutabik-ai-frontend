@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateDatasetSnapshotData } from "@/app/lib/features/datasetSnapshotsApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DatasetModalForm from "@/components/app/datasets/create/DatasetModalForm";
 
 interface DatasetSnapshotFormProps {
   formData: CreateDatasetSnapshotData;
@@ -18,7 +20,8 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: datasets = [], isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const datasets = datasetsData || [];
 
   return (
     <div className="space-y-6 pt-6">
@@ -28,30 +31,21 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="dataset_id">Dataset *</Label>
-            <Select
+            <SelectWithInlineCreate
               value={formData.dataset_id || undefined}
               onValueChange={(value) => handleChange("dataset_id", value)}
-              disabled={isLoadingDatasets || isDatasetsError}
-            >
-              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingDatasets
-                      ? "Loading datasets..."
-                      : isDatasetsError
-                        ? "Failed to load datasets"
-                        : "Select a dataset"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {datasets.map((ds) => (
-                  <SelectItem key={ds.id} value={String(ds.id)}>
-                    {ds.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={datasets.map((ds) => ({
+                id: ds.id,
+                label: ds.name,
+                value: String(ds.id),
+              }))}
+              isLoading={isLoadingDatasets}
+              isEmpty={!isLoadingDatasets && datasets.length === 0}
+              entityName="Dataset"
+              modalForm={DatasetModalForm}
+              placeholder={isLoadingDatasets ? "Loading datasets..." : "Select a dataset"}
+              error={!!errors.dataset_id}
+            />
             {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
 

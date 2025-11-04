@@ -144,7 +144,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                     </div>
                 </div>
 
-                {/* Domain Specialization */}
+                {/* Domain Specialization + Creator Email */}
                 <div className="flex flex-col md:flex-row w-full gap-6">
                     <div className="flex flex-col gap-2 w-full">
                         <Label>
@@ -177,6 +177,24 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                         </Select>
                         {hasError("domain_specialization") && (
                             <p className="text-sm text-red-500">{getError("domain_specialization")}</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col gap-2 w-full">
+                        <Label>
+                            Creator Email <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                            required
+                            type="email"
+                            value={formData.creator_email}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, creator_email: e.target.value }))}
+                            placeholder="creator@example.com"
+                            className={`h-[44px] w-full px-4 rounded-lg border ${hasError("creator_email") ? "border-red-500" : "border-[#D0D5DD]"
+                                } focus:border-[#D0D5DD] focus:-ring-0`}
+                        />
+                        {hasError("creator_email") && (
+                            <p className="text-sm text-red-500">{getError("created_by")}</p>
                         )}
                     </div>
                 </div>
