@@ -11,7 +11,6 @@ import WorkflowStatusSection from "./sections/WorkflowStatusSection";
 import CoreContentSection from "./sections/CoreContentSection";
 import DatesReviewsSection from "./sections/DatesReviewsSection";
 import { useGetAiModelVersionsQuery } from "@/app/lib/features/aiModelVersionsApi";
-import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
 
 type Mode = "create" | "edit";
 
@@ -64,7 +63,6 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
     };
 
     const { data: versions = [] } = useGetAiModelVersionsQuery({ per_page: 100 });
-    const { data: models = [] } = useGetAiModelsQuery();
     const versionOptions = versions.map((v: any) => ({
         id: v.id,
         label: `${v.ai_model?.name ?? "Model"} • v${v.version_number ?? v.version ?? v.id}`,

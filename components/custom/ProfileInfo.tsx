@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/providers/AuthProvider";
-import Image from "next/image";
 import React, { useEffect } from "react";
 import {
   DropdownMenu,
@@ -14,7 +13,7 @@ import { ChevronDown } from "lucide-react";
 
 const ProfileInfo = () => {
   const { profile, fetchProfile } = useAuth();
-  const avatarUrl = `https://ui-avatars.com/api/?name=${profile?.full_name || "User"}&background=random&size=128`;
+  // const avatarUrl = `https://ui-avatars.com/api/?name=${profile?.full_name || "User"}&background=random&size=128`;
   const router = useRouter();
 
   useEffect(() => {

@@ -60,7 +60,7 @@ const Page = () => {
         await deleteArtifact(artifact.id).unwrap();
         router.push("/core-assets/ai-models/artifacts");
       } catch (error) {
-        // Error is handled by the mutation's onQueryStarted
+        console.log(error);
       }
     }
   };

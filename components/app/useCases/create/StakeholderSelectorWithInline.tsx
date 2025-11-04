@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, ChevronsUpDown, Loader2, Search, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGetStakeholdersQuery, Stakeholder } from "@/app/lib/features/stakeholdersApi";
+import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
 import InlineCreateModal from "@/components/custom/InlineCreateModal";
 import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
 

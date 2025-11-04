@@ -24,11 +24,11 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: modelsData, isLoading: isLoadingModels, isError: isModelsError } = useGetAiModelsQuery();
+  const { data: modelsData, isLoading: isLoadingModels } = useGetAiModelsQuery();
   const models = modelsData || [];
   const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
   const datasets = datasetsData || [];
-  const { data: snapshotsData, isLoading: isLoadingSnapshots, isError: isSnapshotsError } = useGetDatasetSnapshotsQuery();
+  const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
   const snapshots = snapshotsData || [];
 
   const filteredSnapshots = React.useMemo(() => {

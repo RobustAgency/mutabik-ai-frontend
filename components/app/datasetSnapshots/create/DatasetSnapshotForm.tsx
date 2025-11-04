@@ -20,7 +20,7 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const { data: datasetsData, isLoading: isLoadingDatasets } = useGetDatasetsQuery();
   const datasets = datasetsData || [];
 
   return (

@@ -11,7 +11,6 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 const DatasetSubjectPopulationList = () => {
   const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
   const [deleteDialogState, setDeleteDialogState] = useState<{
     isOpen: boolean;
     populationId: string | null;
@@ -22,7 +21,7 @@ const DatasetSubjectPopulationList = () => {
     populationName: "",
   });
 
-  const { data: populationData, isLoading } = useGetDatasetSubjectPopulationsQuery({ page: currentPage, per_page: 15 });
+  const { data: populationData, isLoading } = useGetDatasetSubjectPopulationsQuery({ page: 1, per_page: 15 });
   const [deletePopulation, { isLoading: isDeleting }] = useDeleteDatasetSubjectPopulationMutation();
 
   const handleEditClick = (e: React.MouseEvent, population: any) => {

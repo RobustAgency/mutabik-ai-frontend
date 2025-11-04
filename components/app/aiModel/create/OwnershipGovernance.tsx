@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { FormDataType } from "../types/aiModelTypes";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
-import { useGetStakeholdersByTypeQuery, useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
 import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
