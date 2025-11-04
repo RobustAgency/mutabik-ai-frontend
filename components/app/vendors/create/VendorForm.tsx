@@ -112,7 +112,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="vendor_name">Vendor Name *</Label>
+            <Label htmlFor="vendor_name">Vendor Name <span className="text-red-500">*</span></Label>
             <Input
               id="vendor_name"
               value={formData.vendor_name}
@@ -126,7 +126,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="legal_name">Legal Name *</Label>
+            <Label htmlFor="legal_name">Legal Name <span className="text-red-500">*</span></Label>
             <Input
               id="legal_name"
               value={formData.legal_name}
@@ -140,7 +140,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hq_country">HQ Country *</Label>
+            <Label htmlFor="hq_country">HQ Country <span className="text-red-500">*</span></Label>
             <div className={errors.hq_country ? "border-destructive rounded-md" : ""}>
               <CountryDropdown
                 id="hq_country"
@@ -158,7 +158,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="risk_tier">Risk Tier *</Label>
+            <Label htmlFor="risk_tier">Risk Tier <span className="text-red-500">*</span></Label>
             <Select
               key={`risk_tier-${formData.risk_tier || 'empty'}`}
               value={formData.risk_tier}
@@ -180,7 +180,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status *</Label>
+            <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
             <Select
               key={`status-${formData.status || 'empty'}`}
               value={formData.status}
@@ -204,7 +204,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stakeholder_id">Stakeholder *</Label>
+            <Label htmlFor="stakeholder_id">Stakeholder <span className="text-red-500">*</span></Label>
             <Select
               key={`stakeholder_id-${formData.stakeholder_id ?? 'none'}`}
               value={formData.stakeholder_id ? String(formData.stakeholder_id) : undefined}

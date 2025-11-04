@@ -6,6 +6,7 @@ import { aiModelsApi } from "./features/aiModelsApi";
 import { aiModelVersionsApi } from "./features/aiModelVersionsApi";
 import { aiModelUseCasesApi } from "./features/aiModelUseCasesApi";
 import { vendorsApi } from "./features/vendorsApi";
+import { agreementsApi } from "./features/agreementsApi";
 import { stakeholdersApi } from "./features/stakeholdersApi";
 import { aiModelCardsApi } from "./features/aiModelCardsApi";
 import { dataSourcesApi } from "./features/dataSourcesApi";
@@ -29,6 +30,7 @@ export const makeStore = () => {
       [aiModelVersionsApi.reducerPath]: aiModelVersionsApi.reducer,
       [aiModelUseCasesApi.reducerPath]: aiModelUseCasesApi.reducer,
       [vendorsApi.reducerPath]: vendorsApi.reducer,
+      [agreementsApi.reducerPath]: agreementsApi.reducer,
       [stakeholdersApi.reducerPath]: stakeholdersApi.reducer,
       [aiModelCardsApi.reducerPath]: aiModelCardsApi.reducer,
       [dataSourcesApi.reducerPath]: dataSourcesApi.reducer,
@@ -51,6 +53,7 @@ export const makeStore = () => {
         aiModelVersionsApi.middleware,
         aiModelUseCasesApi.middleware,
         vendorsApi.middleware,
+        agreementsApi.middleware,
         stakeholdersApi.middleware,
         aiModelCardsApi.middleware,
         dataSourcesApi.middleware,

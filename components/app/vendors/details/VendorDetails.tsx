@@ -4,7 +4,8 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useGetVendorQuery } from "@/app/lib/features/vendorsApi";
+import { useGetVendorQuery, useDeleteVendorMutation } from "@/app/lib/features/vendorsApi";
+import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 interface VendorDetailsProps {
   vendorId: string;
@@ -14,6 +15,19 @@ const VendorDetails: React.FC<VendorDetailsProps> = ({ vendorId }) => {
   const router = useRouter();
   const idNum = Number(vendorId);
   const { data: vendor, isLoading } = useGetVendorQuery(idNum, { skip: Number.isNaN(idNum) });
+  const [deleteVendor, { isLoading: isDeleting }] = useDeleteVendorMutation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+  const handleDelete = async () => {
+    if (!vendor) return;
+    try {
+      await deleteVendor(vendor.id).unwrap();
+      setDeleteDialogOpen(false);
+      router.push("/core-assets/vendors");
+    } catch (e) {
+      console.error("Failed to delete vendor:", e);
+    }
+  };
 
   if (Number.isNaN(idNum)) {
     return (
@@ -80,6 +94,7 @@ const VendorDetails: React.FC<VendorDetailsProps> = ({ vendorId }) => {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => router.push(`/core-assets/vendors/${vendor.id}/edit`)}>Edit</Button>
+              <Button variant="outline" className="text-destructive" onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
               <Button onClick={() => router.push("/core-assets/vendors")}>Back</Button>
             </div>
           </div>
@@ -144,6 +159,18 @@ const VendorDetails: React.FC<VendorDetailsProps> = ({ vendorId }) => {
           )}
         </CardContent>
       </Card>
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Vendor"
+        description={`Are you sure you want to delete "${vendor.vendor_name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={isDeleting}
+        loadingText="Deleting..."
+      />
     </div>
   );
 };

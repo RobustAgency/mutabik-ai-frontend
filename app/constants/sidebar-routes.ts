@@ -158,6 +158,11 @@ export const userRoutes: RouteItem[] = [
         label: "Vendors & Third Parties",
         icon: Building2,
       },
+      {
+        href: "/core-assets/agreements",
+        label: "Agreements",
+        icon: FileBox,
+      },
     ],
   },
 
