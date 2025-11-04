@@ -104,11 +104,11 @@ export const userRoutes: RouteItem[] = [
             label: "Model Cards",
             icon: FileCog,
           },
-          // {
-          //   href: "/core-assets/ai-models/artifacts",
-          //   label: "Model Artifacts",
-          //   icon: FileCog,
-          // },
+          {
+            href: "/core-assets/ai-models/artifacts",
+            label: "Model Artifacts",
+            icon: Layers3,
+          },
         ],
       },
       {
@@ -157,6 +157,11 @@ export const userRoutes: RouteItem[] = [
         href: "/core-assets/vendors",
         label: "Vendors & Third Parties",
         icon: Building2,
+      },
+      {
+        href: "/core-assets/agreements",
+        label: "Agreements",
+        icon: FileBox,
       },
     ],
   },

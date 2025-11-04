@@ -9,6 +9,9 @@ import { CreateModelDatasetLinkData } from "@/app/lib/features/modelDatasetLinks
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
 import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
+import DatasetSnapshotModalForm from "@/components/app/datasetSnapshots/create/DatasetSnapshotModalForm";
 
 interface ModelDatasetLinkFormProps {
   formData: CreateModelDatasetLinkData;
@@ -21,9 +24,12 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: models = [], isLoading: isLoadingModels, isError: isModelsError } = useGetAiModelsQuery();
-  const { data: datasets = [], isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
-  const { data: snapshots = [], isLoading: isLoadingSnapshots, isError: isSnapshotsError } = useGetDatasetSnapshotsQuery();
+  const { data: modelsData, isLoading: isLoadingModels, isError: isModelsError } = useGetAiModelsQuery();
+  const models = modelsData || [];
+  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const datasets = datasetsData || [];
+  const { data: snapshotsData, isLoading: isLoadingSnapshots, isError: isSnapshotsError } = useGetDatasetSnapshotsQuery();
+  const snapshots = snapshotsData || [];
 
   const filteredSnapshots = React.useMemo(() => {
     if (!formData.dataset_id) return snapshots;
@@ -38,30 +44,21 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="ai_model_id">Model *</Label>
-            <Select
+            <SelectWithInlineCreate
               value={formData.ai_model_id || undefined}
               onValueChange={(value) => handleChange("ai_model_id", value)}
-              disabled={isLoadingModels || isModelsError}
-            >
-              <SelectTrigger id="ai_model_id" className={`w-full ${errors.ai_model_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingModels
-                      ? "Loading models..."
-                      : isModelsError
-                        ? "Failed to load models"
-                        : "Select a model"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {models.map((m: any) => (
-                  <SelectItem key={m.id} value={String(m.id)}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={models.map((m: any) => ({
+                id: m.id,
+                label: m.name,
+                value: String(m.id),
+              }))}
+              isLoading={isLoadingModels}
+              isEmpty={!isLoadingModels && models.length === 0}
+              entityName="AI Model"
+              modalForm={AiModelModalForm}
+              placeholder={isLoadingModels ? "Loading models..." : "Select a model"}
+              error={!!errors.ai_model_id}
+            />
             {errors.ai_model_id && <p className="text-sm text-red-500">{errors.ai_model_id[0]}</p>}
           </div>
 
@@ -80,32 +77,21 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
 
           <div className="space-y-2">
             <Label htmlFor="dataset_snapshot_id">Snapshot * (Required for AC-05)</Label>
-            <Select
+            <SelectWithInlineCreate
               value={formData.dataset_snapshot_id || undefined}
               onValueChange={(value) => handleChange("dataset_snapshot_id", value)}
-              disabled={isLoadingSnapshots || isSnapshotsError}
-            >
-              <SelectTrigger id="dataset_snapshot_id" className={`w-full ${errors.dataset_snapshot_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingSnapshots
-                      ? "Loading snapshots..."
-                      : isSnapshotsError
-                        ? "Failed to load snapshots"
-                        : filteredSnapshots.length === 0 && formData.dataset_id
-                          ? "No snapshots for selected dataset"
-                          : "Select a snapshot"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredSnapshots.map((s: any) => (
-                  <SelectItem key={s.id} value={String(s.id)}>
-                    {s.version_tag} {s.dataset_id ? ` (ds ${s.dataset_id})` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={filteredSnapshots.map((s: any) => ({
+                id: s.id,
+                label: `${s.version_tag}${s.dataset_id ? ` (ds ${s.dataset_id})` : ""}`,
+                value: String(s.id),
+              }))}
+              isLoading={isLoadingSnapshots}
+              isEmpty={!isLoadingSnapshots && filteredSnapshots.length === 0}
+              entityName="Snapshot"
+              modalForm={DatasetSnapshotModalForm}
+              placeholder={isLoadingSnapshots ? "Loading snapshots..." : "Select a snapshot"}
+              error={!!errors.dataset_snapshot_id}
+            />
             {errors.dataset_snapshot_id && <p className="text-sm text-red-500">{errors.dataset_snapshot_id[0]}</p>}
           </div>
 

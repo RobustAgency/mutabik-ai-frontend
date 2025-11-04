@@ -7,6 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CreateAiModelCardData } from "@/service/app/aiModelCards";
 import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
+import AiModelVersionModalForm from "@/components/app/aiModel/versions/AiModelVersionModalForm";
 
 interface BasicInfoSectionProps {
     formData: CreateAiModelCardData;
@@ -50,16 +53,20 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label>Model Version</Label>
-                    <Select value={String(formData.version_id ?? "")} onValueChange={(v) => setFormData({ version_id: v })}>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select version" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {versionOptions.map((opt) => (
-                                <SelectItem key={opt.id} value={String(opt.id)}>{opt.label}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <SelectWithInlineCreate
+                        value={String(formData.version_id ?? "")}
+                        onValueChange={(v) => setFormData({ version_id: v })}
+                        options={versionOptions.map((opt) => ({
+                            id: opt.id,
+                            label: opt.label,
+                            value: String(opt.id),
+                        }))}
+                        isLoading={false}
+                        isEmpty={versionOptions.length === 0}
+                        entityName="Model Version"
+                        modalForm={AiModelVersionModalForm}
+                        placeholder="Select version"
+                    />
                 </div>
 
                 <div className="space-y-2">
@@ -97,40 +104,24 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
 
                 <div className="space-y-2">
                     <Label>Model Owner / Custodian <span className="text-red-500">*</span></Label>
-                    <Select
+                    <SelectWithInlineCreate
                         value={String(formData.owner_stakeholder_id || "")}
                         onValueChange={(value) => {
                             setFormData({ owner_stakeholder_id: value });
                         }}
-                        disabled={stakeholdersLoading || stakeholders.length === 0}
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("owner_stakeholder_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder={
-                                stakeholdersLoading
-                                    ? "Loading custodians..."
-                                    : stakeholdersError
-                                        ? "Error loading custodians"
-                                        : stakeholders.length === 0
-                                            ? "No custodians available"
-                                            : formData.owner_stakeholder_id
-                                                ? stakeholders.find((s) => String(s.id) === String(formData.owner_stakeholder_id))?.display_name || "Select owner..."
-                                                : "Select owner..."
-                            } />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {stakeholders.length > 0 ? (
-                                stakeholders.map((custodian) => (
-                                    <SelectItem key={custodian.id} value={String(custodian.id)}>
-                                        {custodian.display_name}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    {stakeholdersError ? "Failed to load custodians" : "No custodians available"}
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
+                        options={stakeholders.map((custodian) => ({
+                            id: custodian.id,
+                            label: custodian.display_name,
+                            value: String(custodian.id),
+                        }))}
+                        isLoading={stakeholdersLoading}
+                        isEmpty={!stakeholdersLoading && stakeholders.length === 0}
+                        entityName="Stakeholder"
+                        modalForm={StakeholderModalForm}
+                        placeholder={stakeholdersLoading ? "Loading custodians..." : "Select owner..."}
+                        triggerClassName="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0"
+                        error={hasError("owner_stakeholder_id")}
+                    />
                     {hasError("owner_stakeholder_id") && (
                         <p className="text-sm text-red-500">{getError("owner_stakeholder_id")}</p>
                     )}

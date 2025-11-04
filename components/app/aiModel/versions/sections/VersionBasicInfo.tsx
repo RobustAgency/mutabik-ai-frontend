@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CreateAiModelVersionData } from "@/service/app/aiModelVersions";
 import { useAiModels } from "@/hooks/app/useAiModels";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
 
 interface Props {
   formData: CreateAiModelVersionData;
@@ -28,21 +30,21 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
         <Label htmlFor="ai_model_id" className="text-sm font-medium text-gray-700 mb-2">
           Parent Model <span className="text-red-500">*</span>
         </Label>
-        <Select
+        <SelectWithInlineCreate
           value={formData.ai_model_id ? String(formData.ai_model_id) : "0"}
           onValueChange={(value) => setFormData(prev => ({ ...prev, ai_model_id: parseInt(value) }))}
-        >
-          <SelectTrigger className={errors.ai_model_id ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
-            <SelectValue placeholder="Select a model..." />
-          </SelectTrigger>
-          <SelectContent>
-            {aiModels.map((model) => (
-              <SelectItem key={model.id} value={String(model.id)}>
-                {model.name} ({model.primary_category.replace('_', ' ')})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          options={aiModels.map((model) => ({
+            id: model.id,
+            label: `${model.name} (${model.primary_category.replace('_', ' ')})`,
+            value: String(model.id),
+          }))}
+          isLoading={false}
+          isEmpty={aiModels.length === 0}
+          entityName="AI Model"
+          modalForm={AiModelModalForm}
+          placeholder="Select a model..."
+          error={!!errors.ai_model_id}
+        />
         {errors.ai_model_id && (
           <p className="text-xs text-red-600 mt-1">{errors.ai_model_id[0]}</p>
         )}

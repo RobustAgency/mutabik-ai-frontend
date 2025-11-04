@@ -10,6 +10,8 @@ import { X } from "lucide-react";
 import { CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
 import { CountryDropdown } from "react-country-region-selector";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
 
 interface StakeholderFormProps {
   formData: CreateStakeholderData;
@@ -22,7 +24,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
   setFormData,
   errors,
 }) => {
-  const { data: vendors = [], isLoading: isVendorsLoading } = useGetVendorsQuery();
+  const { data: vendorsResponse, isLoading: isVendorsLoading } = useGetVendorsQuery();
+  const vendors = vendorsResponse?.data || [];
   const noVendorsAvailable = !isVendorsLoading && vendors.length === 0;
   const handleInputChange = (field: keyof CreateStakeholderData, value: any) => {
     setFormData((prev) => ({
@@ -180,27 +183,22 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="vendor_id">Link Vendor</Label>
-            <Select
+            <SelectWithInlineCreate
               key={`vendor_id-${formData.vendor_id || 'empty'}`}
               value={formData.vendor_id || ""}
               onValueChange={(value) => handleInputChange("vendor_id", value)}
-              disabled={isVendorsLoading}
-            >
-              <SelectTrigger className={errors.vendor_id ? "border-destructive w-full" : "w-full"}>
-                <SelectValue placeholder={isVendorsLoading ? "Loading vendors..." : "Select vendor"} />
-              </SelectTrigger>
-              <SelectContent>
-                {noVendorsAvailable ? (
-                  <SelectItem disabled value="__no_vendors__">No vendors found</SelectItem>
-                ) : (
-                  vendors.map((v: any) => (
-                    <SelectItem key={v.id} value={String(v.id)}>
-                      {v.name}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+              options={vendors.map((v: any) => ({
+                id: v.id,
+                label: v.vendor_name,
+                value: String(v.id),
+              }))}
+              isLoading={isVendorsLoading}
+              isEmpty={noVendorsAvailable}
+              entityName="Vendor"
+              modalForm={VendorModalForm}
+              placeholder="Select vendor"
+              error={!!errors.vendor_id}
+            />
             {errors.vendor_id && (
               <p className="text-sm text-destructive">{errors.vendor_id[0]}</p>
             )}
