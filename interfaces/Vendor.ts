@@ -4,8 +4,8 @@ export interface Vendor {
   vendor_name: string;
   legal_name: string;
   hq_country: string;
-  risk_tier: "Tier 1" | "Tier 2" | "Tier 3" | "Tier 4";
-  status: "active" | "inactive" | "pending" | "suspended";
+  risk_tier: "tier_1" | "tier_2" | "tier_3" | "tier_4";
+  status: "evaluating" | "approved" | "conditionally_approved" | "restricted" | "suspended" | "terminated";
   stakeholder_id: number | null;
   stakeholder?: {
     id: number;
@@ -18,6 +18,7 @@ export interface Vendor {
     email: string;
     phone?: string;
     role?: string;
+    primary?: boolean;
   }>;
   metadata: Record<string, unknown>;
   notes: string | null;
@@ -27,8 +28,8 @@ export interface Vendor {
 
 export interface VendorFilters {
   search?: string;
-  risk_tier?: "Tier 1" | "Tier 2" | "Tier 3" | "Tier 4";
-  status?: "active" | "inactive" | "pending" | "suspended";
+  risk_tier?: "tier_1" | "tier_2" | "tier_3" | "tier_4";
+  status?: "evaluating" | "approved" | "conditionally_approved" | "restricted" | "suspended" | "terminated";
   page?: number;
   per_page?: number;
 }
@@ -37,14 +38,15 @@ export interface CreateVendorData {
   vendor_name: string;
   legal_name: string;
   hq_country: string;
-  risk_tier: "Tier 1" | "Tier 2" | "Tier 3" | "Tier 4";
-  status: "active" | "inactive" | "pending" | "suspended";
+  risk_tier: "tier_1" | "tier_2" | "tier_3" | "tier_4";
+  status: "evaluating" | "approved" | "conditionally_approved" | "restricted" | "suspended" | "terminated";
   stakeholder_id: number | null;
   primary_contacts: Array<{
     name: string;
     email: string;
     phone?: string;
     role?: string;
+    primary?: boolean;
   }>;
   metadata?: Record<string, unknown>;
   notes?: string | null;

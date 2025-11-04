@@ -126,20 +126,26 @@ const Vendors: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const tier = getValue() as string;
-        const tierColors: Record<string, string> = {
-          "Tier 1": "bg-[#FEF3C7] text-[#D97706]",
-          "Tier 2": "bg-[#FDE68A] text-[#F59E0B]",
-          "Tier 3": "bg-[#FCD34D] text-[#B45309]",
-          "Tier 4": "bg-[#FBBF24] text-[#92400E]",
+        const tierCode = (getValue() as string) || "";
+        const labelMap: Record<string, string> = {
+          tier_1: "Tier 1",
+          tier_2: "Tier 2",
+          tier_3: "Tier 3",
+          tier_4: "Tier 4",
         };
+        const colorMap: Record<string, string> = {
+          tier_1: "bg-[#FEF3C7] text-[#D97706]",
+          tier_2: "bg-[#FDE68A] text-[#F59E0B]",
+          tier_3: "bg-[#FCD34D] text-[#B45309]",
+          tier_4: "bg-[#FBBF24] text-[#92400E]",
+        };
+        const label = labelMap[tierCode] || tierCode;
         return (
           <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-              tierColors[tier] || "bg-[#F2F4F7] text-[#667085]"
-            }`}
+            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${colorMap[tierCode] || "bg-[#F2F4F7] text-[#667085]"
+              }`}
           >
-            {tier}
+            {label}
           </div>
         );
       },
@@ -152,20 +158,29 @@ const Vendors: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const status = getValue() as string;
+        const code = (getValue() as string) || "";
+        const labelMap: Record<string, string> = {
+          evaluating: "Evaluating",
+          approved: "Approved",
+          conditionally_approved: "Conditionally Approved",
+          restricted: "Restricted",
+          suspended: "Suspended",
+          terminated: "Terminated",
+        };
         const statusColors: Record<string, string> = {
-          active: "bg-[#ECF3FF] text-[#465FFF]",
-          inactive: "bg-[#F2F4F7] text-[#667085]",
-          pending: "bg-[#FEF3C7] text-[#D97706]",
+          evaluating: "bg-[#FEF3C7] text-[#D97706]",
+          approved: "bg-[#ECFDF3] text-[#047857]",
+          conditionally_approved: "bg-[#DBEAFE] text-[#1D4ED8]",
+          restricted: "bg-[#F3F4F6] text-[#374151]",
           suspended: "bg-[#FEE2E2] text-[#DC2626]",
+          terminated: "bg-[#F3F4F6] text-[#6B7280]",
         };
         return (
           <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 capitalize ${
-              statusColors[status] || "bg-[#F2F4F7] text-[#667085]"
-            }`}
+            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${statusColors[code] || "bg-[#F2F4F7] text-[#667085]"
+              }`}
           >
-            {status}
+            {labelMap[code] || code}
           </div>
         );
       },
@@ -242,14 +257,15 @@ const Vendors: React.FC = () => {
               data={vendors}
               variant="projects"
               loading={isLoading}
+              onRowClick={(row) => router.push(`/core-assets/vendors/${row.id}/details`)}
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={handlePageChange}

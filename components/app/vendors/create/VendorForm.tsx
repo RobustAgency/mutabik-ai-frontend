@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,13 +24,37 @@ const VendorForm: React.FC<VendorFormProps> = ({
   errors,
 }) => {
   const { data: stakeholders = [], isLoading: isStakeholdersLoading } = useGetStakeholdersQuery();
-  
+
   const [newContact, setNewContact] = useState({
     name: "",
     email: "",
     phone: "",
     role: "",
+    primary: false,
   });
+
+  // Local text inputs for metadata arrays to avoid reformatting while typing
+  const [residencyOptionsText, setResidencyOptionsText] = useState<string>(() => {
+    const existing = (formData.metadata as any)?.residency_options;
+    return Array.isArray(existing) ? (existing as string[]).join(", ") : (existing || "");
+  });
+  const [websitesText, setWebsitesText] = useState<string>(() => {
+    const existing = (formData.metadata as any)?.websites;
+    return Array.isArray(existing) ? (existing as string[]).join(", ") : (existing || "");
+  });
+
+  // Sync local text states when formData.metadata changes (e.g., in Edit flow)
+  useEffect(() => {
+    const meta = (formData.metadata as any) || {};
+    const residency = Array.isArray(meta.residency_options)
+      ? (meta.residency_options as string[]).join(", ")
+      : (meta.residency_options || "");
+    const sites = Array.isArray(meta.websites)
+      ? (meta.websites as string[]).join(", ")
+      : (meta.websites || "");
+    setResidencyOptionsText(residency);
+    setWebsitesText(sites);
+  }, [formData.metadata]);
 
   const handleInputChange = (field: keyof CreateVendorData, value: any) => {
     setFormData((prev) => ({
@@ -54,10 +78,11 @@ const VendorForm: React.FC<VendorFormProps> = ({
             email: newContact.email.trim(),
             phone: newContact.phone.trim() || undefined,
             role: newContact.role.trim() || undefined,
+            primary: newContact.primary,
           },
         ],
       }));
-      setNewContact({ name: "", email: "", phone: "", role: "" });
+      setNewContact({ name: "", email: "", phone: "", role: "", primary: false });
     }
   };
 
@@ -121,7 +146,8 @@ const VendorForm: React.FC<VendorFormProps> = ({
                 id="hq_country"
                 valueType="short"
                 value={formData.hq_country}
-                onChange={(val) => handleInputChange("hq_country", val)}
+                onChange={(val) => handleInputChange("hq_country", (val || "").toString().toUpperCase().slice(0, 2))
+                }
                 aria-label="Select HQ country"
                 className="w-full h-[36px] text-gray-500 rounded-md border border-input bg-background px-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
@@ -142,10 +168,10 @@ const VendorForm: React.FC<VendorFormProps> = ({
                 <SelectValue placeholder="Select risk tier" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Tier 1">Tier 1</SelectItem>
-                <SelectItem value="Tier 2">Tier 2</SelectItem>
-                <SelectItem value="Tier 3">Tier 3</SelectItem>
-                <SelectItem value="Tier 4">Tier 4</SelectItem>
+                <SelectItem value="tier_1">Tier 1</SelectItem>
+                <SelectItem value="tier_2">Tier 2</SelectItem>
+                <SelectItem value="tier_3">Tier 3</SelectItem>
+                <SelectItem value="tier_4">Tier 4</SelectItem>
               </SelectContent>
             </Select>
             {getError("risk_tier") && (
@@ -164,10 +190,12 @@ const VendorForm: React.FC<VendorFormProps> = ({
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="evaluating">Evaluating</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="conditionally_approved">Conditionally Approved</SelectItem>
+                <SelectItem value="restricted">Restricted</SelectItem>
                 <SelectItem value="suspended">Suspended</SelectItem>
+                <SelectItem value="terminated">Terminated</SelectItem>
               </SelectContent>
             </Select>
             {getError("status") && (
@@ -176,18 +204,17 @@ const VendorForm: React.FC<VendorFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stakeholder_id">Link Stakeholder</Label>
+            <Label htmlFor="stakeholder_id">Stakeholder *</Label>
             <Select
-              key={`stakeholder_id-${formData.stakeholder_id || 'empty'}`}
-              value={formData.stakeholder_id ? String(formData.stakeholder_id) : ""}
-              onValueChange={(value) => handleInputChange("stakeholder_id", value ? Number(value) : null)}
+              key={`stakeholder_id-${formData.stakeholder_id ?? 'none'}`}
+              value={formData.stakeholder_id ? String(formData.stakeholder_id) : undefined}
+              onValueChange={(value) => handleInputChange("stakeholder_id", Number(value))}
               disabled={isStakeholdersLoading}
             >
               <SelectTrigger className={errors.stakeholder_id ? "border-destructive w-full" : "w-full"}>
                 <SelectValue placeholder={isStakeholdersLoading ? "Loading stakeholders..." : "Select stakeholder"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
                 {stakeholders.map((stakeholder) => (
                   <SelectItem key={stakeholder.id} value={String(stakeholder.id)}>
                     {stakeholder.display_name}
@@ -247,6 +274,15 @@ const VendorForm: React.FC<VendorFormProps> = ({
               placeholder="Enter contact role"
             />
           </div>
+          <div className="flex items-center gap-2">
+            <input
+              id="contact_primary"
+              type="checkbox"
+              checked={newContact.primary}
+              onChange={(e) => setNewContact({ ...newContact, primary: e.target.checked })}
+            />
+            <Label htmlFor="contact_primary">Primary</Label>
+          </div>
           <div className="md:col-span-2">
             <Button
               type="button"
@@ -278,9 +314,12 @@ const VendorForm: React.FC<VendorFormProps> = ({
                       <div className="text-sm text-[#667085]">{contact.phone}</div>
                     )}
                     {contact.role && (
-                      <Badge variant="outline" className="mt-1">
+                      <Badge variant="outlined" className="mt-1">
                         {contact.role}
                       </Badge>
+                    )}
+                    {contact.primary && (
+                      <Badge variant="light" className="mt-1 ml-2">Primary</Badge>
                     )}
                   </div>
                   <Button
@@ -299,6 +338,82 @@ const VendorForm: React.FC<VendorFormProps> = ({
         )}
       </div>
 
+      {/* Metadata */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+          Metadata
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="meta_sub_processors_url">Sub-processors URL</Label>
+            <Input
+              id="meta_sub_processors_url"
+              value={(formData.metadata as any)?.sub_processors_url || ""}
+              onChange={(e) =>
+                handleInputChange("metadata", {
+                  ...(formData.metadata || {}),
+                  sub_processors_url: e.target.value,
+                })
+              }
+              placeholder="https://example.com/sub-processors"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="meta_residency_options">Residency options (comma separated)</Label>
+            <Input
+              id="meta_residency_options"
+              value={residencyOptionsText}
+              onChange={(e) => setResidencyOptionsText(e.target.value)}
+              onBlur={() => {
+                const arr = residencyOptionsText
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                handleInputChange("metadata", {
+                  ...(formData.metadata || {}),
+                  residency_options: arr,
+                });
+              }}
+              placeholder="EU, US-East, APAC"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="meta_websites">Websites (comma separated)</Label>
+            <Input
+              id="meta_websites"
+              value={websitesText}
+              onChange={(e) => setWebsitesText(e.target.value)}
+              onBlur={() => {
+                const arr = websitesText
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                handleInputChange("metadata", {
+                  ...(formData.metadata || {}),
+                  websites: arr,
+                });
+              }}
+              placeholder="vendor.com, status.vendor.com"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="meta_notes">Metadata notes</Label>
+            <Textarea
+              id="meta_notes"
+              value={(formData.metadata as any)?.notes || ""}
+              onChange={(e) =>
+                handleInputChange("metadata", {
+                  ...(formData.metadata || {}),
+                  notes: e.target.value,
+                })
+              }
+              placeholder="Any metadata notes"
+              rows={3}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Additional Information */}
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
@@ -314,9 +429,6 @@ const VendorForm: React.FC<VendorFormProps> = ({
             placeholder="Enter any additional notes about this vendor"
             rows={4}
           />
-          <p className="text-sm text-muted-foreground">
-            Optional notes about the vendor
-          </p>
         </div>
       </div>
     </div>

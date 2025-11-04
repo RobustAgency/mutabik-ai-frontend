@@ -13,8 +13,8 @@ const initialFormData: CreateVendorData = {
   vendor_name: "",
   legal_name: "",
   hq_country: "",
-  risk_tier: "Tier 1",
-  status: "active",
+  risk_tier: "tier_1",
+  status: "evaluating",
   stakeholder_id: null,
   primary_contacts: [],
   metadata: {},
@@ -52,6 +52,11 @@ const CreateVendor: React.FC = () => {
 
     if (!formData.status) {
       errors.status = ["Status is required"];
+    }
+
+    // stakeholder_id required by backend
+    if (formData.stakeholder_id === null || formData.stakeholder_id === undefined) {
+      errors.stakeholder_id = ["Stakeholder is required"];
     }
 
     // Validate primary contacts if any
