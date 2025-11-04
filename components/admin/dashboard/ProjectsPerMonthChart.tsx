@@ -1,7 +1,5 @@
 "use client";
-import React from 'react';
-import ApexCharts from 'apexcharts';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const chartOptions = {
   chart: {
@@ -91,24 +89,38 @@ const chartSeries = [
 
 export default function ProjectsPerMonthChart() {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [ApexCharts, setApexCharts] = useState<any>(null);
 
   useEffect(() => {
-    let chart: ApexCharts | undefined;
-    if (chartRef.current) {
-      chart = new ApexCharts(chartRef.current, {
-        ...chartOptions,
-        series: chartSeries,
-      });
-      chart.render();
-    }
-    return () => {
-      if (chart) chart.destroy();
-    };
+    // Dynamically import ApexCharts only when needed
+    import('apexcharts').then((mod) => {
+      setApexCharts(() => mod.default);
+    });
   }, []);
+
+  useEffect(() => {
+    if (!ApexCharts || !chartRef.current) return;
+
+    const chart = new ApexCharts(chartRef.current, {
+      ...chartOptions,
+      series: chartSeries,
+    });
+    chart.render();
+
+    return () => {
+      chart?.destroy();
+    };
+  }, [ApexCharts]);
 
   return (
     <div style={{ width: '100%', minHeight: 320, maxHeight: 400, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <div ref={chartRef} style={{ width: '100%', height: 320 }} />
+      {!ApexCharts ? (
+        <div style={{ width: '100%', height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: '#737373', fontSize: '14px' }}>Loading chart...</div>
+        </div>
+      ) : (
+        <div ref={chartRef} style={{ width: '100%', height: 320 }} />
+      )}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 16 }}>
  
       </div>

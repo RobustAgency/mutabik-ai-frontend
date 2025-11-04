@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import ApexCharts from "apexcharts";
+import React, { useEffect, useRef, useState } from "react";
 
 const chartOptions = {
   chart: {
@@ -113,6 +112,7 @@ const titleStyle: React.CSSProperties = {
 
 const ProjectsPerMonthChart: React.FC = () => {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [ApexCharts, setApexCharts] = useState<any>(null);
   const series = React.useMemo(() => [
     {
       name: "Projects",
@@ -121,29 +121,42 @@ const ProjectsPerMonthChart: React.FC = () => {
   ], []);
 
   useEffect(() => {
-    let chart: ApexCharts | null = null;
-    if (chartRef.current) {
-      chart = new ApexCharts(chartRef.current, {
-        ...chartOptions,
-        series,
-        chart: {
-          ...chartOptions.chart,
-          height: '100%',
-          width: '100%',
-        },
-        responsive: chartOptions.responsive,
-      });
-      chart.render();
-    }
+    // Dynamically import ApexCharts only when needed
+    import('apexcharts').then((mod) => {
+      setApexCharts(() => mod.default);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ApexCharts || !chartRef.current) return;
+
+    const chart = new ApexCharts(chartRef.current, {
+      ...chartOptions,
+      series,
+      chart: {
+        ...chartOptions.chart,
+        height: '100%',
+        width: '100%',
+      },
+      responsive: chartOptions.responsive,
+    });
+    chart.render();
+
     return () => {
       chart?.destroy();
     };
-  }, [series]);
+  }, [ApexCharts, series]);
 
   return (
     <div style={{ ...cardStyle, width: '100%', maxWidth: '100%' }}>
       <div style={titleStyle}>Projects per month</div>
-      <div ref={chartRef} style={{ width: '100%', minHeight: 150 }} />
+      {!ApexCharts ? (
+        <div style={{ width: '100%', minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: '#737373', fontSize: '14px' }}>Loading chart...</div>
+        </div>
+      ) : (
+        <div ref={chartRef} style={{ width: '100%', minHeight: 150 }} />
+      )}
     </div>
   );
 };
