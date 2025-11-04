@@ -50,7 +50,6 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
   disabled = false,
   options = [],
   isLoading = false,
-  isEmpty = false,
   entityName,
   modalForm: ModalFormComponent,
   canCreate = true,
@@ -81,7 +80,7 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
   const handleSuccess = (createdItem: any) => {
     // Close the modal
     setIsModalOpen(false);
-    
+
     // The RTK Query cache invalidation will automatically refetch the data
     // and the dropdown will be updated with the new item
     // We don't auto-select per requirements - user will manually select it

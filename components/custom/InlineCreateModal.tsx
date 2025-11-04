@@ -15,7 +15,10 @@ interface InlineCreateModalProps {
     onSuccess: (createdItem: any) => void;
     title: string;
     description?: string;
-    children: React.ReactNode;
+    children: React.ReactElement<{
+        onSuccess?: (createdItem: any) => void;
+        onCancel?: () => void;
+    }>;
 }
 
 const InlineCreateModal: React.FC<InlineCreateModalProps> = ({
@@ -40,7 +43,7 @@ const InlineCreateModal: React.FC<InlineCreateModalProps> = ({
                     )}
                 </DialogHeader>
                 <div className="mt-4">
-                    {React.cloneElement(children as React.ReactElement, {
+                    {React.cloneElement(children, {
                         onSuccess,
                         onCancel: onClose,
                     })}

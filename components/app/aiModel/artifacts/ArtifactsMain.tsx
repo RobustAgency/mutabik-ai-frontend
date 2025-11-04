@@ -8,7 +8,6 @@ import {
     useGetAiModelArtifactsQuery,
     useDeleteAiModelArtifactMutation,
 } from "@/app/lib/features/aiModelArtifactsApi";
-import { ArtifactType } from "@/service/app/aiModelArtifacts";
 import { Trash2, ExternalLink } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 

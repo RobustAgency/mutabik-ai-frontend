@@ -78,7 +78,7 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
                 <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between">
                     <div>
                         <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
-                            New Model Version Card
+                            {titleText}
                         </h1>
                         <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
                             Fill all the details below of your Model Version Card
