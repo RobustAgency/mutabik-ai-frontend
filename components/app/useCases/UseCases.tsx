@@ -40,7 +40,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "title",
+      accessorKey: "name",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">Name</div>
       ),
@@ -84,7 +84,7 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "go_live_date",
+      accessorKey: "target_go_live_date",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Target Go Live Date

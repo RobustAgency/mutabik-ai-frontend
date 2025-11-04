@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -57,6 +58,7 @@ const initialFormData: FormDataType = {
 };
 
 const CreateUseCases: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormDataType>(initialFormData);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const [createUseCase, { isLoading }] = useCreateUseCaseMutation();
@@ -149,6 +151,7 @@ const CreateUseCases: React.FC = () => {
       // Reset form on success
       setFormData(initialFormData);
       setValidationErrors({});
+      router.push("/core-assets/ai-use-cases");
     } catch (err: any) {
       // Handle backend validation errors
       if (err?.data?.errors) {

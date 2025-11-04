@@ -104,6 +104,11 @@ export const userRoutes: RouteItem[] = [
             label: "Model Cards",
             icon: FileCog,
           },
+          // {
+          //   href: "/core-assets/ai-models/artifacts",
+          //   label: "Model Artifacts",
+          //   icon: FileCog,
+          // },
         ],
       },
       {
