@@ -114,7 +114,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
 
         {/* Description + Business Objective */}
         <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2 w-full min-w-0">
             <Label>
               Description <span className="text-red-500">*</span>
             </Label>
@@ -124,14 +124,14 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
               onChange={(e) => setDescriptionInput(e.target.value)}
               onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
               placeholder="Enter detailed scope (100-5000 characters)..."
-              className={`placeholder:text-muted-foreground border dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs outline-none transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-[74px] resize-none focus:outline-none focus:ring-0 focus:border-transparent ${hasError("description") ? "border-red-500" : ""}`}
+              className={`placeholder:text-muted-foreground border dark:bg-input/30 flex min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs outline-none transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-[74px] resize-none focus:outline-none focus:ring-0 focus:border-transparent ${hasError("description") ? "border-red-500" : ""}`}
             />
             {hasError("description") && (
               <p className="text-sm text-red-500">{getError("description")}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2 w-full min-w-0">
             <Label>
               Business Objective <span className="text-red-500">*</span>
             </Label>

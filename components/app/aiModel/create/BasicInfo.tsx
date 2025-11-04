@@ -95,7 +95,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
 
                 {/* Description + Model Type */}
                 <div className="flex flex-col md:flex-row w-full gap-6">
-                    <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col gap-2 w-full min-w-0">
                         <Label>
                             Description <span className="text-red-500">*</span>
                         </Label>
@@ -111,7 +111,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                         )}
                     </div>
 
-                    <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col gap-2 w-full min-w-0">
                         <Label>
                             Model Type <span className="text-red-500">*</span>
                         </Label>
