@@ -174,13 +174,10 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
                 Update vendor registry information
               </p>
             </div>
-            <Button
-              type="submit"
-              className="flex gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100"
-              disabled={isUpdating}
-            >
-              {isUpdating ? "Saving..." : "Save changes"}
-            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => router.push("/core-assets/vendors")}>Cancel</Button>
+              <Button type="submit" className="border bg-[#4FD58F] opacity-100" disabled={isUpdating}>{isUpdating ? "Saving..." : "Save changes"}</Button>
+            </div>
           </div>
 
           <CardContent className="space-y-10 w-full">
