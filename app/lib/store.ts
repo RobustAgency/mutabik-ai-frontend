@@ -20,6 +20,12 @@ import { consentCoverageApi } from "./features/consentCoverageApi";
 import { pdpProcessingRegisterApi } from "./features/pdpProcessingRegisterApi";
 import { datasetSubjectPopulationApi } from "./features/datasetSubjectPopulationApi";
 import { aiModelArtifactsApi } from "./features/aiModelArtifactsApi";
+import { aiIncidentsApi } from "./features/aiIncidentsApi";
+import { incidentAlertsApi } from "./features/incidentAlertsApi";
+import { incidentActionsApi } from "./features/incidentActionsApi";
+import { incidentRootCauseAnalysesApi } from "./features/incidentRootCauseAnalysesApi";
+import { incidentNotificationsApi } from "./features/incidentNotificationsApi";
+import { correctivePreventiveActionsApi } from "./features/correctivePreventiveActionsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -44,6 +50,12 @@ export const makeStore = () => {
       [pdpProcessingRegisterApi.reducerPath]: pdpProcessingRegisterApi.reducer,
       [datasetSubjectPopulationApi.reducerPath]: datasetSubjectPopulationApi.reducer,
       [aiModelArtifactsApi.reducerPath]: aiModelArtifactsApi.reducer,
+      [aiIncidentsApi.reducerPath]: aiIncidentsApi.reducer,
+      [incidentAlertsApi.reducerPath]: incidentAlertsApi.reducer,
+      [incidentActionsApi.reducerPath]: incidentActionsApi.reducer,
+      [incidentRootCauseAnalysesApi.reducerPath]: incidentRootCauseAnalysesApi.reducer,
+      [incidentNotificationsApi.reducerPath]: incidentNotificationsApi.reducer,
+      [correctivePreventiveActionsApi.reducerPath]: correctivePreventiveActionsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -66,7 +78,13 @@ export const makeStore = () => {
         consentCoverageApi.middleware,
         pdpProcessingRegisterApi.middleware,
         datasetSubjectPopulationApi.middleware,
-        aiModelArtifactsApi.middleware
+        aiModelArtifactsApi.middleware,
+        aiIncidentsApi.middleware,
+        incidentAlertsApi.middleware,
+        incidentActionsApi.middleware,
+        incidentRootCauseAnalysesApi.middleware,
+        incidentNotificationsApi.middleware,
+        correctivePreventiveActionsApi.middleware
       ),
   });
 };
