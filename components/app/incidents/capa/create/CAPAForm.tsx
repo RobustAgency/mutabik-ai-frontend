@@ -6,6 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateCorrectivePreventiveActionData } from "@/app/lib/features/correctivePreventiveActionsApi";
+import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
 
 interface CAPAFormProps {
   formData: CreateCorrectivePreventiveActionData;
@@ -14,6 +17,8 @@ interface CAPAFormProps {
 }
 
 const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) => {
+  const { data: aiModels = [], isLoading: isModelsLoading } = useGetAiModelsQuery();
+  
   const handleInputChange = (field: keyof CreateCorrectivePreventiveActionData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -24,7 +29,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         <div className="space-y-2">
           <Label>Source Type <span className="text-red-500">*</span></Label>
           <Select value={formData.source_type} onValueChange={(value) => handleInputChange("source_type", value)}>
-            <SelectTrigger className={errors.source_type ? "border-destructive" : ""}>
+            <SelectTrigger className={`w-full ${errors.source_type ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -40,13 +45,39 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         </div>
         <div className="space-y-2">
           <Label>Source ID <span className="text-red-500">*</span></Label>
-          <Input value={formData.source_id} onChange={(e) => handleInputChange("source_id", e.target.value)} placeholder="Incident or risk ID" />
+          <Input 
+            value={formData.source_id} 
+            onChange={(e) => handleInputChange("source_id", e.target.value)} 
+            placeholder={formData.source_type === "incident" ? "Enter incident ID" : formData.source_type === "risk" ? "Enter risk ID" : "Enter source ID"} 
+            className={errors.source_id ? "border-destructive" : ""}
+          />
+          {errors.source_id && (
+            <p className="text-sm text-destructive">{errors.source_id[0]}</p>
+          )}
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label>Model ID</Label>
-        <Input value={formData.model_id || ""} onChange={(e) => handleInputChange("model_id", e.target.value || null)} />
+        <Label>Model</Label>
+        <SelectWithInlineCreate
+          key={`model_id-${formData.model_id ?? 'none'}`}
+          value={formData.model_id ? String(formData.model_id) : undefined}
+          onValueChange={(value) => handleInputChange("model_id", value || null)}
+          options={aiModels.map((model: any) => ({
+            id: model.id,
+            label: model.name,
+            value: String(model.id),
+          }))}
+          isLoading={isModelsLoading}
+          isEmpty={!isModelsLoading && aiModels.length === 0}
+          entityName="AI Model"
+          modalForm={AiModelModalForm}
+          placeholder="Select model (optional)"
+          error={!!errors.model_id}
+        />
+        {errors.model_id && (
+          <p className="text-sm text-destructive">{errors.model_id[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -58,7 +89,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         <div className="space-y-2">
           <Label>CAPA Type <span className="text-red-500">*</span></Label>
           <Select value={formData.capa_type} onValueChange={(value) => handleInputChange("capa_type", value)}>
-            <SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.capa_type ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -71,7 +102,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         <div className="space-y-2">
           <Label>Priority <span className="text-red-500">*</span></Label>
           <Select value={formData.priority} onValueChange={(value) => handleInputChange("priority", value)}>
-            <SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.priority ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -88,7 +119,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         <div className="space-y-2">
           <Label>Owner Team <span className="text-red-500">*</span></Label>
           <Select value={formData.owner_team} onValueChange={(value) => handleInputChange("owner_team", value)}>
-            <SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.owner_team ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -127,7 +158,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         <div className="space-y-2">
           <Label>Status <span className="text-red-500">*</span></Label>
           <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
-            <SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.status ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -144,7 +175,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       <div className="space-y-2">
         <Label>Verification Result <span className="text-red-500">*</span></Label>
         <Select value={formData.verification_result} onValueChange={(value) => handleInputChange("verification_result", value)}>
-          <SelectTrigger>
+          <SelectTrigger className={`w-full ${errors.verification_result ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateIncidentNotificationData } from "@/app/lib/features/incidentNotificationsApi";
+import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
 
 interface IncidentNotificationFormProps {
   formData: CreateIncidentNotificationData;
@@ -14,6 +15,9 @@ interface IncidentNotificationFormProps {
 }
 
 const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ formData, setFormData, errors }) => {
+  const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
+  const incidents = incidentsData?.data || [];
+  
   const handleInputChange = (field: keyof CreateIncidentNotificationData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -29,14 +33,31 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
       )}
 
       <div className="space-y-2">
-        <Label>Incident ID <span className="text-red-500">*</span></Label>
-        <Input type="number" value={formData.ai_incident_id || ""} onChange={(e) => handleInputChange("ai_incident_id", Number(e.target.value))} className={errors.ai_incident_id ? "border-destructive" : ""} />
+        <Label>Incident <span className="text-red-500">*</span></Label>
+        <Select
+          value={formData.ai_incident_id ? String(formData.ai_incident_id) : undefined}
+          onValueChange={(value) => handleInputChange("ai_incident_id", Number(value))}
+        >
+          <SelectTrigger className={`w-full ${errors.ai_incident_id ? "border-destructive" : ""}`}>
+            <SelectValue placeholder={isIncidentsLoading ? "Loading incidents..." : "Select incident"} />
+          </SelectTrigger>
+          <SelectContent>
+            {incidents.map((incident: any) => (
+              <SelectItem key={incident.id} value={String(incident.id)}>
+                #{incident.id} - {incident.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.ai_incident_id && (
+          <p className="text-sm text-destructive">{errors.ai_incident_id[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label>Audience Type <span className="text-red-500">*</span></Label>
         <Select value={formData.audience_type} onValueChange={(value) => handleInputChange("audience_type", value)}>
-          <SelectTrigger className={errors.audience_type ? "border-destructive" : ""}>
+          <SelectTrigger className={`w-full ${errors.audience_type ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -54,7 +75,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
       <div className="space-y-2">
         <Label>Channel <span className="text-red-500">*</span></Label>
         <Select value={formData.channel} onValueChange={(value) => handleInputChange("channel", value)}>
-          <SelectTrigger className={errors.channel ? "border-destructive" : ""}>
+          <SelectTrigger className={`w-full ${errors.channel ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -99,7 +120,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
       <div className="space-y-2">
         <Label>Follow-up Required <span className="text-red-500">*</span></Label>
         <Select value={formData.follow_up_required ? "true" : "false"} onValueChange={(value) => handleInputChange("follow_up_required", value === "true")}>
-          <SelectTrigger>
+          <SelectTrigger className={`w-full ${errors.follow_up_required ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

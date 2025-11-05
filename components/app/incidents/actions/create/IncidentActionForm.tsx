@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateIncidentActionData } from "@/app/lib/features/incidentActionsApi";
+import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
 
 interface IncidentActionFormProps {
   formData: CreateIncidentActionData;
@@ -14,6 +15,9 @@ interface IncidentActionFormProps {
 }
 
 const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFormData, errors }) => {
+  const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
+  const incidents = incidentsData?.data || [];
+  
   const handleInputChange = (field: keyof CreateIncidentActionData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -21,19 +25,31 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label>Incident ID <span className="text-red-500">*</span></Label>
-        <Input
-          type="number"
-          value={formData.ai_incident_id || ""}
-          onChange={(e) => handleInputChange("ai_incident_id", Number(e.target.value))}
-          className={errors.ai_incident_id ? "border-destructive" : ""}
-        />
+        <Label>Incident <span className="text-red-500">*</span></Label>
+        <Select
+          value={formData.ai_incident_id ? String(formData.ai_incident_id) : undefined}
+          onValueChange={(value) => handleInputChange("ai_incident_id", Number(value))}
+        >
+          <SelectTrigger className={`w-full ${errors.ai_incident_id ? "border-destructive" : ""}`}>
+            <SelectValue placeholder={isIncidentsLoading ? "Loading incidents..." : "Select incident"} />
+          </SelectTrigger>
+          <SelectContent>
+            {incidents.map((incident: any) => (
+              <SelectItem key={incident.id} value={String(incident.id)}>
+                #{incident.id} - {incident.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.ai_incident_id && (
+          <p className="text-sm text-destructive">{errors.ai_incident_id[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label>Action Type <span className="text-red-500">*</span></Label>
         <Select value={formData.action_type} onValueChange={(value) => handleInputChange("action_type", value)}>
-          <SelectTrigger className={errors.action_type ? "border-destructive" : ""}>
+          <SelectTrigger className={`w-full ${errors.action_type ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -75,7 +91,7 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
       <div className="space-y-2">
         <Label>Validation Result <span className="text-red-500">*</span></Label>
         <Select value={formData.validation_result} onValueChange={(value) => handleInputChange("validation_result", value)}>
-          <SelectTrigger>
+          <SelectTrigger className={`w-full ${errors.validation_result ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -7,8 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateAiIncidentData } from "@/app/lib/features/aiIncidentsApi";
 import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
+import { useGetAiModelVersionsQuery } from "@/app/lib/features/aiModelVersionsApi";
+import { useGetUseCasesQuery } from "@/app/lib/features/useCasesApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
+import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
+import AiModelVersionModalForm from "@/components/app/aiModel/versions/AiModelVersionModalForm";
+import UseCaseModalForm from "@/components/app/useCases/create/UseCaseModalForm";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface AiIncidentFormProps {
@@ -23,6 +29,17 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
   errors,
 }) => {
   const { data: stakeholders = [], isLoading: isStakeholdersLoading } = useGetStakeholdersQuery();
+  const { data: aiModels = [], isLoading: isModelsLoading } = useGetAiModelsQuery();
+  const { data: modelVersionsData, isLoading: isVersionsLoading } = useGetAiModelVersionsQuery();
+  const { data: useCases = [], isLoading: isUseCasesLoading } = useGetUseCasesQuery();
+  
+  const modelVersions = modelVersionsData || [];
+  
+  // Filter versions based on selected model
+  const filteredVersions = React.useMemo(() => {
+    if (!formData.model_id) return modelVersions;
+    return modelVersions.filter((version: any) => String(version.ai_model_id) === String(formData.model_id));
+  }, [modelVersions, formData.model_id]);
 
   const handleInputChange = (field: keyof CreateAiIncidentData, value: any) => {
     setFormData((prev) => ({
@@ -208,33 +225,79 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="model_id">Model ID</Label>
-            <Input
-              id="model_id"
-              value={formData.model_id || ""}
-              onChange={(e) => handleInputChange("model_id", e.target.value || null)}
-              placeholder="Model involved"
+            <Label htmlFor="model_id">Model</Label>
+            <SelectWithInlineCreate
+              key={`model_id-${formData.model_id ?? 'none'}`}
+              value={formData.model_id ? String(formData.model_id) : undefined}
+              onValueChange={(value) => {
+                handleInputChange("model_id", value || null);
+                // Reset version when model changes
+                if (value !== formData.model_id) {
+                  handleInputChange("model_version_id", null);
+                }
+              }}
+              options={aiModels.map((model: any) => ({
+                id: model.id,
+                label: model.name,
+                value: String(model.id),
+              }))}
+              isLoading={isModelsLoading}
+              isEmpty={!isModelsLoading && aiModels.length === 0}
+              entityName="AI Model"
+              modalForm={AiModelModalForm}
+              placeholder="Select model"
+              error={!!errors.model_id}
             />
+            {getError("model_id") && (
+              <p className="text-sm text-destructive">{getError("model_id")}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="model_version_id">Model Version ID</Label>
-            <Input
-              id="model_version_id"
-              value={formData.model_version_id || ""}
-              onChange={(e) => handleInputChange("model_version_id", e.target.value || null)}
-              placeholder="Version at time of incident"
+            <Label htmlFor="model_version_id">Model Version</Label>
+            <SelectWithInlineCreate
+              key={`model_version_id-${formData.model_version_id ?? 'none'}`}
+              value={formData.model_version_id ? String(formData.model_version_id) : undefined}
+              onValueChange={(value) => handleInputChange("model_version_id", value || null)}
+              options={filteredVersions.map((version: any) => ({
+                id: version.id,
+                label: version.version_number || `Version ${version.id}`,
+                value: String(version.id),
+              }))}
+              isLoading={isVersionsLoading}
+              isEmpty={!isVersionsLoading && filteredVersions.length === 0}
+              entityName="Model Version"
+              modalForm={AiModelVersionModalForm}
+              placeholder={!formData.model_id ? "Select model first" : "Select version"}
+              error={!!errors.model_version_id}
+              disabled={!formData.model_id}
             />
+            {getError("model_version_id") && (
+              <p className="text-sm text-destructive">{getError("model_version_id")}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="use_case_id">Use Case ID</Label>
-            <Input
-              id="use_case_id"
-              value={formData.use_case_id || ""}
-              onChange={(e) => handleInputChange("use_case_id", e.target.value || null)}
-              placeholder="Business use case"
+            <Label htmlFor="use_case_id">Use Case</Label>
+            <SelectWithInlineCreate
+              key={`use_case_id-${formData.use_case_id ?? 'none'}`}
+              value={formData.use_case_id ? String(formData.use_case_id) : undefined}
+              onValueChange={(value) => handleInputChange("use_case_id", value || null)}
+              options={useCases.map((useCase: any) => ({
+                id: useCase.id,
+                label: useCase.name || useCase.use_case_title || useCase.title,
+                value: String(useCase.id),
+              }))}
+              isLoading={isUseCasesLoading}
+              isEmpty={!isUseCasesLoading && useCases.length === 0}
+              entityName="Use Case"
+              modalForm={UseCaseModalForm}
+              placeholder="Select use case"
+              error={!!errors.use_case_id}
             />
+            {getError("use_case_id") && (
+              <p className="text-sm text-destructive">{getError("use_case_id")}</p>
+            )}
           </div>
 
           <div className="space-y-2">

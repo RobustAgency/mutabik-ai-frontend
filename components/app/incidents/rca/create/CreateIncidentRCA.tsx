@@ -39,24 +39,26 @@ const CreateIncidentRCA: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <Card className="p-6 border-[#E4E7EC] shadow-none">
-        <CardContent>
-          <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939] mb-6">
-            Create Root Cause Analysis
-          </h1>
-          <form onSubmit={handleSubmit}>
-            <IncidentRCAForm formData={formData} setFormData={setFormData} errors={errors} />
-            <div className="flex gap-3 mt-6">
-              <Button type="submit" disabled={isLoading} className="bg-[#4FD58F] text-white">
-                {isLoading ? "Creating..." : "Submit RCA"}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => router.push("/governance/incidents/rca")}>
-                Cancel
-              </Button>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-10">
+            <div>
+              <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
+                Create Root Cause Analysis
+              </h1>
+              <p className="font-sans text-sm text-[#667085]">
+                Create a new root cause analysis
+              </p>
             </div>
-          </form>
-        </CardContent>
+            <Button type="submit" disabled={isLoading} className="flex gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100">
+              {isLoading ? "Creating..." : "Submit RCA"}
+            </Button>
+          </div>
+          <CardContent>
+            <IncidentRCAForm formData={formData} setFormData={setFormData} errors={errors} />
+          </CardContent>
+        </form>
       </Card>
     </div>
   );

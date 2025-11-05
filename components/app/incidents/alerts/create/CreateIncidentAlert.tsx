@@ -41,10 +41,10 @@ const CreateIncidentAlert: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <Card className="p-6 border-[#E4E7EC] shadow-none">
-        <CardContent>
-          <div className="flex items-center justify-between mb-6">
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-10">
             <div>
               <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                 Log Incident Alert
@@ -53,33 +53,14 @@ const CreateIncidentAlert: React.FC = () => {
                 Create a new alert signal
               </p>
             </div>
+            <Button type="submit" disabled={isLoading} className="flex gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100">
+              {isLoading ? "Creating..." : "Log Alert"}
+            </Button>
           </div>
-
-          <form onSubmit={handleSubmit}>
-            <IncidentAlertForm
-              formData={formData}
-              setFormData={setFormData}
-              errors={errors}
-            />
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="bg-[#4FD58F] text-white"
-              >
-                {isLoading ? "Creating..." : "Log Alert"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push("/governance/incidents/alerts")}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
+          <CardContent>
+            <IncidentAlertForm formData={formData} setFormData={setFormData} errors={errors} />
+          </CardContent>
+        </form>
       </Card>
     </div>
   );
