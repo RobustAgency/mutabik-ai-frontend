@@ -95,6 +95,7 @@ const CorrectivePreventiveActions: React.FC = () => {
         <div className="flex gap-2">
           <Button
             variant="outline"
+            className="text-[#667085]"
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/governance/incidents/capa/${row.original.id}/edit`);
@@ -104,6 +105,7 @@ const CorrectivePreventiveActions: React.FC = () => {
           </Button>
           <Button
             variant="outline"
+            className="text-[#667085]"
             onClick={(e) => {
               e.stopPropagation();
               setDeleteDialogState({ isOpen: true, capaId: row.original.id });
@@ -146,11 +148,11 @@ const CorrectivePreventiveActions: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={setCurrentPage}

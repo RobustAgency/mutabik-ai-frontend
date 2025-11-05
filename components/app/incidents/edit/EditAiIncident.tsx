@@ -132,43 +132,31 @@ const EditAiIncident: React.FC<EditAiIncidentProps> = ({ incidentId }) => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <Card className="p-6 border-[#E4E7EC] shadow-none">
-        <CardContent>
-          <div className="flex items-center justify-between mb-6">
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-10">
             <div>
               <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                 Edit AI Incident
               </h1>
               <p className="font-sans text-sm text-[#667085]">{incident.title}</p>
             </div>
+            <Button type="submit" disabled={isLoading} className="flex gap-2 px-4 py-6 rounded-full border bg-[#4FD58F] opacity-100">
+              {isLoading ? "Updating..." : "Update Incident"}
+            </Button>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <CardContent>
             <AiIncidentForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
             />
 
-            <div className="flex gap-3 mt-6">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="bg-[#4FD58F] text-white"
-              >
-                {isLoading ? "Updating..." : "Update Incident"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push(`/governance/incidents/${incidentId}/details`)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
+
+          </CardContent>
+        </form>
       </Card>
     </div>
   );

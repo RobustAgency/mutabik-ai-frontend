@@ -62,6 +62,7 @@ const IncidentRootCauseAnalyses: React.FC = () => {
       cell: ({ row }) => (
         <Button
           variant="outline"
+          className="text-[#667085]"
           onClick={(e) => {
             e.stopPropagation();
             setDeleteDialogState({ isOpen: true, rcaId: row.original.id });
@@ -102,11 +103,11 @@ const IncidentRootCauseAnalyses: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={setCurrentPage}

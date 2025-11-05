@@ -66,6 +66,7 @@ const IncidentNotifications: React.FC = () => {
       cell: ({ row }) => (
         <Button
           variant="outline"
+          className="text-[#667085]"
           onClick={(e) => {
             e.stopPropagation();
             setDeleteDialogState({ isOpen: true, notificationId: row.original.id });
@@ -106,11 +107,11 @@ const IncidentNotifications: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={setCurrentPage}

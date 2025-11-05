@@ -81,7 +81,7 @@ const IncidentActions: React.FC = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Button variant="outline" onClick={(e) => handleDeleteClick(e, row.original)}>
+        <Button variant="outline" className="text-[#667085]" onClick={(e) => handleDeleteClick(e, row.original)}>
           Remove
         </Button>
       ),
@@ -117,11 +117,11 @@ const IncidentActions: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={setCurrentPage}

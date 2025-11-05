@@ -128,14 +128,14 @@ const AiIncidentDetails: React.FC<AiIncidentDetailsProps> = ({ incidentId }) => 
           </div>
 
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            {/* <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="alerts">Alerts</TabsTrigger>
               <TabsTrigger value="actions">Actions</TabsTrigger>
               <TabsTrigger value="rca">RCA</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="capa">CAPA</TabsTrigger>
-            </TabsList>
+            </TabsList> */}
 
             <TabsContent value="overview" className="space-y-6 mt-6">
               <div>
