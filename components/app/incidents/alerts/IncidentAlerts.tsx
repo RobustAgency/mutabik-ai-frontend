@@ -132,6 +132,16 @@ const IncidentAlerts: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/governance/incidents/alerts/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
               onClick={(e) => handleDeleteClick(e, row.original)}
             >
               Remove

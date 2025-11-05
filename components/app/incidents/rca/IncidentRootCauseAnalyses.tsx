@@ -60,16 +60,28 @@ const IncidentRootCauseAnalyses: React.FC = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Button
-          variant="outline"
-          className="text-[#667085]"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteDialogState({ isOpen: true, rcaId: row.original.id });
-          }}
-        >
-          Remove
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/governance/incidents/rca/${row.original.id}/edit`);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            className="text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteDialogState({ isOpen: true, rcaId: row.original.id });
+            }}
+          >
+            Remove
+          </Button>
+        </div>
       ),
     },
   ];

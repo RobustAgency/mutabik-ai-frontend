@@ -81,9 +81,21 @@ const IncidentActions: React.FC = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Button variant="outline" className="text-[#667085]" onClick={(e) => handleDeleteClick(e, row.original)}>
-          Remove
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/governance/incidents/actions/${row.original.id}/edit`);
+            }}
+          >
+            Edit
+          </Button>
+          <Button variant="outline" className="text-[#667085]" onClick={(e) => handleDeleteClick(e, row.original)}>
+            Remove
+          </Button>
+        </div>
       ),
     },
   ];
