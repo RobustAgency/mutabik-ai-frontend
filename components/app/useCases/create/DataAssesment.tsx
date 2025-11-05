@@ -54,10 +54,9 @@ const DataAssesment: React.FC<DataAssesmentProps> = ({ formData, setFormData }) 
         {/* Data Readiness */}
         <div className="flex flex-col gap-2">
           <Label className="font-sans font-medium text-sm leading-5 text-[#344054]">
-            Data Readiness <span className="text-red-500">*</span>
+            Data Readiness
           </Label>
           <Select
-            required
             value={formData.data_readiness}
             onValueChange={(value) => handleChange("data_readiness", value)}
           >

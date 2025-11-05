@@ -98,7 +98,7 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
     }
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = (createdItem: any) => {
     // Close the modal
     setIsModalOpen(false);
 
@@ -191,4 +191,3 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
 };
 
 export default SelectWithInlineCreate;
-

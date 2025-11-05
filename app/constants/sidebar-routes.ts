@@ -80,7 +80,7 @@ export const userRoutes: RouteItem[] = [
     href: "/dashboard",
     label: "Dashboard",
     icon: House,
-    children: [{ href: "/dashboard", label: "My Workspace", icon: LayoutGrid }],
+    // children: [{ href: "/dashboard", label: "My Workspace", icon: LayoutGrid }],
   },
 
   {
