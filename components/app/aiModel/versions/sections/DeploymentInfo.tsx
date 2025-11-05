@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatDateLong } from "@/lib/helpers/date";
 
 interface DeploymentInfoProps {
     deploymentStatus: string;
@@ -64,13 +65,7 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
         return value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    const formatDate = (dateString: string): string => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
+    const formatDate = (dateString: string): string => formatDateLong(dateString);
 
     return (
         <Card className="p-6">

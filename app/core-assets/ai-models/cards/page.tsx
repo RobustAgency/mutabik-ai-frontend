@@ -7,16 +7,11 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetAiModelCardsQuery } from '@/app/lib/features/aiModelCardsApi'
+import { formatDateISO } from '@/lib/helpers/date'
 
 const Page = () => {
     const router = useRouter();
     const { data: cards = [], isLoading } = useGetAiModelCardsQuery();
-
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toISOString().split('T')[0];
-    };
 
     const getStatusLabel = (status: string) => {
         const statusMap: Record<string, string> = {
@@ -71,13 +66,13 @@ const Page = () => {
                                             <div className="flex flex-col">
                                                 <span className="text-[#667085] text-xs">Last Review Date</span>
                                                 <span className="text-[#101828] font-medium mt-1">
-                                                    {formatDate(card.last_review_date)}
+                                                    {formatDateISO(card.last_review_date)}
                                                 </span>
                                             </div>
                                             <div className="flex flex-col text-right">
                                                 <span className="text-[#667085] text-xs">Next Review Date</span>
                                                 <span className="text-[#101828] font-medium mt-1">
-                                                    {formatDate(card.next_review_date)}
+                                                    {formatDateISO(card.next_review_date)}
                                                 </span>
                                             </div>
                                         </div>

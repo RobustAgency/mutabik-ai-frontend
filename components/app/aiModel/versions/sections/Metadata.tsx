@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDateLongTime } from "@/lib/helpers/date";
 
 interface MetadataProps {
     id: number;
@@ -10,15 +11,7 @@ interface MetadataProps {
 }
 
 const Metadata: React.FC<MetadataProps> = ({ id, createdAt, updatedAt }) => {
-    const formatDate = (dateString: string): string => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+    const formatDate = (dateString: string): string => formatDateLongTime(dateString);
 
     return (
         <Card className="p-6">

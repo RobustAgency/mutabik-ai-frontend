@@ -53,7 +53,7 @@ const EditIncidentAlert: React.FC<EditIncidentAlertProps> = ({ alertId }) => {
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-sans font-medium text-sm text-[#000]">Edit Incident Alert</h2>
+            <h2 className="font-sans font-medium text-sm text-black">Edit Incident Alert</h2>
             <p className="font-sans text-sm text-[#667085]">Update alert details</p>
           </div>
         </div>
@@ -62,7 +62,7 @@ const EditIncidentAlert: React.FC<EditIncidentAlertProps> = ({ alertId }) => {
           <div className="text-sm text-[#667085]">Loading...</div>
         ) : (
           <div className="space-y-6">
-            <IncidentAlertForm formData={formData} setFormData={setFormData} errors={errors} />
+            <IncidentAlertForm formData={formData} setFormData={setFormData as React.Dispatch<React.SetStateAction<CreateIncidentAlertData>>} errors={errors} />
             <div className="flex justify-end">
               <Button onClick={handleSubmit} disabled={isSubmitting} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">
                 {isSubmitting ? "Saving..." : "Save Changes"}

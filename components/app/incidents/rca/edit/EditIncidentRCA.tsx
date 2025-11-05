@@ -57,7 +57,7 @@ const EditIncidentRCA: React.FC<EditIncidentRCAProps> = ({ rcaId }) => {
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-sans font-medium text-sm text-[#000]">Edit Root Cause Analysis</h2>
+            <h2 className="font-sans font-medium text-sm text-black">Edit Root Cause Analysis</h2>
             <p className="font-sans text-sm text-[#667085]">Update RCA details</p>
           </div>
         </div>
@@ -66,7 +66,25 @@ const EditIncidentRCA: React.FC<EditIncidentRCAProps> = ({ rcaId }) => {
           <div className="text-sm text-[#667085]">Loading...</div>
         ) : (
           <div className="space-y-6">
-            <IncidentRCAForm formData={formData} setFormData={setFormData} errors={errors} />
+            {formData && (
+              <IncidentRCAForm
+                formData={formData}
+                // Ensure setFormData always receives a function or object with non-null value
+                setFormData={(dataOrUpdater) => {
+                  // Accept both functional and object signature for setState
+                  if (typeof dataOrUpdater === "function") {
+                    setFormData((prev) =>
+                      prev
+                        ? (dataOrUpdater as (prev: CreateIncidentRootCauseAnalysisData) => CreateIncidentRootCauseAnalysisData)(prev)
+                        : prev // If prev is null, do nothing
+                    );
+                  } else {
+                    setFormData(dataOrUpdater);
+                  }
+                }}
+                errors={errors}
+              />
+            )}
             <div className="flex justify-end">
               <Button onClick={handleSubmit} disabled={isSubmitting} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">
                 {isSubmitting ? "Saving..." : "Save Changes"}

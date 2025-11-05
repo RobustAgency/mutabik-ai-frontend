@@ -8,18 +8,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useUseCases } from '@/hooks/app/useUseCases';
 import { UseCase } from "@/service/app/useCases";
+import { formatDateShort } from "@/lib/helpers/date";
 
-// Optional: define date formatter (e.g., "Oct 6, 2025")
-const formatDate = (dateString: string | null | undefined): string => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "-";
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  });
-};
+// Date formatter (e.g., "Oct 06, 2025")
+const formatDate = (dateString: string | null | undefined): string => formatDateShort(dateString);
 
 const UseCases: React.FC = () => {
   const { useCases, loading } = useUseCases();
@@ -90,7 +82,6 @@ const UseCases: React.FC = () => {
           Target Go Live Date
         </div>
       ),
-      // ✅ Format date here
       cell: ({ getValue }) => {
         const rawDate = getValue() as string;
         const formatted = formatDate(rawDate);
