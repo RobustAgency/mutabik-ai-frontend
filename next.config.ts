@@ -1,17 +1,8 @@
 import type { NextConfig } from "next";
 
-// Only initialize Cloudflare dev mode in development
-if (process.env.NODE_ENV === "development") {
-  const { initOpenNextCloudflareForDev } = await import(
-    "@opennextjs/cloudflare"
-  );
-  initOpenNextCloudflareForDev();
-}
-
 const nextConfig: NextConfig = {
   reactStrictMode: false,
 
-  // Optimized package imports
   experimental: {
     optimizePackageImports: [
       "lucide-react",
