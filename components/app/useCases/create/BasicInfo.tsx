@@ -182,7 +182,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
             onValueChange={(value) => setFormData((prev) => ({ ...prev, business_owner_id: value }))}
             placeholder="Select Business Owner"
             description="Select the business stakeholder responsible for this use case"
-            filterType="person"
+            filterType="all"
             error={hasError("business_owner_id") ? getError("business_owner_id") : undefined}
           />
 
@@ -192,7 +192,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
             onValueChange={(value) => setFormData((prev) => ({ ...prev, technical_owner_id: value }))}
             placeholder="Select Technical Owner"
             description="Select the technical stakeholder responsible for this use case"
-            filterType="person"
+            filterType="all"
             error={hasError("technical_owner_id") ? getError("technical_owner_id") : undefined}
           />
         </div>

@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateIncidentAlertData } from "@/app/lib/features/incidentAlertsApi";
 import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiIncidentModalForm from "@/components/app/incidents/create/AiIncidentModalForm";
 
 interface IncidentAlertFormProps {
   formData: CreateIncidentAlertData;
@@ -21,7 +23,7 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
 }) => {
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
   const incidents = incidentsData?.data || [];
-  
+
   const handleInputChange = (field: keyof CreateIncidentAlertData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -32,21 +34,18 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="ai_incident_id">Incident <span className="text-red-500">*</span></Label>
-        <Select
-          value={formData.ai_incident_id ? String(formData.ai_incident_id) : undefined}
+        <SelectWithInlineCreate
+          value={formData.ai_incident_id ? String(formData.ai_incident_id) : ""}
           onValueChange={(value) => handleInputChange("ai_incident_id", Number(value))}
-        >
-          <SelectTrigger className={`w-full ${errors.ai_incident_id ? "border-destructive" : ""}`}>
-            <SelectValue placeholder={isIncidentsLoading ? "Loading incidents..." : "Select incident"} />
-          </SelectTrigger>
-          <SelectContent>
-            {incidents.map((incident: any) => (
-              <SelectItem key={incident.id} value={String(incident.id)}>
-                #{incident.id} - {incident.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder={isIncidentsLoading ? "Loading incidents..." : "Select incident"}
+          options={incidents.map((incident: any) => ({ id: incident.id, label: `#${incident.id} - ${incident.title}`, value: String(incident.id) }))}
+          isLoading={isIncidentsLoading}
+          isEmpty={!isIncidentsLoading && incidents.length === 0}
+          entityName="Incident"
+          canCreate={true}
+          modalForm={AiIncidentModalForm}
+          error={!!errors.ai_incident_id}
+        />
         {getError("ai_incident_id") && (
           <p className="text-sm text-destructive">{getError("ai_incident_id")}</p>
         )}

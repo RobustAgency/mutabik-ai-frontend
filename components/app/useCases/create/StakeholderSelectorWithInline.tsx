@@ -23,7 +23,7 @@ interface StakeholderSelectorWithInlineProps {
     description?: string;
     required?: boolean;
     error?: string;
-    filterType?: "person" | "team" | "vendor_org" | "all";
+    filterType?: "person" | "team" | "vendor_org" | "regulator" | "all";
 }
 
 const StakeholderSelectorWithInline: React.FC<StakeholderSelectorWithInlineProps> = ({

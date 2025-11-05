@@ -36,26 +36,26 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
     business_owner_id: null,
     technical_owner_id: null,
     business_domain: "",
-    use_case_type: "predictive_model",
-    priority: "medium",
-    status: "draft",
+    roi_classification: "",
+    priority: "",
+    risk_level: "medium",
     data_sensitivity: "internal",
-    created_by: "",
+    expected_roi_percentage: null,
+    budget_allocated: null,
     target_go_live_date: null,
-    estimated_budget: null,
-    funding_status: "not_funded",
-    ai_techniques_used: [],
-    ml_lifecycle_stage: "business_understanding",
-    expected_annual_volume: null,
-    expected_users_count: null,
-    risk_profile: "low",
-    regulatory_scope_gdpr: false,
-    regulatory_scope_ccpa: false,
-    regulatory_scope_other: [],
-    requires_human_oversight: true,
-    appeals_mechanism: false,
-    third_party_dependencies: [],
-    integration_points: [],
+    status: "draft",
+    created_by: "",
+    updated_by: null,
+    roi_assessment: false,
+    risk_assessment: false,
+    data_assessment: false,
+    estimated_implementation_cost: null,
+    estimated_reduction_in_time: null,
+    estimated_reduction_in_cost: null,
+    estimated_revenue_increase: null,
+    estimated_fte_capacity_saving: null,
+    data_availability_status: "",
+    data_readiness: "",
   });
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -310,7 +310,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
 
       {/* Ownership */}
       <div className="space-y-4">
-        <h3 className="font-bold text-base text-[#039855]">Ownership</h3>
+        <h3 className="font-bold text-base text-[#039855]">Ownership & Contacts</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StakeholderSelectorWithInline
@@ -319,7 +319,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
             onValueChange={(value) => handleInputChange("business_owner_id", value)}
             placeholder="Select Business Owner"
             description="Business stakeholder responsible"
-            filterType="person"
+            filterType="all"
             error={hasError("business_owner_id") ? getError("business_owner_id") : undefined}
           />
 
@@ -329,9 +329,351 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
             onValueChange={(value) => handleInputChange("technical_owner_id", value)}
             placeholder="Select Technical Owner"
             description="Technical stakeholder responsible"
-            filterType="person"
+            filterType="all"
             error={hasError("technical_owner_id") ? getError("technical_owner_id") : undefined}
           />
+
+          <div className="space-y-2">
+            <Label htmlFor="data_sensitivity">
+              Data Sensitivity
+            </Label>
+            <Select
+              value={formData.data_sensitivity}
+              onValueChange={(value) => handleInputChange("data_sensitivity", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">Public</SelectItem>
+                <SelectItem value="internal">Internal</SelectItem>
+                <SelectItem value="confidential">Confidential</SelectItem>
+                <SelectItem value="restricted">Restricted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="target_go_live_date">
+              Target Go Live Date
+            </Label>
+            <Input
+              id="target_go_live_date"
+              type="date"
+              value={formData.target_go_live_date || ""}
+              onChange={(e) => handleInputChange("target_go_live_date", e.target.value || null)}
+              className={hasError("target_go_live_date") ? "border-destructive" : ""}
+            />
+            {hasError("target_go_live_date") && (
+              <p className="text-sm text-destructive">{getError("target_go_live_date")}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Financial Metrics */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-base text-[#039855]">Financial Metrics</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="expected_roi_percentage">
+              Expected ROI (%)
+            </Label>
+            <Input
+              id="expected_roi_percentage"
+              type="number"
+              step="0.01"
+              min="0"
+              max="999.99"
+              value={formData.expected_roi_percentage ?? ""}
+              onChange={(e) => handleInputChange("expected_roi_percentage", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("expected_roi_percentage") ? "border-destructive" : ""}
+            />
+            {hasError("expected_roi_percentage") && (
+              <p className="text-sm text-destructive">{getError("expected_roi_percentage")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimated_implementation_cost">
+              Implementation Cost ($)
+            </Label>
+            <Input
+              id="estimated_implementation_cost"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.estimated_implementation_cost ?? ""}
+              onChange={(e) => handleInputChange("estimated_implementation_cost", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("estimated_implementation_cost") ? "border-destructive" : ""}
+            />
+            {hasError("estimated_implementation_cost") && (
+              <p className="text-sm text-destructive">{getError("estimated_implementation_cost")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimated_revenue_increase">
+              Increase in Revenue ($)
+            </Label>
+            <Input
+              id="estimated_revenue_increase"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.estimated_revenue_increase ?? ""}
+              onChange={(e) => handleInputChange("estimated_revenue_increase", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("estimated_revenue_increase") ? "border-destructive" : ""}
+            />
+            {hasError("estimated_revenue_increase") && (
+              <p className="text-sm text-destructive">{getError("estimated_revenue_increase")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimated_reduction_in_time">
+              Reduction in Time (hrs)
+            </Label>
+            <Input
+              id="estimated_reduction_in_time"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.estimated_reduction_in_time ?? ""}
+              onChange={(e) => handleInputChange("estimated_reduction_in_time", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("estimated_reduction_in_time") ? "border-destructive" : ""}
+            />
+            {hasError("estimated_reduction_in_time") && (
+              <p className="text-sm text-destructive">{getError("estimated_reduction_in_time")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimated_reduction_in_cost">
+              Reduction in Cost ($)
+            </Label>
+            <Input
+              id="estimated_reduction_in_cost"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.estimated_reduction_in_cost ?? ""}
+              onChange={(e) => handleInputChange("estimated_reduction_in_cost", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("estimated_reduction_in_cost") ? "border-destructive" : ""}
+            />
+            {hasError("estimated_reduction_in_cost") && (
+              <p className="text-sm text-destructive">{getError("estimated_reduction_in_cost")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimated_fte_capacity_saving">
+              FTE Capacity Saved
+            </Label>
+            <Input
+              id="estimated_fte_capacity_saving"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.estimated_fte_capacity_saving ?? ""}
+              onChange={(e) => handleInputChange("estimated_fte_capacity_saving", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("estimated_fte_capacity_saving") ? "border-destructive" : ""}
+            />
+            {hasError("estimated_fte_capacity_saving") && (
+              <p className="text-sm text-destructive">{getError("estimated_fte_capacity_saving")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="budget_allocated">
+              Budget Allocated ($)
+            </Label>
+            <Input
+              id="budget_allocated"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.budget_allocated ?? ""}
+              onChange={(e) => handleInputChange("budget_allocated", e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="0.00"
+              className={hasError("budget_allocated") ? "border-destructive" : ""}
+            />
+            {hasError("budget_allocated") && (
+              <p className="text-sm text-destructive">{getError("budget_allocated")}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Risk & Governance */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-base text-[#039855]">Risk & Governance</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="risk_level">
+              Risk Level
+            </Label>
+            <Select
+              value={formData.risk_level}
+              onValueChange={(value) => handleInputChange("risk_level", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="critical">Critical</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="priority">
+              Priority
+            </Label>
+            <Select
+              value={formData.priority}
+              onValueChange={(value) => handleInputChange("priority", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Low">Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="roi_classification">
+              ROI Classification
+            </Label>
+            <Select
+              value={formData.roi_classification}
+              onValueChange={(value) => handleInputChange("roi_classification", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Low">Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="roi_assessment">
+              ROI Assessment Completed
+            </Label>
+            <Select
+              value={formData.roi_assessment ? "true" : "false"}
+              onValueChange={(value) => handleInputChange("roi_assessment", value === "true")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="risk_assessment">
+              Risk Assessment Completed
+            </Label>
+            <Select
+              value={formData.risk_assessment ? "true" : "false"}
+              onValueChange={(value) => handleInputChange("risk_assessment", value === "true")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="data_assessment">
+              Data Assessment Completed
+            </Label>
+            <Select
+              value={formData.data_assessment ? "true" : "false"}
+              onValueChange={(value) => handleInputChange("data_assessment", value === "true")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Assessment */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-base text-[#039855]">Data Assessment</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="data_availability_status">
+              Data Availability Status
+            </Label>
+            <Select
+              value={formData.data_availability_status}
+              onValueChange={(value) => handleInputChange("data_availability_status", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="partially_available">Partially Available</SelectItem>
+                <SelectItem value="not_available">Not Available</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="data_readiness">
+              Data Readiness Level
+            </Label>
+            <Select
+              value={formData.data_readiness}
+              onValueChange={(value) => handleInputChange("data_readiness", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="D1">D1</SelectItem>
+                <SelectItem value="D2">D2</SelectItem>
+                <SelectItem value="D3">D3</SelectItem>
+                <SelectItem value="D4">D4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

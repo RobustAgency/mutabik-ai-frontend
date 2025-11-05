@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateAiIncidentData } from "@/app/lib/features/aiIncidentsApi";
-import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
 import { useGetAiModelVersionsQuery } from "@/app/lib/features/aiModelVersionsApi";
 import { useGetUseCasesQuery } from "@/app/lib/features/useCasesApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
-import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
 import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
 import AiModelVersionModalForm from "@/components/app/aiModel/versions/AiModelVersionModalForm";
 import UseCaseModalForm from "@/components/app/useCases/create/UseCaseModalForm";
@@ -28,13 +26,12 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
   setFormData,
   errors,
 }) => {
-  const { data: stakeholders = [], isLoading: isStakeholdersLoading } = useGetStakeholdersQuery();
   const { data: aiModels = [], isLoading: isModelsLoading } = useGetAiModelsQuery();
   const { data: modelVersionsData, isLoading: isVersionsLoading } = useGetAiModelVersionsQuery();
   const { data: useCases = [], isLoading: isUseCasesLoading } = useGetUseCasesQuery();
-  
+
   const modelVersions = modelVersionsData || [];
-  
+
   // Filter versions based on selected model
   const filteredVersions = React.useMemo(() => {
     if (!formData.model_id) return modelVersions;
@@ -334,7 +331,21 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
               id="resolved_at"
               type="datetime-local"
               value={formData.resolved_at || ""}
-              onChange={(e) => handleInputChange("resolved_at", e.target.value || null)}
+              onChange={(e) => {
+                const newResolvedAt = e.target.value || null;
+                setFormData((prev) => {
+                  const next = { ...prev, resolved_at: newResolvedAt };
+                  if (
+                    next.closed_at &&
+                    newResolvedAt &&
+                    // Ensure closed_at is not before resolved_at
+                    String(next.closed_at) < String(newResolvedAt)
+                  ) {
+                    next.closed_at = newResolvedAt;
+                  }
+                  return next;
+                });
+              }}
             />
             <p className="text-xs text-[#667085]">Service restored/impact stopped</p>
           </div>
@@ -345,6 +356,8 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
               id="closed_at"
               type="datetime-local"
               value={formData.closed_at || ""}
+              min={formData.resolved_at || undefined}
+              disabled={!formData.resolved_at}
               onChange={(e) => handleInputChange("closed_at", e.target.value || null)}
             />
             <p className="text-xs text-[#667085]">After RCA/CAPA complete</p>
