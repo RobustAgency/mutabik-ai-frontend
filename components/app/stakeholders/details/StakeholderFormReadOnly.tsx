@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Stakeholder } from "@/app/lib/features/stakeholdersApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
+import { formatDateLongTime } from "@/lib/helpers/date";
 
 interface StakeholderFormReadOnlyProps {
     stakeholder: Stakeholder;
@@ -35,19 +36,7 @@ const StakeholderFormReadOnly: React.FC<StakeholderFormReadOnlyProps> = ({
     };
 
     // Helper to format date
-    const formatDate = (dateString: string): string => {
-        try {
-            return new Date(dateString).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            });
-        } catch {
-            return dateString;
-        }
-    };
+    const formatDate = (dateString: string): string => formatDateLongTime(dateString);
 
     return (
         <div className="space-y-6">

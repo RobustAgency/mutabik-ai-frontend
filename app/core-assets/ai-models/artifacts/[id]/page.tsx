@@ -11,6 +11,7 @@ import {
 import { ArrowLeft, Trash2, ExternalLink } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { useState } from "react";
+import { formatDateISO } from "@/lib/helpers/date";
 
 const Page = () => {
   const params = useParams();
@@ -25,11 +26,7 @@ const Page = () => {
   const [deleteArtifact, { isLoading: isDeleting }] =
     useDeleteAiModelArtifactMutation();
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
+  const formatDate = (dateString: string | null) => (dateString ? formatDateISO(dateString) : "N/A");
 
   const formatBytes = (bytes: number | null | undefined) => {
     if (!bytes) return "N/A";

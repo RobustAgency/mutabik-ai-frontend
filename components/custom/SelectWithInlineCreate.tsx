@@ -61,20 +61,41 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
+  const [previousValue, setPreviousValue] = useState<string | undefined>(value);
+  const [selectKey, setSelectKey] = useState(0); // Force re-render key
 
   const ADD_NEW_VALUE = "__add_new__";
+
+  // Track the previous value (before clicking "Add New")
+  React.useEffect(() => {
+    if (value !== ADD_NEW_VALUE && value !== undefined) {
+      setPreviousValue(value);
+    }
+  }, [value]);
 
   const handleValueChange = (selectedValue: string) => {
     if (selectedValue === ADD_NEW_VALUE) {
       setIsModalOpen(true);
       setInternalOpen(false);
     } else {
+      setPreviousValue(selectedValue);
       onValueChange(selectedValue);
     }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    // Reset the select to clear the "__add_new__" selection
+    // Force a re-render by changing the key
+    setSelectKey(prev => prev + 1);
+    // Reset to previous value or empty string
+    if (previousValue) {
+      onValueChange(previousValue);
+    } else {
+      // If no previous value (empty dropdown), just trigger change with empty
+      // The key change will clear the visual selection
+      onValueChange("");
+    }
   };
 
   const handleSuccess = () => {
@@ -82,8 +103,22 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
     setIsModalOpen(false);
 
     // The RTK Query cache invalidation will automatically refetch the data
-    // and the dropdown will be updated with the new item
-    // We don't auto-select per requirements - user will manually select it
+    // Auto-select the newly created item if it has an ID
+    if (createdItem?.id) {
+      const newId = String(createdItem.id);
+      setPreviousValue(newId);
+      onValueChange(newId);
+      // Force re-render to show the new selection
+      setSelectKey(prev => prev + 1);
+    } else {
+      // If no ID, reset to previous value or empty
+      setSelectKey(prev => prev + 1);
+      if (previousValue) {
+        onValueChange(previousValue);
+      } else {
+        onValueChange("");
+      }
+    }
   };
 
   const showAddNew = canCreate && !isLoading;
@@ -91,6 +126,7 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
   return (
     <>
       <Select
+        key={selectKey}
         value={value}
         onValueChange={handleValueChange}
         disabled={disabled || isLoading}

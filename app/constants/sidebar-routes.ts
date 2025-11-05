@@ -163,6 +163,11 @@ export const userRoutes: RouteItem[] = [
         label: "Agreements",
         icon: FileBox,
       },
+      {
+        href: "/core-assets/ai-assets",
+        label: "AI Assets",
+        icon: Brain,
+      },
     ],
   },
 
@@ -292,9 +297,41 @@ export const userRoutes: RouteItem[] = [
         icon: BarChart3,
       },
       {
-        href: "/governance/incidents",
         label: "Incident Management",
+        href: "/governance/incidents",
         icon: Activity,
+        children: [
+          // {
+          //   href: "/governance/incidents",
+          //   label: "AI Incidents",
+          //   icon: Activity,
+          // },
+          {
+            href: "/governance/incidents/alerts",
+            label: "Incident Alerts",
+            icon: BellDot,
+          },
+          {
+            href: "/governance/incidents/actions",
+            label: "Incident Actions",
+            icon: CheckCircle2,
+          },
+          {
+            href: "/governance/incidents/rca",
+            label: "Root Cause Analyses",
+            icon: FileSearch,
+          },
+          {
+            href: "/governance/incidents/notifications",
+            label: "Notifications",
+            icon: BellDot,
+          },
+          {
+            href: "/governance/incidents/capa",
+            label: "CAPA",
+            icon: FileCheck2,
+          },
+        ],
       },
     ],
   },

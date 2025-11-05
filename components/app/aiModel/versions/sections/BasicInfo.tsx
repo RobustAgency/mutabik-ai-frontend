@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDateLong } from "@/lib/helpers/date";
 
 interface BasicInfoProps {
     version: string;
@@ -27,13 +28,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         return value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    const formatDate = (dateString: string): string => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
+    const formatDate = (dateString: string): string => formatDateLong(dateString);
 
     return (
         <Card className="p-6">

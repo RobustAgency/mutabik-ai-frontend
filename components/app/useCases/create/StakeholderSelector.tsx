@@ -21,7 +21,7 @@ interface StakeholderSelectorProps {
     description?: string;
     required?: boolean;
     error?: string;
-    filterType?: "person" | "team" | "vendor_org" | "all";
+    filterType?: "person" | "team" | "vendor_org" | "regulator" | "all";
 }
 
 const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
@@ -34,6 +34,7 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
     error,
     filterType = "all",
 }) => {
+    console.log("🚀 ~ StakeholderSelector ~ filterType:", filterType)
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 

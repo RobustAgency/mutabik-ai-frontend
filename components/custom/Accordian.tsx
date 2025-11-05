@@ -119,7 +119,7 @@ const Accordian = ({
               className="shrink-0 size-4"
               color={(isActive || isChildActive) ? "currentColor" : "#737373"}
             />
-            <span className="flex-1">{label}</span>
+            <span className="flex-1 whitespace-nowrap">{label}</span>
           </Link>
         ) : (
           // Non-clickable parent (just label)
@@ -129,7 +129,7 @@ const Accordian = ({
               className="shrink-0 size-4"
               color={isChildActive ? "currentColor" : "#737373"}
             />
-            <span className="flex-1">{label}</span>
+            <span className="flex-1 whitespace-nowrap">{label}</span>
           </div>
         )}
 
