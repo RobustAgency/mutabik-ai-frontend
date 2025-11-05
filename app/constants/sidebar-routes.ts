@@ -163,6 +163,11 @@ export const userRoutes: RouteItem[] = [
         label: "Agreements",
         icon: FileBox,
       },
+      {
+        href: "/core-assets/ai-assets",
+        label: "AI Assets",
+        icon: Brain,
+      },
     ],
   },
 

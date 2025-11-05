@@ -26,6 +26,7 @@ import { incidentActionsApi } from "./features/incidentActionsApi";
 import { incidentRootCauseAnalysesApi } from "./features/incidentRootCauseAnalysesApi";
 import { incidentNotificationsApi } from "./features/incidentNotificationsApi";
 import { correctivePreventiveActionsApi } from "./features/correctivePreventiveActionsApi";
+import { aiAssetsApi } from "./features/aiAssetsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -48,14 +49,18 @@ export const makeStore = () => {
       [consentScopesApi.reducerPath]: consentScopesApi.reducer,
       [consentCoverageApi.reducerPath]: consentCoverageApi.reducer,
       [pdpProcessingRegisterApi.reducerPath]: pdpProcessingRegisterApi.reducer,
-      [datasetSubjectPopulationApi.reducerPath]: datasetSubjectPopulationApi.reducer,
+      [datasetSubjectPopulationApi.reducerPath]:
+        datasetSubjectPopulationApi.reducer,
       [aiModelArtifactsApi.reducerPath]: aiModelArtifactsApi.reducer,
       [aiIncidentsApi.reducerPath]: aiIncidentsApi.reducer,
       [incidentAlertsApi.reducerPath]: incidentAlertsApi.reducer,
       [incidentActionsApi.reducerPath]: incidentActionsApi.reducer,
-      [incidentRootCauseAnalysesApi.reducerPath]: incidentRootCauseAnalysesApi.reducer,
+      [incidentRootCauseAnalysesApi.reducerPath]:
+        incidentRootCauseAnalysesApi.reducer,
       [incidentNotificationsApi.reducerPath]: incidentNotificationsApi.reducer,
-      [correctivePreventiveActionsApi.reducerPath]: correctivePreventiveActionsApi.reducer,
+      [correctivePreventiveActionsApi.reducerPath]:
+        correctivePreventiveActionsApi.reducer,
+      [aiAssetsApi.reducerPath]: aiAssetsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -84,7 +89,8 @@ export const makeStore = () => {
         incidentActionsApi.middleware,
         incidentRootCauseAnalysesApi.middleware,
         incidentNotificationsApi.middleware,
-        correctivePreventiveActionsApi.middleware
+        correctivePreventiveActionsApi.middleware,
+        aiAssetsApi.middleware
       ),
   });
 };
