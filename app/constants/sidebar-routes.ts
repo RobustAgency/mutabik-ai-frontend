@@ -292,15 +292,15 @@ export const userRoutes: RouteItem[] = [
         icon: BarChart3,
       },
       {
-        href: "/governance/incidents",
         label: "Incident Management",
+        href: "/governance/incidents",
         icon: Activity,
         children: [
-          {
-            href: "/governance/incidents",
-            label: "AI Incidents",
-            icon: Activity,
-          },
+          // {
+          //   href: "/governance/incidents",
+          //   label: "AI Incidents",
+          //   icon: Activity,
+          // },
           {
             href: "/governance/incidents/alerts",
             label: "Incident Alerts",

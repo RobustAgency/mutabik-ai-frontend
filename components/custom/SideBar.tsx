@@ -51,8 +51,8 @@ export function Sidebar({
           href={item.href}
           onClick={onNavigate}
           className={`relative flex items-center rounded-lg gap-2 px-3 py-2 text-sm font-medium transition-colors ${isActive
-              ? "bg-primary/10 text-primary"
-              : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
+            ? "bg-primary/10 text-primary"
+            : "hover:bg-accent hover:text-accent-foreground text-[#404040]"
             }`}
         >
           {item.icon && (
@@ -76,7 +76,7 @@ export function Sidebar({
       {/* Logo */}
       <div
         aria-details="logo"
-        className="flex items-center justify-between !mb-9"
+        className="flex items-center justify-between mb-9!"
       >
         <Link href="/">
           <Image
