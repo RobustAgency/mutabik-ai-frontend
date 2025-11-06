@@ -76,7 +76,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_snapshot_id">Snapshot * (Required for AC-05)</Label>
+            <Label htmlFor="dataset_snapshot_id">Snapshot <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
               value={formData.dataset_snapshot_id || undefined}
               onValueChange={(value) => handleChange("dataset_snapshot_id", value)}

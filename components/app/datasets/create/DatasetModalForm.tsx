@@ -20,7 +20,7 @@ const initialFormData: CreateDatasetData = {
     lawful_basis: "",
     lawful_basis_detail: "",
     consent_required: false,
-    consent_coverage_pct: undefined,
+    consent_coverage_pct: 0,
     consent_source_ref: "",
     licensing_basis: "",
     license_type: "",

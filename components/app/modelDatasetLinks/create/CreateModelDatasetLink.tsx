@@ -34,13 +34,13 @@ const CreateModelDatasetLink: React.FC = () => {
 
     if (!formData.ai_model_id?.trim()) errors.ai_model_id = ["Model is required"];
     if (!formData.ai_model_version_id) errors.ai_model_version_id = ["Model version is required"];
-    if (!formData.dataset_snapshot_id?.trim()) errors.dataset_snapshot_id = ["Snapshot is required (AC-05)"];
+    if (!formData.dataset_snapshot_id?.trim()) errors.dataset_snapshot_id = ["Snapshot is required"];
     if (!formData.role?.trim()) errors.role = ["Role is required"];
     if (!formData.created_by?.trim()) errors.created_by = ["Created by is required"];
 
     const trainRoles = ["train", "validation", "test", "eval_benchmark"];
     if (trainRoles.includes(formData.role) && !formData.dataset_snapshot_id?.trim()) {
-      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles (AC-05)"];
+      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles"];
     }
 
     setValidationErrors(errors);
