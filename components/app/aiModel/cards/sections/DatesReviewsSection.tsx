@@ -8,9 +8,13 @@ import type { CreateAiModelCardData } from "@/service/app/aiModelCards";
 interface DatesReviewsSectionProps {
     formData: CreateAiModelCardData;
     setFormData: (next: Partial<CreateAiModelCardData>) => void;
+    errors?: Record<string, string[]>;
 }
 
-export default function DatesReviewsSection({ formData, setFormData }: DatesReviewsSectionProps) {
+export default function DatesReviewsSection({ formData, setFormData, errors = {} }: DatesReviewsSectionProps) {
+    const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
+    const getError = (fieldName: string) => errors[fieldName]?.[0];
+    
     const set = (k: keyof CreateAiModelCardData) => (e: React.ChangeEvent<HTMLInputElement>) => setFormData({ [k]: e.target.value } as any);
     return (
         <div className="space-y-4">
@@ -35,8 +39,37 @@ export default function DatesReviewsSection({ formData, setFormData }: DatesRevi
                     <Input type="date" placeholder="YYYY-MM-DD" value={formData.next_review_date || ""} onChange={set("next_review_date")} />
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label>
+                        Created By <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        type="email"
+                        placeholder="creator@example.com"
+                        value={formData.created_by || ""}
+                        onChange={(e) => setFormData({ created_by: e.target.value })}
+                        className={hasError("created_by") ? "border-red-500" : ""}
+                    />
+                    {hasError("created_by") && (
+                        <p className="text-sm text-red-500">{getError("created_by")}</p>
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <Label>Updated By</Label>
+                    <Input
+                        type="email"
+                        placeholder="updater@example.com"
+                        value={formData.updated_by || ""}
+                        onChange={(e) => setFormData({ updated_by: e.target.value || null })}
+                        className={hasError("updated_by") ? "border-red-500" : ""}
+                    />
+                    {hasError("updated_by") && (
+                        <p className="text-sm text-red-500">{getError("updated_by")}</p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
-
-

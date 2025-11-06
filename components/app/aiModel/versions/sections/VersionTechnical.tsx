@@ -97,12 +97,29 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2">Architecture Type <span className="text-red-500">*</span></Label>
-          <Input
+          <Select
             value={formData.architecture_type}
-            onChange={(e) => setFormData(prev => ({ ...prev, architecture_type: e.target.value }))}
-            placeholder="transformer, cnn, rnn, etc."
-            className={`w-full ${errors.architecture_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
-          />
+            onValueChange={(value) => setFormData(prev => ({ ...prev, architecture_type: value as any }))}
+          >
+            <SelectTrigger className={errors.architecture_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue placeholder="Select architecture type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="transformer">Transformer</SelectItem>
+              <SelectItem value="cnn">CNN</SelectItem>
+              <SelectItem value="rnn">RNN</SelectItem>
+              <SelectItem value="lstm">LSTM</SelectItem>
+              <SelectItem value="gru">GRU</SelectItem>
+              <SelectItem value="bert">BERT</SelectItem>
+              <SelectItem value="gpt">GPT</SelectItem>
+              <SelectItem value="resnet">ResNet</SelectItem>
+              <SelectItem value="vgg">VGG</SelectItem>
+              <SelectItem value="efficientnet">EfficientNet</SelectItem>
+              <SelectItem value="yolo">YOLO</SelectItem>
+              <SelectItem value="unet">U-Net</SelectItem>
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectContent>
+          </Select>
           {errors.architecture_type && (
             <p className="text-xs text-red-600 mt-1">{errors.architecture_type[0]}</p>
           )}
@@ -139,12 +156,12 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
           />
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Model File Size (GB) <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Model File Size (GB)</Label>
           <Input
             type="number"
             step="0.001"
             value={formData.model_file_size_gb ?? ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, model_file_size_gb: e.target.value ? parseFloat(e.target.value) : 0 }))}
+            onChange={(e) => setFormData(prev => ({ ...prev, model_file_size_gb: e.target.value ? parseFloat(e.target.value) : null }))}
             placeholder="2.5"
             className={`w-full ${errors.model_file_size_gb ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />

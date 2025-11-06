@@ -148,6 +148,61 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
           ))}
         </div>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">
+            Performance Data <span className="text-red-500">*</span>
+          </Label>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="has_performance_data"
+              checked={formData.has_performance_data ?? false}
+              onCheckedChange={(checked) =>
+                setFormData(prev => ({ ...prev, has_performance_data: checked as boolean }))
+              }
+            />
+            <Label htmlFor="has_performance_data" className="text-sm text-gray-700">
+              Has Performance Data
+            </Label>
+          </div>
+          {errors.has_performance_data && (
+            <p className="text-xs text-red-600 mt-1">{errors.has_performance_data[0]}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">
+            Created By <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            type="email"
+            value={formData.created_by || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, created_by: e.target.value }))}
+            placeholder="creator@example.com"
+            className={`w-full ${errors.created_by ? "border-red-500 focus:border-red-500" : ""}`}
+          />
+          {errors.created_by && (
+            <p className="text-xs text-red-600 mt-1">{errors.created_by[0]}</p>
+          )}
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Updated By</Label>
+          <Input
+            type="email"
+            value={formData.updated_by || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, updated_by: e.target.value || null }))}
+            placeholder="updater@example.com"
+            className={`w-full ${errors.updated_by ? "border-red-500 focus:border-red-500" : ""}`}
+          />
+          {errors.updated_by && (
+            <p className="text-xs text-red-600 mt-1">{errors.updated_by[0]}</p>
+          )}
+        </div>
+      </div>
     </section>
   );
 };

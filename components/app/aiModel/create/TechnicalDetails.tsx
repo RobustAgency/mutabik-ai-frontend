@@ -10,6 +10,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { FormDataType } from "../types/aiModelTypes";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
+import AiModelVersionModalForm from "../versions/AiModelVersionModalForm";
 
 interface TechnicalDetailsProps {
     formData: FormDataType;
@@ -25,6 +28,12 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
     // Helper to check if field has error
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
     const getError = (fieldName: string) => errors[fieldName]?.[0];
+
+    // Fetch AI Model Versions
+    const { aiModelVersions, loading: isLoadingVersions } = useAiModelVersions();
+
+    // Check if production version is required
+    const isProductionVersionRequired = formData.operational_status === "production";
 
     return (
         <div className="space-y-6 w-full">
@@ -101,7 +110,7 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                 {/* Risk Classification */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Risk Classification <span className="text-red-500">*</span>
+                        Regulatory Classification <span className="text-red-500">*</span>
                     </Label>
                     <Select
                         value={formData.regulatory_risk_classification}
@@ -126,6 +135,38 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                     </Select>
                     {hasError("regulatory_risk_classification") && (
                         <p className="text-sm text-red-500">{getError("regulatory_risk_classification")}</p>
+                    )}
+                </div>
+
+                {/* Current Version - Required when operational_status is production, optional otherwise */}
+                <div className="flex flex-col gap-1">
+                    <Label className="text-sm text-[#344054] font-medium">
+                        Current Version {isProductionVersionRequired && <span className="text-red-500">*</span>}
+                    </Label>
+                    <SelectWithInlineCreate
+                        value={formData.current_version_id || ""}
+                        onValueChange={(value) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                current_version_id: value || null,
+                            }))
+                        }
+                        options={aiModelVersions.map((version) => ({
+                            id: version.id,
+                            label: `${version.ai_model?.name || "Model"} • v${version.version || version.id}`,
+                            value: String(version.id),
+                        }))}
+                        isLoading={isLoadingVersions}
+                        isEmpty={!isLoadingVersions && aiModelVersions.length === 0}
+                        entityName="AI Model Version"
+                        modalForm={AiModelVersionModalForm}
+                        placeholder="Select a current version..."
+                        triggerClassName={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("current_version_id") ? "border-red-500" : "border-[#D0D5DD]"
+                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}
+                        error={hasError("current_version_id")}
+                    />
+                    {hasError("current_version_id") && (
+                        <p className="text-sm text-red-500">{getError("current_version_id")}</p>
                     )}
                 </div>
             </div>

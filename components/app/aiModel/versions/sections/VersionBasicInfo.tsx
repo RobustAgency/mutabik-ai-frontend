@@ -106,6 +106,25 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="release_date" className="text-sm font-medium text-gray-700 mb-2">
+            Release Date
+          </Label>
+          <Input
+            id="release_date"
+            type="date"
+            value={formData.release_date || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, release_date: e.target.value || null }))}
+            placeholder="YYYY-MM-DD"
+            className="w-full"
+          />
+          {errors.release_date && (
+            <p className="text-xs text-red-600 mt-1">{errors.release_date[0]}</p>
+          )}
+        </div>
+      </div>
+
       <div>
         <Label htmlFor="release_notes" className="text-sm font-medium text-gray-700 mb-2">Release Notes</Label>
         <Textarea

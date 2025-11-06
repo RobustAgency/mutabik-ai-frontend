@@ -44,6 +44,7 @@ export interface FormDataType {
     | "high_risk"
     | "unacceptable_risk"
     | "sector_specific";
+  current_version_id: string | null;
 
   // Ownership & Governance
   ownership_type:

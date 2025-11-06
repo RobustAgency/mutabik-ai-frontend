@@ -28,6 +28,7 @@ const initialFormData: FormDataType = {
     owner_stakeholder_id: null,
     vendor_id: null,
     current_owner: null,
+    current_version_id: null,
 };
 
 interface AiModelModalFormProps {
@@ -58,6 +59,11 @@ const AiModelModalForm: React.FC<AiModelModalFormProps> = ({
             errors.type = ["Model type is required"];
         }
 
+        // Current version is required when operational_status is production
+        if (formData.operational_status === "production" && !formData.current_version_id) {
+            errors.current_version_id = ["Current version is required when operational status is production"];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -78,15 +84,21 @@ const AiModelModalForm: React.FC<AiModelModalFormProps> = ({
                 organizational_role = "",
                 source_organization = "",
                 vendor = "",
+                current_version_id,
                 ...rest
             } = formData as any;
 
-            const createPayload = {
+            const createPayload: any = {
                 ...rest,
                 organizational_role,
                 source_organization,
                 vendor,
             };
+
+            // Only include current_version_id if it's not null
+            if (current_version_id !== null && current_version_id !== undefined) {
+                createPayload.current_version_id = current_version_id;
+            }
 
             const result = await createAiModel(createPayload).unwrap();
 

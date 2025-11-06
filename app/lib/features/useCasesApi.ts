@@ -66,13 +66,24 @@ export const useCasesApi = createApi({
             ]
           : [{ type: "UseCase", id: "LIST" }],
       transformResponse: (response: {
-        data: { data: UseCase[] };
+        data: { data: { data?: UseCase[] } | UseCase[] };
         error?: boolean;
         message?: string;
       }) => {
-        if (response.data?.data) {
+        // Handle paginated response: { data: { data: [...] } }
+        if (response.data?.data && Array.isArray(response.data.data)) {
           return response.data.data;
         }
+        // Handle nested paginated response: { data: { data: { data: [...] } } }
+        if (
+          response.data?.data &&
+          typeof response.data.data === "object" &&
+          "data" in response.data.data &&
+          Array.isArray((response.data.data as any).data)
+        ) {
+          return (response.data.data as any).data;
+        }
+        // Handle direct array response
         if (Array.isArray(response.data)) {
           return response.data;
         }

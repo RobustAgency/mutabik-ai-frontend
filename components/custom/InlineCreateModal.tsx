@@ -31,7 +31,7 @@ const InlineCreateModal: React.FC<InlineCreateModalProps> = ({
 }) => {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-3xlxl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] overflow-y-auto max-w-3xl!">
                 <DialogHeader>
                     <DialogTitle className="text-lg font-semibold text-[#1D2939]">
                         {title}

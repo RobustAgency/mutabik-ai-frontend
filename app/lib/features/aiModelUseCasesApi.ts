@@ -12,17 +12,28 @@ export interface AiModelUseCase {
   relationship_type: string;
   created_at: string;
   updated_at: string;
+  created_by?: string;
+  updated_by?: string | null;
   // Include related data
+  ai_model?: {
+    id: number;
+    name: string;
+    description?: string;
+    primary_category?: string;
+    type?: string;
+  };
   use_case?: {
     id: number;
-    title: string;
+    name?: string;
+    title?: string;
     description?: string;
     status: string;
     business_domain: string;
   };
   ai_model_version?: {
     id: number;
-    version: string;
+    version_number?: string;
+    version?: string;
   };
 }
 
@@ -32,6 +43,8 @@ export interface CreateAiModelUseCaseData {
   use_case_id: number;
   ai_model_version_id: number;
   relationship_type: string;
+  created_by?: string;
+  updated_by?: string | null;
 }
 
 // Type for AI Model Use Cases response
@@ -120,11 +133,11 @@ export const aiModelUseCasesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiModelUseCase"],
   endpoints: (builder) => ({
-    getAiModelUseCases: builder.query<AiModelUseCase[], number>({
+    getAiModelUseCases: builder.query<AiModelUseCase[], number | void>({
       query: (aiModelId) => ({
         url: "/ai-model-use-cases",
         method: "GET",
-        params: { ai_model_id: aiModelId },
+        params: aiModelId ? { ai_model_id: aiModelId } : {},
       }),
       providesTags: (result, error, aiModelId) =>
         result
@@ -133,9 +146,9 @@ export const aiModelUseCasesApi = createApi({
                 type: "AiModelUseCase" as const,
                 id,
               })),
-              { type: "AiModelUseCase", id: `LIST-${aiModelId}` },
+              { type: "AiModelUseCase", id: aiModelId ? `LIST-${aiModelId}` : "LIST" },
             ]
-          : [{ type: "AiModelUseCase", id: `LIST-${aiModelId}` }],
+          : [{ type: "AiModelUseCase", id: aiModelId ? `LIST-${aiModelId}` : "LIST" }],
       transformResponse: (response: AiModelUseCasesResponse) => {
         if (response.data?.data) {
           return response.data.data;
