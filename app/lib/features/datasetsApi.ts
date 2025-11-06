@@ -46,14 +46,14 @@ export interface DatasetFilters {
 
 export interface CreateDatasetData {
   name: string;
-  source_ids: string[];
+  source_ids: number[];
   purpose: string;
   schema_summary?: string;
   sensitivity: string;
   contains_pii: string;
-  data_subject_categories: string[];
+  data_subject_categories?: string[];
   controller_role: string;
-  lawful_basis?: string;
+  lawful_basis: string;
   lawful_basis_detail?: string;
   consent_required: boolean;
   consent_coverage_pct?: number;
@@ -197,8 +197,7 @@ export const datasetsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create dataset";
+              mutationError?.error?.data?.message || "Failed to create dataset";
             toast.error(errorMessage);
           }
         }
@@ -226,8 +225,7 @@ export const datasetsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update dataset";
+              mutationError?.error?.data?.message || "Failed to update dataset";
             toast.error(errorMessage);
           }
         }
@@ -250,8 +248,7 @@ export const datasetsApi = createApi({
         } catch (error) {
           const mutationError = error as MutationError;
           const errorMessage =
-            mutationError?.error?.data?.message ||
-            "Failed to delete dataset";
+            mutationError?.error?.data?.message || "Failed to delete dataset";
           toast.error(errorMessage);
         }
       },
@@ -266,4 +263,3 @@ export const {
   useUpdateDatasetMutation,
   useDeleteDatasetMutation,
 } = datasetsApi;
-

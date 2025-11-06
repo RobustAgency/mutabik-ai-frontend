@@ -54,6 +54,10 @@ const DataSourceModalForm: React.FC<DataSourceModalFormProps> = ({
             errors.owner_team = ["Owner team is required"];
         }
 
+        if (!formData.data_domains || formData.data_domains.length === 0) {
+            errors.data_domains = ["At least one data domain is required"];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

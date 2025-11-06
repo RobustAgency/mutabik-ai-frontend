@@ -64,7 +64,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">Name <span className="text-red-500">*</span></Label>
             <Input
               id="name"
               value={formData.name}
@@ -78,7 +78,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="system_type">System Type *</Label>
+            <Label htmlFor="system_type">System Type <span className="text-red-500">*</span></Label>
             <Select
               key={`system_type-${formData.system_type || 'empty'}`}
               value={formData.system_type || ""}
@@ -103,7 +103,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="owner_team">Owner Team *</Label>
+            <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
             <Input
               id="owner_team"
               value={formData.owner_team}
@@ -117,7 +117,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="access_method">Access Method *</Label>
+            <Label htmlFor="access_method">Access Method <span className="text-red-500">*</span></Label>
             <Select
               key={`access_method-${formData.access_method || 'empty'}`}
               value={formData.access_method || ""}
@@ -150,9 +150,12 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="data_domains_picker">Select data domain</Label>
+            <Label htmlFor="data_domains_picker">Select data domain <span className="text-red-500">*</span></Label>
             <Select onValueChange={(value) => handleDataDomainAdd(value)}>
-              <SelectTrigger id="data_domains_picker" className="w-full">
+              <SelectTrigger
+                id="data_domains_picker"
+                className={`w-full ${errors.data_domains ? "border-destructive" : ""}`}
+              >
                 <SelectValue placeholder="Choose a data domain" />
               </SelectTrigger>
               <SelectContent>
@@ -163,6 +166,9 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errors.data_domains && (
+              <p className="text-sm text-destructive">{errors.data_domains[0]}</p>
+            )}
             <p className="text-sm text-muted-foreground">Selected domains appear below. Click x to remove.</p>
           </div>
         </div>
@@ -191,7 +197,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 w-full">
-            <Label htmlFor="residency">Residency *</Label>
+            <Label htmlFor="residency">Residency <span className="text-red-500">*</span></Label>
             <Select
               key={`residency-${formData.residency || 'empty'}`}
               value={formData.residency || ""}
@@ -219,7 +225,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="classification">Classification *</Label>
+            <Label htmlFor="classification">Classification <span className="text-red-500">*</span></Label>
             <Select
               key={`classification-${formData.classification || 'empty'}`}
               value={formData.classification || ""}
@@ -248,7 +254,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 w-full">
-            <Label htmlFor="hosting_model">Hosting Model *</Label>
+            <Label htmlFor="hosting_model">Hosting Model <span className="text-red-500">*</span></Label>
             <Select
               key={`hosting_model-${formData.hosting_model || 'empty'}`}
               value={formData.hosting_model || ""}
@@ -269,7 +275,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="service_model">Service Model *</Label>
+            <Label htmlFor="service_model">Service Model <span className="text-red-500">*</span></Label>
             <Select
               key={`service_model-${formData.service_model || 'empty'}`}
               value={formData.service_model || ""}
@@ -291,7 +297,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="cloud_provider">Cloud Provider *</Label>
+            <Label htmlFor="cloud_provider">Cloud Provider <span className="text-red-500">*</span></Label>
             <Select
               key={`cloud_provider-${formData.cloud_provider || 'empty'}`}
               value={formData.cloud_provider || ""}
