@@ -36,6 +36,12 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
     return snapshots.filter((s: any) => String(s.dataset_id) === String(formData.dataset_id));
   }, [snapshots, formData.dataset_id]);
 
+  // Determine if snapshot is required based on role
+  const isSnapshotRequired = React.useMemo(() => {
+    const trainRoles = ["train", "validation", "test", "eval_benchmark"];
+    return trainRoles.includes(formData.role);
+  }, [formData.role]);
+
   return (
     <div className="space-y-6 pt-6">
       {/* Link Identification */}
@@ -76,7 +82,9 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_snapshot_id">Snapshot * (Required for AC-05)</Label>
+            <Label htmlFor="dataset_snapshot_id">
+              Snapshot {isSnapshotRequired ? <span className="text-red-500">*</span> : <span className="text-gray-500">(optional)</span>}
+            </Label>
             <SelectWithInlineCreate
               value={formData.dataset_snapshot_id || undefined}
               onValueChange={(value) => handleChange("dataset_snapshot_id", value)}
