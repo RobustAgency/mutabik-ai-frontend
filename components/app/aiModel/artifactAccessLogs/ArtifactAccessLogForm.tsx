@@ -34,19 +34,14 @@ interface ArtifactAccessLogFormProps {
 const actionOptions = [
     { value: AccessAction.READ, label: "Read" },
     { value: AccessAction.WRITE, label: "Write" },
-    { value: AccessAction.DOWNLOAD, label: "Download" },
     { value: AccessAction.DELETE, label: "Delete" },
-    { value: AccessAction.UPDATE, label: "Update" },
-    { value: AccessAction.EXECUTE, label: "Execute" },
 ];
 
 const contextOptions = [
     { value: AccessContext.API, label: "API" },
-    { value: AccessContext.WEB, label: "Web" },
-    { value: AccessContext.CLI, label: "CLI" },
-    { value: AccessContext.BATCH, label: "Batch" },
-    { value: AccessContext.SCHEDULED, label: "Scheduled" },
-    { value: AccessContext.MANUAL, label: "Manual" },
+    { value: AccessContext.NOTEBOOK, label: "Notebook" },
+    { value: AccessContext.CONSOLE, label: "Console" },
+    { value: AccessContext.CI_CD, label: "CI/CD" },
 ];
 
 export default function ArtifactAccessLogForm({
@@ -55,7 +50,7 @@ export default function ArtifactAccessLogForm({
 }: ArtifactAccessLogFormProps) {
     const { data: artifactsData, isLoading: isLoadingArtifacts } = useGetAiModelArtifactsQuery({ per_page: 100 });
     const { data: stakeholders = [], isLoading: isLoadingStakeholders } = useGetStakeholdersQuery();
-    
+
     const artifacts = artifactsData?.data || [];
 
     const [formData, setFormData] = useState<{
@@ -72,7 +67,7 @@ export default function ArtifactAccessLogForm({
         accessor_stakeholder_id: "",
         action: "",
         context: "",
-        ts: new Date().toISOString().slice(0, 16), // Format: YYYY-MM-DDTHH:mm
+        ts: "",
         ip_or_agent: "",
         request_id: "",
         reason: "",
@@ -100,12 +95,6 @@ export default function ArtifactAccessLogForm({
 
         if (!formData.ts) {
             next.ts = ["Timestamp is required"];
-        } else {
-            // Validate timestamp format
-            const timestamp = new Date(formData.ts);
-            if (isNaN(timestamp.getTime())) {
-                next.ts = ["Please enter a valid timestamp"];
-            }
         }
 
         if (formData.ip_or_agent && formData.ip_or_agent.length > 255) {
@@ -128,15 +117,12 @@ export default function ArtifactAccessLogForm({
         e.preventDefault();
         if (!validate()) return;
 
-        // Convert timestamp to ISO string with timezone
-        const timestamp = new Date(formData.ts).toISOString();
-
         await onSubmit({
             artifact_id: parseInt(formData.artifact_id, 10),
             accessor_stakeholder_id: parseInt(formData.accessor_stakeholder_id, 10),
             action: formData.action,
             context: formData.context,
-            ts: timestamp,
+            ts: formData.ts,
             ip_or_agent: formData.ip_or_agent || null,
             request_id: formData.request_id || null,
             reason: formData.reason || null,
@@ -326,7 +312,7 @@ export default function ArtifactAccessLogForm({
                                 <Label htmlFor="ts">
                                     Timestamp <span className="text-red-500">*</span>
                                 </Label>
-                                <Input
+                                {/* <Input
                                     id="ts"
                                     type="datetime-local"
                                     value={formData.ts}
@@ -339,7 +325,28 @@ export default function ArtifactAccessLogForm({
                                         });
                                     }}
                                     className={errors.ts ? "border-red-500" : ""}
-                                />
+                                /> */}
+                                <Select
+                                    key={`ts-${formData.ts || 'empty'}`}
+                                    value={formData.ts || ""}
+                                    onValueChange={(value) => setFormData((prev) => ({ ...prev, ts: value }))}
+                                >
+                                    <SelectTrigger className={errors.ts ? "border-destructive w-full" : "w-full"}>
+                                        <SelectValue placeholder="Select timestamp" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="UTC">UTC</SelectItem>
+                                        <SelectItem value="America/New_York">America/New_York (EST)</SelectItem>
+                                        <SelectItem value="America/Chicago">America/Chicago (CST)</SelectItem>
+                                        <SelectItem value="America/Denver">America/Denver (MST)</SelectItem>
+                                        <SelectItem value="America/Los_Angeles">America/Los_Angeles (PST)</SelectItem>
+                                        <SelectItem value="Europe/London">Europe/London (GMT)</SelectItem>
+                                        <SelectItem value="Europe/Paris">Europe/Paris (CET)</SelectItem>
+                                        <SelectItem value="Asia/Tokyo">Asia/Tokyo (JST)</SelectItem>
+                                        <SelectItem value="Asia/Shanghai">Asia/Shanghai (CST)</SelectItem>
+                                        <SelectItem value="Australia/Sydney">Australia/Sydney (AEST)</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 {errors.ts && (
                                     <p className="text-sm text-red-500">{errors.ts[0]}</p>
                                 )}

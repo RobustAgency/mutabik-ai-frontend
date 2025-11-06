@@ -1,19 +1,14 @@
 export enum AccessAction {
   READ = "read",
   WRITE = "write",
-  DOWNLOAD = "download",
   DELETE = "delete",
-  UPDATE = "update",
-  EXECUTE = "execute",
 }
 
 export enum AccessContext {
+  CI_CD = "ci_cd",
+  NOTEBOOK = "notebook",
+  CONSOLE = "console",
   API = "api",
-  WEB = "web",
-  CLI = "cli",
-  BATCH = "batch",
-  SCHEDULED = "scheduled",
-  MANUAL = "manual",
 }
 
 export interface ArtifactAccessLog {
@@ -82,4 +77,3 @@ export interface PaginatedArtifactAccessLogsResponse {
   from: number;
   to: number;
 }
-

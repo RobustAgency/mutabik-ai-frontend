@@ -364,8 +364,9 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="consent_coverage_pct">Consent Coverage % (0-100)</Label>
+                                <Label htmlFor="consent_coverage_pct">Consent Coverage % (0-100) <span className="text-red-500">*</span></Label>
                                 <Input
+                                    required
                                     id="consent_coverage_pct"
                                     type="number"
                                     min="0"
@@ -381,8 +382,9 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="consent_source_ref">Consent Source Reference</Label>
+                                <Label htmlFor="consent_source_ref">Consent Source Reference <span className="text-red-500">*</span></Label>
                                 <Input
+                                    required
                                     id="consent_source_ref"
                                     value={formData.consent_source_ref || ""}
                                     onChange={(e) => handleInputChange("consent_source_ref", e.target.value)}
