@@ -21,7 +21,7 @@ export interface DatasetSnapshot {
 }
 
 export interface CreateDatasetSnapshotData {
-  dataset_id: string;
+  dataset_id: number;
   version_tag: string;
   time_range_start: string;
   time_range_end: string;
@@ -101,7 +101,10 @@ export const datasetSnapshotsApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "DatasetSnapshot" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "DatasetSnapshot" as const,
+                id,
+              })),
               { type: "DatasetSnapshot", id: "LIST" },
             ]
           : [{ type: "DatasetSnapshot", id: "LIST" }],
@@ -123,9 +126,7 @@ export const datasetSnapshotsApi = createApi({
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "DatasetSnapshot", id }],
-      transformResponse: (response: {
-        data: DatasetSnapshot;
-      }) => {
+      transformResponse: (response: { data: DatasetSnapshot }) => {
         if (response.data) {
           return response.data;
         }
@@ -133,7 +134,10 @@ export const datasetSnapshotsApi = createApi({
       },
     }),
 
-    createDatasetSnapshot: builder.mutation<DatasetSnapshot, CreateDatasetSnapshotData>({
+    createDatasetSnapshot: builder.mutation<
+      DatasetSnapshot,
+      CreateDatasetSnapshotData
+    >({
       query: (data) => ({
         url: "/dataset-snapshots",
         method: "POST",
@@ -217,4 +221,3 @@ export const {
   useUpdateDatasetSnapshotMutation,
   useDeleteDatasetSnapshotMutation,
 } = datasetSnapshotsApi;
-

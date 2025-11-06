@@ -21,7 +21,7 @@ export interface AiModelArtifact {
   created_by?: string | null; // Creator/uploader email
   notes?: string | null; // Text (0-2000 chars)
   updated_at?: string;
-  
+
   // Related data
   ai_model_version?: {
     id: number;
@@ -35,7 +35,7 @@ export interface AiModelArtifact {
 
 export interface CreateAiModelArtifactData {
   ai_model_version_id: number | string; // Required, exists in ai_model_versions
-  url: string; // Required, url, max:2048
+  uri: string; // Required, url, max:2048
   checksum: string; // Required, string, max:255
   size_bytes: number; // Required, integer, min:0
   artifact_type: ArtifactType | string; // Required, string, in ArtifactType enum
@@ -52,4 +52,3 @@ export interface PaginatedArtifactsResponse {
   from: number;
   to: number;
 }
-

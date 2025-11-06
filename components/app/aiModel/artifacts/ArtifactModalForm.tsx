@@ -47,7 +47,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 
     const [formData, setFormData] = useState<{
         ai_model_version_id: string;
-        url: string;
+        uri: string;
         checksum: string;
         size_bytes: string;
         artifact_type: string;
@@ -55,7 +55,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
         created_by: string;
     }>({
         ai_model_version_id: "",
-        url: "",
+        uri: "",
         checksum: "",
         size_bytes: "",
         artifact_type: "",
@@ -72,16 +72,16 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
             errors.ai_model_version_id = ["Version is required"];
         }
 
-        if (!formData.url) {
-            errors.url = ["URL is required"];
+        if (!formData.uri) {
+            errors.uri = ["URI is required"];
         } else {
             try {
-                new URL(formData.url);
+                new URL(formData.uri);
             } catch {
-                errors.url = ["Please enter a valid URL"];
+                errors.uri = ["Please enter a valid URL/URI"];
             }
-            if (formData.url.length > 2048) {
-                errors.url = ["URL must be 2048 characters or less"];
+            if (formData.uri.length > 2048) {
+                errors.uri = ["URI must be 2048 characters or less"];
             }
         }
 
@@ -134,7 +134,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
         try {
             const result = await createAiModelArtifact({
                 ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
-                url: formData.url,
+                uri: formData.uri,
                 checksum: formData.checksum,
                 size_bytes: parseInt(formData.size_bytes, 10),
                 artifact_type: formData.artifact_type,
@@ -258,26 +258,26 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* URL */}
                     <div className="space-y-2">
-                        <Label htmlFor="url">
-                            URL <span className="text-red-500">*</span>
+                        <Label htmlFor="uri">
+                            URI <span className="text-red-500">*</span>
                         </Label>
                         <Input
-                            id="url"
+                            id="uri"
                             type="url"
-                            value={formData.url}
+                            value={formData.uri}
                             onChange={(e) => {
-                                setFormData((prev) => ({ ...prev, url: e.target.value }));
+                                setFormData((prev) => ({ ...prev, uri: e.target.value }));
                                 setValidationErrors((prev) => {
                                     const next = { ...prev };
-                                    delete next.url;
+                                    delete next.uri;
                                     return next;
                                 });
                             }}
                             placeholder="https://example.com/artifact"
-                            className={hasError("url") ? "border-red-500" : ""}
+                            className={hasError("uri") ? "border-red-500" : ""}
                         />
-                        {hasError("url") && (
-                            <p className="text-sm text-red-500">{getError("url")}</p>
+                        {hasError("uri") && (
+                            <p className="text-sm text-red-500">{getError("uri")}</p>
                         )}
                     </div>
 

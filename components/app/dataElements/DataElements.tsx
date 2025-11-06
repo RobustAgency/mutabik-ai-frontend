@@ -8,6 +8,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useGetDataElementsQuery, useDeleteDataElementMutation, DataElement } from "@/app/lib/features/dataElementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import InlineCreateModal from "@/components/custom/InlineCreateModal";
+import AssociateElementWithDatasetModal from "@/components/app/dataElements/map/AssociateElementWithDatasetModal";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
@@ -23,6 +25,8 @@ const DataElements: React.FC = () => {
 
   const [deleteDataElement, { isLoading: isDeleting }] = useDeleteDataElementMutation();
   const { data: dataElements, isLoading } = useGetDataElementsQuery();
+
+  const [associateState, setAssociateState] = React.useState<{ isOpen: boolean; dataElementId: number | null }>({ isOpen: false, dataElementId: null });
 
   const handleEditClick = (e: React.MouseEvent, dataElement: DataElement) => {
     e.stopPropagation();
@@ -116,9 +120,8 @@ const DataElements: React.FC = () => {
       cell: ({ getValue }) => {
         const piiFlag = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {piiFlag}
           </div>
         );
@@ -134,9 +137,8 @@ const DataElements: React.FC = () => {
       cell: ({ getValue }) => {
         const cdeFlag = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {cdeFlag}
           </div>
         );
@@ -165,6 +167,16 @@ const DataElements: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
+              }}
+            >
+              Associate
+            </Button>
             <Button
               variant={"outline"}
               className="text-[#667085]"
@@ -240,6 +252,20 @@ const DataElements: React.FC = () => {
         isLoading={isDeleting}
         loadingText="Deleting..."
       />
+
+      <InlineCreateModal
+        isOpen={associateState.isOpen}
+        onClose={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        onSuccess={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        title="Associate Data Element with Dataset"
+        description="Create a mapping between this canonical element and a dataset column."
+      >
+        <AssociateElementWithDatasetModal
+          dataElementId={Number(associateState.dataElementId || 0)}
+          onClose={() => setAssociateState({ isOpen: false, dataElementId: null })}
+          onSuccess={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        />
+      </InlineCreateModal>
     </>
   );
 };
