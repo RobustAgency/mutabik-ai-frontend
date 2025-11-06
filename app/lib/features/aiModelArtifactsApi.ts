@@ -98,16 +98,21 @@ export const aiModelArtifactsApi = createApi({
       { error: boolean; message: string; data?: any },
       CreateAiModelArtifactData
     >({
-      query: ({ file, artifact_type }) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("artifact_type", artifact_type);
+      query: (data) => {
         return {
           url: "/ai-model-artifacts",
           method: "POST",
-          data: formData,
+          data: {
+            version_id: data.version_id,
+            url: data.url,
+            checksum: data.checksum,
+            size_bytes: data.size_bytes,
+            artifact_type: data.artifact_type,
+            notes: data.notes || null,
+            created_by: data.created_by || null,
+          },
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         };
       },
