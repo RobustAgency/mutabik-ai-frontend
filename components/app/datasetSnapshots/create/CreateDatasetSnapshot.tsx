@@ -32,7 +32,16 @@ const CreateDatasetSnapshot: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: Record<string, string[]> = {};
 
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset ID is required"];
+    // dataset_id can be a number (when selected) or string (when empty)
+    if (typeof formData.dataset_id === 'number') {
+      if (formData.dataset_id <= 0) {
+        errors.dataset_id = ["Dataset ID is required"];
+      }
+    } else {
+      if (!formData.dataset_id?.trim()) {
+        errors.dataset_id = ["Dataset ID is required"];
+      }
+    }
     if (!formData.version_tag?.trim()) errors.version_tag = ["Version tag is required"];
     if (formData.version_tag && formData.version_tag.length > 50) errors.version_tag = ["Max 50 characters"];
     // time ranges optional, but if both provided, enforce ordering

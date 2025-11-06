@@ -56,8 +56,8 @@ export interface CreateDatasetData {
   lawful_basis: string;
   lawful_basis_detail?: string;
   consent_required: boolean;
-  consent_coverage_pct?: number;
-  consent_source_ref?: string;
+  consent_coverage_pct: number;
+  consent_source_ref: string;
   licensing_basis?: string;
   license_type?: string;
   privacy_notice_ref?: string;

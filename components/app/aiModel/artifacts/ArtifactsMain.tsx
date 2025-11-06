@@ -4,13 +4,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataTable } from "@/components/custom/DataTable";
+import { ColumnDef } from "@tanstack/react-table";
 import {
     useGetAiModelArtifactsQuery,
     useDeleteAiModelArtifactMutation,
 } from "@/app/lib/features/aiModelArtifactsApi";
-import { Trash2, ExternalLink } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
+import { AiModelArtifact } from "@/service/app/aiModelArtifacts";
 
 const ArtifactsMain = () => {
     const router = useRouter();
@@ -94,6 +97,121 @@ const ArtifactsMain = () => {
     const artifacts = data?.data || [];
     const totalPages = data?.last_page || 1;
 
+    const columns: ColumnDef<AiModelArtifact>[] = [
+        {
+            accessorKey: "artifact_type",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Type
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+                    {getArtifactTypeLabel(String(getValue()))}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "uri",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    URI
+                </div>
+            ),
+            cell: ({ getValue }) => {
+                const uri = String(getValue() || "");
+                return (
+                    <div className="font-sans text-sm leading-5 tracking-normal text-[#667085] flex items-center gap-2 truncate max-w-[420px]">
+                        <span className="truncate">{uri}</span>
+                        {uri ? (
+                            <a
+                                href={uri}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#175CD3] hover:underline whitespace-nowrap"
+                            >
+                                Open
+                            </a>
+                        ) : null}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: "checksum",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Checksum
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-mono text-sm leading-5 tracking-normal text-[#667085] truncate max-w-[260px]">
+                    {String(getValue() || "-")}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "size_bytes",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Size
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans text-sm leading-5 tracking-normal text-[#667085]">
+                    {formatBytes(getValue() as number | null | undefined)}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "created_at",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Created
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans text-sm leading-5 tracking-normal text-[#667085]">
+                    {formatDate(String(getValue() ?? ""))}
+                </div>
+            ),
+        },
+        {
+            id: "actions",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085] text-right">
+                    Actions
+                </div>
+            ),
+            cell: ({ row }) => (
+                <div className="flex items-center justify-end gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/core-assets/ai-models/artifacts/${row.original.id}`);
+                        }}
+                        className="h-8 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
+                    >
+                        View
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(row.original.id, row.original.uri);
+                        }}
+                        className="h-8 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <>
             <div className="max-w-7xl mx-auto">
@@ -110,168 +228,31 @@ const ArtifactsMain = () => {
                                 New Artifact
                             </Button>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {isLoading ? (
-                                <div className="col-span-full text-sm text-muted-foreground">
-                                    Loading...
-                                </div>
-                            ) : artifacts.length === 0 ? (
-                                <div className="col-span-full text-sm text-muted-foreground">
-                                    No artifacts found
-                                </div>
-                            ) : (
-                                artifacts.map((artifact) => (
-                                    <Card
-                                        key={artifact.id}
-                                        className="rounded-2xl border border-[#E4E7EC] bg-white shadow-sm hover:shadow-md transition-shadow"
-                                    >
-                                        <CardContent className="p-6 flex flex-col gap-4">
-                                            {/* Header with artifact ID and type */}
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="flex-1">
-                                                    <h3 className="text-lg font-semibold text-[#101828] leading-7">
-                                                        {artifact.artifact_id || `Artifact #${artifact.id}`}
-                                                    </h3>
-                                                    <p className="text-sm text-[#667085] mt-1">
-                                                        {getArtifactTypeLabel(artifact.artifact_type)}
-                                                    </p>
-                                                </div>
-                                                <span className="px-2.5 py-0.5 rounded-md bg-[#EFF8FF] text-[#175CD3] text-xs font-medium">
-                                                    {artifact.artifact_type}
-                                                </span>
-                                            </div>
-
-                                            {/* URI */}
-                                            <div className="space-y-1">
-                                                <span className="text-xs text-[#667085]">URI</span>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-sm text-[#475467] leading-5 truncate">
-                                                        {artifact.uri}
-                                                    </p>
-                                                    {artifact.uri && (
-                                                        <a
-                                                            href={artifact.uri}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-[#175CD3] hover:underline"
-                                                        >
-                                                            <ExternalLink className="h-4 w-4" />
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Model Version Info */}
-                                            {artifact.ai_model_version && (
-                                                <div className="space-y-1">
-                                                    <span className="text-xs text-[#667085]">Model Version</span>
-                                                    <p className="text-sm text-[#475467] leading-5">
-                                                        {artifact.ai_model_version.ai_model?.name || "N/A"} • v
-                                                        {artifact.ai_model_version.version || artifact.ai_model_version.id}
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* Metadata */}
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                                <div className="flex flex-col">
-                                                    <span className="text-[#667085] text-xs">Size</span>
-                                                    <span className="text-[#101828] font-medium mt-1">
-                                                        {formatBytes(artifact.size_bytes)}
-                                                    </span>
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-[#667085] text-xs">Created</span>
-                                                    <span className="text-[#101828] font-medium mt-1">
-                                                        {formatDate(artifact.created_at)}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Checksum */}
-                                            {artifact.checksum && (
-                                                <div className="space-y-1">
-                                                    <span className="text-xs text-[#667085]">Checksum</span>
-                                                    <p className="text-sm text-[#475467] leading-5 font-mono truncate">
-                                                        {artifact.checksum}
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* Notes */}
-                                            {artifact.notes && (
-                                                <div className="space-y-1">
-                                                    <span className="text-xs text-[#667085]">Notes</span>
-                                                    <p className="text-sm text-[#475467] leading-5 line-clamp-2">
-                                                        {artifact.notes}
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* Action Buttons */}
-                                            <div className="flex items-center gap-3 pt-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        router.push(
-                                                            `/core-assets/ai-models/artifacts/${artifact.id}`
-                                                        )
-                                                    }
-                                                    className="flex-1 h-10 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
-                                                >
-                                                    View Details
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleDeleteClick(artifact.id, artifact.uri)
-                                                    }
-                                                    className="h-10 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))
-                            )}
-                        </div>
-
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between gap-4 pt-4">
-                                <div className="text-sm text-[#667085]">
-                                    Showing {data?.from || 0} to {data?.to || 0} of {data?.total || 0}{" "}
-                                    artifacts
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                        disabled={page === 1}
-                                        className="h-10 border-[#D0D5DD] text-[#344054]"
-                                    >
-                                        Previous
-                                    </Button>
-                                    <span className="text-sm text-[#344054]">
-                                        Page {page} of {totalPages}
-                                    </span>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={page === totalPages}
-                                        className="h-10 border-[#D0D5DD] text-[#344054]"
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                        <DataTable
+                            columns={columns}
+                            data={artifacts}
+                            variant="projects"
+                            loading={isLoading}
+                            onRowClick={(row) => router.push(`/core-assets/ai-models/artifacts/${row.id}`)}
+                            pagination={
+                                data
+                                    ? {
+                                        page: data.current_page,
+                                        limit: data.per_page,
+                                        total: data.total,
+                                        totalPages: data.last_page,
+                                    }
+                                    : undefined
+                            }
+                            onPageChange={(newPage) => setPage(newPage)}
+                            emptyState={{
+                                title: "No artifacts found",
+                                description: "Get started by creating your first artifact",
+                                action: (
+                                    <Button onClick={() => router.push("/core-assets/ai-models/artifacts/create")}>New Artifact</Button>
+                                ),
+                            }}
+                        />
                     </CardContent>
                 </Card>
             </div>
