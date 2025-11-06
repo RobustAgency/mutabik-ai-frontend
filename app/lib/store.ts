@@ -28,6 +28,7 @@ import { incidentRootCauseAnalysesApi } from "./features/incidentRootCauseAnalys
 import { incidentNotificationsApi } from "./features/incidentNotificationsApi";
 import { correctivePreventiveActionsApi } from "./features/correctivePreventiveActionsApi";
 import { aiAssetsApi } from "./features/aiAssetsApi";
+import { datasetElementMapApi } from "./features/datasetElementMapApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -63,6 +64,7 @@ export const makeStore = () => {
       [correctivePreventiveActionsApi.reducerPath]:
         correctivePreventiveActionsApi.reducer,
       [aiAssetsApi.reducerPath]: aiAssetsApi.reducer,
+      [datasetElementMapApi.reducerPath]: datasetElementMapApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -93,7 +95,8 @@ export const makeStore = () => {
         incidentRootCauseAnalysesApi.middleware,
         incidentNotificationsApi.middleware,
         correctivePreventiveActionsApi.middleware,
-        aiAssetsApi.middleware
+        aiAssetsApi.middleware,
+        datasetElementMapApi.middleware
       ),
   });
 };
