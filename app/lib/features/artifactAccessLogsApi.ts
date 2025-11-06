@@ -3,10 +3,11 @@ import { AxiosError, AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 import { apiClient } from "@/lib/api";
 import type {
-  AiModelArtifact,
-  CreateAiModelArtifactData,
-  PaginatedArtifactsResponse,
-} from "@/service/app/aiModelArtifacts";
+  ArtifactAccessLog,
+  CreateArtifactAccessLogData,
+  ArtifactAccessLogFilters,
+  PaginatedArtifactAccessLogsResponse,
+} from "@/service/app/artifactAccessLogs";
 
 const axiosBaseQuery =
   (): BaseQueryFn<
@@ -40,17 +41,17 @@ const axiosBaseQuery =
     }
   };
 
-export const aiModelArtifactsApi = createApi({
-  reducerPath: "aiModelArtifactsApi",
+export const artifactAccessLogsApi = createApi({
+  reducerPath: "artifactAccessLogsApi",
   baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModelArtifact"],
+  tagTypes: ["ArtifactAccessLog"],
   endpoints: (builder) => ({
-    getAiModelArtifacts: builder.query<
-      PaginatedArtifactsResponse,
-      { per_page?: number; page?: number } | void
+    getArtifactAccessLogs: builder.query<
+      PaginatedArtifactAccessLogsResponse,
+      ArtifactAccessLogFilters | void
     >({
       query: (params = {}) => ({
-        url: "/ai-model-artifacts",
+        url: "/artifact-access-logs",
         method: "GET",
         params,
       }),
@@ -58,14 +59,14 @@ export const aiModelArtifactsApi = createApi({
         result
           ? [
               ...result.data.map(({ id }) => ({
-                type: "AiModelArtifact" as const,
+                type: "ArtifactAccessLog" as const,
                 id,
               })),
-              { type: "AiModelArtifact" as const, id: "LIST" },
+              { type: "ArtifactAccessLog" as const, id: "LIST" },
             ]
-          : [{ type: "AiModelArtifact" as const, id: "LIST" }],
+          : [{ type: "ArtifactAccessLog" as const, id: "LIST" }],
       transformResponse: (response: {
-        data: PaginatedArtifactsResponse;
+        data: PaginatedArtifactAccessLogsResponse;
         error?: boolean;
         message?: string;
       }) => {
@@ -84,77 +85,67 @@ export const aiModelArtifactsApi = createApi({
       },
     }),
 
-    getAiModelArtifact: builder.query<AiModelArtifact, number | string>({
-      query: (id) => ({ url: `/ai-model-artifacts/${id}`, method: "GET" }),
-      providesTags: (_result, _e, id) => [{ type: "AiModelArtifact", id }],
+    getArtifactAccessLog: builder.query<ArtifactAccessLog, number | string>({
+      query: (id) => ({ url: `/artifact-access-logs/${id}`, method: "GET" }),
+      providesTags: (_result, _e, id) => [{ type: "ArtifactAccessLog", id }],
       transformResponse: (response: {
-        data: AiModelArtifact;
+        data: ArtifactAccessLog;
         error?: boolean;
         message?: string;
       }) => response.data,
     }),
 
-    createAiModelArtifact: builder.mutation<
-      { error: boolean; message: string; data?: any },
-      CreateAiModelArtifactData
+    createArtifactAccessLog: builder.mutation<
+      { error: boolean; message: string; data?: ArtifactAccessLog },
+      CreateArtifactAccessLogData
     >({
-      query: (data) => {
-        return {
-          url: "/ai-model-artifacts",
-          method: "POST",
-          data: {
-            ai_model_version_id: data.ai_model_version_id,
-            url: data.url,
-            checksum: data.checksum,
-            size_bytes: data.size_bytes,
-            artifact_type: data.artifact_type,
-            notes: data.notes || null,
-            created_by: data.created_by || null,
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-      },
-      invalidatesTags: [{ type: "AiModelArtifact", id: "LIST" }],
+      query: (data) => ({
+        url: "/artifact-access-logs",
+        method: "POST",
+        data,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: [{ type: "ArtifactAccessLog", id: "LIST" }],
       async onQueryStarted(_, { queryFulfilled }) {
         try {
           const result = await queryFulfilled;
           if (result.data.error) {
-            toast.error(result.data.message || "Failed to create artifact");
+            toast.error(result.data.message || "Failed to create access log");
           } else {
-            toast.success(result.data.message || "Artifact created successfully");
+            toast.success(result.data.message || "Access log created successfully");
           }
         } catch (error: any) {
           if (!error?.error?.data?.errors) {
             toast.error(
-              error?.error?.data?.message || "Failed to create artifact"
+              error?.error?.data?.message || "Failed to create access log"
             );
           }
         }
       },
     }),
 
-    deleteAiModelArtifact: builder.mutation<
+    deleteArtifactAccessLog: builder.mutation<
       { error: boolean; message: string },
       number | string
     >({
       query: (id) => ({
-        url: `/ai-model-artifacts/${id}`,
+        url: `/artifact-access-logs/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "AiModelArtifact", id },
-        { type: "AiModelArtifact", id: "LIST" },
+        { type: "ArtifactAccessLog", id },
+        { type: "ArtifactAccessLog", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
         try {
           await queryFulfilled;
-          toast.success("Artifact deleted successfully");
+          toast.success("Access log deleted successfully");
         } catch (error: any) {
           if (!error?.error?.data?.errors) {
             toast.error(
-              error?.error?.data?.message || "Failed to delete artifact"
+              error?.error?.data?.message || "Failed to delete access log"
             );
           }
         }
@@ -164,9 +155,9 @@ export const aiModelArtifactsApi = createApi({
 });
 
 export const {
-  useGetAiModelArtifactsQuery,
-  useGetAiModelArtifactQuery,
-  useCreateAiModelArtifactMutation,
-  useDeleteAiModelArtifactMutation,
-} = aiModelArtifactsApi;
+  useGetArtifactAccessLogsQuery,
+  useGetArtifactAccessLogQuery,
+  useCreateArtifactAccessLogMutation,
+  useDeleteArtifactAccessLogMutation,
+} = artifactAccessLogsApi;
 

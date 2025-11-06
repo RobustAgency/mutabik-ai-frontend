@@ -34,7 +34,7 @@ export interface AiModelArtifact {
 }
 
 export interface CreateAiModelArtifactData {
-  version_id: number | string; // Required, exists in ai_model_versions
+  ai_model_version_id: number | string; // Required, exists in ai_model_versions
   url: string; // Required, url, max:2048
   checksum: string; // Required, string, max:255
   size_bytes: number; // Required, integer, min:0

@@ -20,6 +20,7 @@ import { consentCoverageApi } from "./features/consentCoverageApi";
 import { pdpProcessingRegisterApi } from "./features/pdpProcessingRegisterApi";
 import { datasetSubjectPopulationApi } from "./features/datasetSubjectPopulationApi";
 import { aiModelArtifactsApi } from "./features/aiModelArtifactsApi";
+import { artifactAccessLogsApi } from "./features/artifactAccessLogsApi";
 import { aiIncidentsApi } from "./features/aiIncidentsApi";
 import { incidentAlertsApi } from "./features/incidentAlertsApi";
 import { incidentActionsApi } from "./features/incidentActionsApi";
@@ -52,6 +53,7 @@ export const makeStore = () => {
       [datasetSubjectPopulationApi.reducerPath]:
         datasetSubjectPopulationApi.reducer,
       [aiModelArtifactsApi.reducerPath]: aiModelArtifactsApi.reducer,
+      [artifactAccessLogsApi.reducerPath]: artifactAccessLogsApi.reducer,
       [aiIncidentsApi.reducerPath]: aiIncidentsApi.reducer,
       [incidentAlertsApi.reducerPath]: incidentAlertsApi.reducer,
       [incidentActionsApi.reducerPath]: incidentActionsApi.reducer,
@@ -84,6 +86,7 @@ export const makeStore = () => {
         pdpProcessingRegisterApi.middleware,
         datasetSubjectPopulationApi.middleware,
         aiModelArtifactsApi.middleware,
+        artifactAccessLogsApi.middleware,
         aiIncidentsApi.middleware,
         incidentAlertsApi.middleware,
         incidentActionsApi.middleware,

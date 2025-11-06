@@ -3,7 +3,6 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -73,7 +72,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 w-full">
-            <Label htmlFor="type">Type *</Label>
+            <Label htmlFor="type">Type <span className="text-red-500">*</span></Label>
             <Select
               key={`type-${formData.type || 'empty'}`}
               value={formData.type || ""}
@@ -97,7 +96,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="display_name">Display Name *</Label>
+            <Label htmlFor="display_name">Display Name <span className="text-red-500">*</span></Label>
             <Input
               id="display_name"
               value={formData.display_name}
@@ -111,7 +110,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="legal_name">Legal Name *</Label>
+            <Label htmlFor="legal_name">Legal Name <span className="text-red-500">*</span></Label>
             <Input
               id="legal_name"
               value={formData.legal_name}
@@ -125,7 +124,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="org_unit">Organization Unit *</Label>
+            <Label htmlFor="org_unit">Organization Unit <span className="text-red-500">*</span></Label>
             <Input
               id="org_unit"
               value={formData.org_unit}
@@ -146,7 +145,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
             <Input
               id="email"
               type="email"
@@ -161,7 +160,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone *</Label>
+            <Label htmlFor="phone">Phone <span className="text-red-500">*</span></Label>
             <Input
               id="phone"
               value={formData.phone}
@@ -205,7 +204,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="classification">Classification *</Label>
+            <Label htmlFor="classification">Classification <span className="text-red-500">*</span></Label>
             <Select
               key={`classification-${formData.classification || 'empty'}`}
               value={formData.classification || ""}
@@ -225,7 +224,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">Country *</Label>
+            <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
             <div className={errors.country ? "border-destructive rounded-md" : ""}>
               <CountryDropdown
                 id="country"
@@ -242,7 +241,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone *</Label>
+            <Label htmlFor="timezone">Timezone <span className="text-red-500">*</span></Label>
             <Select
               key={`timezone-${formData.timezone || 'empty'}`}
               value={formData.timezone || ""}
@@ -277,9 +276,12 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="role_tags_picker">Select role tag</Label>
+            <Label htmlFor="role_tags_picker">Select role tag <span className="text-red-500">*</span></Label>
             <Select onValueChange={(value) => handleRoleTagAdd(value)}>
-              <SelectTrigger id="role_tags_picker" className="w-full">
+              <SelectTrigger
+                id="role_tags_picker"
+                className={`w-full ${errors.role_tags ? "border-destructive" : ""}`}
+              >
                 <SelectValue placeholder="Choose a role tag" />
               </SelectTrigger>
               <SelectContent>
@@ -290,6 +292,9 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errors.role_tags && (
+              <p className="text-sm text-destructive">{errors.role_tags[0]}</p>
+            )}
             <p className="text-sm text-muted-foreground">Selected tags appear below. Click x to remove.</p>
           </div>
         </div>
@@ -315,31 +320,38 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
       {/* Additional Information */}
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Additional Information</h3>
-
-        <div className="space-y-2">
-          <Label htmlFor="external_ref">External Reference</Label>
-          <Input
-            id="external_ref"
-            value={formData.external_ref}
-            onChange={(e) => handleInputChange("external_ref", e.target.value)}
-            placeholder="Enter external reference"
-          />
-          <p className="text-sm text-muted-foreground">
-            Optional external reference or ID
-          </p>
-        </div>
-
-        <div className="space-y-2 w-full md:w-1/2">
-          <Label htmlFor="active">Active</Label>
-          <div className="flex items-center gap-3">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => handleInputChange("active", checked)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="external_ref">External Reference</Label>
+            <Input
+              id="external_ref"
+              value={formData.external_ref}
+              onChange={(e) => handleInputChange("external_ref", e.target.value)}
+              placeholder="Enter external reference"
             />
-            <span className="text-sm text-muted-foreground">
-              {formData.active ? "Active" : "Inactive"}
-            </span>
+            <p className="text-sm text-muted-foreground">
+              Optional external reference or ID
+            </p>
+          </div>
+
+          <div className="space-y-2 w-full">
+            <Label htmlFor="active">Active</Label>
+            <Select
+              key={`active-${formData.active || 'empty'}`}
+              value={formData.active ? "true" : "false"}
+              onValueChange={(value) => handleInputChange("active", value === "true")}
+            >
+              <SelectTrigger className={`w-full ${errors.active ? "border-destructive" : ""}`}>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Active</SelectItem>
+                <SelectItem value="false">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.active && (
+              <p className="text-sm text-destructive">{errors.active[0]}</p>
+            )}
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
     const { aiModelVersions, loading: isLoadingVersions } = useAiModelVersions();
 
     const [formData, setFormData] = useState<{
-        version_id: string;
+        ai_model_version_id: string;
         url: string;
         checksum: string;
         size_bytes: string;
@@ -48,7 +48,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
         notes: string;
         created_by: string;
     }>({
-        version_id: "",
+        ai_model_version_id: "",
         url: "",
         checksum: "",
         size_bytes: "",
@@ -61,8 +61,8 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
     const validate = (): boolean => {
         const next: Record<string, string[]> = {};
 
-        if (!formData.version_id) {
-            next.version_id = ["Version is required"];
+        if (!formData.ai_model_version_id) {
+            next.ai_model_version_id = ["Version is required"];
         }
 
         if (!formData.url) {
@@ -120,7 +120,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
         if (!validate()) return;
 
         await onSubmit({
-            version_id: parseInt(formData.version_id, 10),
+            ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
             url: formData.url,
             checksum: formData.checksum,
             size_bytes: parseInt(formData.size_bytes, 10),
@@ -184,12 +184,12 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                     Model Version <span className="text-red-500">*</span>
                                 </Label>
                                 <SelectWithInlineCreate
-                                    value={formData.version_id}
+                                    value={formData.ai_model_version_id}
                                     onValueChange={(value) => {
-                                        setFormData((prev) => ({ ...prev, version_id: value }));
+                                        setFormData((prev) => ({ ...prev, ai_model_version_id: value }));
                                         setErrors((prev) => {
                                             const next = { ...prev };
-                                            delete next.version_id;
+                                            delete next.ai_model_version_id;
                                             return next;
                                         });
                                     }}
@@ -203,11 +203,11 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                     entityName="AI Model Version"
                                     modalForm={AiModelVersionModalForm}
                                     placeholder="Select a model version..."
-                                    triggerClassName={`w-full ${errors.version_id ? "border-red-500" : ""}`}
-                                    error={!!errors.version_id}
+                                    triggerClassName={`w-full ${errors.ai_model_version_id ? "border-red-500" : ""}`}
+                                    error={!!errors.ai_model_version_id}
                                 />
-                                {errors.version_id && (
-                                    <p className="text-sm text-red-500">{errors.version_id[0]}</p>
+                                {errors.ai_model_version_id && (
+                                    <p className="text-sm text-red-500">{errors.ai_model_version_id[0]}</p>
                                 )}
                             </div>
 
