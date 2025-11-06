@@ -115,13 +115,19 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
         // Technical characteristics validation
         if (!formData.architecture_type?.trim()) {
-            errors.architecture_type = ["Architecture type is required"];
-        }
-        if (formData.model_file_size_gb === null || formData.model_file_size_gb < 0) {
-            errors.model_file_size_gb = ["Model file size is required and must be >= 0"];
-        }
-        if (!formData.complexity_level) {
-            errors.complexity_level = ["Complexity level is required"];
+            if (!formData.architecture_type || !formData.architecture_type.trim()) {
+                errors.architecture_type = ["Architecture type is required"];
+            }
+            if (
+                formData.model_file_size_gb === undefined ||
+                formData.model_file_size_gb === null ||
+                formData.model_file_size_gb < 0
+            ) {
+                errors.model_file_size_gb = ["Model file size is required and must be >= 0"];
+            }
+            if (!formData.complexity_level) {
+                errors.complexity_level = ["Complexity level is required"];
+            }
         }
 
         // Deployment / lifecycle / compliance validation
