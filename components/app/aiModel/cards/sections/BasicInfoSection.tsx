@@ -52,7 +52,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label>Model Version</Label>
+                    <Label>Model Version <span className="text-red-500">*</span></Label>
                     <SelectWithInlineCreate
                         value={String(formData.version_id ?? "")}
                         onValueChange={(v) => setFormData({ version_id: v })}
@@ -66,18 +66,30 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                         entityName="Model Version"
                         modalForm={AiModelVersionModalForm}
                         placeholder="Select version"
+                        error={hasError("version_id")}
                     />
+                    {hasError("version_id") && (
+                        <p className="text-sm text-red-500">{getError("version_id")}</p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
-                    <Label>Card Title</Label>
-                    <Input value={formData.title || ""} onChange={(e) => setFormData({ title: e.target.value })} placeholder="Title" />
+                    <Label>Card Title <span className="text-red-500">*</span></Label>
+                    <Input
+                        value={formData.title || ""}
+                        onChange={(e) => setFormData({ title: e.target.value })}
+                        placeholder="Title (min 10 characters)"
+                        className={hasError("title") ? "border-red-500" : ""}
+                    />
+                    {hasError("title") && (
+                        <p className="text-sm text-red-500">{getError("title")}</p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
-                    <Label>Creator Role</Label>
+                    <Label>Creator Role <span className="text-red-500">*</span></Label>
                     <Select value={formData.creator_role || ""} onValueChange={(v) => setFormData({ creator_role: v })}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={hasError("creator_role") ? "border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select role" />
                         </SelectTrigger>
                         <SelectContent>
@@ -86,12 +98,15 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                             ))}
                         </SelectContent>
                     </Select>
+                    {hasError("creator_role") && (
+                        <p className="text-sm text-red-500">{getError("creator_role")}</p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
-                    <Label>Card Format</Label>
+                    <Label>Card Format <span className="text-red-500">*</span></Label>
                     <Select value={formData.format || ""} onValueChange={(v) => setFormData({ format: v })}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={hasError("format") ? "border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select format" />
                         </SelectTrigger>
                         <SelectContent>
@@ -100,6 +115,9 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                             ))}
                         </SelectContent>
                     </Select>
+                    {hasError("format") && (
+                        <p className="text-sm text-red-500">{getError("format")}</p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
@@ -131,8 +149,16 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                 </div>
 
                 <div className="space-y-2">
-                    <Label>Model Overview</Label>
-                    <Textarea value={formData.model_overview || ""} onChange={(e) => setFormData({ model_overview: e.target.value })} placeholder="Enter description..." />
+                    <Label>Model Overview <span className="text-red-500">*</span></Label>
+                    <Textarea
+                        value={formData.model_overview || ""}
+                        onChange={(e) => setFormData({ model_overview: e.target.value })}
+                        placeholder="Enter description..."
+                        className={hasError("model_overview") ? "border-red-500" : ""}
+                    />
+                    {hasError("model_overview") && (
+                        <p className="text-sm text-red-500">{getError("model_overview")}</p>
+                    )}
                 </div>
             </div>
         </div>

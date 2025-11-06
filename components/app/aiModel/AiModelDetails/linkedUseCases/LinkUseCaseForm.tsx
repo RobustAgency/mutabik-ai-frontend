@@ -2,25 +2,50 @@ import { Button } from '@/components/ui/button'
 import { DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import React, { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { useGetAiModelsQuery } from '@/app/lib/features/aiModelsApi'
 import { useGetAiModelVersionsQuery } from '@/app/lib/features/aiModelVersionsApi'
 import { useGetUseCasesQuery } from '@/app/lib/features/useCasesApi'
 import { useCreateAiModelUseCaseMutation } from '@/app/lib/features/aiModelUseCasesApi'
+import SelectWithInlineCreate from '@/components/custom/SelectWithInlineCreate'
+import UseCaseModalForm from '@/components/app/useCases/create/UseCaseModalForm'
+import AiModelVersionModalForm from '@/components/app/aiModel/versions/AiModelVersionModalForm'
+import AiModelModalForm from '@/components/app/aiModel/create/AiModelModalForm'
+import { useRouter } from 'next/navigation'
 
 interface LinkUseCaseFormProps {
-    aiModelId: number
+    aiModelId?: number // Make optional since we'll select it in the form
     onSuccess?: () => void
 }
 
 const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess }) => {
+    const router = useRouter()
     const [formData, setFormData] = useState({
+        ai_model_id: aiModelId ? String(aiModelId) : '',
         ai_model_version_id: '',
         use_case_id: '',
-        relationship_type: 'primary'
+        relationship_type: 'primary',
+        created_by: '',
+        updated_by: null as string | null
     })
+    const [touched, setTouched] = useState({
+        ai_model_id: false,
+        use_case_id: false,
+        created_by: false
+    })
+    const [submitAttempted, setSubmitAttempted] = useState(false)
 
-    // Fetch AI model versions
-    const { data: versions = [], isLoading: versionsLoading } = useGetAiModelVersionsQuery({ ai_model_id: aiModelId })
+    // Fetch AI models
+    const { data: aiModels = [], isLoading: aiModelsLoading } = useGetAiModelsQuery()
+
+    // Fetch AI model versions - only when ai_model_id is selected
+    const selectedModelId = formData.ai_model_id ? parseInt(formData.ai_model_id) : undefined
+    const { data: versions = [], isLoading: versionsLoading } = useGetAiModelVersionsQuery(
+        selectedModelId ? { ai_model_id: selectedModelId } : undefined,
+        { skip: !selectedModelId }
+    )
 
     // Fetch use cases
     const { data: useCases = [], isLoading: useCasesLoading } = useGetUseCasesQuery()
@@ -28,134 +53,164 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     // Create mutation
     const [createLink, { isLoading: isCreating }] = useCreateAiModelUseCaseMutation()
 
+    // Clear ai_model_version_id when ai_model_id changes
+    useEffect(() => {
+        if (formData.ai_model_id) {
+            setFormData(prev => ({
+                ...prev,
+                ai_model_version_id: '' // Clear version when model changes
+            }))
+        }
+    }, [formData.ai_model_id])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setSubmitAttempted(true)
+
+        // Mark all fields as touched
+        setTouched({
+            ai_model_id: true,
+            use_case_id: true,
+            created_by: true
+        })
 
         // Check for valid selections (not loading or empty state values)
-        if (!formData.ai_model_version_id ||
+        if (!formData.ai_model_id ||
             !formData.use_case_id ||
-            formData.ai_model_version_id === 'loading' ||
-            formData.ai_model_version_id === 'no-versions' ||
+            !formData.created_by?.trim() ||
+            formData.ai_model_id === 'loading' ||
             formData.use_case_id === 'loading' ||
             formData.use_case_id === 'no-use-cases') {
             return
         }
 
         try {
-            await createLink({
-                ai_model_id: aiModelId,
-                ai_model_version_id: parseInt(formData.ai_model_version_id),
+            // Build payload - all required fields from form
+            const payload: any = {
+                ai_model_id: parseInt(formData.ai_model_id),
                 use_case_id: parseInt(formData.use_case_id),
                 relationship_type: formData.relationship_type
-            }).unwrap()
+            }
 
-            // Reset form
-            setFormData({
-                ai_model_version_id: '',
-                use_case_id: '',
-                relationship_type: 'primary'
-            })
+            // Only include ai_model_version_id if it's provided (it's nullable)
+            if (formData.ai_model_version_id &&
+                formData.ai_model_version_id !== 'loading' &&
+                formData.ai_model_version_id !== 'no-versions' &&
+                formData.ai_model_version_id.trim() !== '') {
+                payload.ai_model_version_id = parseInt(formData.ai_model_version_id)
+            }
 
+            // Only include created_by if it's provided
+            if (formData.created_by?.trim()) {
+                payload.created_by = formData.created_by.trim()
+            }
+
+            // Only include updated_by if it's provided
+            if (formData.updated_by?.trim()) {
+                payload.updated_by = formData.updated_by.trim()
+            }
+
+            await createLink(payload).unwrap()
+
+            router.push(`/core-assets/ai-models/link-use-case`)
             onSuccess?.()
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to link use case:', error)
+            toast.error(error?.data?.message || 'Failed to link use case. Please try again.')
         }
     }
 
-    const handleChange = (field: string, value: string) => {
+    const handleChange = (field: string, value: string | null) => {
         setFormData(prev => ({
             ...prev,
             [field]: value
         }))
+        // Mark field as touched when user interacts
+        if (field === 'ai_model_id' || field === 'use_case_id' || field === 'created_by') {
+            setTouched(prev => ({
+                ...prev,
+                [field]: true
+            }))
+        }
     }
+
+    // Prepare AI model options for SelectWithInlineCreate
+    const aiModelOptions = aiModels.map((model) => ({
+        id: model.id,
+        label: `${model.name} (${model.primary_category?.replace('_', ' ') ?? 'N/A'})`,
+        value: String(model.id),
+    }))
+
+    // Prepare version options for SelectWithInlineCreate
+    const versionOptions = versions.map((version: any) => ({
+        id: version.id,
+        label: `${version.ai_model?.name ?? "Model"} • v${version.version_number ?? version.version ?? version.id}`,
+        value: String(version.id),
+    }))
+
+    // Prepare use case options for SelectWithInlineCreate
+    const useCaseOptions = useCases.map((useCase: any) => ({
+        id: useCase.id,
+        label: useCase.name || useCase.title || `Use Case ${useCase.id}`,
+        value: String(useCase.id),
+    }))
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="space-y-2">
-                <Label htmlFor="model-version" className="text-sm font-medium">
-                    Choose model version
+                <Label htmlFor="ai-model" className="text-sm font-medium">
+                    Select AI Model <span className="text-red-500">*</span>
                 </Label>
-                <Select
-                    value={formData.ai_model_version_id}
-                    onValueChange={(value) => handleChange('ai_model_version_id', value)}
-                    disabled={versionsLoading}
-                    required
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select model version" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {versionsLoading ? (
-                            <SelectItem value="loading" disabled>
-                                Loading versions...
-                            </SelectItem>
-                        ) : versions.length === 0 ? (
-                            <SelectItem value="no-versions" disabled>
-                                No model versions available
-                            </SelectItem>
-                        ) : (
-                            versions.map((version) => (
-                                <SelectItem key={version.id} value={version.id.toString()}>
-                                    {version.version}
-                                </SelectItem>
-                            ))
-                        )}
-                    </SelectContent>
-                </Select>
-                {versionsLoading && (
-                    <p className="text-sm text-muted-foreground">Loading versions...</p>
-                )}
-                {!versionsLoading && versions.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
-                        No model versions found. Please create a version first.
-                    </p>
-                )}
+                <SelectWithInlineCreate
+                    value={String(formData.ai_model_id ?? "")}
+                    onValueChange={(v) => handleChange('ai_model_id', v)}
+                    options={aiModelOptions}
+                    isLoading={aiModelsLoading}
+                    isEmpty={!aiModelsLoading && aiModels.length === 0}
+                    entityName="AI Model"
+                    modalForm={AiModelModalForm}
+                    placeholder="Select AI model"
+                    error={submitAttempted && touched.ai_model_id && !formData.ai_model_id && formData.ai_model_id !== 'loading'}
+                />
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="use-case" className="text-sm font-medium">
-                    Select use case
+                    Select Use Case <span className="text-red-500">*</span>
                 </Label>
-                <Select
-                    value={formData.use_case_id}
-                    onValueChange={(value) => handleChange('use_case_id', value)}
-                    disabled={useCasesLoading}
-                    required
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select use case" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {useCasesLoading ? (
-                            <SelectItem value="loading" disabled>
-                                Loading use cases...
-                            </SelectItem>
-                        ) : useCases.length === 0 ? (
-                            <SelectItem value="no-use-cases" disabled>
-                                No use cases available
-                            </SelectItem>
-                        ) : (
-                            useCases.map((useCase) => (
-                                <SelectItem key={useCase.id} value={useCase.id.toString()}>
-                                    {useCase.title}
-                                </SelectItem>
-                            ))
-                        )}
-                    </SelectContent>
-                </Select>
-                {useCasesLoading && (
-                    <p className="text-sm text-muted-foreground">Loading use cases...</p>
-                )}
-                {!useCasesLoading && useCases.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
-                        No use cases found. Please create a use case first.
-                    </p>
-                )}
+                <SelectWithInlineCreate
+                    value={String(formData.use_case_id ?? "")}
+                    onValueChange={(v) => handleChange('use_case_id', v)}
+                    options={useCaseOptions}
+                    isLoading={useCasesLoading}
+                    isEmpty={!useCasesLoading && useCases.length === 0}
+                    entityName="Use Case"
+                    modalForm={UseCaseModalForm}
+                    placeholder="Select use case"
+                    error={submitAttempted && touched.use_case_id && !formData.use_case_id && formData.use_case_id !== 'loading' && formData.use_case_id !== 'no-use-cases'}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="model-version" className="text-sm font-medium">
+                    Choose Model Version
+                </Label>
+                <SelectWithInlineCreate
+                    value={String(formData.ai_model_version_id ?? "")}
+                    onValueChange={(v) => handleChange('ai_model_version_id', v || null)}
+                    options={versionOptions}
+                    isLoading={versionsLoading}
+                    isEmpty={!versionsLoading && !!formData.ai_model_id && versions.length === 0}
+                    entityName="Model Version"
+                    modalForm={AiModelVersionModalForm}
+                    placeholder={!formData.ai_model_id ? "Select AI model first" : "Select model version (optional)"}
+                    disabled={!formData.ai_model_id}
+                />
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="relationship-type" className="text-sm font-medium">
-                    Relationship type
+                    Relationship Type <span className="text-red-500">*</span>
                 </Label>
                 <Select
                     value={formData.relationship_type}
@@ -172,16 +227,48 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
                 </Select>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="created-by" className="text-sm font-medium">
+                        Created By <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        id="created-by"
+                        type="email"
+                        value={formData.created_by}
+                        onChange={(e) => handleChange('created_by', e.target.value)}
+                        placeholder="creator@example.com"
+                        required
+                        className={submitAttempted && touched.created_by && !formData.created_by?.trim() ? "border-red-500 focus:border-red-500" : ""}
+                    />
+                    {submitAttempted && touched.created_by && !formData.created_by?.trim() && (
+                        <p className="text-xs text-red-600 mt-1">Created by is required</p>
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="updated-by" className="text-sm font-medium">
+                        Updated By
+                    </Label>
+                    <Input
+                        id="updated-by"
+                        type="email"
+                        value={formData.updated_by || ''}
+                        onChange={(e) => handleChange('updated_by', e.target.value ? e.target.value : null)}
+                        placeholder="updater@example.com"
+                    />
+                </div>
+            </div>
+
             <DialogFooter>
                 <Button
                     className="bg-[#4FD58F] text-white mt-4"
                     type="submit"
                     disabled={
                         isCreating ||
-                        !formData.ai_model_version_id ||
+                        !formData.ai_model_id ||
                         !formData.use_case_id ||
-                        formData.ai_model_version_id === 'loading' ||
-                        formData.ai_model_version_id === 'no-versions' ||
+                        !formData.created_by?.trim() ||
+                        formData.ai_model_id === 'loading' ||
                         formData.use_case_id === 'loading' ||
                         formData.use_case_id === 'no-use-cases'
                     }

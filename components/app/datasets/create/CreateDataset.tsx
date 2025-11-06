@@ -22,7 +22,7 @@ const initialFormData: CreateDatasetData = {
     lawful_basis: "",
     lawful_basis_detail: "",
     consent_required: false,
-    consent_coverage_pct: 0,
+    consent_coverage_pct: undefined,
     consent_source_ref: "",
     licensing_basis: "",
     license_type: "",
@@ -75,12 +75,15 @@ const CreateDataset: React.FC = () => {
             errors.contains_pii = ["Contains PII selection is required"];
         }
 
-        if (formData.data_subject_categories.length === 0) {
-            errors.data_subject_categories = ["At least one data subject category is required"];
-        }
+        // data_subject_categories is optional (nullable) - no validation needed
 
         if (!formData.controller_role?.trim()) {
             errors.controller_role = ["Controller role is required"];
+        }
+
+        // lawful_basis is always required (not conditional on contains_pii)
+        if (!formData.lawful_basis?.trim()) {
+            errors.lawful_basis = ["Lawful basis is required"];
         }
 
         if (!formData.data_structure?.trim()) {
@@ -99,21 +102,20 @@ const CreateDataset: React.FC = () => {
             errors.owner_team = ["Owner team is required"];
         }
 
-        // AC-02: PII datasets must have lawful basis
-        if (formData.contains_pii === "Yes") {
-            if (!formData.lawful_basis?.trim()) {
-                errors.lawful_basis = ["Lawful basis is required for PII datasets (AC-02)"];
+        // If lawful basis is Consent, require consent_required field
+        if (formData.lawful_basis === "Consent") {
+            // consent_required is required (boolean)
+            if (formData.consent_required === undefined || formData.consent_required === null) {
+                errors.consent_required = ["Consent required is required when lawful basis is Consent"];
             }
 
-            // AC-02: If lawful basis is Consent, require consent artifacts
-            if (formData.lawful_basis === "Consent") {
-                if (!formData.consent_coverage_pct || formData.consent_coverage_pct <= 0) {
-                    errors.consent_coverage_pct = ["Consent coverage percentage is required when lawful basis is Consent (AC-02)"];
-                }
-                if (!formData.consent_source_ref?.trim()) {
-                    errors.consent_source_ref = ["Consent source reference is required when lawful basis is Consent (AC-02)"];
+            // consent_coverage_pct is optional, but if provided must be 0-100
+            if (formData.consent_coverage_pct !== undefined && formData.consent_coverage_pct !== null) {
+                if (formData.consent_coverage_pct < 0 || formData.consent_coverage_pct > 100) {
+                    errors.consent_coverage_pct = ["Consent coverage percentage must be between 0 and 100"];
                 }
             }
+            // consent_source_ref is optional - no validation needed
         }
 
         setValidationErrors(errors);
@@ -130,10 +132,10 @@ const CreateDataset: React.FC = () => {
             return;
         }
 
-        // Prepare data: set consent_required based on lawful_basis
+        // Prepare data: convert source_ids to integers
         const dataToSubmit = {
             ...formData,
-            consent_required: formData.lawful_basis === "Consent",
+            source_ids: formData.source_ids.map(id => typeof id === 'string' ? parseInt(id, 10) : id),
         };
 
         try {

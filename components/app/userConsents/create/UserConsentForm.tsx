@@ -35,13 +35,13 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Subject Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="subject_key">Subject Key *</Label>
+            <Label htmlFor="subject_key">Subject Key <span className="text-red-500">*</span></Label>
             <Input id="subject_key" value={formData.subject_key} onChange={(e) => handleChange("subject_key", e.target.value)} placeholder="e.g., subject_abc123" className={errors.subject_key ? "border-red-500" : ""} />
             {errors.subject_key && <p className="text-sm text-red-500">{errors.subject_key[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="subject_realm">Subject Realm *</Label>
+            <Label htmlFor="subject_realm">Subject Realm <span className="text-red-500">*</span></Label>
             <Select key={`subject_realm-${formData.subject_realm || 'empty'}`} value={formData.subject_realm || ""} onValueChange={(value) => handleChange("subject_realm", value)}>
               <SelectTrigger className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select realm" />
@@ -58,7 +58,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="jurisdiction">Jurisdiction *</Label>
+            <Label htmlFor="jurisdiction">Jurisdiction <span className="text-red-500">*</span></Label>
             <Select key={`jurisdiction-${formData.jurisdiction || 'empty'}`} value={formData.jurisdiction || ""} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
@@ -85,7 +85,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Consent Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="consent_status">Consent Status *</Label>
+            <Label htmlFor="consent_status">Consent Status <span className="text-red-500">*</span></Label>
             <Select key={`consent_status-${formData.consent_status || 'empty'}`} value={formData.consent_status || ""} onValueChange={(value) => handleChange("consent_status", value)}>
               <SelectTrigger className={`w-full ${errors.consent_status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select status" />
@@ -102,7 +102,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="legal_basis">Legal Basis *</Label>
+            <Label htmlFor="legal_basis">Legal Basis <span className="text-red-500">*</span></Label>
             <Select key={`legal_basis-${formData.legal_basis || 'empty'}`} value={formData.legal_basis || ""} onValueChange={(value) => handleChange("legal_basis", value)}>
               <SelectTrigger className={`w-full ${errors.legal_basis ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select legal basis" />
@@ -120,7 +120,7 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="consent_purpose">Consent Purpose *</Label>
+            <Label htmlFor="consent_purpose">Consent Purpose <span className="text-red-500">*</span></Label>
             <CustomMultiSelect
               options={consentPurposeOptions}
               value={formData.consent_purpose || []}
@@ -132,19 +132,19 @@ const UserConsentForm: React.FC<UserConsentFormProps> = ({ formData, setFormData
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="source_system">Source System *</Label>
+            <Label htmlFor="source_system">Source System <span className="text-red-500">*</span></Label>
             <Input id="source_system" value={formData.source_system} onChange={(e) => handleChange("source_system", e.target.value)} placeholder="e.g., consent_management_system" className={errors.source_system ? "border-red-500" : ""} />
             {errors.source_system && <p className="text-sm text-red-500">{errors.source_system[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="evidence_ref">Evidence Reference *</Label>
+            <Label htmlFor="evidence_ref">Evidence Reference <span className="text-red-500">*</span></Label>
             <Input id="evidence_ref" value={formData.evidence_ref} onChange={(e) => handleChange("evidence_ref", e.target.value)} placeholder="Link to evidence" className={errors.evidence_ref ? "border-red-500" : ""} />
             {errors.evidence_ref && <p className="text-sm text-red-500">{errors.evidence_ref[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="effective_from">Effective From *</Label>
+            <Label htmlFor="effective_from">Effective From <span className="text-red-500">*</span></Label>
             <Input id="effective_from" type="datetime-local" value={formData.effective_from} onChange={(e) => handleChange("effective_from", e.target.value)} className={errors.effective_from ? "border-red-500" : ""} />
             {errors.effective_from && <p className="text-sm text-red-500">{errors.effective_from[0]}</p>}
           </div>

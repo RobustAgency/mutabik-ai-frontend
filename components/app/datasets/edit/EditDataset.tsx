@@ -54,7 +54,7 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
         if (dataset) {
             setFormData({
                 name: dataset.name,
-                source_ids: dataset.source_ids || [],
+                source_ids: (dataset.source_ids || []).map(id => typeof id === 'string' ? parseInt(id, 10) : id),
                 purpose: dataset.purpose,
                 schema_summary: dataset.schema_summary || "",
                 sensitivity: dataset.sensitivity,
@@ -64,7 +64,7 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
                 lawful_basis: dataset.lawful_basis || "",
                 lawful_basis_detail: dataset.lawful_basis_detail || "",
                 consent_required: dataset.consent_required || false,
-                consent_coverage_pct: dataset.consent_coverage_pct || 0,
+                consent_coverage_pct: dataset.consent_coverage_pct || undefined,
                 consent_source_ref: dataset.consent_source_ref || "",
                 licensing_basis: dataset.licensing_basis || "",
                 license_type: dataset.license_type || "",
@@ -93,23 +93,29 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
         if (formData.source_ids.length === 0) errors.source_ids = ["At least one data source is required"];
         if (!formData.sensitivity?.trim()) errors.sensitivity = ["Sensitivity is required"];
         if (!formData.contains_pii?.trim()) errors.contains_pii = ["Contains PII selection is required"];
-        if (formData.data_subject_categories.length === 0) errors.data_subject_categories = ["At least one data subject category is required"];
+        // data_subject_categories is optional (nullable) - no validation needed
         if (!formData.controller_role?.trim()) errors.controller_role = ["Controller role is required"];
+        // lawful_basis is always required (not conditional on contains_pii)
+        if (!formData.lawful_basis?.trim()) errors.lawful_basis = ["Lawful basis is required"];
         if (!formData.data_structure?.trim()) errors.data_structure = ["Data structure is required"];
         if (!formData.storage_format?.trim()) errors.storage_format = ["Storage format is required"];
         if (!formData.cross_border_transfer?.trim()) errors.cross_border_transfer = ["Cross-border transfer is required"];
         if (!formData.owner_team?.trim()) errors.owner_team = ["Owner team is required"];
 
-        if (formData.contains_pii === "Yes") {
-            if (!formData.lawful_basis?.trim()) errors.lawful_basis = ["Lawful basis is required for PII datasets (AC-02)"];
-            if (formData.lawful_basis === "Consent") {
-                if (!formData.consent_coverage_pct || formData.consent_coverage_pct <= 0) {
-                    errors.consent_coverage_pct = ["Consent coverage percentage is required when lawful basis is Consent (AC-02)"];
-                }
-                if (!formData.consent_source_ref?.trim()) {
-                    errors.consent_source_ref = ["Consent source reference is required when lawful basis is Consent (AC-02)"];
+        // If lawful basis is Consent, require consent_required field
+        if (formData.lawful_basis === "Consent") {
+            // consent_required is required (boolean)
+            if (formData.consent_required === undefined || formData.consent_required === null) {
+                errors.consent_required = ["Consent required is required when lawful basis is Consent"];
+            }
+
+            // consent_coverage_pct is optional, but if provided must be 0-100
+            if (formData.consent_coverage_pct !== undefined && formData.consent_coverage_pct !== null) {
+                if (formData.consent_coverage_pct < 0 || formData.consent_coverage_pct > 100) {
+                    errors.consent_coverage_pct = ["Consent coverage percentage must be between 0 and 100"];
                 }
             }
+            // consent_source_ref is optional - no validation needed
         }
 
         setValidationErrors(errors);
@@ -125,10 +131,10 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
             return;
         }
 
-        // Prepare data: set consent_required based on lawful_basis
+        // Prepare data: convert source_ids to integers
         const dataToSubmit = {
             ...formData,
-            consent_required: formData.lawful_basis === "Consent",
+            source_ids: formData.source_ids.map(id => typeof id === 'string' ? parseInt(id, 10) : id),
         };
 
         try {

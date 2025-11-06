@@ -20,7 +20,7 @@ const initialFormData: CreateDatasetData = {
     lawful_basis: "",
     lawful_basis_detail: "",
     consent_required: false,
-    consent_coverage_pct: 0,
+    consent_coverage_pct: undefined,
     consent_source_ref: "",
     licensing_basis: "",
     license_type: "",
@@ -67,6 +67,55 @@ const DatasetModalForm: React.FC<DatasetModalFormProps> = ({
             errors.source_ids = ["At least one data source is required"];
         }
 
+        if (!formData.sensitivity?.trim()) {
+            errors.sensitivity = ["Sensitivity is required"];
+        }
+
+        if (!formData.contains_pii?.trim()) {
+            errors.contains_pii = ["Contains PII selection is required"];
+        }
+
+        if (!formData.controller_role?.trim()) {
+            errors.controller_role = ["Controller role is required"];
+        }
+
+        // lawful_basis is always required
+        if (!formData.lawful_basis?.trim()) {
+            errors.lawful_basis = ["Lawful basis is required"];
+        }
+
+        if (!formData.data_structure?.trim()) {
+            errors.data_structure = ["Data structure is required"];
+        }
+
+        if (!formData.storage_format?.trim()) {
+            errors.storage_format = ["Storage format is required"];
+        }
+
+        if (!formData.cross_border_transfer?.trim()) {
+            errors.cross_border_transfer = ["Cross-border transfer is required"];
+        }
+
+        if (!formData.owner_team?.trim()) {
+            errors.owner_team = ["Owner team is required"];
+        }
+
+        // If lawful basis is Consent, require consent_required field
+        if (formData.lawful_basis === "Consent") {
+            // consent_required is required (boolean)
+            if (formData.consent_required === undefined || formData.consent_required === null) {
+                errors.consent_required = ["Consent required is required when lawful basis is Consent"];
+            }
+
+            // consent_coverage_pct is optional, but if provided must be 0-100
+            if (formData.consent_coverage_pct !== undefined && formData.consent_coverage_pct !== null) {
+                if (formData.consent_coverage_pct < 0 || formData.consent_coverage_pct > 100) {
+                    errors.consent_coverage_pct = ["Consent coverage percentage must be between 0 and 100"];
+                }
+            }
+            // consent_source_ref is optional - no validation needed
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -80,9 +129,10 @@ const DatasetModalForm: React.FC<DatasetModalFormProps> = ({
             return;
         }
 
+        // Prepare data: convert source_ids to integers
         const dataToSubmit = {
             ...formData,
-            consent_required: formData.lawful_basis === "Consent",
+            source_ids: formData.source_ids.map(id => typeof id === 'string' ? parseInt(id, 10) : id),
         };
 
         try {

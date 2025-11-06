@@ -27,9 +27,10 @@ const defaultState: CreateAiModelCardData = {
     creator_role: "",
     format: "",
     status: "draft",
-    publication_status: "internal",
+    publication_status: "not_published",
     owner_stakeholder_id: "",
-    organizational_context: [] as any,
+    organizational_context: null,
+    model_overview: "",
     intended_use: "",
     training_data_overview: "",
     bias_evaluation_methods: "",
@@ -37,9 +38,11 @@ const defaultState: CreateAiModelCardData = {
     ethical_considerations: "",
     risk_summary: "",
     performance_summary: "",
-    publication_date: "",
-    last_review_date: "",
-    next_review_date: "",
+    publication_date: null,
+    last_review_date: null,
+    next_review_date: null,
+    created_by: "",
+    updated_by: null,
 };
 
 export default function AiModelCardForm({ mode, initial, onSubmit, loading }: AiModelCardFormProps) {
@@ -50,8 +53,82 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
 
     const validate = (): boolean => {
         const next: Record<string, string[]> = {};
-        if (!formData.version_id || String(formData.version_id).trim() === "") next.version_id = ["Model version is required"];
-        if (!formData.title?.trim()) next.title = ["Title is required"];
+
+        // Required fields validation
+        if (!formData.version_id || String(formData.version_id).trim() === "") {
+            next.version_id = ["Model version is required"];
+        }
+
+        if (!formData.title?.trim()) {
+            next.title = ["Title is required"];
+        } else if (formData.title.trim().length < 10) {
+            next.title = ["Title must be at least 10 characters"];
+        } else if (formData.title.trim().length > 255) {
+            next.title = ["Title must be at most 255 characters"];
+        }
+
+        if (!formData.creator_role?.trim()) {
+            next.creator_role = ["Creator role is required"];
+        }
+
+        if (!formData.format?.trim()) {
+            next.format = ["Card format is required"];
+        }
+
+        if (!formData.owner_stakeholder_id || String(formData.owner_stakeholder_id).trim() === "") {
+            next.owner_stakeholder_id = ["Model owner is required"];
+        }
+
+        if (!formData.model_overview?.trim()) {
+            next.model_overview = ["Model overview is required"];
+        }
+
+        if (!formData.intended_use?.trim()) {
+            next.intended_use = ["Intended use is required"];
+        }
+
+        if (!formData.training_data_overview?.trim()) {
+            next.training_data_overview = ["Training data overview is required"];
+        }
+
+        if (!formData.bias_evaluation_methods?.trim()) {
+            next.bias_evaluation_methods = ["Bias evaluation methods is required"];
+        }
+
+        if (!formData.model_limitations?.trim()) {
+            next.model_limitations = ["Model limitations is required"];
+        }
+
+        if (!formData.ethical_considerations?.trim()) {
+            next.ethical_considerations = ["Ethical considerations is required"];
+        }
+
+        if (!formData.performance_summary?.trim()) {
+            next.performance_summary = ["Performance summary is required"];
+        }
+
+        if (!formData.risk_summary?.trim()) {
+            next.risk_summary = ["Risk summary is required"];
+        }
+
+        if (!formData.status?.trim()) {
+            next.status = ["Status is required"];
+        }
+
+        if (!formData.publication_status?.trim()) {
+            next.publication_status = ["Publication status is required"];
+        }
+
+        if (!formData.created_by?.trim()) {
+            next.created_by = ["Created by email is required"];
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.created_by.trim())) {
+            next.created_by = ["Created by must be a valid email address"];
+        }
+
+        if (formData.updated_by && formData.updated_by.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.updated_by.trim())) {
+            next.updated_by = ["Updated by must be a valid email address"];
+        }
+
         setErrors(next);
         return Object.keys(next).length === 0;
     };
@@ -106,9 +183,9 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
 
                     <CardContent className="space-y-8">
                         <BasicInfoSection formData={formData} setFormData={setForm} versionOptions={versionOptions} errors={errors} />
-                        <WorkflowStatusSection formData={formData} setFormData={setForm} />
-                        <CoreContentSection formData={formData} setFormData={setForm} />
-                        <DatesReviewsSection formData={formData} setFormData={setForm} />
+                        <WorkflowStatusSection formData={formData} setFormData={setForm} errors={errors} />
+                        <CoreContentSection formData={formData} setFormData={setForm} errors={errors} />
+                        <DatesReviewsSection formData={formData} setFormData={setForm} errors={errors} />
                     </CardContent>
                 </form>
             </Card>

@@ -43,7 +43,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Link Identification</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="ai_model_id">Model *</Label>
+            <Label htmlFor="ai_model_id">Model <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
               value={formData.ai_model_id || undefined}
               onValueChange={(value) => handleChange("ai_model_id", value)}
@@ -63,7 +63,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="ai_model_version_id">Model Version ID *</Label>
+            <Label htmlFor="ai_model_version_id">Model Version ID <span className="text-red-500">*</span></Label>
             <Input
               type="number"
               id="ai_model_version_id"
@@ -139,7 +139,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Role & Usage</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="role">Role *</Label>
+            <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
             <Select value={formData.role} onValueChange={(value) => handleChange("role", value)}>
               <SelectTrigger className={`w-full ${errors.role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
@@ -161,7 +161,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="created_by">Created By *</Label>
+            <Label htmlFor="created_by">Created By <span className="text-red-500">*</span></Label>
             <Input
               id="created_by"
               value={formData.created_by}

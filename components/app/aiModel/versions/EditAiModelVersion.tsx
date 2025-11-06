@@ -36,7 +36,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
         // Technical characteristics
         architecture_type: 'transformer',
-        model_file_size_gb: 0,
+        model_file_size_gb: null,
         training_duration_hours: null,
         complexity_level: 'moderate',
         parameter_count: null,
@@ -52,6 +52,10 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
         // Flags
         has_performance_data: false,
+
+        // Audit fields
+        created_by: '',
+        updated_by: null,
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -75,7 +79,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
                 // Technical characteristics
                 architecture_type: aiModelVersion.architecture_type,
-                model_file_size_gb: aiModelVersion.model_file_size_gb || 0,
+                model_file_size_gb: aiModelVersion.model_file_size_gb ?? null,
                 training_duration_hours: aiModelVersion.training_duration_hours,
                 complexity_level: aiModelVersion.complexity_level,
                 parameter_count: aiModelVersion.parameter_count,
@@ -111,13 +115,19 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
         // Technical characteristics validation
         if (!formData.architecture_type?.trim()) {
-            errors.architecture_type = ["Architecture type is required"];
-        }
-        if (formData.model_file_size_gb === null || formData.model_file_size_gb < 0) {
-            errors.model_file_size_gb = ["Model file size is required and must be >= 0"];
-        }
-        if (!formData.complexity_level) {
-            errors.complexity_level = ["Complexity level is required"];
+            if (!formData.architecture_type || !formData.architecture_type.trim()) {
+                errors.architecture_type = ["Architecture type is required"];
+            }
+            if (
+                formData.model_file_size_gb === undefined ||
+                formData.model_file_size_gb === null ||
+                formData.model_file_size_gb < 0
+            ) {
+                errors.model_file_size_gb = ["Model file size is required and must be >= 0"];
+            }
+            if (!formData.complexity_level) {
+                errors.complexity_level = ["Complexity level is required"];
+            }
         }
 
         // Deployment / lifecycle / compliance validation

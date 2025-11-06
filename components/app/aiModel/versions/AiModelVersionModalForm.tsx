@@ -33,7 +33,7 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
         version_source: 'internal_development',
         our_involvement: 'full_development',
         architecture_type: 'transformer',
-        model_file_size_gb: 0,
+        model_file_size_gb: null,
         training_duration_hours: null,
         complexity_level: 'moderate',
         parameter_count: null,
@@ -44,6 +44,8 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
         deployment_environments: [],
         customizations_applied: [],
         has_performance_data: false,
+        created_by: '',
+        updated_by: null,
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});

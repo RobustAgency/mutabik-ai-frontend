@@ -36,6 +36,7 @@ import {
   CheckCircle2,
   FileBarChart,
   Lock,
+  Link2,
 } from "lucide-react";
 
 export type RouteItem = {
@@ -105,8 +106,18 @@ export const userRoutes: RouteItem[] = [
             icon: FileCog,
           },
           {
+            href: "/core-assets/ai-models/link-use-case",
+            label: "Link Use Case",
+            icon: Link2,
+          },
+          {
             href: "/core-assets/ai-models/artifacts",
             label: "Model Artifacts",
+            icon: Layers3,
+          },
+          {
+            href: "/core-assets/ai-models/artifact-access-logs",
+            label: "Artifact Access Logs",
             icon: Layers3,
           },
         ],

@@ -158,7 +158,7 @@ const StakeholderSelectorWithInline: React.FC<StakeholderSelectorWithInlineProps
                                 <>
                                     {/* Clear selection option */}
                                     <div
-                                        className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
                                         onClick={() => {
                                             onValueChange(null);
                                             setOpen(false);
@@ -177,7 +177,7 @@ const StakeholderSelectorWithInline: React.FC<StakeholderSelectorWithInlineProps
                                     {filteredStakeholders.map((stakeholder) => (
                                         <div
                                             key={stakeholder.id}
-                                            className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                            className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
                                             onClick={() => {
                                                 onValueChange(stakeholder.id);
                                                 setOpen(false);

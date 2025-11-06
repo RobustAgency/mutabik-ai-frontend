@@ -58,7 +58,7 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="purpose">Purpose *</Label>
+            <Label htmlFor="purpose">Purpose <span className="text-red-500">*</span></Label>
             <CustomMultiSelect
               options={purposeOptions}
               value={formData.purpose}
@@ -70,7 +70,7 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="subject_realm">Subject Realm *</Label>
+            <Label htmlFor="subject_realm">Subject Realm <span className="text-red-500">*</span></Label>
             <Select key={`subject_realm-${formData.subject_realm || 'empty'}`} value={formData.subject_realm || ""} onValueChange={(value) => handleChange("subject_realm", value)}>
               <SelectTrigger className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select realm" />
@@ -87,7 +87,7 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="jurisdiction">Jurisdiction *</Label>
+            <Label htmlFor="jurisdiction">Jurisdiction <span className="text-red-500">*</span></Label>
             <Select key={`jurisdiction-${formData.jurisdiction || 'empty'}`} value={formData.jurisdiction || ""} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
@@ -109,7 +109,7 @@ const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormDa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="effective_from">Effective From *</Label>
+            <Label htmlFor="effective_from">Effective From <span className="text-red-500">*</span></Label>
             <Input id="effective_from" type="datetime-local" value={formData.effective_from} onChange={(e) => handleChange("effective_from", e.target.value)} className={errors.effective_from ? "border-red-500" : ""} />
             {errors.effective_from && <p className="text-sm text-red-500">{errors.effective_from[0]}</p>}
           </div>
