@@ -115,8 +115,6 @@ const StakeholderModalForm: React.FC<StakeholderModalFormProps> = ({
             // Handle backend validation errors
             if (err?.data?.errors) {
                 setValidationErrors(err.data.errors);
-            } else {
-                toast.error(err?.data?.message || "Failed to create stakeholder");
             }
         }
     };

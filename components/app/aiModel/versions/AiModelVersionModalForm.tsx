@@ -83,8 +83,6 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
         } catch (err: any) {
             if (err?.data?.errors) {
                 setValidationErrors(err.data.errors);
-            } else {
-                toast.error("Failed to create model version");
             }
         }
     };
