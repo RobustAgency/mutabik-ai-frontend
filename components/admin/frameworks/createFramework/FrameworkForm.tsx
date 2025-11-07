@@ -48,13 +48,6 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         version: "",
     });
 
-    console.log("formData", formData)
-
-    // Debug: Track formData changes
-    useEffect(() => {
-        console.log('FormData changed:', formData);
-    }, [formData]);
-
     // Additional information state - will be managed by AdditionalInformation component
     const [additionalInfo, setAdditionalInfo] = useState({
         authority_publisher: undefined as AuthorityPublisher | undefined,
@@ -248,7 +241,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
             <div className="flex flex-col md:flex-row gap-6 w-full">
                 {/* Main Form Card */}
-                <Card className="flex-1 border-0 rounded-xl py-0 !bg-transparent">
+                <Card className="flex-1 border-0 rounded-xl py-0 bg-transparent!">
                     <form className="space-y-6 w-full" onSubmit={handleSubmit}>
 
                         {/* Basic Information */}

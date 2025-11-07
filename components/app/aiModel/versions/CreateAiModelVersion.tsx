@@ -183,7 +183,6 @@ const CreateAiModelVersion: React.FC = () => {
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertDescription>
                                     <p className="font-semibold mb-2">Please fix the following errors:</p>
-                                    <p className="text-xs mb-2">Debug: {JSON.stringify(validationErrors)}</p>
                                     <ul className="list-disc list-inside space-y-1">
                                         {Object.entries(validationErrors).map(([field, errors]) => (
                                             <li key={field}>
