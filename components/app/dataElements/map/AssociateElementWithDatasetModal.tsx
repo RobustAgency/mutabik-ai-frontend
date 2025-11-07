@@ -42,6 +42,24 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
+    // Validate: if CDE in Dataset is "Yes", then CDE Category is required
+    const validationErrors: Record<string, string[]> = {};
+    if (!form.dataset_id) validationErrors.dataset_id = ["Dataset is required"];
+    if (!form.column_name?.trim()) validationErrors.column_name = ["Column name is required"];
+    if (!form.nullable) validationErrors.nullable = ["Nullable is required"];
+    if (!form.cde_in_dataset) validationErrors.cde_in_dataset = ["CDE in Dataset is required"];
+
+    // Conditional validation: if CDE in Dataset is "Yes", CDE Category is required
+    if (form.cde_in_dataset === "Yes" && !form.cde_category_in_dataset) {
+      validationErrors.cde_category_in_dataset = ["CDE Category is required when CDE in Dataset is Yes"];
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
       const payload: any = {
         dataset_id: Number(form.dataset_id),
@@ -96,23 +114,39 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
           entityName="Dataset"
           modalForm={DatasetModalForm}
           canCreate={true}
+          error={!!errors.dataset_id}
         />
+        {errors.dataset_id && (
+          <p className="text-sm text-destructive">{errors.dataset_id[0]}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Column Name <span className="text-red-500">*</span></Label>
-          <Input value={form.column_name} onChange={(e) => setForm((p) => ({ ...p, column_name: e.target.value }))} />
+          <Input
+            value={form.column_name}
+            onChange={(e) => setForm((p) => ({ ...p, column_name: e.target.value }))}
+            className={errors.column_name ? "border-destructive" : ""}
+          />
+          {errors.column_name && (
+            <p className="text-sm text-destructive">{errors.column_name[0]}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label>Nullable <span className="text-red-500">*</span></Label>
           <Select value={form.nullable} onValueChange={(v) => setForm((p) => ({ ...p, nullable: v }))}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.nullable ? "border-destructive" : ""}`}>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="Yes">Yes</SelectItem>
               <SelectItem value="No">No</SelectItem>
             </SelectContent>
           </Select>
+          {errors.nullable && (
+            <p className="text-sm text-destructive">{errors.nullable[0]}</p>
+          )}
         </div>
       </div>
 
@@ -156,17 +190,30 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
         <div className="space-y-2">
           <Label>CDE in Dataset <span className="text-red-500">*</span></Label>
           <Select value={form.cde_in_dataset} onValueChange={(v) => setForm((p) => ({ ...p, cde_in_dataset: v }))}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectTrigger className={`w-full ${errors.cde_in_dataset ? "border-destructive" : ""}`}>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="Yes">Yes</SelectItem>
               <SelectItem value="No">No</SelectItem>
             </SelectContent>
           </Select>
+          {errors.cde_in_dataset && (
+            <p className="text-sm text-destructive">{errors.cde_in_dataset[0]}</p>
+          )}
         </div>
         <div className="space-y-2">
-          <Label>CDE Category in Dataset</Label>
-          <Select value={form.cde_category_in_dataset} onValueChange={(v) => setForm((p) => ({ ...p, cde_category_in_dataset: v }))}>
-            <SelectTrigger className="w-full"><SelectValue placeholder="Select if CDE is Yes" /></SelectTrigger>
+          <Label>
+            CDE Category in Dataset
+            {form.cde_in_dataset === "Yes" && <span className="text-red-500">*</span>}
+          </Label>
+          <Select
+            value={form.cde_category_in_dataset}
+            onValueChange={(v) => setForm((p) => ({ ...p, cde_category_in_dataset: v }))}
+          >
+            <SelectTrigger className={`w-full ${errors.cde_category_in_dataset ? "border-destructive" : ""}`}>
+              <SelectValue placeholder="Select if CDE is Yes" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="Strategic">Strategic</SelectItem>
               <SelectItem value="Compliance">Compliance</SelectItem>
@@ -177,6 +224,9 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
               <SelectItem value="Customer Experience">Customer Experience</SelectItem>
             </SelectContent>
           </Select>
+          {errors.cde_category_in_dataset && (
+            <p className="text-sm text-destructive">{errors.cde_category_in_dataset[0]}</p>
+          )}
         </div>
       </div>
 
