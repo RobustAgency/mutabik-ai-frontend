@@ -47,7 +47,13 @@ const DatasetSnapshotModalForm: React.FC<DatasetSnapshotModalFormProps> = ({
             errors.version_tag = ["Version tag is required"];
         }
 
-        // dates optional; enforce ordering if both provided
+        if (!formData.time_range_start?.trim()) {
+            errors.time_range_start = ["Time range start is required"];
+        }
+        if (!formData.time_range_end?.trim()) {
+            errors.time_range_end = ["Time range end is required"];
+        }
+        // If both provided, enforce ordering
         if (formData.time_range_start && formData.time_range_end) {
             if (new Date(formData.time_range_end) < new Date(formData.time_range_start)) {
                 errors.time_range_end = ["Must be after or equal to start"];

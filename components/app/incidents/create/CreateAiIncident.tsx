@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AiIncidentForm from "./AiIncidentForm";
 import {
@@ -40,9 +42,34 @@ const CreateAiIncident: React.FC = () => {
     evidence_link: null,
   });
 
+  const validateForm = (): boolean => {
+    const validationErrors: Record<string, string[]> = {};
+
+    if (!formData.title?.trim()) validationErrors.title = ["Title is required"];
+    if (!formData.summary?.trim()) validationErrors.summary = ["Summary is required"];
+    if (!formData.category?.trim()) validationErrors.category = ["Category is required"];
+    if (!formData.severity?.trim()) validationErrors.severity = ["Severity is required"];
+    if (!formData.status?.trim()) validationErrors.status = ["Status is required"];
+    if (!formData.stage?.trim()) validationErrors.stage = ["Stage is required"];
+    if (!formData.ic_owner?.trim()) validationErrors.ic_owner = ["Incident commander is required"];
+    if (!formData.first_seen_at?.trim()) validationErrors.first_seen_at = ["First seen at is required"];
+    if (!formData.declared_at?.trim()) validationErrors.declared_at = ["Declared at is required"];
+    if (!formData.impacted_data || formData.impacted_data.length === 0) {
+      validationErrors.impacted_data = ["At least one impacted data type is required"];
+    }
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     try {
       await createIncident(formData).unwrap();
@@ -50,6 +77,7 @@ const CreateAiIncident: React.FC = () => {
     } catch (error: any) {
       if (error?.data?.errors) {
         setErrors(error.data.errors);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
@@ -72,6 +100,21 @@ const CreateAiIncident: React.FC = () => {
             </Button>
           </div>
           <CardContent>
+            {Object.keys(errors).length > 0 && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="font-semibold mb-2">Please fix the following errors:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {Object.entries(errors).map(([field, fieldErrors]) => (
+                      <li key={field}>
+                        <span className="font-medium capitalize">{field.replace(/_/g, " ")}:</span> {fieldErrors[0]}
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
             <AiIncidentForm formData={formData} setFormData={setFormData} errors={errors} />
           </CardContent>
         </form>

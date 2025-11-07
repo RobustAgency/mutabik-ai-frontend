@@ -351,39 +351,39 @@ const CreateAgreement: React.FC = () => {
                         </div>
 
                         {/* SLA Terms */}
-                        {form.agreement_type === "sla" && (
-                            <div className="space-y-4">
-                                <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
-                                    SLA Terms
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="availability_target_pct">Availability Target %</Label>
-                                        <Input id="availability_target_pct" name="availability_target_pct" value={form.availability_target_pct} onChange={onChange} placeholder="99.9" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="latency_p95_ms">Latency p95 (ms)</Label>
-                                        <Input id="latency_p95_ms" name="latency_p95_ms" value={form.latency_p95_ms} onChange={onChange} placeholder="200" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="support_tier">Support Tier</Label>
-                                        <Input id="support_tier" name="support_tier" value={form.support_tier} onChange={onChange} placeholder="Premium" />
-                                    </div>
-                                    <div className="md:col-span-3 space-y-2">
-                                        <Label htmlFor="breach_definition">Breach Definition</Label>
-                                        <Input id="breach_definition" name="breach_definition" value={form.breach_definition} onChange={onChange} placeholder="Service unavailable for more than 1 hour" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="credit_schedule_ref">Credit Schedule Ref</Label>
-                                        <Input id="credit_schedule_ref" name="credit_schedule_ref" value={form.credit_schedule_ref} onChange={onChange} placeholder="SLA-CREDIT-2024" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="monitoring_ref">Monitoring Ref</Label>
-                                        <Input id="monitoring_ref" name="monitoring_ref" value={form.monitoring_ref} onChange={onChange} placeholder="MON-2024" />
-                                    </div>
+                        {/* {form.agreement_type === "sla" && ()} */}
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+                                SLA Terms
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="availability_target_pct">Availability Target %</Label>
+                                    <Input id="availability_target_pct" name="availability_target_pct" value={form.availability_target_pct} onChange={onChange} placeholder="99.9" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="latency_p95_ms">Latency p95 (ms)</Label>
+                                    <Input id="latency_p95_ms" name="latency_p95_ms" value={form.latency_p95_ms} onChange={onChange} placeholder="200" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="support_tier">Support Tier</Label>
+                                    <Input id="support_tier" name="support_tier" value={form.support_tier} onChange={onChange} placeholder="Premium" />
+                                </div>
+                                <div className="md:col-span-3 space-y-2">
+                                    <Label htmlFor="breach_definition">Breach Definition</Label>
+                                    <Input id="breach_definition" name="breach_definition" value={form.breach_definition} onChange={onChange} placeholder="Service unavailable for more than 1 hour" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="credit_schedule_ref">Credit Schedule Ref</Label>
+                                    <Input id="credit_schedule_ref" name="credit_schedule_ref" value={form.credit_schedule_ref} onChange={onChange} placeholder="SLA-CREDIT-2024" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="monitoring_ref">Monitoring Ref</Label>
+                                    <Input id="monitoring_ref" name="monitoring_ref" value={form.monitoring_ref} onChange={onChange} placeholder="MON-2024" />
                                 </div>
                             </div>
-                        )}
+                        </div>
+
                     </CardContent>
                 </Card>
             </form>
