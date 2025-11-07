@@ -19,7 +19,7 @@ interface IncidentRCAFormProps {
 const IncidentRCAForm: React.FC<IncidentRCAFormProps> = ({ formData, setFormData, errors }) => {
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
   const incidents = incidentsData?.data || [];
-  
+
   const handleInputChange = (field: keyof CreateIncidentRootCauseAnalysisData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -63,37 +63,37 @@ const IncidentRCAForm: React.FC<IncidentRCAFormProps> = ({ formData, setFormData
 
       <div className="space-y-2">
         <Label>Immediate Cause <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.immediate_cause} onChange={(e) => handleInputChange("immediate_cause", e.target.value)} rows={3} />
+        <Textarea value={formData.immediate_cause} onChange={(e) => handleInputChange("immediate_cause", e.target.value)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Latent Causes <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.latent_causes} onChange={(e) => handleInputChange("latent_causes", e.target.value)} rows={4} />
+        <Textarea value={formData.latent_causes} onChange={(e) => handleInputChange("latent_causes", e.target.value)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Contributing Factors</Label>
-        <Textarea value={formData.contributing_factors || ""} onChange={(e) => handleInputChange("contributing_factors", e.target.value || null)} rows={3} />
+        <Textarea value={formData.contributing_factors || ""} onChange={(e) => handleInputChange("contributing_factors", e.target.value || null)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Impact Assessment</Label>
-        <Textarea value={formData.impact_assessment || ""} onChange={(e) => handleInputChange("impact_assessment", e.target.value || null)} rows={3} />
+        <Textarea value={formData.impact_assessment || ""} onChange={(e) => handleInputChange("impact_assessment", e.target.value || null)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Fixes Implemented</Label>
-        <Textarea value={formData.fixes_implemented || ""} onChange={(e) => handleInputChange("fixes_implemented", e.target.value || null)} rows={3} />
+        <Textarea value={formData.fixes_implemented || ""} onChange={(e) => handleInputChange("fixes_implemented", e.target.value || null)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Lessons Learned <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.lessons_learned} onChange={(e) => handleInputChange("lessons_learned", e.target.value)} rows={4} />
+        <Textarea value={formData.lessons_learned} onChange={(e) => handleInputChange("lessons_learned", e.target.value)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Recommendations <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.recommendations} onChange={(e) => handleInputChange("recommendations", e.target.value)} rows={4} />
+        <Textarea required value={formData.recommendations} onChange={(e) => handleInputChange("recommendations", e.target.value)} className="min-h-32 resize-none" />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

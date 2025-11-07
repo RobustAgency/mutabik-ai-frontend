@@ -64,7 +64,7 @@ const GeneralDetail = () => {
                       id="description"
                       ref={descriptionRef}
                       placeholder="Enter a description..."
-                      className="h-[194px] gap-2 pt-[10px] pr-4 pb-[10px] pl-4 rounded-lg border border-[#D0D5DD] bg-white placeholder:text-sm placeholder:font-normal placeholder:leading-[20px] placeholder:tracking-normal placeholder:text-[#98A2B3] focus:outline-none focus:ring-0 focus-visible:ring-0 focus:border-[#D0D5DD] resize-none"
+                      className="min-h-32 resize-none gap-2 pt-[10px] pr-4 pb-[10px] pl-4 rounded-lg border border-[#D0D5DD] bg-white placeholder:text-sm placeholder:font-normal placeholder:leading-[20px] placeholder:tracking-normal placeholder:text-[#98A2B3] focus:outline-none focus:ring-0 focus-visible:ring-0 focus:border-[#D0D5DD]"
                     />
                   </div>
 

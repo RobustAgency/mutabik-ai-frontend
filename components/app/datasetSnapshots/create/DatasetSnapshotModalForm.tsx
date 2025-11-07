@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 const initialFormData = {
     dataset_id: "",
     version_tag: "",
+    source_created_at: "",
     time_range_start: "",
     time_range_end: "",
     row_count: undefined,
@@ -47,7 +48,17 @@ const DatasetSnapshotModalForm: React.FC<DatasetSnapshotModalFormProps> = ({
             errors.version_tag = ["Version tag is required"];
         }
 
-        // dates optional; enforce ordering if both provided
+        if (!formData.source_created_at?.trim()) {
+            errors.source_created_at = ["Created at is required"];
+        }
+
+        if (!formData.time_range_start?.trim()) {
+            errors.time_range_start = ["Time range start is required"];
+        }
+        if (!formData.time_range_end?.trim()) {
+            errors.time_range_end = ["Time range end is required"];
+        }
+        // If both provided, enforce ordering
         if (formData.time_range_start && formData.time_range_end) {
             if (new Date(formData.time_range_end) < new Date(formData.time_range_start)) {
                 errors.time_range_end = ["Must be after or equal to start"];
@@ -102,8 +113,6 @@ const DatasetSnapshotModalForm: React.FC<DatasetSnapshotModalFormProps> = ({
         } catch (err: any) {
             if (err?.data?.errors) {
                 setValidationErrors(err.data.errors);
-            } else {
-                toast.error(err?.data?.message || "Failed to create snapshot");
             }
         }
     };

@@ -101,7 +101,7 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
           value={formData.context || ""}
           onChange={(e) => handleInputChange("context", e.target.value || null)}
           placeholder="Brief payload/context (sanitized)"
-          rows={4}
+          className={`min-h-32 resize-none`}
         />
         <p className="text-xs text-[#667085]">Ensure sensitive data is sanitized before logging</p>
       </div>

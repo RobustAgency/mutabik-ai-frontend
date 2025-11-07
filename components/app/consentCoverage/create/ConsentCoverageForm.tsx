@@ -122,6 +122,12 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input id="source_created_at" type="datetime-local" value={formData.source_created_at} onChange={(e) => handleChange("source_created_at", e.target.value)} className={errors.source_created_at ? "border-red-500" : ""} />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="as_of">As Of (UTC) <span className="text-red-500">*</span></Label>
             <Input id="as_of" type="datetime-local" value={formData.as_of} onChange={(e) => handleChange("as_of", e.target.value)} className={errors.as_of ? "border-red-500" : ""} />
             {errors.as_of && <p className="text-sm text-red-500">{errors.as_of[0]}</p>}

@@ -48,6 +48,14 @@ const DatasetSnapshotFormReadOnly: React.FC<DatasetSnapshotFormReadOnlyProps> = 
           <ReadonlyField label="Privacy Transform Evidence Reference" value={snapshot.privacy_transform_evidence_ref ?? ""} />
         </div>
       </div>
+
+      {/* Metadata */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Metadata</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ReadonlyField label="Created At" value={snapshot.created_at ? new Date(snapshot.created_at).toLocaleString() : ""} />
+        </div>
+      </div>
     </div>
   );
 };

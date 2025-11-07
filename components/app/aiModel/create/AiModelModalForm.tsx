@@ -108,8 +108,6 @@ const AiModelModalForm: React.FC<AiModelModalFormProps> = ({
         } catch (err: any) {
             if (err?.data?.errors) {
                 setValidationErrors(err.data.errors);
-            } else {
-                toast.error(err?.data?.message || "Failed to create AI model");
             }
         }
     };

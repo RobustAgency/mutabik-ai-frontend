@@ -7,10 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateModelDatasetLinkData } from "@/app/lib/features/modelDatasetLinksApi";
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
+import { useGetAiModelVersionsQuery } from "@/app/lib/features/aiModelVersionsApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
 import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
+import AiModelVersionModalForm from "@/components/app/aiModel/versions/AiModelVersionModalForm";
 import DatasetSnapshotModalForm from "@/components/app/datasetSnapshots/create/DatasetSnapshotModalForm";
 
 interface ModelDatasetLinkFormProps {
@@ -26,10 +28,18 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
 
   const { data: modelsData, isLoading: isLoadingModels } = useGetAiModelsQuery();
   const models = modelsData || [];
+  const { data: modelVersionsData, isLoading: isLoadingVersions } = useGetAiModelVersionsQuery();
+  const modelVersions = modelVersionsData || [];
   const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
   const datasets = datasetsData || [];
   const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
   const snapshots = snapshotsData || [];
+
+  // Filter versions based on selected model
+  const filteredVersions = React.useMemo(() => {
+    if (!formData.ai_model_id) return modelVersions;
+    return modelVersions.filter((version: any) => String(version.ai_model_id) === String(formData.ai_model_id));
+  }, [modelVersions, formData.ai_model_id]);
 
   const filteredSnapshots = React.useMemo(() => {
     if (!formData.dataset_id) return snapshots;
@@ -52,7 +62,13 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
             <Label htmlFor="ai_model_id">Model <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
               value={formData.ai_model_id || undefined}
-              onValueChange={(value) => handleChange("ai_model_id", value)}
+              onValueChange={(value) => {
+                handleChange("ai_model_id", value);
+                // Reset version when model changes
+                if (value !== formData.ai_model_id) {
+                  handleChange("ai_model_version_id", 1);
+                }
+              }}
               options={models.map((m: any) => ({
                 id: m.id,
                 label: m.name,
@@ -69,14 +85,23 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="ai_model_version_id">Model Version ID <span className="text-red-500">*</span></Label>
-            <Input
-              type="number"
-              id="ai_model_version_id"
-              value={formData.ai_model_version_id}
-              onChange={(e) => handleChange("ai_model_version_id", e.target.value)}
-              placeholder="1"
-              className={errors.ai_model_version_id ? "border-red-500" : ""}
+            <Label htmlFor="ai_model_version_id">Model Version <span className="text-red-500">*</span></Label>
+            <SelectWithInlineCreate
+              key={`model_version_id-${formData.ai_model_version_id ?? 'none'}`}
+              value={formData.ai_model_version_id ? String(formData.ai_model_version_id) : undefined}
+              onValueChange={(value) => handleChange("ai_model_version_id", value ? Number(value) : 1)}
+              options={filteredVersions.map((version: any) => ({
+                id: version.id,
+                label: version.version_number || `Version ${version.id}`,
+                value: String(version.id),
+              }))}
+              isLoading={isLoadingVersions}
+              isEmpty={!isLoadingVersions && filteredVersions.length === 0}
+              entityName="Model Version"
+              modalForm={AiModelVersionModalForm}
+              placeholder={!formData.ai_model_id ? "Select model first" : isLoadingVersions ? "Loading versions..." : "Select a version"}
+              error={!!errors.ai_model_version_id}
+              disabled={!formData.ai_model_id}
             />
             {errors.ai_model_version_id && <p className="text-sm text-red-500">{errors.ai_model_version_id[0]}</p>}
           </div>
@@ -179,6 +204,18 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
             />
             {errors.created_by && <p className="text-sm text-red-500">{errors.created_by[0]}</p>}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input
+              id="source_created_at"
+              type="datetime-local"
+              value={formData.source_created_at}
+              onChange={(e) => handleChange("source_created_at", e.target.value)}
+              className={errors.source_created_at ? "border-red-500" : ""}
+            />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
+          </div>
         </div>
       </div>
 
@@ -248,7 +285,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
             value={formData.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
             placeholder="Additional notes about this link"
-            rows={3}
+            className="min-h-32 resize-none"
           />
         </div>
       </div>

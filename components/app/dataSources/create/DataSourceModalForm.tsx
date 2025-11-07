@@ -80,8 +80,6 @@ const DataSourceModalForm: React.FC<DataSourceModalFormProps> = ({
         } catch (err: any) {
             if (err?.data?.errors) {
                 setValidationErrors(err.data.errors);
-            } else {
-                toast.error(err?.data?.message || "Failed to create data source");
             }
         }
     };

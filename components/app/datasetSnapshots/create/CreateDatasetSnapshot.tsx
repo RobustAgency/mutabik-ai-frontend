@@ -44,7 +44,14 @@ const CreateDatasetSnapshot: React.FC = () => {
     }
     if (!formData.version_tag?.trim()) errors.version_tag = ["Version tag is required"];
     if (formData.version_tag && formData.version_tag.length > 50) errors.version_tag = ["Max 50 characters"];
-    // time ranges optional, but if both provided, enforce ordering
+    
+    if (!formData.time_range_start?.trim()) {
+      errors.time_range_start = ["Time range start is required"];
+    }
+    if (!formData.time_range_end?.trim()) {
+      errors.time_range_end = ["Time range end is required"];
+    }
+    // If both provided, enforce ordering
     if (formData.time_range_start && formData.time_range_end) {
       if (new Date(formData.time_range_end) < new Date(formData.time_range_start)) {
         errors.time_range_end = ["Must be after or equal to start"];

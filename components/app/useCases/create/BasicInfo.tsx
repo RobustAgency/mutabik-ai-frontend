@@ -124,7 +124,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
               onChange={(e) => setDescriptionInput(e.target.value)}
               onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
               placeholder="Enter detailed scope (100-5000 characters)..."
-              className={`placeholder:text-muted-foreground border dark:bg-input/30 flex min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs outline-none transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-[74px] resize-none focus:outline-none focus:ring-0 focus:border-transparent ${hasError("description") ? "border-red-500" : ""}`}
+              className={`min-h-32 resize-none ${hasError("description") ? "border-red-500" : ""}`}
             />
             {hasError("description") && (
               <p className="text-sm text-red-500">{getError("description")}</p>
@@ -141,7 +141,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
               onChange={(e) => setBusinessObjectiveInput(e.target.value)}
               onBlur={() => setFormData((prev) => ({ ...prev, business_objective: businessObjectiveInput }))}
               placeholder="Enter expected outcomes (50-2000 characters)..."
-              className={`h-[74px] resize-none ${hasError("business_objective") ? "border-red-500" : ""}`}
+              className={`min-h-32 resize-none ${hasError("business_objective") ? "border-red-500" : ""}`}
             />
             {hasError("business_objective") && (
               <p className="text-sm text-red-500">{getError("business_objective")}</p>

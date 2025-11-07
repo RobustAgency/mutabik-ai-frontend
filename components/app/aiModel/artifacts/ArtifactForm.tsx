@@ -366,8 +366,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                     });
                                 }}
                                 placeholder="Additional notes about this artifact..."
-                                rows={4}
-                                className={errors.notes ? "border-red-500" : ""}
+                                className={`min-h-32 resize-none ${errors.notes ? "border-red-500" : ""}`}
                             />
                             {errors.notes && (
                                 <p className="text-sm text-red-500">{errors.notes[0]}</p>

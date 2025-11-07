@@ -21,7 +21,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     );
 
   return (
-    <div className="!bg-[#FAFAFA] text-foreground">
+    <div className="bg-[#FAFAFA]! text-foreground">
       <section className="md:hidden">
         <MobileLayout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
           {children}

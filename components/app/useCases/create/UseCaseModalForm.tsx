@@ -201,8 +201,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
               value={formData.description || ""}
               onChange={(e) => handleInputChange("description", e.target.value)}
               placeholder="Detailed description of the use case (minimum 100 characters)"
-              rows={3}
-              className={hasError("description") ? "border-destructive" : ""}
+              className={`min-h-32 resize-none ${hasError("description") ? "border-destructive" : ""}`}
             />
             <div className="flex justify-between items-center">
               <div>
@@ -225,8 +224,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
               value={formData.business_objective}
               onChange={(e) => handleInputChange("business_objective", e.target.value)}
               placeholder="Expected business outcomes (minimum 50 characters)"
-              rows={2}
-              className={hasError("business_objective") ? "border-destructive" : ""}
+              className={`min-h-32 resize-none ${hasError("business_objective") ? "border-destructive" : ""}`}
             />
             <div className="flex justify-between items-center">
               <div>

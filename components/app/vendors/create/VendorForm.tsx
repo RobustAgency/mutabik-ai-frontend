@@ -409,7 +409,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
                 })
               }
               placeholder="Any metadata notes"
-              rows={3}
+              className={`min-h-32 resize-none`}
             />
           </div>
         </div>
@@ -428,7 +428,7 @@ const VendorForm: React.FC<VendorFormProps> = ({
             value={formData.notes || ""}
             onChange={(e) => handleInputChange("notes", e.target.value || null)}
             placeholder="Enter any additional notes about this vendor"
-            rows={4}
+            className={`min-h-32 resize-none`}
           />
         </div>
       </div>

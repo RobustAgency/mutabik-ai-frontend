@@ -7,6 +7,7 @@ export interface DatasetSnapshot {
   id: string;
   dataset_id: string;
   version_tag: string;
+  source_created_at: string;
   time_range_start: string;
   time_range_end: string;
   row_count: number | null;
@@ -23,6 +24,7 @@ export interface DatasetSnapshot {
 export interface CreateDatasetSnapshotData {
   dataset_id: number;
   version_tag: string;
+  source_created_at: string;
   time_range_start: string;
   time_range_end: string;
   row_count?: number;

@@ -18,7 +18,7 @@ interface CAPAFormProps {
 
 const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) => {
   const { data: aiModels = [], isLoading: isModelsLoading } = useGetAiModelsQuery();
-  
+
   const handleInputChange = (field: keyof CreateCorrectivePreventiveActionData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -45,10 +45,10 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         </div>
         <div className="space-y-2">
           <Label>Source ID <span className="text-red-500">*</span></Label>
-          <Input 
-            value={formData.source_id} 
-            onChange={(e) => handleInputChange("source_id", e.target.value)} 
-            placeholder={formData.source_type === "incident" ? "Enter incident ID" : formData.source_type === "risk" ? "Enter risk ID" : "Enter source ID"} 
+          <Input
+            value={formData.source_id}
+            onChange={(e) => handleInputChange("source_id", e.target.value)}
+            placeholder={formData.source_type === "incident" ? "Enter incident ID" : formData.source_type === "risk" ? "Enter risk ID" : "Enter source ID"}
             className={errors.source_id ? "border-destructive" : ""}
           />
           {errors.source_id && (
@@ -142,12 +142,12 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
 
       <div className="space-y-2">
         <Label>Root Cause</Label>
-        <Textarea value={formData.root_cause || ""} onChange={(e) => handleInputChange("root_cause", e.target.value || null)} rows={2} />
+        <Textarea className="min-h-32 resize-none" value={formData.root_cause || ""} onChange={(e) => handleInputChange("root_cause", e.target.value || null)} rows={2} />
       </div>
 
       <div className="space-y-2">
         <Label>Actions</Label>
-        <Textarea value={formData.actions || ""} onChange={(e) => handleInputChange("actions", e.target.value || null)} rows={3} placeholder="Steps or link to checklist" />
+        <Textarea className="min-h-32 resize-none" value={formData.actions || ""} onChange={(e) => handleInputChange("actions", e.target.value || null)} rows={3} placeholder="Steps or link to checklist" />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

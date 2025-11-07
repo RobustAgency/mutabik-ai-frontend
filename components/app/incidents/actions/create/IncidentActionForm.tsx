@@ -19,7 +19,7 @@ interface IncidentActionFormProps {
 const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFormData, errors }) => {
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
   const incidents = incidentsData?.data || [];
-  
+
   const handleInputChange = (field: keyof CreateIncidentActionData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -68,7 +68,7 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
 
       <div className="space-y-2">
         <Label>Description <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} rows={3} />
+        <Textarea value={formData.description} onChange={(e) => handleInputChange("description", e.target.value)} className={`min-h-32 resize-none ${errors.description ? "border-red-500" : ""}`} />
       </div>
 
       <div className="space-y-2">
@@ -104,7 +104,12 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
 
       <div className="space-y-2">
         <Label>Validation Notes</Label>
-        <Textarea value={formData.validation_notes || ""} onChange={(e) => handleInputChange("validation_notes", e.target.value || null)} rows={2} />
+        <Textarea value={formData.validation_notes || ""} onChange={(e) => handleInputChange("validation_notes", e.target.value || null)} className={`min-h-32 resize-none`} />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Linked Release ID</Label>
+        <Input value={formData.linked_release_id || ""} onChange={(e) => handleInputChange("linked_release_id", e.target.value || null)} placeholder="Release used for rollback/patch" />
       </div>
 
       <div className="space-y-2">

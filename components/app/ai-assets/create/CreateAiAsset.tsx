@@ -3,6 +3,8 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useCreateAiAssetMutation, CreateAiAssetData } from "@/app/lib/features/aiAssetsApi";
 import AiAssetForm from "@/components/app/ai-assets/create/AiAssetForm";
 import { useRouter } from "next/navigation";
@@ -12,8 +14,22 @@ const CreateAiAsset: React.FC = () => {
   const [formData, setFormData] = React.useState<CreateAiAssetData>({});
   const [errors, setErrors] = React.useState<Record<string, string[]>>({});
 
+  const isFormEmpty = () => {
+    return !formData.vendor_id &&
+      !formData.vendor_effective_from &&
+      !formData.vendor_effective_to &&
+      !formData.vendor_agreement_id &&
+      !formData.vendor_assessment_id;
+  };
+
   const handleSubmit = async () => {
     setErrors({});
+
+    if (isFormEmpty()) {
+      setErrors({ form: ["Please fill in at least one field before submitting"] });
+      return;
+    }
+
     try {
       await createAsset(formData).unwrap();
       router.push("/core-assets/ai-assets");
@@ -37,6 +53,12 @@ const CreateAiAsset: React.FC = () => {
         </div>
 
         <div className="space-y-6">
+          {errors.form && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{errors.form[0]}</AlertDescription>
+            </Alert>
+          )}
           <AiAssetForm formData={formData} setFormData={setFormData} errors={errors} />
         </div>
       </CardContent>

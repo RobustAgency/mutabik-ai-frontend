@@ -17,6 +17,7 @@ export interface ModelDatasetLink {
   eligibility_status: string | null;
   notes: string | null;
   created_by: string;
+  source_created_at: string;
   created_at: string;
 }
 
@@ -33,6 +34,7 @@ export interface CreateModelDatasetLinkData {
   eligibility_status?: string;
   notes?: string;
   created_by: string;
+  source_created_at: string;
 }
 
 const axiosBaseQuery =

@@ -62,7 +62,7 @@ const ModelDatasetLinksPage: React.FC = () => {
 
   const columns: ColumnDef<ModelDatasetLink>[] = [
     {
-      accessorKey: "model_id",
+      accessorKey: "ai_model_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Model ID
@@ -75,7 +75,7 @@ const ModelDatasetLinksPage: React.FC = () => {
       ),
     },
     {
-      accessorKey: "model_version_id",
+      accessorKey: "ai_model_version_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Version ID
@@ -104,7 +104,7 @@ const ModelDatasetLinksPage: React.FC = () => {
       },
     },
     {
-      accessorKey: "snapshot_id",
+      accessorKey: "dataset_snapshot_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Snapshot ID
