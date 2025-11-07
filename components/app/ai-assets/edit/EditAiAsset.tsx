@@ -3,6 +3,8 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useGetAiAssetQuery, useUpdateAiAssetMutation, CreateAiAssetData } from "@/app/lib/features/aiAssetsApi";
 import AiAssetForm from "@/components/app/ai-assets/create/AiAssetForm";
 import { useRouter } from "next/navigation";
@@ -30,9 +32,24 @@ const EditAiAsset: React.FC<EditAiAssetProps> = ({ aiAssetId }) => {
     }
   }, [data]);
 
+  const isFormEmpty = () => {
+    if (!formData) return true;
+    return !formData.vendor_id && 
+           !formData.vendor_effective_from && 
+           !formData.vendor_effective_to && 
+           !formData.vendor_agreement_id && 
+           !formData.vendor_assessment_id;
+  };
+
   const handleSubmit = async () => {
     if (!formData) return;
     setErrors({});
+    
+    if (isFormEmpty()) {
+      setErrors({ form: ["Please fill in at least one field before submitting"] });
+      return;
+    }
+
     try {
       await updateAsset({ id: idNum, data: formData }).unwrap();
       router.push("/core-assets/ai-assets");
@@ -56,6 +73,12 @@ const EditAiAsset: React.FC<EditAiAssetProps> = ({ aiAssetId }) => {
           <div className="text-sm text-[#667085]">Loading...</div>
         ) : (
           <div className="space-y-6">
+            {errors.form && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{errors.form[0]}</AlertDescription>
+              </Alert>
+            )}
             {formData && (
               <AiAssetForm
                 formData={formData}
