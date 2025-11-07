@@ -62,6 +62,18 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input
+              id="source_created_at"
+              type="datetime-local"
+              value={formData.source_created_at}
+              onChange={(e) => handleChange("source_created_at", e.target.value)}
+              className={errors.source_created_at ? "border-red-500" : ""}
+            />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="time_range_start">Time Range Start <span className="text-red-500">*</span></Label>
             <Input
               id="time_range_start"

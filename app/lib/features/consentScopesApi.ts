@@ -9,6 +9,7 @@ export interface ConsentScope {
   purpose: string[];
   subject_realm: string;
   jurisdiction: string;
+  source_created_at: string;
   effective_from: string;
   effective_to: string | null;
   created_at: string;
@@ -19,6 +20,7 @@ export interface CreateConsentScopeData {
   purpose: string[];
   subject_realm: string;
   jurisdiction: string;
+  source_created_at: string;
   effective_from: string;
   effective_to?: string;
 }

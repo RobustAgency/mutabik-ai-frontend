@@ -16,6 +16,7 @@ const CreateConsentCoverage: React.FC = () => {
     snapshot_id: "",
     purpose: [],
     jurisdiction: "",
+    source_created_at: "",
     as_of: "",
     subjects_total: 0,
     subjects_with_valid_consent: 0,
@@ -32,6 +33,7 @@ const CreateConsentCoverage: React.FC = () => {
     if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset ID is required"];
     if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.as_of?.trim()) errors.as_of = ["As of date is required"];
     if (!formData.subjects_total || formData.subjects_total <= 0) errors.subjects_total = ["Total subjects must be greater than 0"];
     if (formData.subjects_with_valid_consent < 0) errors.subjects_with_valid_consent = ["Subjects with consent cannot be negative"];

@@ -20,6 +20,7 @@ const EditDatasetSnapshot: React.FC<EditDatasetSnapshotProps> = ({ snapshotId })
   const [formData, setFormData] = useState<any>({
     dataset_id: "",
     version_tag: "",
+    source_created_at: "",
     time_range_start: "",
     time_range_end: "",
     row_count: undefined,
@@ -41,6 +42,7 @@ const EditDatasetSnapshot: React.FC<EditDatasetSnapshotProps> = ({ snapshotId })
       setFormData({
         dataset_id: snapshot.dataset_id,
         version_tag: snapshot.version_tag,
+        source_created_at: snapshot.source_created_at,
         time_range_start: snapshot.time_range_start,
         time_range_end: snapshot.time_range_end,
         row_count: snapshot.row_count ?? undefined,
@@ -61,6 +63,7 @@ const EditDatasetSnapshot: React.FC<EditDatasetSnapshotProps> = ({ snapshotId })
     if (!formData.dataset_id?.trim?.()) errors.dataset_id = ["Dataset is required"];
     if (!formData.version_tag?.trim?.()) errors.version_tag = ["Version tag is required"];
     if (formData.version_tag && formData.version_tag.length > 50) errors.version_tag = ["Max 50 characters"];
+    if (!formData.source_created_at?.trim?.()) errors.source_created_at = ["Created at is required"];
     
     if (!formData.time_range_start?.trim?.()) {
       errors.time_range_start = ["Time range start is required"];

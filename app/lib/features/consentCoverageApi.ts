@@ -9,6 +9,7 @@ export interface ConsentCoverage {
   snapshot_id: string | null;
   purpose: string[];
   jurisdiction: string;
+  source_created_at: string;
   as_of: string;
   subjects_total: number;
   subjects_with_valid_consent: number;
@@ -26,6 +27,7 @@ export interface CreateConsentCoverageData {
   snapshot_id?: string;
   purpose: string[];
   jurisdiction: string;
+  source_created_at: string;
   as_of: string;
   subjects_total: number;
   subjects_with_valid_consent: number;

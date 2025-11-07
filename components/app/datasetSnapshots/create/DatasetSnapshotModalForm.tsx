@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 const initialFormData = {
     dataset_id: "",
     version_tag: "",
+    source_created_at: "",
     time_range_start: "",
     time_range_end: "",
     row_count: undefined,
@@ -45,6 +46,10 @@ const DatasetSnapshotModalForm: React.FC<DatasetSnapshotModalFormProps> = ({
 
         if (!formData.version_tag?.trim()) {
             errors.version_tag = ["Version tag is required"];
+        }
+
+        if (!formData.source_created_at?.trim()) {
+            errors.source_created_at = ["Created at is required"];
         }
 
         if (!formData.time_range_start?.trim()) {
