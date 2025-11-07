@@ -14,9 +14,9 @@ const LinkUseCasePage: React.FC = () => {
             <Card className='p-6'>
                 <CardHeader>
                     <CardTitle>Link Use Case to AI Model</CardTitle>
-                    <CardDescription>
+                    {/* <CardDescription>
                         Link a use case to an AI model
-                    </CardDescription>
+                    </CardDescription> */}
                 </CardHeader>
                 <CardContent>
                     <LinkUseCaseForm onSuccess={handleSuccess} />

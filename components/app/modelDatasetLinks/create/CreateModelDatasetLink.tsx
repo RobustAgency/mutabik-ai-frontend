@@ -13,7 +13,7 @@ const CreateModelDatasetLink: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<CreateModelDatasetLinkData>({
     ai_model_id: "",
-    ai_model_version_id: 1,
+    ai_model_version_id: null,
     dataset_id: "",
     dataset_snapshot_id: "",
     role: "",
