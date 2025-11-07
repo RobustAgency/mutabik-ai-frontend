@@ -98,11 +98,10 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
         </Label>
         <Textarea
           id="description"
-          rows={4}
           value={formData.description || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           placeholder="What changed in this version? New features, improvements, bug fixes..."
-          className="w-full"
+          className="min-h-32 resize-none w-full"
         />
       </div>
 
@@ -129,11 +128,10 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
         <Label htmlFor="release_notes" className="text-sm font-medium text-gray-700 mb-2">Release Notes</Label>
         <Textarea
           id="release_notes"
-          rows={3}
           value={formData.release_notes || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, release_notes: e.target.value }))}
           placeholder="Detailed release notes for stakeholders..."
-          className="w-full"
+          className="min-h-32 resize-none w-full"
         />
       </div>
     </section>

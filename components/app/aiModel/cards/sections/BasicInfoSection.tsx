@@ -154,7 +154,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                         value={formData.model_overview || ""}
                         onChange={(e) => setFormData({ model_overview: e.target.value })}
                         placeholder="Enter description..."
-                        className={hasError("model_overview") ? "border-red-500" : ""}
+                        className={`min-h-32 resize-none ${hasError("model_overview") ? "border-red-500" : ""}`}
                     />
                     {hasError("model_overview") && (
                         <p className="text-sm text-red-500">{getError("model_overview")}</p>

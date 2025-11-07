@@ -104,7 +104,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             onChange={(e) => setDescriptionInput(e.target.value)}
                             onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
                             placeholder="Enter a description..."
-                            className={`${hasError("description") ? "border-red-500" : "border-[#D0D5DD]"}`}
+                            className={`min-h-32 resize-none ${hasError("description") ? "border-red-500" : "border-[#D0D5DD]"}`}
                         />
                         {hasError("description") && (
                             <p className="text-sm text-red-500">{getError("description")}</p>

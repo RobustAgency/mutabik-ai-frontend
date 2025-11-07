@@ -373,8 +373,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             });
                         }}
                         placeholder="Additional notes about this artifact..."
-                        rows={4}
-                        className={hasError("notes") ? "border-red-500" : ""}
+                        className={`min-h-32 resize-none ${hasError("notes") ? "border-red-500" : ""}`}
                     />
                     {hasError("notes") && (
                         <p className="text-sm text-red-500">{getError("notes")}</p>

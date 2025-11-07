@@ -140,7 +140,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                         value={formData.schema_summary || ""}
                         onChange={(e) => handleInputChange("schema_summary", e.target.value)}
                         placeholder="Optional schema description"
-                        rows={3}
+                        className={`min-h-32 resize-none ${errors.schema_summary ? "border-red-500" : ""}`}
                     />
                 </div>
             </div>

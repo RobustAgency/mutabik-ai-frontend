@@ -19,7 +19,7 @@ interface IncidentNotificationFormProps {
 const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ formData, setFormData, errors }) => {
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
   const incidents = incidentsData?.data || [];
-  
+
   const handleInputChange = (field: keyof CreateIncidentNotificationData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -91,7 +91,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
 
       <div className="space-y-2">
         <Label>Notice Summary <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.notice_summary} onChange={(e) => handleInputChange("notice_summary", e.target.value)} rows={4} />
+        <Textarea required value={formData.notice_summary} onChange={(e) => handleInputChange("notice_summary", e.target.value)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">

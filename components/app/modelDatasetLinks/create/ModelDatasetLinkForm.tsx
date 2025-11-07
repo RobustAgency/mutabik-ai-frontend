@@ -248,7 +248,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
             value={formData.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
             placeholder="Additional notes about this link"
-            rows={3}
+            className="min-h-32 resize-none"
           />
         </div>
       </div>

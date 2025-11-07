@@ -416,8 +416,7 @@ export default function ArtifactAccessLogForm({
                                     });
                                 }}
                                 placeholder="Reason for access..."
-                                rows={3}
-                                className={errors.reason ? "border-red-500" : ""}
+                                className={`min-h-32 resize-none ${errors.reason ? "border-red-500" : ""}`}
                             />
                             {errors.reason && (
                                 <p className="text-sm text-red-500">{errors.reason[0]}</p>

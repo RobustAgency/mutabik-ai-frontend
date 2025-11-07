@@ -53,7 +53,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="purpose">Processing Purpose <span className="text-red-500">*</span></Label>
-            <Textarea id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="Describe the processing purpose" rows={2} className={errors.purpose ? "border-red-500" : ""} />
+            <Textarea id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="Describe the processing purpose" className={`min-h-32 resize-none ${errors.purpose ? "border-red-500" : ""}`} />
             {errors.purpose && <p className="text-sm text-red-500">{errors.purpose[0]}</p>}
           </div>
 
@@ -74,7 +74,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
 
           <div className="space-y-2">
             <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
-            <Input id="owner_team" value={formData.owner_team} onChange={(e) => handleChange("owner_team", e.target.value)} placeholder="e.g., Data Governance" className={errors.owner_team ? "border-red-500" : ""} />
+            <Input id="owner_team" value={formData.owner_team} onChange={(e) => handleChange("owner_team", e.target.value)} placeholder="e.g., Data Governance" className={`min-h-32 resize-none ${errors.owner_team ? "border-red-500" : ""}`} />
             {errors.owner_team && <p className="text-sm text-red-500">{errors.owner_team[0]}</p>}
           </div>
 

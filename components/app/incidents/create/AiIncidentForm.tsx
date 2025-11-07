@@ -95,9 +95,8 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
               id="summary"
               value={formData.summary}
               onChange={(e) => handleInputChange("summary", e.target.value)}
-              className={errors.summary ? "border-destructive" : ""}
+              className={`min-h-32 resize-none ${errors.summary ? "border-destructive" : ""}`}
               placeholder="Short narrative of what happened"
-              rows={4}
             />
             {getError("summary") && (
               <p className="text-sm text-destructive">{getError("summary")}</p>
@@ -423,7 +422,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
               value={formData.impacted_systems || ""}
               onChange={(e) => handleInputChange("impacted_systems", e.target.value || null)}
               placeholder="Free text/list of systems/vendors"
-              rows={2}
+              className="min-h-32 resize-none"
             />
           </div>
         </div>

@@ -89,8 +89,7 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
             value={formData.business_definition}
             onChange={(e) => handleChange("business_definition", e.target.value)}
             placeholder="Provide a clear business definition for this element"
-            rows={3}
-            className={errors.business_definition ? "border-red-500" : ""}
+            className={`min-h-32 resize-none ${errors.business_definition ? "border-red-500" : ""}`}
           />
           {errors.business_definition && <p className="text-sm text-red-500">{errors.business_definition[0]}</p>}
         </div>
