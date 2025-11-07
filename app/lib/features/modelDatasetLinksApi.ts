@@ -23,7 +23,7 @@ export interface ModelDatasetLink {
 
 export interface CreateModelDatasetLinkData {
   ai_model_id: string;
-  ai_model_version_id: number;
+  ai_model_version_id: number | null;
   dataset_id?: string;
   dataset_snapshot_id: string;
   role: string;
