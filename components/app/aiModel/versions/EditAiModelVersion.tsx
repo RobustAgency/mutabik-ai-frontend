@@ -65,7 +65,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         if (aiModelVersion) {
             setFormData({
                 // Core identifiers
-                version_number: aiModelVersion.version,
+                version_number: aiModelVersion.version_number,
                 version_type: aiModelVersion.version_type,
                 ai_model_id: aiModelVersion.ai_model_id,
                 description: aiModelVersion.description || '',

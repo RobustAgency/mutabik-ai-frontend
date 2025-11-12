@@ -52,7 +52,7 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
         <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <VersionHeader
-                version={aiModelVersion.version}
+                version={aiModelVersion.version_number}
                 modelName={aiModelVersion.ai_model?.name}
                 versionId={versionId}
                 modelId={aiModelVersion.ai_model_id}
@@ -70,7 +70,7 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-6">
                     <BasicInfo
-                        version={aiModelVersion.version}
+                        version={aiModelVersion.version_number}
                         modelName={aiModelVersion.ai_model?.name}
                         description={aiModelVersion.description || undefined}
                         versionRole={aiModelVersion.version_role}

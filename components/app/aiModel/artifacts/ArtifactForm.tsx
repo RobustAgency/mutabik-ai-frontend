@@ -195,7 +195,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                     }}
                                     options={aiModelVersions.map((version) => ({
                                         id: version.id,
-                                        label: `${version.ai_model?.name || "Model"} • v${version.version || version.id}`,
+                                        label: `${version.ai_model?.name || "Model"} • ${version.version_number}`,
                                         value: String(version.id),
                                     }))}
                                     isLoading={isLoadingVersions}

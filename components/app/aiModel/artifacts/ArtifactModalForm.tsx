@@ -204,7 +204,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             }}
                             options={aiModelVersions.map((version) => ({
                                 id: version.id,
-                                label: `${version.ai_model?.name || "Model"} • v${version.version || version.id}`,
+                                label: `${version.ai_model?.name || "Model"} • ${version.version_number || version.id}`,
                                 value: String(version.id),
                             }))}
                             isLoading={isLoadingVersions}

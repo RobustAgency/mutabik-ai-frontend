@@ -2,7 +2,7 @@ import { api, ApiResponse } from "@/lib/api";
 
 export interface AiModelVersion {
   id: number;
-  version: string;
+  version_number: string;
   ai_model_id: number;
   description?: string | null;
   version_type: "major" | "minor" | "patch" | "experimental";

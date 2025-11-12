@@ -144,7 +144,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     // Prepare version options for SelectWithInlineCreate
     const versionOptions = versions.map((version: any) => ({
         id: version.id,
-        label: `${version.ai_model?.name ?? "Model"} • v${version.version_number ?? version.version ?? version.id}`,
+        label: `${version.ai_model?.name ?? "Model"} • ${version.version_number}`,
         value: String(version.id),
     }))
 

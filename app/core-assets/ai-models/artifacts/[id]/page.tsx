@@ -135,9 +135,7 @@ const Page = () => {
                 <div className="space-y-2">
                   <label className="text-xs text-[#667085] font-medium">Model Version</label>
                   <p className="text-sm text-[#101828]">
-                    {artifact.ai_model_version.ai_model?.name || "N/A"} • v
-                    {artifact.ai_model_version.version ||
-                      artifact.ai_model_version.id}
+                    {artifact.ai_model_version.ai_model?.version_number || "N/A"}
                   </p>
                 </div>
               )}
