@@ -11,6 +11,7 @@ import { CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import { useGetDataSourcesQuery } from "@/app/lib/features/dataSourcesApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import DataSourceModalForm from "@/components/app/dataSources/create/DataSourceModalForm";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface DatasetFormProps {
     formData: CreateDatasetData;
@@ -97,22 +98,19 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
 
                     <div className="space-y-2 w-full">
                         <Label htmlFor="purpose">Purpose <span className="text-red-500">*</span></Label>
-                        <Select
-                            key={`purpose-${formData.purpose || 'empty'}`}
-                            value={formData.purpose || ""}
-                            onValueChange={(value) => handleInputChange("purpose", value)}
-                        >
-                            <SelectTrigger className={errors.purpose ? "border-destructive w-full" : "w-full"}>
-                                <SelectValue placeholder="Select purpose" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="train">Train</SelectItem>
-                                <SelectItem value="val">Validation</SelectItem>
-                                <SelectItem value="test">Test</SelectItem>
-                                <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="analytics">Analytics</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <CustomMultiSelect
+                            options={[
+                                { value: "train", label: "Train" },
+                                { value: "val", label: "Validation" },
+                                { value: "test", label: "Test" },
+                                { value: "online", label: "Online" },
+                                { value: "analytics", label: "Analytics" },
+                            ]}
+                            value={formData.purpose || []}
+                            onChange={(value) => handleInputChange("purpose", value)}
+                            placeholder="Select purpose(s)"
+                            error={!!errors.purpose}
+                        />
                         {errors.purpose && (
                             <p className="text-sm text-destructive">{errors.purpose[0]}</p>
                         )}

@@ -47,7 +47,7 @@ export interface DatasetFilters {
 export interface CreateDatasetData {
   name: string;
   source_ids: number[];
-  purpose: string;
+  purpose: string[];
   schema_summary?: string;
   sensitivity: string;
   contains_pii: string;

@@ -129,7 +129,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset (optional)</Label>
+            <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <Select
               value={formData.dataset_id || undefined}
               onValueChange={(value) => {
@@ -151,7 +151,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                       ? "Loading datasets..."
                       : isDatasetsError
                         ? "Failed to load datasets"
-                        : "Select a dataset (optional)"
+                        : "Select a dataset"
                   }
                 />
               </SelectTrigger>
@@ -163,6 +163,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 ))}
               </SelectContent>
             </Select>
+            {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
         </div>
       </div>

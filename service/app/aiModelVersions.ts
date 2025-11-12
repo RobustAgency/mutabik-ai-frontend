@@ -3,6 +3,7 @@ import { api, ApiResponse } from "@/lib/api";
 export interface AiModelVersion {
   id: number;
   version_number: string;
+  version?: string; // Present in single API response, normalized from version_number in list API
   ai_model_id: number;
   description?: string | null;
   version_type: "major" | "minor" | "patch" | "experimental";
@@ -83,6 +84,7 @@ export interface AiModelVersion {
 export interface CreateAiModelVersionData {
   // Core identifiers
   version_number: string;
+  version: string;
   version_type: "major" | "minor" | "patch" | "experimental";
   ai_model_id: number;
   description?: string | null;

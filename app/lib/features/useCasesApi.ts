@@ -98,13 +98,15 @@ export const useCasesApi = createApi({
       }),
       providesTags: (result, error, id) => [{ type: "UseCase", id }],
       transformResponse: (response: {
-        data: UseCase;
+        data?: UseCase;
         error?: boolean;
         message?: string;
       }) => {
+        // Handle response structure: { data: UseCase, error: boolean, message: string }
         if (response.data) {
           return response.data;
         }
+        // Fallback: if response is the UseCase directly
         return response as any;
       },
     }),

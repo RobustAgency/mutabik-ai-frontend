@@ -18,7 +18,7 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
     const [formData, setFormData] = useState<CreateDatasetData>({
         name: "",
         source_ids: [],
-        purpose: "",
+        purpose: [],
         schema_summary: "",
         sensitivity: "",
         contains_pii: "No",
@@ -55,7 +55,7 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
             setFormData({
                 name: dataset.name,
                 source_ids: (dataset.source_ids || []).map(id => typeof id === 'string' ? parseInt(id, 10) : id),
-                purpose: dataset.purpose,
+                purpose: Array.isArray(dataset.purpose) ? dataset.purpose : (dataset.purpose ? [dataset.purpose] : []),
                 schema_summary: dataset.schema_summary || "",
                 sensitivity: dataset.sensitivity,
                 contains_pii: dataset.contains_pii,
@@ -89,7 +89,7 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
         const errors: Record<string, string[]> = {};
 
         if (!formData.name?.trim()) errors.name = ["Name is required"];
-        if (!formData.purpose?.trim()) errors.purpose = ["Purpose is required"];
+        if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
         if (formData.source_ids.length === 0) errors.source_ids = ["At least one data source is required"];
         if (!formData.sensitivity?.trim()) errors.sensitivity = ["Sensitivity is required"];
         if (!formData.contains_pii?.trim()) errors.contains_pii = ["Contains PII selection is required"];

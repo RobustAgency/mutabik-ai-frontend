@@ -92,13 +92,17 @@ export const aiModelVersionsApi = createApi({
         error?: boolean;
         message?: string;
       }) => {
+        let versions: AiModelVersion[] = [];
         if (response.data?.data) {
-          return response.data.data;
+          versions = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          versions = response.data;
         }
-        if (Array.isArray(response.data)) {
-          return response.data;
-        }
-        return [];
+        // Normalize: ensure version is always available from version_number
+        return versions.map((v) => ({
+          ...v,
+          version: v.version || v.version_number,
+        }));
       },
     }),
 
@@ -113,10 +117,13 @@ export const aiModelVersionsApi = createApi({
         error?: boolean;
         message?: string;
       }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as AiModelVersion;
+        const version =
+          response.data || (response as unknown as AiModelVersion);
+        // Normalize: ensure version is always available (single API returns 'version', fallback to 'version_number')
+        return {
+          ...version,
+          version: version.version || version.version_number,
+        };
       },
     }),
 
