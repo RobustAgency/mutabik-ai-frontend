@@ -34,7 +34,10 @@ const CreateModelDatasetLink: React.FC = () => {
     const errors: Record<string, string[]> = {};
 
     if (!formData.ai_model_id?.trim()) errors.ai_model_id = ["Model is required"];
-    if (!formData.ai_model_version_id) errors.ai_model_version_id = ["Model version is required"];
+    // Model version is required (form shows asterisk)
+    if (!formData.ai_model_version_id || (typeof formData.ai_model_version_id === 'number' && formData.ai_model_version_id <= 0)) {
+      errors.ai_model_version_id = ["Model version is required"];
+    }
     if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
     if (!formData.role?.trim()) errors.role = ["Role is required"];
     if (!formData.created_by?.trim()) errors.created_by = ["Created by is required"];

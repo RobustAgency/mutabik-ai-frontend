@@ -414,13 +414,13 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="license_type">License Type</Label>
+                        <Label htmlFor="license_type">License Type <span className="text-red-500">*</span></Label>
                         <Select
                             key={`license_type-${formData.license_type || 'empty'}`}
                             value={formData.license_type || ""}
                             onValueChange={(value) => handleInputChange("license_type", value)}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className={errors.license_type ? "border-destructive w-full" : "w-full"}>
                                 <SelectValue placeholder="Select license type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -431,6 +431,9 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                                 <SelectItem value="Dataset EULA">Dataset EULA</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.license_type && (
+                            <p className="text-sm text-destructive">{errors.license_type[0]}</p>
+                        )}
                     </div>
                 </div>
             </div>

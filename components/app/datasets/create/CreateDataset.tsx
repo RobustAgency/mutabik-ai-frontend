@@ -102,6 +102,11 @@ const CreateDataset: React.FC = () => {
             errors.owner_team = ["Owner team is required"];
         }
 
+        // License type validation - required
+        if (!formData.license_type?.trim()) {
+            errors.license_type = ["License type is required"];
+        }
+
         // If lawful basis is Consent, require consent_required field
         if (formData.lawful_basis === "Consent") {
             // consent_required is required (boolean)

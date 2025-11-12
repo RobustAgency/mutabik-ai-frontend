@@ -335,10 +335,10 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="active">Active</Label>
+            <Label htmlFor="active">Active Status <span className="text-red-500">*</span></Label>
             <Select
               key={`active-${formData.active || 'empty'}`}
-              value={formData.active ? "true" : "false"}
+              value={formData.active !== undefined && formData.active !== null ? (formData.active ? "true" : "false") : ""}
               onValueChange={(value) => handleInputChange("active", value === "true")}
             >
               <SelectTrigger className={`w-full ${errors.active ? "border-destructive" : ""}`}>

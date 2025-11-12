@@ -78,15 +78,13 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
             }
         }
 
-        if (!formData.checksum) {
-            next.checksum = ["Checksum is required"];
-        } else if (formData.checksum.length > 255) {
+        // Checksum is optional
+        if (formData.checksum && formData.checksum.length > 255) {
             next.checksum = ["Checksum must be 255 characters or less"];
         }
 
-        if (!formData.size_bytes) {
-            next.size_bytes = ["Size in bytes is required"];
-        } else {
+        // Size bytes is optional
+        if (formData.size_bytes) {
             const size = parseInt(formData.size_bytes, 10);
             if (isNaN(size) || size < 0) {
                 next.size_bytes = ["Size must be a non-negative integer"];
@@ -122,8 +120,8 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
         await onSubmit({
             ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
             uri: formData.uri,
-            checksum: formData.checksum,
-            size_bytes: parseInt(formData.size_bytes, 10),
+            checksum: formData.checksum || null,
+            size_bytes: formData.size_bytes ? parseInt(formData.size_bytes, 10) : null,
             artifact_type: formData.artifact_type,
             notes: formData.notes || null,
             created_by: formData.created_by || null,
@@ -275,7 +273,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                             {/* Checksum */}
                             <div className="space-y-2">
                                 <Label htmlFor="checksum">
-                                    Checksum <span className="text-red-500">*</span>
+                                    Checksum
                                 </Label>
                                 <Input
                                     id="checksum"
@@ -302,7 +300,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                             {/* Size Bytes */}
                             <div className="space-y-2">
                                 <Label htmlFor="size_bytes">
-                                    Size (bytes) <span className="text-red-500">*</span>
+                                    Size (bytes)
                                 </Label>
                                 <Input
                                     id="size_bytes"

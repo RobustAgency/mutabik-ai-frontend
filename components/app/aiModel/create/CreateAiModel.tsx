@@ -85,6 +85,16 @@ const CreateAiModel: React.FC = () => {
             errors.organizational_role = ["Organizational role is required"];
         }
 
+        // Source organization/stakeholder validation - always required (form shows asterisk)
+        if (!formData.source_org_stakeholder_id) {
+            errors.source_org_stakeholder_id = ["Source organization/stakeholder is required"];
+        }
+
+        // Model owner/custodian validation - always required
+        if (!formData.owner_stakeholder_id) {
+            errors.owner_stakeholder_id = ["Model owner/custodian is required"];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

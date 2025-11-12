@@ -24,6 +24,7 @@ const CreateDatasetSnapshot: React.FC = () => {
     privacy_transform_evidence_ref: "",
     residency_zone: "",
     storage_uri: "",
+    source_created_at: "",
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
@@ -57,6 +58,7 @@ const CreateDatasetSnapshot: React.FC = () => {
         errors.time_range_end = ["Must be after or equal to start"];
       }
     }
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.residency_zone?.trim()) errors.residency_zone = ["Residency zone is required (AC-04)"];
     if (!formData.storage_uri?.trim()) errors.storage_uri = ["Storage URI is required (AC-04)"];
     if (formData.storage_uri && formData.storage_uri.length > 500) errors.storage_uri = ["Max 500 characters"];

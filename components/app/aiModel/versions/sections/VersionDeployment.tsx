@@ -152,7 +152,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2">
-            Performance Data <span className="text-red-500">*</span>
+            Performance Data
           </Label>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -166,9 +166,6 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
               Has Performance Data
             </Label>
           </div>
-          {errors.has_performance_data && (
-            <p className="text-xs text-red-600 mt-1">{errors.has_performance_data[0]}</p>
-          )}
         </div>
       </div>
 
