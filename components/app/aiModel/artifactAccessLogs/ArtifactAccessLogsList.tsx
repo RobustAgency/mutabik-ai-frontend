@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,12 +11,14 @@ import {
 import { Trash2, Eye } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
-import { AccessAction, AccessContext } from "@/service/app/artifactAccessLogs";
+import { AccessAction, AccessContext, ArtifactAccessLogFilters } from "@/service/app/artifactAccessLogs";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const ArtifactAccessLogsList = () => {
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [perPage] = useState(15);
+    const [filters, setFilters] = useState<ArtifactAccessLogFilters>({});
     const [deleteDialogState, setDeleteDialogState] = useState<{
         isOpen: boolean;
         logId: number | string | null;
@@ -25,10 +27,13 @@ const ArtifactAccessLogsList = () => {
         logId: null,
     });
 
-    const { data, isLoading, refetch } = useGetArtifactAccessLogsQuery({
+    const queryParams = useMemo(() => ({
+        ...filters,
         page,
         per_page: perPage,
-    });
+    }), [filters, page, perPage]);
+
+    const { data, isLoading, refetch } = useGetArtifactAccessLogsQuery(queryParams);
 
     const [deleteLog, { isLoading: isDeleting }] =
         useDeleteArtifactAccessLogMutation();
@@ -100,12 +105,22 @@ const ArtifactAccessLogsList = () => {
                             <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                                 Artifact Access Logs
                             </h2>
-                            <Button
-                                onClick={() => router.push("/core-assets/ai-models/artifact-access-logs/create")}
-                                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-                            >
-                                New Access Log
-                            </Button>
+                            <div className="flex items-center gap-4">
+                                <DynamicFilter
+                                    filterType="artifact-access-logs"
+                                    filters={filters}
+                                    onFiltersChange={(newFilters) => {
+                                        setFilters(newFilters as ArtifactAccessLogFilters);
+                                        setPage(1); // Reset to first page when filters change
+                                    }}
+                                />
+                                <Button
+                                    onClick={() => router.push("/core-assets/ai-models/artifact-access-logs/create")}
+                                    className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                >
+                                    New Access Log
+                                </Button>
+                            </div>
                         </div>
 
                         <div className="overflow-x-auto">

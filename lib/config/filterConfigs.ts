@@ -282,6 +282,74 @@ export const ENUM_VALUES = {
     { value: "high", label: "High" },
     { value: "critical", label: "Critical" },
   ],
+  versionType: [
+    { value: "major", label: "Major" },
+    { value: "minor", label: "Minor" },
+    { value: "patch", label: "Patch" },
+    { value: "experimental", label: "Experimental" },
+  ],
+  lifecycleStage: [
+    { value: "development", label: "Development" },
+    { value: "testing", label: "Testing" },
+    { value: "staging", label: "Staging" },
+    { value: "production", label: "Production" },
+    { value: "deprecated", label: "Deprecated" },
+    { value: "retired", label: "Retired" },
+  ],
+  deploymentStatus: [
+    { value: "not_deployed", label: "Not Deployed" },
+    { value: "deploying", label: "Deploying" },
+    { value: "deployed", label: "Deployed" },
+    { value: "failed", label: "Failed" },
+    { value: "rollback", label: "Rollback" },
+  ],
+  cardStatus: [
+    { value: "draft", label: "Draft" },
+    { value: "in_review", label: "In Review" },
+    { value: "approved", label: "Approved" },
+    { value: "published", label: "Published" },
+    { value: "archived", label: "Archived" },
+  ],
+  publicationStatus: [
+    { value: "not_published", label: "Not Published" },
+    { value: "published_internal", label: "Published Internal" },
+    { value: "published_public", label: "Published Public" },
+  ],
+  creatorRole: [
+    { value: "internal_team", label: "Internal Team" },
+    { value: "vendor_provided", label: "Vendor Provided" },
+    { value: "community_contributed", label: "Community Contributed" },
+    { value: "auto_generated", label: "Auto Generated" },
+  ],
+  cardFormat: [
+    { value: "standard", label: "Standard" },
+    { value: "regulatory", label: "Regulatory" },
+    { value: "industry_specific", label: "Industry Specific" },
+    { value: "custom", label: "Custom" },
+  ],
+  datasetRole: [
+    { value: "pretrain", label: "Pretrain" },
+    { value: "train", label: "Train" },
+    { value: "fine_tune", label: "Fine Tune" },
+    { value: "align_rlhf", label: "Align RLHF" },
+    { value: "validation", label: "Validation" },
+    { value: "test", label: "Test" },
+    { value: "eval_benchmark", label: "Eval Benchmark" },
+    { value: "rag_corpus", label: "RAG Corpus" },
+    { value: "drift_baseline", label: "Drift Baseline" },
+    { value: "online_feedback", label: "Online Feedback" },
+  ],
+  artifactAccessAction: [
+    { value: "read", label: "Read" },
+    { value: "write", label: "Write" },
+    { value: "delete", label: "Delete" },
+  ],
+  artifactAccessContext: [
+    { value: "ci_cd", label: "CI/CD" },
+    { value: "notebook", label: "Notebook" },
+    { value: "console", label: "Console" },
+    { value: "api", label: "API" },
+  ],
 };
 
 // Filter configurations for each API
@@ -780,6 +848,146 @@ export const FILTER_CONFIGS: Record<string, FilterConfig> = {
       dateConstraints: {
         disableFuture: true,
       },
+    },
+  },
+  "ai-model-versions": {
+    version_type: {
+      key: "version_type",
+      label: "Version Type",
+      type: "select",
+      options: ENUM_VALUES.versionType,
+    },
+    lifecycle_stage: {
+      key: "lifecycle_stage",
+      label: "Lifecycle Stage",
+      type: "select",
+      options: ENUM_VALUES.lifecycleStage,
+    },
+    deployment_status: {
+      key: "deployment_status",
+      label: "Deployment Status",
+      type: "select",
+      options: ENUM_VALUES.deploymentStatus,
+    },
+    version_source: {
+      key: "version_source",
+      label: "Version Source",
+      type: "text",
+      placeholder: "Enter version source",
+      maxLength: 100,
+    },
+    version_role: {
+      key: "version_role",
+      label: "Version Role",
+      type: "text",
+      placeholder: "Enter version role",
+      maxLength: 50,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+    },
+  },
+  "ai-model-cards": {
+    status: {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ENUM_VALUES.cardStatus,
+    },
+    publication_status: {
+      key: "publication_status",
+      label: "Publication Status",
+      type: "select",
+      options: ENUM_VALUES.publicationStatus,
+    },
+    owner: {
+      key: "owner",
+      label: "Owner",
+      type: "text",
+      placeholder: "Enter owner name",
+    },
+    creator_role: {
+      key: "creator_role",
+      label: "Creator Role",
+      type: "select",
+      options: ENUM_VALUES.creatorRole,
+    },
+    format: {
+      key: "format",
+      label: "Format",
+      type: "select",
+      options: ENUM_VALUES.cardFormat,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+    },
+  },
+  "ai-model-use-cases": {
+    // Only ai_model_id filter - this is typically used in detail views, not in the main list
+    // We'll skip this as it's not a typical filter for the list view
+  },
+  "dataset-snapshots": {
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+    },
+  },
+  "ai-model-datasets": {
+    role: {
+      key: "role",
+      label: "Role",
+      type: "select",
+      options: ENUM_VALUES.datasetRole,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "artifact-access-logs": {
+    action: {
+      key: "action",
+      label: "Action",
+      type: "select",
+      options: ENUM_VALUES.artifactAccessAction,
+    },
+    context: {
+      key: "context",
+      label: "Context",
+      type: "select",
+      options: ENUM_VALUES.artifactAccessContext,
     },
   },
 };

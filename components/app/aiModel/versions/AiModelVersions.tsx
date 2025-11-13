@@ -7,8 +7,9 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
-import { AiModelVersion } from "@/service/app/aiModelVersions";
+import { AiModelVersion, AiModelVersionFilters } from "@/service/app/aiModelVersions";
 import { formatDate } from "@/lib/helpers/ui";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import {
     Dialog,
     DialogContent,
@@ -25,8 +26,9 @@ const formatCategory = (value: unknown): string => {
 };
 
 const AiModelVersions: React.FC = () => {
-    const { aiModelVersions, loading, deleteAiModelVersion } = useAiModelVersions();
     const router = useRouter();
+    const [filters, setFilters] = React.useState<AiModelVersionFilters>({});
+    const { aiModelVersions, loading, deleteAiModelVersion } = useAiModelVersions(filters);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [versionToDelete, setVersionToDelete] = React.useState<AiModelVersion | null>(null);
 
@@ -233,12 +235,19 @@ const AiModelVersions: React.FC = () => {
                 <CardContent className="flex flex-col flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Model Versions</h2>
-                        <Button
-                            onClick={() => router.push("/core-assets/ai-models/versions/create")}
-                            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-                        >
-                            New AI Model Version
-                        </Button>
+                        <div className="flex items-center gap-4">
+                            <DynamicFilter
+                                filterType="ai-model-versions"
+                                filters={filters}
+                                onFiltersChange={(newFilters) => setFilters(newFilters as AiModelVersionFilters)}
+                            />
+                            <Button
+                                onClick={() => router.push("/core-assets/ai-models/versions/create")}
+                                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            >
+                                New AI Model Version
+                            </Button>
+                        </div>
                     </div>
                     <Card className="bg-white w-full rounded-xl border-0 py-0">
                         <DataTable
