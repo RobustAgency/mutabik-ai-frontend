@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useGetAiIncidentQuery, useDeleteAiIncidentMutation } from "@/app/lib/features/aiIncidentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 interface AiIncidentDetailsProps {
   incidentId: string;

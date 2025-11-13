@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDatasetSnapshotsQuery, useDeleteDatasetSnapshotMutation, DatasetSnapshot } from "@/app/lib/features/datasetSnapshotsApi";
+import { useGetDatasetSnapshotsQuery, useDeleteDatasetSnapshotMutation, DatasetSnapshot, DatasetSnapshotFilters } from "@/app/lib/features/datasetSnapshotsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const DatasetSnapshotsPage: React.FC = () => {
   const router = useRouter();
+  const [filters, setFilters] = React.useState<DatasetSnapshotFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     snapshotId: string | null;
@@ -24,7 +26,7 @@ const DatasetSnapshotsPage: React.FC = () => {
   });
 
   const [deleteSnapshot, { isLoading: isDeleting }] = useDeleteDatasetSnapshotMutation();
-  const { data: snapshots, isLoading } = useGetDatasetSnapshotsQuery();
+  const { data: snapshots, isLoading } = useGetDatasetSnapshotsQuery(filters);
 
   const handleDeleteClick = (e: React.MouseEvent, snapshot: DatasetSnapshot) => {
     e.stopPropagation();
@@ -78,14 +80,18 @@ const DatasetSnapshotsPage: React.FC = () => {
       accessorKey: "dataset_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Dataset ID
+          Dataset
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const datasetName = row.original.dataset?.name;
+        const datasetId = row.original.dataset_id;
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {datasetName || datasetId}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "residency_zone",
@@ -158,12 +164,19 @@ const DatasetSnapshotsPage: React.FC = () => {
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Dataset Snapshots</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Immutable snapshots for reproducible training/validation</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/snapshots/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Snapshot
-            </Button>
+            <div className="flex items-center gap-4">
+              <DynamicFilter
+                filterType="dataset-snapshots"
+                filters={filters}
+                onFiltersChange={(newFilters) => setFilters(newFilters as DatasetSnapshotFilters)}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/snapshots/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Snapshot
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable

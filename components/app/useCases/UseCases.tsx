@@ -9,13 +9,16 @@ import { useRouter } from "next/navigation";
 import { useUseCases } from '@/hooks/app/useUseCases';
 import { UseCase } from "@/service/app/useCases";
 import { formatDateShort } from "@/lib/helpers/date";
+import { UseCaseFilters } from "@/app/lib/features/useCasesApi";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 // Date formatter (e.g., "Oct 06, 2025")
 const formatDate = (dateString: string | null | undefined): string => formatDateShort(dateString);
 
 const UseCases: React.FC = () => {
-  const { useCases, loading } = useUseCases();
   const router = useRouter();
+  const [filters, setFilters] = React.useState<UseCaseFilters>({});
+  const { useCases, loading } = useUseCases(filters);
 
   const columns: ColumnDef<UseCase>[] = [
     {
@@ -107,17 +110,28 @@ const UseCases: React.FC = () => {
     },
   ];
 
+  const handleFiltersChange = (newFilters: Record<string, any>) => {
+    setFilters(newFilters as UseCaseFilters);
+  };
+
   return (
     <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
       <CardContent className="flex flex-col flex-1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Use cases</h2>
-          <Button
-            onClick={() => router.push("/core-assets/ai-use-cases/create")}
-            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-          >
-            New use case
-          </Button>
+          <div className="flex items-center gap-3">
+            <DynamicFilter
+              filterType="use-cases"
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+            />
+            <Button
+              onClick={() => router.push("/core-assets/ai-use-cases/create")}
+              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+            >
+              New use case
+            </Button>
+          </div>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
           <DataTable

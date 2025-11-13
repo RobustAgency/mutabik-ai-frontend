@@ -9,7 +9,6 @@ import { CreateAiModelVersionData } from '@/service/app/aiModelVersions';
 import VersionBasicInfo from './sections/VersionBasicInfo';
 import VersionTechnical from './sections/VersionTechnical';
 import VersionDeployment from './sections/VersionDeployment';
-import { toast } from "react-toastify";
 
 interface AiModelVersionModalFormProps {
     onSuccess?: (version: any) => void;
@@ -24,6 +23,7 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
 
     const [formData, setFormData] = useState<CreateAiModelVersionData>({
         version_number: '',
+        version: '',
         version_type: 'minor',
         ai_model_id: 0,
         description: '',

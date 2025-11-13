@@ -26,6 +26,14 @@ export interface DataSource {
 }
 
 export interface DataSourceFilters {
+  per_page?: number; // min:1, max:100
+  from?: string; // date
+  to?: string; // date
+  name?: string; // max:255
+  system_type?: string; // max:255
+  access_method?: string; // max:255
+  classification?: string; // max:255
+  // Legacy support
   search?: string;
   page?: number;
   limit?: number;

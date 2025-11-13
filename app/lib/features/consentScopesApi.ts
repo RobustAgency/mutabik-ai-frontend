@@ -13,6 +13,16 @@ export interface ConsentScope {
   effective_from: string;
   effective_to: string | null;
   created_at: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+}
+
+// Filter types for Consent Scopes
+export interface ConsentScopeFilters {
+  per_page?: number | null; // min:1, max:100
 }
 
 export interface CreateConsentScopeData {
@@ -83,10 +93,14 @@ export const consentScopesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["ConsentScope"],
   endpoints: (builder) => ({
-    getConsentScopes: builder.query<ConsentScope[], void>({
-      query: () => ({
+    getConsentScopes: builder.query<
+      ConsentScope[],
+      ConsentScopeFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/consent-scopes",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

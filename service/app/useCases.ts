@@ -2,7 +2,8 @@ import { api, ApiResponse } from "@/lib/api";
 
 export interface UseCase {
   id: number;
-  title: string;
+  name?: string; // API returns 'name' instead of 'title' in some cases
+  title?: string;
   description: string | null;
   status:
     | "draft"
@@ -16,29 +17,49 @@ export interface UseCase {
     | "deprecated";
   business_domain: string;
   business_objective: string;
-  business_owner_email: string;
-  technical_owner_email: string;
-  regulatory_scope: string[]; // backend expects array
+  business_owner?: {
+    id: number;
+    email: string;
+    display_name?: string;
+    [key: string]: any;
+  };
+  business_owner_email?: string;
+  technical_owner?: {
+    id: number;
+    email: string;
+    display_name?: string;
+    [key: string]: any;
+  };
+  technical_owner_email?: string;
+  regulatory_scope?: string[]; // backend expects array
   data_sensitivity: "public" | "internal" | "confidential" | "restricted";
-  go_live_date: string | null;
+  go_live_date?: string | null;
+  target_go_live_date?: string | null;
 
-  use_case_type: string;
-  value_driver: string;
-  expected_roi: number | null;
-  implementation_cost: number | null;
-  reduction_time: number | null;
-  reduction_cost: number | null;
-  increase_revenue: number | null;
-  risk_avoidance: number | null;
-  fte_capacity: number | null;
-  overall_risk_score: number | null;
+  use_case_type?: string;
+  value_driver?: string;
+  expected_roi?: number | null;
+  expected_roi_percentage?: string | number | null; // API returns as string "0.00"
+  implementation_cost?: number | null;
+  estimated_implementation_cost?: number | null;
+  reduction_time?: number | null;
+  estimated_reduction_in_time?: number | null;
+  reduction_cost?: number | null;
+  estimated_reduction_in_cost?: number | null;
+  increase_revenue?: number | null;
+  estimated_revenue_increase?: number | null;
+  risk_avoidance?: number | null;
+  fte_capacity?: number | null;
+  estimated_fte_capacity_saving?: number | null;
+  overall_risk_score?: number | null;
   risk_level: "low" | "medium" | "high" | "critical";
-  human_oversigh_mode: string;
-  dpia: boolean | null;
-  aia: boolean | null;
-  data_availability_status: string;
-  data_readiness_level: string;
-  data_freshness: string;
+  human_oversigh_mode?: string;
+  dpia?: boolean | null;
+  aia?: boolean | null;
+  data_availability_status?: string | null;
+  data_readiness?: string | null; // API returns 'data_readiness' instead of 'data_readiness_level'
+  data_readiness_level?: string;
+  data_freshness?: string;
   created_at: string;
   updated_at: string;
 }

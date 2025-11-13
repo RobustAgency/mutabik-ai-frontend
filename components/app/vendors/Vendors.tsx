@@ -10,12 +10,15 @@ import {
   useGetVendorsQuery,
   useDeleteVendorMutation,
   Vendor,
+  VendorFilters,
 } from "@/app/lib/features/vendorsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const Vendors: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<VendorFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     vendorId: number | null;
@@ -26,10 +29,13 @@ const Vendors: React.FC = () => {
     vendorName: "",
   });
 
-  const { data, isLoading } = useGetVendorsQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetVendorsQuery(queryParams);
   const [deleteVendor, { isLoading: isDeleting }] = useDeleteVendorMutation();
 
   const vendors = data?.data ?? [];
@@ -244,12 +250,22 @@ const Vendors: React.FC = () => {
                 Manage vendor registry and relationships
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/vendors/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Vendor
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="vendors"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as VendorFilters);
+                  setCurrentPage(1); // Reset to first page when filters change
+                }}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/vendors/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Vendor
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable

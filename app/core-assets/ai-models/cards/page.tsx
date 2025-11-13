@@ -2,16 +2,18 @@
 
 
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useGetAiModelCardsQuery } from '@/app/lib/features/aiModelCardsApi'
+import { useGetAiModelCardsQuery, AiModelCardFilters } from '@/app/lib/features/aiModelCardsApi'
 import { formatDateISO } from '@/lib/helpers/date'
+import { DynamicFilter } from '@/components/custom/DynamicFilter'
 
 const Page = () => {
     const router = useRouter();
-    const { data: cards = [], isLoading } = useGetAiModelCardsQuery();
+    const [filters, setFilters] = useState<AiModelCardFilters>({});
+    const { data: cards = [], isLoading } = useGetAiModelCardsQuery(filters);
 
     const getStatusLabel = (status: string) => {
         const statusMap: Record<string, string> = {
@@ -29,7 +31,14 @@ const Page = () => {
                 <CardContent className="flex flex-col flex-1 gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Model Version Cards</h2>
-                        <Button onClick={() => router.push('/core-assets/ai-models/cards/create')} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">New model version card</Button>
+                        <div className="flex items-center gap-4">
+                            <DynamicFilter
+                                filterType="ai-model-cards"
+                                filters={filters}
+                                onFiltersChange={(newFilters) => setFilters(newFilters as AiModelCardFilters)}
+                            />
+                            <Button onClick={() => router.push('/core-assets/ai-models/cards/create')} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">New model version card</Button>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

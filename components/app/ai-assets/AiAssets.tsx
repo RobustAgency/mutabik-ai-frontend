@@ -34,8 +34,12 @@ const AiAssets: React.FC = () => {
         },
         {
             accessorKey: "vendor_id",
-            header: "Vendor ID",
-            cell: ({ getValue }) => getValue() ?? "-",
+            header: "Vendor",
+            cell: ({ row }) => {
+                const vendorName = row.original.vendor?.vendor_name;
+                const vendorId = row.original.vendor_id;
+                return vendorName || vendorId || "-";
+            },
         },
         {
             accessorKey: "vendor_agreement_id",

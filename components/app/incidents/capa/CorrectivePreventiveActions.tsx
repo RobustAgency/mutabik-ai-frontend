@@ -10,12 +10,15 @@ import {
   useGetCorrectivePreventiveActionsQuery,
   useDeleteCorrectivePreventiveActionMutation,
   CorrectivePreventiveAction,
+  CorrectivePreventiveActionFilters,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const CorrectivePreventiveActions: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<CorrectivePreventiveActionFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     capaId: number | null;
@@ -24,10 +27,13 @@ const CorrectivePreventiveActions: React.FC = () => {
     capaId: null,
   });
 
-  const { data, isLoading } = useGetCorrectivePreventiveActionsQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetCorrectivePreventiveActionsQuery(queryParams);
   const [deleteCapa, { isLoading: isDeleting }] = useDeleteCorrectivePreventiveActionMutation();
 
   const capas = data?.data ?? [];
@@ -131,12 +137,22 @@ const CorrectivePreventiveActions: React.FC = () => {
                 Manage remediation and hardening tasks
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/governance/incidents/capa/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              Create CAPA
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="corrective-preventive-actions"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as CorrectivePreventiveActionFilters);
+                  setCurrentPage(1);
+                }}
+              />
+              <Button
+                onClick={() => router.push("/governance/incidents/capa/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                Create CAPA
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable

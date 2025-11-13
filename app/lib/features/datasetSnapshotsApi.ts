@@ -19,6 +19,18 @@ export interface DatasetSnapshot {
   residency_zone: string;
   storage_uri: string;
   created_at: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+}
+
+// Filter types for Dataset Snapshots
+export interface DatasetSnapshotFilters {
+  per_page?: number | null; // min:1, max:100
+  from?: string | null; // date
+  to?: string | null; // date, after_or_equal:from
 }
 
 export interface CreateDatasetSnapshotData {
@@ -95,10 +107,14 @@ export const datasetSnapshotsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["DatasetSnapshot"],
   endpoints: (builder) => ({
-    getDatasetSnapshots: builder.query<DatasetSnapshot[], void>({
-      query: () => ({
+    getDatasetSnapshots: builder.query<
+      DatasetSnapshot[],
+      DatasetSnapshotFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/dataset-snapshots",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

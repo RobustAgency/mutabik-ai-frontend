@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { useGetDatasetSubjectPopulationsQuery, useDeleteDatasetSubjectPopulationMutation } from "@/app/lib/features/datasetSubjectPopulationApi";
+import { useGetDatasetSubjectPopulationsQuery, useDeleteDatasetSubjectPopulationMutation, DatasetSubjectPopulationFilters } from "@/app/lib/features/datasetSubjectPopulationApi";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const DatasetSubjectPopulationList = () => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<DatasetSubjectPopulationFilters>({});
   const [deleteDialogState, setDeleteDialogState] = useState<{
     isOpen: boolean;
     populationId: string | null;
@@ -21,7 +24,13 @@ const DatasetSubjectPopulationList = () => {
     populationName: "",
   });
 
-  const { data: populationData, isLoading } = useGetDatasetSubjectPopulationsQuery({ page: 1, per_page: 15 });
+  const queryParams = useMemo(() => ({
+    ...filters,
+    page: currentPage,
+    per_page: 15,
+  }), [filters, currentPage]);
+
+  const { data: populationData, isLoading } = useGetDatasetSubjectPopulationsQuery(queryParams);
   const [deletePopulation, { isLoading: isDeleting }] = useDeleteDatasetSubjectPopulationMutation();
 
   const handleEditClick = (e: React.MouseEvent, population: any) => {
@@ -200,12 +209,22 @@ const DatasetSubjectPopulationList = () => {
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Dataset Subject Population</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Denominator facts by dataset/snapshot/realm/jurisdiction</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/subject-population/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              + Add Population Record
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="dataset-subject-populations"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as DatasetSubjectPopulationFilters);
+                  setCurrentPage(1); // Reset to first page when filters change
+                }}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/subject-population/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                + Add Population Record
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable
@@ -214,6 +233,17 @@ const DatasetSubjectPopulationList = () => {
               variant="projects"
               loading={isLoading}
               onRowClick={(population) => router.push(`/core-assets/data/subject-population/${population.id}/details`)}
+              pagination={
+                populationData
+                  ? {
+                    page: populationData.current_page,
+                    limit: populationData.per_page,
+                    total: populationData.total,
+                    totalPages: populationData.last_page,
+                  }
+                  : undefined
+              }
+              onPageChange={setCurrentPage}
               emptyState={{
                 title: "No population records found",
                 description: "Population records define subject counts by dataset, snapshot, realm, and jurisdiction",

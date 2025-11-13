@@ -19,7 +19,7 @@ interface AgreementModalFormProps {
 
 const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCancel }) => {
   const [createAgreement, { isLoading }] = useCreateAgreementMutation();
-  const { data: vendorsData, isLoading: isVendorsLoading } = useGetVendorsQuery({ per_page: 1000 });
+  const { data: vendorsData, isLoading: isVendorsLoading } = useGetVendorsQuery({ per_page: 100 });
 
   const [form, setForm] = useState<Partial<CreateAgreementData>>({
     agreement_type: "msa",

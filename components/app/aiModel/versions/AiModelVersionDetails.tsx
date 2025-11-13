@@ -11,7 +11,6 @@ import BasicInfo from "./sections/BasicInfo";
 import TechnicalDetails from "./sections/TechnicalDetails";
 import DeploymentInfo from "./sections/DeploymentInfo";
 import ReleaseNotes from "./sections/ReleaseNotes";
-import QuickActions from "./sections/QuickActions";
 import Metadata from "./sections/Metadata";
 
 interface AiModelVersionDetailsProps {
@@ -52,7 +51,7 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
         <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <VersionHeader
-                version={aiModelVersion.version}
+                version={aiModelVersion.version || aiModelVersion.version_number}
                 modelName={aiModelVersion.ai_model?.name}
                 versionId={versionId}
                 modelId={aiModelVersion.ai_model_id}
@@ -70,7 +69,7 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-6">
                     <BasicInfo
-                        version={aiModelVersion.version}
+                        version={aiModelVersion.version || aiModelVersion.version_number}
                         modelName={aiModelVersion.ai_model?.name}
                         description={aiModelVersion.description || undefined}
                         versionRole={aiModelVersion.version_role}
@@ -99,21 +98,21 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
                         complianceStatus={aiModelVersion.compliance_check_status}
                     />
 
-                    <ReleaseNotes releaseNotes={aiModelVersion.release_notes || undefined} />
                 </div>
 
                 {/* Sidebar */}
                 <div className="space-y-6">
-                    <QuickActions
+                    {/* <QuickActions
                         versionId={versionId}
                         modelId={aiModelVersion.ai_model_id}
-                    />
+                        /> */}
 
                     <Metadata
                         id={aiModelVersion.id}
                         createdAt={aiModelVersion.created_at}
                         updatedAt={aiModelVersion.updated_at}
                     />
+                    <ReleaseNotes releaseNotes={aiModelVersion.release_notes || undefined} />
                 </div>
             </div>
         </div>

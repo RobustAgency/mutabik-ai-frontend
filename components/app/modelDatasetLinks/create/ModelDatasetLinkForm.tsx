@@ -29,11 +29,11 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
   const { data: modelsData, isLoading: isLoadingModels } = useGetAiModelsQuery();
   const models = modelsData || [];
   const { data: modelVersionsData, isLoading: isLoadingVersions } = useGetAiModelVersionsQuery();
-  const modelVersions = modelVersionsData || [];
+  const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
   const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
   const datasets = datasetsData || [];
   const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
-  const snapshots = snapshotsData || [];
+  const snapshots = React.useMemo(() => snapshotsData || [], [snapshotsData]);
 
   // Filter versions based on selected model
   const filteredVersions = React.useMemo(() => {
@@ -108,7 +108,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
 
           <div className="space-y-2">
             <Label htmlFor="dataset_snapshot_id">
-              Snapshot {isSnapshotRequired ? <span className="text-red-500">*</span> : <span className="text-gray-500">(optional)</span>}
+              Snapshot {isSnapshotRequired ? <span className="text-red-500">*</span> : <span className="text-gray-500"></span>}
             </Label>
             <SelectWithInlineCreate
               value={formData.dataset_snapshot_id || undefined}
@@ -129,7 +129,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset (optional)</Label>
+            <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <Select
               value={formData.dataset_id || undefined}
               onValueChange={(value) => {
@@ -151,7 +151,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                       ? "Loading datasets..."
                       : isDatasetsError
                         ? "Failed to load datasets"
-                        : "Select a dataset (optional)"
+                        : "Select a dataset"
                   }
                 />
               </SelectTrigger>
@@ -163,6 +163,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 ))}
               </SelectContent>
             </Select>
+            {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
         </div>
       </div>

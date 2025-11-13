@@ -6,12 +6,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateDatasetMutation, CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import DatasetForm from "./DatasetForm";
-import { toast } from "react-toastify";
 
 const initialFormData: CreateDatasetData = {
     name: "",
     source_ids: [],
-    purpose: "",
+    purpose: [],
     schema_summary: "",
     sensitivity: "",
     contains_pii: "No",
@@ -59,8 +58,8 @@ const DatasetModalForm: React.FC<DatasetModalFormProps> = ({
             errors.name = ["Name is required"];
         }
 
-        if (!formData.purpose?.trim()) {
-            errors.purpose = ["Purpose is required"];
+        if (!formData.purpose || formData.purpose.length === 0) {
+            errors.purpose = ["At least one purpose is required"];
         }
 
         if (formData.source_ids.length === 0) {

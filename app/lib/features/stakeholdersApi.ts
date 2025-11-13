@@ -24,13 +24,10 @@ export interface Stakeholder {
 }
 
 export interface StakeholderFilters {
-  type?:
-    | "person"
-    | "team"
-    | "vendor_org"
-    | "regulator"
-    | "customer_group"
-    | "committee_secretariat";
+  type?: string | null;
+  name?: string | null; // max:255
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
   search?: string;
   page?: number;
   limit?: number;

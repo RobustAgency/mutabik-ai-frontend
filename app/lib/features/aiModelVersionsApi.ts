@@ -5,8 +5,23 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 import type {
   AiModelVersion,
   CreateAiModelVersionData,
-  AiModelVersionFilters,
 } from "@/service/app/aiModelVersions";
+
+// Filter types for AI Model Versions (matching API spec)
+export interface AiModelVersionFilters {
+  ai_model_id?: number; // exists:ai_models,id
+  version_type?: string | null; // max:50
+  from?: string | null; // date
+  to?: string | null; // date, after_or_equal:from
+  version_source?: string | null; // max:100
+  lifecycle_stage?: string | null; // max:50
+  version_role?: string | null; // max:50
+  deployment_status?: string | null; // max:50
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
+  search?: string;
+  page?: number;
+}
 
 // Custom base query using existing Axios client
 const axiosBaseQuery =
@@ -92,13 +107,17 @@ export const aiModelVersionsApi = createApi({
         error?: boolean;
         message?: string;
       }) => {
+        let versions: AiModelVersion[] = [];
         if (response.data?.data) {
-          return response.data.data;
+          versions = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          versions = response.data;
         }
-        if (Array.isArray(response.data)) {
-          return response.data;
-        }
-        return [];
+        // Normalize: ensure version is always available from version_number
+        return versions.map((v) => ({
+          ...v,
+          version: v.version || v.version_number,
+        }));
       },
     }),
 
@@ -113,10 +132,13 @@ export const aiModelVersionsApi = createApi({
         error?: boolean;
         message?: string;
       }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as AiModelVersion;
+        const version =
+          response.data || (response as unknown as AiModelVersion);
+        // Normalize: ensure version is always available (single API returns 'version', fallback to 'version_number')
+        return {
+          ...version,
+          version: version.version || version.version_number,
+        };
       },
     }),
 

@@ -37,6 +37,12 @@ export interface AiModelUseCase {
   };
 }
 
+// Filter types for AI Model Use Cases
+export interface AiModelUseCaseFilters {
+  ai_model_id?: number; // exists:ai_models,id
+  per_page?: number; // min:1
+}
+
 // Type for creating AI Model Use Case
 export interface CreateAiModelUseCaseData {
   ai_model_id: number;
@@ -133,12 +139,22 @@ export const aiModelUseCasesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiModelUseCase"],
   endpoints: (builder) => ({
-    getAiModelUseCases: builder.query<AiModelUseCase[], number | void>({
-      query: (aiModelId) => ({
-        url: "/ai-model-use-cases",
-        method: "GET",
-        params: aiModelId ? { ai_model_id: aiModelId } : {},
-      }),
+    getAiModelUseCases: builder.query<
+      AiModelUseCase[],
+      AiModelUseCaseFilters | number | void
+    >({
+      query: (filtersOrId) => {
+        // Support both old API (number) and new API (filters object)
+        const params =
+          typeof filtersOrId === "number"
+            ? { ai_model_id: filtersOrId }
+            : filtersOrId || {};
+        return {
+          url: "/ai-model-use-cases",
+          method: "GET",
+          params,
+        };
+      },
       providesTags: (result, error, aiModelId) =>
         result
           ? [
@@ -146,9 +162,17 @@ export const aiModelUseCasesApi = createApi({
                 type: "AiModelUseCase" as const,
                 id,
               })),
-              { type: "AiModelUseCase", id: aiModelId ? `LIST-${aiModelId}` : "LIST" },
+              {
+                type: "AiModelUseCase",
+                id: aiModelId ? `LIST-${aiModelId}` : "LIST",
+              },
             ]
-          : [{ type: "AiModelUseCase", id: aiModelId ? `LIST-${aiModelId}` : "LIST" }],
+          : [
+              {
+                type: "AiModelUseCase",
+                id: aiModelId ? `LIST-${aiModelId}` : "LIST",
+              },
+            ],
       transformResponse: (response: AiModelUseCasesResponse) => {
         if (response.data?.data) {
           return response.data.data;

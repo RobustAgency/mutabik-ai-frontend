@@ -28,7 +28,7 @@ const EditAgreement: React.FC = () => {
   const [validationErrors, setValidationErrors] = React.useState<Record<string, string[]>>({});
 
   // Fetch vendors for dropdown
-  const { data: vendorsData, isLoading: isLoadingVendors } = useGetVendorsQuery({ per_page: 1000 });
+  const { data: vendorsData, isLoading: isLoadingVendors } = useGetVendorsQuery({ per_page: 100 });
 
   const [form, setForm] = React.useState({
     vendor_id: "",

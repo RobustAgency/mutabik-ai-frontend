@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,16 +9,19 @@ import { ColumnDef } from "@tanstack/react-table";
 import {
     useGetAiModelArtifactsQuery,
     useDeleteAiModelArtifactMutation,
+    AiModelArtifactFilters,
 } from "@/app/lib/features/aiModelArtifactsApi";
 import { Trash2 } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
 import { AiModelArtifact } from "@/service/app/aiModelArtifacts";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const ArtifactsMain = () => {
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [perPage] = useState(15);
+    const [filters, setFilters] = useState<AiModelArtifactFilters>({});
     const [deleteDialogState, setDeleteDialogState] = useState<{
         isOpen: boolean;
         artifactId: number | string | null;
@@ -29,10 +32,13 @@ const ArtifactsMain = () => {
         artifactUri: "",
     });
 
-    const { data, isLoading, refetch } = useGetAiModelArtifactsQuery({
+    const queryParams = useMemo(() => ({
+        ...filters,
         page,
         per_page: perPage,
-    });
+    }), [filters, page, perPage]);
+
+    const { data, isLoading, refetch } = useGetAiModelArtifactsQuery(queryParams);
 
     const [deleteArtifact, { isLoading: isDeleting }] =
         useDeleteAiModelArtifactMutation();
@@ -88,16 +94,28 @@ const ArtifactsMain = () => {
                     artifactUri: "",
                 });
                 refetch();
-            } catch (error) {
+            } catch {
                 // Error is handled by the mutation's onQueryStarted
             }
         }
     };
 
     const artifacts = data?.data || [];
-    const totalPages = data?.last_page || 1;
 
     const columns: ColumnDef<AiModelArtifact>[] = [
+        {
+            accessorKey: "name",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Name
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans text-sm leading-5 tracking-normal text-[#1D2939]">
+                    {String(getValue() || "N/A")}
+                </div>
+            ),
+        },
         {
             accessorKey: "artifact_type",
             header: () => (
@@ -185,7 +203,7 @@ const ArtifactsMain = () => {
             ),
             cell: ({ row }) => (
                 <div className="flex items-center justify-end gap-2">
-                    <Button
+                    {/* <Button
                         variant="outline"
                         size="sm"
                         onClick={(e) => {
@@ -195,7 +213,7 @@ const ArtifactsMain = () => {
                         className="h-8 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
                     >
                         View
-                    </Button>
+                    </Button> */}
                     <Button
                         variant="outline"
                         size="sm"
@@ -221,12 +239,22 @@ const ArtifactsMain = () => {
                             <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                                 All AI Model Artifacts
                             </h2>
-                            <Button
-                                onClick={() => router.push("/core-assets/ai-models/artifacts/create")}
-                                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-                            >
-                                New Artifact
-                            </Button>
+                            <div className="flex items-center gap-3">
+                                <DynamicFilter
+                                    filterType="ai-model-artifacts"
+                                    filters={filters}
+                                    onFiltersChange={(newFilters) => {
+                                        setFilters(newFilters as AiModelArtifactFilters);
+                                        setPage(1); // Reset to first page when filters change
+                                    }}
+                                />
+                                <Button
+                                    onClick={() => router.push("/core-assets/ai-models/artifacts/create")}
+                                    className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                >
+                                    New Artifact
+                                </Button>
+                            </div>
                         </div>
                         <DataTable
                             columns={columns}

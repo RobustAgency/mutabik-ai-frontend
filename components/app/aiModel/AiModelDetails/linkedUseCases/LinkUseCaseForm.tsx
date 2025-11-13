@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button'
-import { DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -18,9 +16,13 @@ import { useRouter } from 'next/navigation'
 interface LinkUseCaseFormProps {
     aiModelId?: number // Make optional since we'll select it in the form
     onSuccess?: () => void
+    formRef?: React.RefObject<HTMLFormElement | null>
+    onValidityChange?: (isValid: boolean) => void
+    isSubmitting?: boolean
+    setIsSubmitting?: (value: boolean) => void
 }
 
-const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess }) => {
+const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess, formRef, onValidityChange, setIsSubmitting }) => {
     const router = useRouter()
     const [formData, setFormData] = useState({
         ai_model_id: aiModelId ? String(aiModelId) : '',
@@ -51,7 +53,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     const { data: useCases = [], isLoading: useCasesLoading } = useGetUseCasesQuery()
 
     // Create mutation
-    const [createLink, { isLoading: isCreating }] = useCreateAiModelUseCaseMutation()
+    const [createLink] = useCreateAiModelUseCaseMutation()
 
     // Clear ai_model_version_id when ai_model_id changes
     useEffect(() => {
@@ -66,6 +68,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setSubmitAttempted(true)
+        setIsSubmitting?.(true)
 
         // Mark all fields as touched
         setTouched({
@@ -81,6 +84,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
             formData.ai_model_id === 'loading' ||
             formData.use_case_id === 'loading' ||
             formData.use_case_id === 'no-use-cases') {
+            setIsSubmitting?.(false)
             return
         }
 
@@ -114,9 +118,11 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
 
             router.push(`/core-assets/ai-models/link-use-case`)
             onSuccess?.()
+            setIsSubmitting?.(false)
         } catch (error: any) {
             console.error('Failed to link use case:', error)
             toast.error(error?.data?.message || 'Failed to link use case. Please try again.')
+            setIsSubmitting?.(false)
         }
     }
 
@@ -144,7 +150,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
     // Prepare version options for SelectWithInlineCreate
     const versionOptions = versions.map((version: any) => ({
         id: version.id,
-        label: `${version.ai_model?.name ?? "Model"} • v${version.version_number ?? version.version ?? version.id}`,
+        label: `${version.ai_model?.name ?? "Model"} • ${version.version_number}`,
         value: String(version.id),
     }))
 
@@ -155,8 +161,24 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
         value: String(useCase.id),
     }))
 
+    // Check if form is valid for submit button
+    const isFormValid = !!(
+        formData.ai_model_id &&
+        formData.use_case_id &&
+        formData.created_by?.trim() &&
+        formData.ai_model_id !== 'loading' &&
+        formData.use_case_id !== 'loading' &&
+        formData.use_case_id !== 'no-use-cases'
+    );
+
+    // Notify parent of validity changes
+    useEffect(() => {
+        onValidityChange?.(isFormValid);
+    }, [isFormValid, onValidityChange]);
+
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
+
             <div className="space-y-2">
                 <Label htmlFor="ai-model" className="text-sm font-medium">
                     Select AI Model <span className="text-red-500">*</span>
@@ -258,24 +280,6 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess 
                     />
                 </div>
             </div>
-
-            <DialogFooter>
-                <Button
-                    className="bg-[#4FD58F] text-white mt-4"
-                    type="submit"
-                    disabled={
-                        isCreating ||
-                        !formData.ai_model_id ||
-                        !formData.use_case_id ||
-                        !formData.created_by?.trim() ||
-                        formData.ai_model_id === 'loading' ||
-                        formData.use_case_id === 'loading' ||
-                        formData.use_case_id === 'no-use-cases'
-                    }
-                >
-                    {isCreating ? 'Linking...' : 'Add use case'}
-                </Button>
-            </DialogFooter>
         </form>
     )
 }

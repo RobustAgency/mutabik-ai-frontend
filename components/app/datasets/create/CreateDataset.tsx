@@ -13,7 +13,7 @@ import DatasetForm from "./DatasetForm";
 const initialFormData: CreateDatasetData = {
     name: "",
     source_ids: [],
-    purpose: "",
+    purpose: [],
     schema_summary: "",
     sensitivity: "",
     contains_pii: "No",
@@ -59,8 +59,8 @@ const CreateDataset: React.FC = () => {
             errors.name = ["Name is required"];
         }
 
-        if (!formData.purpose?.trim()) {
-            errors.purpose = ["Purpose is required"];
+        if (!formData.purpose || formData.purpose.length === 0) {
+            errors.purpose = ["At least one purpose is required"];
         }
 
         if (formData.source_ids.length === 0) {
@@ -100,6 +100,11 @@ const CreateDataset: React.FC = () => {
 
         if (!formData.owner_team?.trim()) {
             errors.owner_team = ["Owner team is required"];
+        }
+
+        // License type validation - required
+        if (!formData.license_type?.trim()) {
+            errors.license_type = ["License type is required"];
         }
 
         // If lawful basis is Consent, require consent_required field

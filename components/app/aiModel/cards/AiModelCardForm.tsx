@@ -142,7 +142,7 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
     const { data: versions = [] } = useGetAiModelVersionsQuery({ per_page: 100 });
     const versionOptions = versions.map((v: any) => ({
         id: v.id,
-        label: `${v.ai_model?.name ?? "Model"} • v${v.version_number ?? v.version ?? v.id}`,
+        label: `${v.ai_model?.name ?? "Model"} • ${v.version_number ?? v.id}`,
     }));
 
     const setForm = (next: Partial<CreateAiModelCardData>) => setFormData((s) => ({ ...s, ...next }));

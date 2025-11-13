@@ -14,7 +14,7 @@ interface DatesReviewsSectionProps {
 export default function DatesReviewsSection({ formData, setFormData, errors = {} }: DatesReviewsSectionProps) {
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
     const getError = (fieldName: string) => errors[fieldName]?.[0];
-    
+
     const set = (k: keyof CreateAiModelCardData) => (e: React.ChangeEvent<HTMLInputElement>) => setFormData({ [k]: e.target.value } as any);
     return (
         <div className="space-y-4">

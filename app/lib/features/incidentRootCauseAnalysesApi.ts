@@ -34,6 +34,8 @@ export interface IncidentRootCauseAnalysis {
 export interface IncidentRootCauseAnalysisFilters {
   ai_incident_id?: number;
   rca_method?: IncidentRootCauseAnalysis["rca_method"];
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
   per_page?: number;
 }

@@ -4,6 +4,20 @@ import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
 import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
 
+// Filter types for Use Cases
+export interface UseCaseFilters {
+  risk_level?: string | null;
+  business_domain?: string | null;
+  owner?: string | null;
+  roi_assessment?: string | null;
+  risk_assessment?: string | null;
+  data_assessment?: string | null;
+  to?: string | null; // date
+  from?: string | null; // date, before_or_equal:to
+  status?: string; // enum: UseCase\Status
+  per_page?: number; // min:1, max:100
+}
+
 // Custom base query using existing Axios client
 const axiosBaseQuery =
   (): BaseQueryFn<
@@ -53,10 +67,11 @@ export const useCasesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["UseCase"],
   endpoints: (builder) => ({
-    getUseCases: builder.query<UseCase[], void>({
-      query: () => ({
+    getUseCases: builder.query<UseCase[], UseCaseFilters | void>({
+      query: (filters = {}) => ({
         url: "/use-cases",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result
@@ -98,13 +113,15 @@ export const useCasesApi = createApi({
       }),
       providesTags: (result, error, id) => [{ type: "UseCase", id }],
       transformResponse: (response: {
-        data: UseCase;
+        data?: UseCase;
         error?: boolean;
         message?: string;
       }) => {
+        // Handle response structure: { data: UseCase, error: boolean, message: string }
         if (response.data) {
           return response.data;
         }
+        // Fallback: if response is the UseCase directly
         return response as any;
       },
     }),

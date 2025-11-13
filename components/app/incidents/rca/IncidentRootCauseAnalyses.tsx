@@ -10,12 +10,15 @@ import {
   useGetIncidentRootCauseAnalysesQuery,
   useDeleteIncidentRootCauseAnalysisMutation,
   IncidentRootCauseAnalysis,
+  IncidentRootCauseAnalysisFilters,
 } from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const IncidentRootCauseAnalyses: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<IncidentRootCauseAnalysisFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     rcaId: number | null;
@@ -24,10 +27,13 @@ const IncidentRootCauseAnalyses: React.FC = () => {
     rcaId: null,
   });
 
-  const { data, isLoading } = useGetIncidentRootCauseAnalysesQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetIncidentRootCauseAnalysesQuery(queryParams);
   const [deleteRCA, { isLoading: isDeleting }] = useDeleteIncidentRootCauseAnalysisMutation();
 
   const rcas = data?.data ?? [];
@@ -99,12 +105,22 @@ const IncidentRootCauseAnalyses: React.FC = () => {
                 Manage incident RCA records
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/governance/incidents/rca/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New RCA
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="incident-root-cause-analyses"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as IncidentRootCauseAnalysisFilters);
+                  setCurrentPage(1);
+                }}
+              />
+              <Button
+                onClick={() => router.push("/governance/incidents/rca/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New RCA
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable

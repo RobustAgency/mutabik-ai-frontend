@@ -32,10 +32,11 @@ export interface ArtifactAccessLog {
     uri: string;
     ai_model_version?: {
       id: number;
-      version: string;
+      version_number: string;
       ai_model?: {
         id: number;
         name: string;
+        version_number: string;
       };
     };
   };

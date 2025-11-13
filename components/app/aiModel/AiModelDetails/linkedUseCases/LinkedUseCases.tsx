@@ -49,7 +49,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
             ),
         },
         {
-            accessorKey: "ai_model_version.version",
+            accessorKey: "ai_model_version.version_number",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
                     Model Version
@@ -57,7 +57,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
             ),
             cell: ({ row }) => (
                 <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {row.original.ai_model_version?.version || 'N/A'}
+                    {row.original.ai_model_version?.version_number || 'N/A'}
                 </div>
             ),
         },

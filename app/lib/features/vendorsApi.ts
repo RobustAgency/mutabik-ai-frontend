@@ -48,17 +48,15 @@ export interface Vendor {
 }
 
 export interface VendorFilters {
+  risk_tier?: string | null; // enum: Vendor\RiskTier
+  status?: string | null; // enum: Vendor\VendorStatus
+  owner?: string | null; // max:255
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, after_or_equal:from
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
   search?: string;
-  risk_tier?: "tier_1" | "tier_2" | "tier_3" | "tier_4";
-  status?:
-    | "evaluating"
-    | "approved"
-    | "conditionally_approved"
-    | "restricted"
-    | "suspended"
-    | "terminated";
   page?: number;
-  per_page?: number;
 }
 
 export interface CreateVendorData {

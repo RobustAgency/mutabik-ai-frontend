@@ -30,7 +30,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
   const { data: modelVersionsData, isLoading: isVersionsLoading } = useGetAiModelVersionsQuery();
   const { data: useCases = [], isLoading: isUseCasesLoading } = useGetUseCasesQuery();
 
-  const modelVersions = modelVersionsData || [];
+  const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
 
   // Filter versions based on selected model
   const filteredVersions = React.useMemo(() => {
@@ -64,7 +64,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
       const now = new Date().toISOString().slice(0, 16);
       setFormData((prev) => ({ ...prev, declared_at: now }));
     }
-  }, []);
+  }, [formData.declared_at, setFormData]);
 
   return (
     <div className="space-y-6">

@@ -19,6 +19,7 @@ const CreateAiModelVersion: React.FC = () => {
     const [formData, setFormData] = useState<CreateAiModelVersionData>({
         // Core identifiers
         version_number: '',
+        version: '',
         version_type: 'minor',
         ai_model_id: 0,
         description: '',
@@ -61,8 +62,8 @@ const CreateAiModelVersion: React.FC = () => {
         const errors: Record<string, string[]> = {};
 
         // Core identifiers validation
-        if (!formData.ai_model_id) {
-            errors.ai_model_id = ["Parent model is required"];
+        if (!formData.ai_model_id || formData.ai_model_id <= 0) {
+            errors.ai_model_id = ["AI Model is required"];
         }
         if (!formData.version_number?.trim()) {
             errors.version_number = ["Version number is required"];
@@ -98,6 +99,15 @@ const CreateAiModelVersion: React.FC = () => {
         if (!formData.lifecycle_stage) {
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
+
+        // Created by validation - required
+        if (!formData.created_by?.trim()) {
+            errors.created_by = ["Created by email is required"];
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.created_by)) {
+            errors.created_by = ["Please enter a valid email address"];
+        }
+
+        // Performance data checkbox is optional - no validation needed
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;

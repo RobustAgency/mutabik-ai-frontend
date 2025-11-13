@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateAiModelArtifactMutation } from '@/app/lib/features/aiModelArtifactsApi';
-import { CreateAiModelArtifactData } from '@/service/app/aiModelArtifacts';
 import { toast } from "react-toastify";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -36,6 +35,7 @@ const artifactTypeOptions = [
     { value: ArtifactType.CONFIG, label: "Config" },
     { value: ArtifactType.DOCKER_IMAGE, label: "Docker Image" },
     { value: ArtifactType.SBOM, label: "SBOM" },
+    { value: "others", label: "Others" },
 ];
 
 const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
@@ -47,18 +47,22 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 
     const [formData, setFormData] = useState<{
         ai_model_version_id: string;
+        name: string;
         uri: string;
         checksum: string;
         size_bytes: string;
         artifact_type: string;
+        custom_artifact_type: string;
         notes: string;
         created_by: string;
     }>({
         ai_model_version_id: "",
+        name: "",
         uri: "",
         checksum: "",
         size_bytes: "",
         artifact_type: "",
+        custom_artifact_type: "",
         notes: "",
         created_by: "",
     });
@@ -70,6 +74,12 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 
         if (!formData.ai_model_version_id) {
             errors.ai_model_version_id = ["Version is required"];
+        }
+
+        if (!formData.name) {
+            errors.name = ["Name is required"];
+        } else if (formData.name.length > 255) {
+            errors.name = ["Name must be 255 characters or less"];
         }
 
         if (!formData.uri) {
@@ -102,6 +112,12 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 
         if (!formData.artifact_type) {
             errors.artifact_type = ["Artifact type is required"];
+        } else if (formData.artifact_type === "others") {
+            if (!formData.custom_artifact_type) {
+                errors.custom_artifact_type = ["Custom artifact type is required"];
+            } else if (formData.custom_artifact_type.length > 255) {
+                errors.custom_artifact_type = ["Custom artifact type must be 255 characters or less"];
+            }
         }
 
         if (formData.notes && formData.notes.length > 1000) {
@@ -134,10 +150,11 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
         try {
             const result = await createAiModelArtifact({
                 ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
+                name: formData.name,
                 uri: formData.uri,
                 checksum: formData.checksum,
                 size_bytes: parseInt(formData.size_bytes, 10),
-                artifact_type: formData.artifact_type,
+                artifact_type: formData.artifact_type === "others" ? formData.custom_artifact_type : formData.artifact_type,
                 notes: formData.notes || null,
                 created_by: formData.created_by || null,
             }).unwrap();
@@ -186,6 +203,32 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
             )}
 
             <div className="space-y-6">
+                {/* Name */}
+                <div className="space-y-2">
+                    <Label htmlFor="name">
+                        Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        id="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => {
+                            setFormData((prev) => ({ ...prev, name: e.target.value }));
+                            setValidationErrors((prev) => {
+                                const next = { ...prev };
+                                delete next.name;
+                                return next;
+                            });
+                        }}
+                        placeholder="Enter artifact name"
+                        className={hasError("name") ? "border-red-500" : ""}
+                    />
+                    {hasError("name") && (
+                        <p className="text-sm text-red-500">{getError("name")}</p>
+                    )}
+                    <p className="text-xs text-[#667085]">Maximum 255 characters</p>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Version ID */}
                     <div className="space-y-2">
@@ -204,7 +247,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             }}
                             options={aiModelVersions.map((version) => ({
                                 id: version.id,
-                                label: `${version.ai_model?.name || "Model"} • v${version.version || version.id}`,
+                                label: `${version.ai_model?.name || "Model"} • ${version.version_number || version.id}`,
                                 value: String(version.id),
                             }))}
                             isLoading={isLoadingVersions}
@@ -228,10 +271,15 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                         <Select
                             value={formData.artifact_type}
                             onValueChange={(value) => {
-                                setFormData((prev) => ({ ...prev, artifact_type: value }));
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    artifact_type: value,
+                                    custom_artifact_type: value === "others" ? prev.custom_artifact_type : "",
+                                }));
                                 setValidationErrors((prev) => {
                                     const next = { ...prev };
                                     delete next.artifact_type;
+                                    delete next.custom_artifact_type;
                                     return next;
                                 });
                             }}
@@ -251,6 +299,29 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                         </Select>
                         {hasError("artifact_type") && (
                             <p className="text-sm text-red-500">{getError("artifact_type")}</p>
+                        )}
+                        {formData.artifact_type === "others" && (
+                            <div className="mt-2">
+                                <Input
+                                    id="custom_artifact_type"
+                                    type="text"
+                                    value={formData.custom_artifact_type}
+                                    onChange={(e) => {
+                                        setFormData((prev) => ({ ...prev, custom_artifact_type: e.target.value }));
+                                        setValidationErrors((prev) => {
+                                            const next = { ...prev };
+                                            delete next.custom_artifact_type;
+                                            return next;
+                                        });
+                                    }}
+                                    placeholder="Enter custom artifact type"
+                                    className={hasError("custom_artifact_type") ? "border-red-500" : ""}
+                                />
+                                {hasError("custom_artifact_type") && (
+                                    <p className="text-sm text-red-500 mt-1">{getError("custom_artifact_type")}</p>
+                                )}
+                                <p className="text-xs text-[#667085] mt-1">Maximum 255 characters</p>
+                            </div>
                         )}
                     </div>
                 </div>

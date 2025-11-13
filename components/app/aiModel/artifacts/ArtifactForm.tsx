@@ -34,6 +34,7 @@ const artifactTypeOptions = [
     { value: ArtifactType.CONFIG, label: "Config" },
     { value: ArtifactType.DOCKER_IMAGE, label: "Docker Image" },
     { value: ArtifactType.SBOM, label: "SBOM" },
+    { value: "others", label: "Others" },
 ];
 
 export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
@@ -41,18 +42,22 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
 
     const [formData, setFormData] = useState<{
         ai_model_version_id: string;
+        name: string;
         uri: string;
         checksum: string;
         size_bytes: string;
         artifact_type: string;
+        custom_artifact_type: string;
         notes: string;
         created_by: string;
     }>({
         ai_model_version_id: "",
+        name: "",
         uri: "",
         checksum: "",
         size_bytes: "",
         artifact_type: "",
+        custom_artifact_type: "",
         notes: "",
         created_by: "",
     });
@@ -63,6 +68,12 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
 
         if (!formData.ai_model_version_id) {
             next.ai_model_version_id = ["Version is required"];
+        }
+
+        if (!formData.name) {
+            next.name = ["Name is required"];
+        } else if (formData.name.length > 255) {
+            next.name = ["Name must be 255 characters or less"];
         }
 
         if (!formData.uri) {
@@ -78,12 +89,14 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
             }
         }
 
+        // Checksum is required
         if (!formData.checksum) {
             next.checksum = ["Checksum is required"];
         } else if (formData.checksum.length > 255) {
             next.checksum = ["Checksum must be 255 characters or less"];
         }
 
+        // Size bytes is required
         if (!formData.size_bytes) {
             next.size_bytes = ["Size in bytes is required"];
         } else {
@@ -95,6 +108,12 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
 
         if (!formData.artifact_type) {
             next.artifact_type = ["Artifact type is required"];
+        } else if (formData.artifact_type === "others") {
+            if (!formData.custom_artifact_type) {
+                next.custom_artifact_type = ["Custom artifact type is required"];
+            } else if (formData.custom_artifact_type.length > 255) {
+                next.custom_artifact_type = ["Custom artifact type must be 255 characters or less"];
+            }
         }
 
         if (formData.notes && formData.notes.length > 1000) {
@@ -121,10 +140,11 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
 
         await onSubmit({
             ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
+            name: formData.name,
             uri: formData.uri,
             checksum: formData.checksum,
             size_bytes: parseInt(formData.size_bytes, 10),
-            artifact_type: formData.artifact_type,
+            artifact_type: formData.artifact_type === "others" ? formData.custom_artifact_type : formData.artifact_type,
             notes: formData.notes || null,
             created_by: formData.created_by || null,
         });
@@ -177,6 +197,32 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                     )}
 
                     <CardContent className="space-y-6">
+                        {/* Name */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">
+                                Name <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                id="name"
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => {
+                                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                                    setErrors((prev) => {
+                                        const next = { ...prev };
+                                        delete next.name;
+                                        return next;
+                                    });
+                                }}
+                                placeholder="Enter artifact name"
+                                className={errors.name ? "border-red-500" : ""}
+                            />
+                            {errors.name && (
+                                <p className="text-sm text-red-500">{errors.name[0]}</p>
+                            )}
+                            <p className="text-xs text-[#667085]">Maximum 255 characters</p>
+                        </div>
+
                         {/* Version ID */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -195,7 +241,7 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                     }}
                                     options={aiModelVersions.map((version) => ({
                                         id: version.id,
-                                        label: `${version.ai_model?.name || "Model"} • v${version.version || version.id}`,
+                                        label: `${version.ai_model?.name || "Model"} • ${version.version_number}`,
                                         value: String(version.id),
                                     }))}
                                     isLoading={isLoadingVersions}
@@ -219,10 +265,15 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                 <Select
                                     value={formData.artifact_type}
                                     onValueChange={(value) => {
-                                        setFormData((prev) => ({ ...prev, artifact_type: value }));
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            artifact_type: value,
+                                            custom_artifact_type: value === "others" ? prev.custom_artifact_type : "",
+                                        }));
                                         setErrors((prev) => {
                                             const next = { ...prev };
                                             delete next.artifact_type;
+                                            delete next.custom_artifact_type;
                                             return next;
                                         });
                                     }}
@@ -242,6 +293,29 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                 </Select>
                                 {errors.artifact_type && (
                                     <p className="text-sm text-red-500">{errors.artifact_type[0]}</p>
+                                )}
+                                {formData.artifact_type === "others" && (
+                                    <div className="mt-2">
+                                        <Input
+                                            id="custom_artifact_type"
+                                            type="text"
+                                            value={formData.custom_artifact_type}
+                                            onChange={(e) => {
+                                                setFormData((prev) => ({ ...prev, custom_artifact_type: e.target.value }));
+                                                setErrors((prev) => {
+                                                    const next = { ...prev };
+                                                    delete next.custom_artifact_type;
+                                                    return next;
+                                                });
+                                            }}
+                                            placeholder="Enter custom artifact type"
+                                            className={errors.custom_artifact_type ? "border-red-500" : ""}
+                                        />
+                                        {errors.custom_artifact_type && (
+                                            <p className="text-sm text-red-500 mt-1">{errors.custom_artifact_type[0]}</p>
+                                        )}
+                                        <p className="text-xs text-[#667085] mt-1">Maximum 255 characters</p>
+                                    </div>
                                 )}
                             </div>
                         </div>

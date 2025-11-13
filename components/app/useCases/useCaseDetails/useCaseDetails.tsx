@@ -74,20 +74,24 @@ const RiskBadge: React.FC<{ level: string }> = ({ level }) => {
 };
 
 // Format currency
-const formatCurrency = (value: number | null | undefined): string => {
+const formatCurrency = (value: number | string | null | undefined): string => {
     if (value === null || value === undefined) return "N/A";
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(numValue)) return "N/A";
     return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(value);
+    }).format(numValue);
 };
 
 // Format number with commas
-const formatNumber = (value: number | null | undefined): string => {
+const formatNumber = (value: number | string | null | undefined): string => {
     if (value === null || value === undefined) return "N/A";
-    return new Intl.NumberFormat("en-US").format(value);
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(numValue)) return "N/A";
+    return new Intl.NumberFormat("en-US").format(numValue);
 };
 
 const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
@@ -136,7 +140,7 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-[#1D2939]">{useCase.title}</h1>
+                    <h1 className="text-2xl font-semibold text-[#1D2939]">{useCase.name || useCase.title}</h1>
                     <div className="flex items-center gap-3 mt-2">
                         <StatusBadge status={useCase.status} />
                         <RiskBadge level={useCase.risk_level} />
@@ -161,8 +165,8 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <StatusBadge status={useCase.status} />
                             </div>
                             <DetailItem label="Business Domain" value={useCase.business_domain} />
-                            <DetailItem label="Use Case Type" value={useCase.use_case_type} />
-                            <DetailItem label="Value Driver" value={useCase.value_driver} />
+                            {useCase.use_case_type && <DetailItem label="Use Case Type" value={useCase.use_case_type} />}
+                            {useCase.value_driver && <DetailItem label="Value Driver" value={useCase.value_driver} />}
                             <DetailItem
                                 label="Created"
                                 value={useCase.created_at ? formatDate(useCase.created_at) : null}
@@ -194,12 +198,18 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-wrap gap-4 justify-between">
-                        <DetailItem label="Business Owner Email" value={useCase.business_owner_email} />
-                        <DetailItem label="Technical Owner Email" value={useCase.technical_owner_email} />
+                        <DetailItem
+                            label="Business Owner Email"
+                            value={useCase.business_owner?.email || useCase.business_owner_email}
+                        />
+                        <DetailItem
+                            label="Technical Owner Email"
+                            value={useCase.technical_owner?.email || useCase.technical_owner_email}
+                        />
                         <DetailItem label="Data Sensitivity" value={useCase.data_sensitivity} />
                         <DetailItem
                             label="Target Go Live Date"
-                            value={useCase.go_live_date ? formatDate(useCase.go_live_date) : null}
+                            value={useCase.target_go_live_date ? formatDate(useCase.target_go_live_date) : (useCase.go_live_date ? formatDate(useCase.go_live_date) : null)}
                         />
                     </div>
                     {useCase.regulatory_scope && useCase.regulatory_scope.length > 0 && (
@@ -233,7 +243,11 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <span className="text-sm">Expected ROI</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {useCase.expected_roi !== null ? `${useCase.expected_roi}%` : "N/A"}
+                                {useCase.expected_roi_percentage !== null && useCase.expected_roi_percentage !== undefined
+                                    ? `${parseFloat(String(useCase.expected_roi_percentage))}%`
+                                    : (useCase.expected_roi !== null && useCase.expected_roi !== undefined
+                                        ? `${useCase.expected_roi}%`
+                                        : "N/A")}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -242,7 +256,7 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <span className="text-sm">Implementation Cost</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {formatCurrency(useCase.implementation_cost)}
+                                {formatCurrency(useCase.estimated_implementation_cost || useCase.implementation_cost)}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -251,7 +265,7 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <span className="text-sm">Increase in Revenue</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {formatCurrency(useCase.increase_revenue)}
+                                {formatCurrency(useCase.estimated_revenue_increase || useCase.increase_revenue)}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -260,7 +274,7 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <span className="text-sm">Reduction in Time (hrs)</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {formatNumber(useCase.reduction_time)}
+                                {formatNumber(useCase.estimated_reduction_in_time || useCase.reduction_time)}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -269,25 +283,27 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                                 <span className="text-sm">Reduction in Cost</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {formatCurrency(useCase.reduction_cost)}
+                                {formatCurrency(useCase.estimated_reduction_in_cost || useCase.reduction_cost)}
                             </p>
                         </div>
-                        <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2 text-[#667085]">
-                                <Shield className="w-4 h-4" />
-                                <span className="text-sm">Risk Avoidance</span>
+                        {useCase.risk_avoidance && (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2 text-[#667085]">
+                                    <Shield className="w-4 h-4" />
+                                    <span className="text-sm">Risk Avoidance</span>
+                                </div>
+                                <p className="text-2xl font-semibold text-[#344054]">
+                                    {formatCurrency(useCase.risk_avoidance)}
+                                </p>
                             </div>
-                            <p className="text-2xl font-semibold text-[#344054]">
-                                {formatCurrency(useCase.risk_avoidance)}
-                            </p>
-                        </div>
+                        )}
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-[#667085]">
                                 <TrendingUp className="w-4 h-4" />
                                 <span className="text-sm">FTE Capacity Saved</span>
                             </div>
                             <p className="text-2xl font-semibold text-[#344054]">
-                                {formatNumber(useCase.fte_capacity)} FTE
+                                {formatNumber(useCase.estimated_fte_capacity_saving || useCase.fte_capacity)} FTE
                             </p>
                         </div>
                     </div>
@@ -308,36 +324,46 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                             <p className="font-sans font-normal text-sm leading-5 text-[#667085]">Risk Level</p>
                             <RiskBadge level={useCase.risk_level} />
                         </div>
-                        <DetailItem
-                            label="Overall Risk Score"
-                            value={useCase.overall_risk_score ? formatNumber(useCase.overall_risk_score) : null}
-                        />
-                        <DetailItem label="Human Oversight Mode" value={useCase.human_oversigh_mode} />
+                        {useCase.overall_risk_score && (
+                            <DetailItem
+                                label="Overall Risk Score"
+                                value={formatNumber(useCase.overall_risk_score)}
+                            />
+                        )}
+                        {useCase.human_oversigh_mode && (
+                            <DetailItem label="Human Oversight Mode" value={useCase.human_oversigh_mode} />
+                        )}
                     </div>
-                    <div className="mt-4 pt-4 border-t border-[#E4E7EC]">
-                        <div className="flex flex-wrap gap-6">
-                            <div className="flex items-center gap-2">
-                                {useCase.dpia ? (
-                                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                ) : (
-                                    <XCircle className="w-5 h-5 text-gray-400" />
+                    {(useCase.dpia !== undefined || useCase.aia !== undefined) && (
+                        <div className="mt-4 pt-4 border-t border-[#E4E7EC]">
+                            <div className="flex flex-wrap gap-6">
+                                {useCase.dpia !== undefined && (
+                                    <div className="flex items-center gap-2">
+                                        {useCase.dpia ? (
+                                            <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                        ) : (
+                                            <XCircle className="w-5 h-5 text-gray-400" />
+                                        )}
+                                        <span className="text-sm font-medium text-[#344054]">
+                                            DPIA Required: {useCase.dpia ? "Yes" : "No"}
+                                        </span>
+                                    </div>
                                 )}
-                                <span className="text-sm font-medium text-[#344054]">
-                                    DPIA Required: {useCase.dpia ? "Yes" : "No"}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                {useCase.aia ? (
-                                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                                ) : (
-                                    <XCircle className="w-5 h-5 text-gray-400" />
+                                {useCase.aia !== undefined && (
+                                    <div className="flex items-center gap-2">
+                                        {useCase.aia ? (
+                                            <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                        ) : (
+                                            <XCircle className="w-5 h-5 text-gray-400" />
+                                        )}
+                                        <span className="text-sm font-medium text-[#344054]">
+                                            AIA Required: {useCase.aia ? "Yes" : "No"}
+                                        </span>
+                                    </div>
                                 )}
-                                <span className="text-sm font-medium text-[#344054]">
-                                    AIA Required: {useCase.aia ? "Yes" : "No"}
-                                </span>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -352,8 +378,10 @@ const UseCaseDetails: React.FC<UseCaseDetailsProps> = ({ useCaseId }) => {
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-wrap gap-4 justify-between">
                         <DetailItem label="Data Availability Status" value={useCase.data_availability_status} />
-                        <DetailItem label="Data Readiness Level" value={useCase.data_readiness_level} />
-                        <DetailItem label="Data Freshness" value={useCase.data_freshness} />
+                        <DetailItem label="Data Readiness Level" value={useCase.data_readiness || useCase.data_readiness_level} />
+                        {useCase.data_freshness && (
+                            <DetailItem label="Data Freshness" value={useCase.data_freshness} />
+                        )}
                     </div>
                 </CardContent>
             </Card>

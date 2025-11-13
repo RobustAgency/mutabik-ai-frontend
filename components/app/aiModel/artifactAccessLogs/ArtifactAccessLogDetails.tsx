@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGetArtifactAccessLogQuery } from "@/app/lib/features/artifactAccessLogsApi";
 import { ArrowLeft } from "lucide-react";
 import { formatDateISO } from "@/lib/helpers/date";
-import { AccessAction, AccessContext } from "@/service/app/artifactAccessLogs";
 
 interface ArtifactAccessLogDetailsProps {
     logId: number | string;
@@ -133,8 +132,8 @@ const ArtifactAccessLogDetails: React.FC<ArtifactAccessLogDetailsProps> = ({ log
                                     <div>
                                         <span className="text-xs text-[#667085]">Model</span>
                                         <p className="text-sm text-[#475467] mt-1">
-                                            {log.artifact.ai_model_version.ai_model.name} • v
-                                            {log.artifact.ai_model_version.version || log.artifact.ai_model_version.id}
+                                            {log.artifact.ai_model_version.ai_model.name} •
+                                            {log.artifact.ai_model_version.version_number}
                                         </p>
                                     </div>
                                 )}

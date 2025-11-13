@@ -24,9 +24,14 @@ export interface DataElement {
 }
 
 export interface DataElementFilters {
+  per_page?: number | null; // min:1, max:100
+  from?: string | null; // date
+  to?: string | null; // date
+  name?: string | null; // max:255
+  data_type?: string | null; // max:255
+  // Legacy support
   search?: string;
   page?: number;
-  per_page?: number;
 }
 
 export interface CreateDataElementData {

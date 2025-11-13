@@ -23,8 +23,16 @@ export interface AiAsset {
   vendor_assessment_id?: number | null;
   created_at?: string;
   updated_at?: string;
-  vendor?: unknown;
-  vendorAgreement?: unknown;
+  vendor?: {
+    id: number;
+    vendor_name: string;
+    legal_name?: string;
+    [key: string]: unknown;
+  };
+  vendor_agreement?: {
+    id: number;
+    [key: string]: unknown;
+  } | null;
 }
 
 export interface AiAssetFilters {

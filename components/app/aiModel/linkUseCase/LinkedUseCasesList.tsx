@@ -99,7 +99,7 @@ const LinkedUseCasesList: React.FC = () => {
             ),
             cell: ({ row }) => (
                 <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {row.original.ai_model_version?.version_number || row.original.ai_model_version?.version || 'N/A'}
+                    {row.original.ai_model_version?.version_number || 'N/A'}
                 </div>
             ),
         },

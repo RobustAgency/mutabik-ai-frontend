@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDataElementsQuery, useDeleteDataElementMutation, DataElement } from "@/app/lib/features/dataElementsApi";
+import { useGetDataElementsQuery, useDeleteDataElementMutation, DataElement, DataElementFilters } from "@/app/lib/features/dataElementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import InlineCreateModal from "@/components/custom/InlineCreateModal";
 import AssociateElementWithDatasetModal from "@/components/app/dataElements/map/AssociateElementWithDatasetModal";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
+  const [filters, setFilters] = React.useState<DataElementFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     dataElementId: string | null;
@@ -24,7 +26,7 @@ const DataElements: React.FC = () => {
   });
 
   const [deleteDataElement, { isLoading: isDeleting }] = useDeleteDataElementMutation();
-  const { data: dataElements, isLoading } = useGetDataElementsQuery();
+  const { data: dataElements, isLoading } = useGetDataElementsQuery(filters);
 
   const [associateState, setAssociateState] = React.useState<{ isOpen: boolean; dataElementId: number | null }>({ isOpen: false, dataElementId: null });
 
@@ -206,12 +208,19 @@ const DataElements: React.FC = () => {
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Data Elements</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Enterprise data dictionary with canonical definitions and PII/CDE stewardship</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/elements/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Data Element
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="data-elements"
+                filters={filters}
+                onFiltersChange={(newFilters) => setFilters(newFilters as DataElementFilters)}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/elements/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Data Element
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable

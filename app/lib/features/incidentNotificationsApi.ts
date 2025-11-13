@@ -40,6 +40,8 @@ export interface IncidentNotificationFilters {
   audience_type?: IncidentNotification["audience_type"];
   channel?: IncidentNotification["channel"];
   follow_up_required?: boolean;
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
   per_page?: number;
 }
