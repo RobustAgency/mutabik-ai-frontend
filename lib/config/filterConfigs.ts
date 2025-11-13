@@ -402,19 +402,19 @@ export const FILTER_CONFIGS: Record<string, FilterConfig> = {
     risk_level: {
       key: "risk_level",
       label: "Risk Level",
-      type: "multiselect",
+      type: "select",
       options: ENUM_VALUES.riskLevel,
     },
     status: {
       key: "status",
       label: "Status",
-      type: "multiselect",
+      type: "select",
       options: ENUM_VALUES.useCaseStatus,
     },
     business_domain: {
       key: "business_domain",
       label: "Business Domain",
-      type: "multiselect",
+      type: "select",
       options: ENUM_VALUES.businessDomain,
     },
     owner: {
