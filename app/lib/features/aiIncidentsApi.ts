@@ -53,13 +53,17 @@ export interface AiIncident {
 }
 
 export interface AiIncidentFilters {
+  title?: string | null; // max:255
+  status?: string | null; // enum: AiIncident\IncidentStatus
+  severity?: string | null; // enum: AiIncident\IncidentSeverity
+  stage?: string | null; // enum: AiIncident\IncidentStage
+  category?: string | null; // enum: AiIncident\IncidentCategory
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
   search?: string;
-  category?: AiIncident["category"];
-  severity?: AiIncident["severity"];
-  status?: AiIncident["status"];
-  stage?: AiIncident["stage"];
   page?: number;
-  per_page?: number;
 }
 
 export interface CreateAiIncidentData {

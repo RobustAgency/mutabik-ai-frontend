@@ -40,6 +40,14 @@ const axiosBaseQuery =
     }
   };
 
+// Filter types for AI Model Artifacts
+export interface AiModelArtifactFilters {
+  artifact_type?: string | null;
+  name?: string | null; // max:255
+  per_page?: number | null; // min:1, max:100
+  page?: number;
+}
+
 export const aiModelArtifactsApi = createApi({
   reducerPath: "aiModelArtifactsApi",
   baseQuery: axiosBaseQuery(),
@@ -47,12 +55,12 @@ export const aiModelArtifactsApi = createApi({
   endpoints: (builder) => ({
     getAiModelArtifacts: builder.query<
       PaginatedArtifactsResponse,
-      { per_page?: number; page?: number } | void
+      AiModelArtifactFilters | void
     >({
-      query: (params = {}) => ({
+      query: (filters = {}) => ({
         url: "/ai-model-artifacts",
         method: "GET",
-        params,
+        params: filters,
       }),
       providesTags: (result) =>
         result

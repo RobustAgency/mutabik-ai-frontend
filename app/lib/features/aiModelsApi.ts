@@ -4,6 +4,17 @@ import type { AiModel, CreateAiModelData } from "@/service/app/aiModels";
 import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
 
+// Filter types for AI Models
+export interface AiModelFilters {
+  status?: string; // enum: OperationalStatus
+  ownership_type?: string; // enum: OwnershipType
+  regulatory_risk_classification?: string; // max:255
+  owner?: string; // max:255
+  from?: string; // date, before_or_equal:today
+  to?: string; // date, after_or_equal:from
+  per_page?: number; // min:1, max:100
+}
+
 // Custom base query using existing Axios client
 const axiosBaseQuery =
   (): BaseQueryFn<
@@ -64,10 +75,11 @@ export const aiModelsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiModel"],
   endpoints: (builder) => ({
-    getAiModels: builder.query<AiModel[], void>({
-      query: () => ({
+    getAiModels: builder.query<AiModel[], AiModelFilters | void>({
+      query: (filters = {}) => ({
         url: "/ai-models",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

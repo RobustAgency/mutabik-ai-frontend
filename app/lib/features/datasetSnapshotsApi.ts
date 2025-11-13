@@ -21,6 +21,13 @@ export interface DatasetSnapshot {
   created_at: string;
 }
 
+// Filter types for Dataset Snapshots
+export interface DatasetSnapshotFilters {
+  per_page?: number | null; // min:1, max:100
+  from?: string | null; // date
+  to?: string | null; // date, after_or_equal:from
+}
+
 export interface CreateDatasetSnapshotData {
   dataset_id: number;
   version_tag: string;
@@ -95,10 +102,14 @@ export const datasetSnapshotsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["DatasetSnapshot"],
   endpoints: (builder) => ({
-    getDatasetSnapshots: builder.query<DatasetSnapshot[], void>({
-      query: () => ({
+    getDatasetSnapshots: builder.query<
+      DatasetSnapshot[],
+      DatasetSnapshotFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/dataset-snapshots",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

@@ -5,8 +5,23 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 import type {
   AiModelVersion,
   CreateAiModelVersionData,
-  AiModelVersionFilters,
 } from "@/service/app/aiModelVersions";
+
+// Filter types for AI Model Versions (matching API spec)
+export interface AiModelVersionFilters {
+  ai_model_id?: number; // exists:ai_models,id
+  version_type?: string | null; // max:50
+  from?: string | null; // date
+  to?: string | null; // date, after_or_equal:from
+  version_source?: string | null; // max:100
+  lifecycle_stage?: string | null; // max:50
+  version_role?: string | null; // max:50
+  deployment_status?: string | null; // max:50
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
+  search?: string;
+  page?: number;
+}
 
 // Custom base query using existing Axios client
 const axiosBaseQuery =

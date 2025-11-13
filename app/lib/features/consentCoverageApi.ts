@@ -22,6 +22,11 @@ export interface ConsentCoverage {
   snapshot_version_tag?: string;
 }
 
+// Filter types for Consent Coverages
+export interface ConsentCoverageFilters {
+  per_page?: number | null; // min:1, max:100
+}
+
 export interface CreateConsentCoverageData {
   dataset_id: string;
   snapshot_id?: string;
@@ -93,10 +98,14 @@ export const consentCoverageApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["ConsentCoverage"],
   endpoints: (builder) => ({
-    getConsentCoverages: builder.query<ConsentCoverage[], void>({
-      query: () => ({
+    getConsentCoverages: builder.query<
+      ConsentCoverage[],
+      ConsentCoverageFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/consent-coverages",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

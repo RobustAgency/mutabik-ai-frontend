@@ -20,6 +20,11 @@ export interface UserConsent {
   updated_at: string;
 }
 
+// Filter types for User Consents
+export interface UserConsentFilters {
+  per_page?: number | null; // min:1, max:100
+}
+
 export interface CreateUserConsentData {
   subject_key: string;
   subject_realm: string;
@@ -92,10 +97,14 @@ export const userConsentsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["UserConsent"],
   endpoints: (builder) => ({
-    getUserConsents: builder.query<UserConsent[], void>({
-      query: () => ({
+    getUserConsents: builder.query<
+      UserConsent[],
+      UserConsentFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/user-consents",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

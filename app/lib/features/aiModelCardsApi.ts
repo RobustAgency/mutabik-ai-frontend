@@ -7,6 +7,18 @@ import type {
   CreateAiModelCardData,
 } from "@/service/app/aiModelCards";
 
+// Filter types for AI Model Cards
+export interface AiModelCardFilters {
+  status?: string | null;
+  publication_status?: string | null;
+  owner?: string | null;
+  from?: string | null; // date
+  to?: string | null; // date
+  creator_role?: string | null;
+  format?: string | null;
+  per_page?: number | null; // min:1, max:100
+}
+
 const axiosBaseQuery =
   (): BaseQueryFn<
     {
@@ -43,8 +55,12 @@ export const aiModelCardsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiModelCard"],
   endpoints: (builder) => ({
-    getAiModelCards: builder.query<AiModelCard[], void>({
-      query: () => ({ url: "/ai-model-cards", method: "GET" }),
+    getAiModelCards: builder.query<AiModelCard[], AiModelCardFilters | void>({
+      query: (filters = {}) => ({
+        url: "/ai-model-cards",
+        method: "GET",
+        params: filters,
+      }),
       providesTags: (result) =>
         result
           ? [

@@ -32,6 +32,15 @@ export interface CreateDatasetSubjectPopulationData {
   as_of: string;
 }
 
+// Filter types for Dataset Subject Populations
+export interface DatasetSubjectPopulationFilters {
+  subject_realm?: string; // max:255
+  jurisdiction?: string; // max:255
+  from?: string; // date, before_or_equal:today
+  to?: string; // date, before_or_equal:today, after_or_equal:from
+  per_page?: number; // min:1, max:100
+}
+
 export interface PaginatedDatasetSubjectPopulationResponse {
   current_page: number;
   data: DatasetSubjectPopulation[];
@@ -113,11 +122,12 @@ export const datasetSubjectPopulationApi = createApi({
   endpoints: (builder) => ({
     getDatasetSubjectPopulations: builder.query<
       PaginatedDatasetSubjectPopulationResponse,
-      { page?: number; per_page?: number }
+      DatasetSubjectPopulationFilters | void
     >({
-      query: ({ page = 1, per_page = 15 }) => ({
-        url: `/dataset-subject-populations?page=${page}&per_page=${per_page}`,
+      query: (filters = {}) => ({
+        url: "/dataset-subject-populations",
         method: "GET",
+        params: filters,
       }),
       transformResponse: (response: any) => response.data,
       providesTags: (result) =>

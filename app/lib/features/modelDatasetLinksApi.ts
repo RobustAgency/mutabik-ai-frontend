@@ -21,6 +21,14 @@ export interface ModelDatasetLink {
   created_at: string;
 }
 
+// Filter types for AI Model Datasets (Model Dataset Links)
+export interface ModelDatasetLinkFilters {
+  role?: string; // enum: AiModelDataset\Role
+  from?: string; // date, before_or_equal:today
+  to?: string; // date, before_or_equal:today, after_or_equal:from
+  per_page?: number; // min:1, max:100
+}
+
 export interface CreateModelDatasetLinkData {
   ai_model_id: string;
   ai_model_version_id: number | null;
@@ -95,10 +103,14 @@ export const modelDatasetLinksApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["ModelDatasetLink"],
   endpoints: (builder) => ({
-    getModelDatasetLinks: builder.query<ModelDatasetLink[], void>({
-      query: () => ({
+    getModelDatasetLinks: builder.query<
+      ModelDatasetLink[],
+      ModelDatasetLinkFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/ai-model-datasets",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

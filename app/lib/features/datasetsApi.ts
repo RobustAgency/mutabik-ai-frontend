@@ -39,6 +39,12 @@ export interface Dataset {
 }
 
 export interface DatasetFilters {
+  name?: string | null; // max:255
+  sensitivity?: string | null; // max:255
+  contains_pii?: boolean | null;
+  controller_role?: string | null; // max:255
+  per_page?: number | null; // min:1, max:100
+  // Legacy support
   search?: string;
   page?: number;
   limit?: number;

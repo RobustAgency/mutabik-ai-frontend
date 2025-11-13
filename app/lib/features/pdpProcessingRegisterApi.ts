@@ -24,6 +24,11 @@ export interface PdpProcessingRegister {
   updated_at: string;
 }
 
+// Filter types for PDP Processing Registers
+export interface PdpProcessingRegisterFilters {
+  per_page?: number; // optional, default: 15
+}
+
 export interface CreatePdpProcessingRegisterData {
   purpose: string;
   controller_role: string;
@@ -100,10 +105,14 @@ export const pdpProcessingRegisterApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["PdpProcessingRegister"],
   endpoints: (builder) => ({
-    getPdpProcessingRegisters: builder.query<PdpProcessingRegister[], void>({
-      query: () => ({
+    getPdpProcessingRegisters: builder.query<
+      PdpProcessingRegister[],
+      PdpProcessingRegisterFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/pdp-processing-registers",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result

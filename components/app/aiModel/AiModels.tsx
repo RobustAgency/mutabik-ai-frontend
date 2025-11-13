@@ -181,7 +181,7 @@ const AiModels: React.FC = () => {
                         columns={columns}
                         data={aiModels ?? []}
                         variant="projects"
-                        loading={loading}
+                        loading={loading}  
                         onRowClick={(row) => router.push(`/core-assets/ai-models/${row.id}/details`)}
                         emptyState={{
                             title: "No AI models found",
