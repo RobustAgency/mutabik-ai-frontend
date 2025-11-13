@@ -104,6 +104,7 @@ export const aiModelArtifactsApi = createApi({
           method: "POST",
           data: {
             ai_model_version_id: data.ai_model_version_id,
+            name: data.name,
             uri: data.uri,
             checksum: data.checksum,
             size_bytes: data.size_bytes,

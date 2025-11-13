@@ -99,6 +99,19 @@ const ArtifactsMain = () => {
 
     const columns: ColumnDef<AiModelArtifact>[] = [
         {
+            accessorKey: "name",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Name
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans text-sm leading-5 tracking-normal text-[#1D2939]">
+                    {String(getValue() || "N/A")}
+                </div>
+            ),
+        },
+        {
             accessorKey: "artifact_type",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
@@ -185,7 +198,7 @@ const ArtifactsMain = () => {
             ),
             cell: ({ row }) => (
                 <div className="flex items-center justify-end gap-2">
-                    <Button
+                    {/* <Button
                         variant="outline"
                         size="sm"
                         onClick={(e) => {
@@ -195,7 +208,7 @@ const ArtifactsMain = () => {
                         className="h-8 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
                     >
                         View
-                    </Button>
+                    </Button> */}
                     <Button
                         variant="outline"
                         size="sm"

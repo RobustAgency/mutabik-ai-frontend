@@ -36,10 +36,11 @@ export interface AiModelArtifact {
 
 export interface CreateAiModelArtifactData {
   ai_model_version_id: number | string; // Required, exists in ai_model_versions
+  name: string; // Required, string, max:255
   uri: string; // Required, url, max:2048
   checksum: string; // Required, string, max:255
   size_bytes: number; // Required, integer, min:0
-  artifact_type: ArtifactType | string; // Required, string, in ArtifactType enum
+  artifact_type: ArtifactType | string; // Required, string, max:255
   notes?: string | null; // Nullable, string, max:1000
   created_by?: string | null; // Nullable, email, max:255
 }
