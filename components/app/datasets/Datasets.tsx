@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDatasetsQuery, useDeleteDatasetMutation } from "@/app/lib/features/datasetsApi";
+import { useGetDatasetsQuery, useDeleteDatasetMutation, DatasetFilters } from "@/app/lib/features/datasetsApi";
 import { Dataset } from "@/app/lib/features/datasetsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const Datasets: React.FC = () => {
   const router = useRouter();
+  const [filters, setFilters] = React.useState<DatasetFilters>({});
 
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
@@ -25,7 +27,7 @@ const Datasets: React.FC = () => {
 
   const [deleteDataset, { isLoading: isDeleting }] = useDeleteDatasetMutation();
 
-  const { data: datasets, isLoading } = useGetDatasetsQuery();
+  const { data: datasets, isLoading } = useGetDatasetsQuery(filters);
 
   const handleEditClick = (e: React.MouseEvent, dataset: Dataset) => {
     e.stopPropagation();
@@ -192,12 +194,19 @@ const Datasets: React.FC = () => {
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Datasets Registry</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Privacy posture and structure registry for AI eligibility</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/registry/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Dataset
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="datasets"
+                filters={filters}
+                onFiltersChange={(newFilters) => setFilters(newFilters as DatasetFilters)}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/registry/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Dataset
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable

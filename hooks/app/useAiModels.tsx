@@ -6,9 +6,10 @@ import type { AiModel, CreateAiModelData } from "@/service/app/aiModels";
 import {
     useGetAiModelsQuery,
     useCreateAiModelMutation,
+    type AiModelFilters,
 } from "@/app/lib/features/aiModelsApi";
 
-export const useAiModels = () => {
+export const useAiModels = (filters?: AiModelFilters) => {
     const router = useRouter();
 
     // RTK Query hooks
@@ -17,7 +18,7 @@ export const useAiModels = () => {
         isLoading: loading,
         error,
         refetch: refetchAiModels,
-    } = useGetAiModelsQuery();
+    } = useGetAiModelsQuery(filters);
 
     const [createAiModelMutation, { isLoading: creating }] =
         useCreateAiModelMutation();

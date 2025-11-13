@@ -6,9 +6,10 @@ import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
 import {
   useGetUseCasesQuery,
   useCreateUseCaseMutation,
+  type UseCaseFilters,
 } from "@/app/lib/features/useCasesApi";
 
-export const useUseCases = () => {
+export const useUseCases = (filters?: UseCaseFilters) => {
   const router = useRouter();
 
   // RTK Query hooks
@@ -17,7 +18,7 @@ export const useUseCases = () => {
     isLoading: loading,
     error,
     refetch: refetchUseCases,
-  } = useGetUseCasesQuery();
+  } = useGetUseCasesQuery(filters);
 
   const [createUseCaseMutation, { isLoading: creating }] =
     useCreateUseCaseMutation();

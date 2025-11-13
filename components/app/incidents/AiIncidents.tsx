@@ -10,12 +10,15 @@ import {
   useGetAiIncidentsQuery,
   useDeleteAiIncidentMutation,
   AiIncident,
+  AiIncidentFilters,
 } from "@/app/lib/features/aiIncidentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const AiIncidents: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<AiIncidentFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     incidentId: number | null;
@@ -26,10 +29,13 @@ const AiIncidents: React.FC = () => {
     incidentTitle: "",
   });
 
-  const { data, isLoading } = useGetAiIncidentsQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetAiIncidentsQuery(queryParams);
   const [deleteIncident, { isLoading: isDeleting }] = useDeleteAiIncidentMutation();
 
   const incidents = data?.data ?? [];
@@ -257,12 +263,22 @@ const AiIncidents: React.FC = () => {
                 Manage AI incidents and near-misses
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/governance/incidents/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Incident
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="ai-incidents"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as AiIncidentFilters);
+                  setCurrentPage(1); // Reset to first page when filters change
+                }}
+              />
+              <Button
+                onClick={() => router.push("/governance/incidents/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Incident
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable
