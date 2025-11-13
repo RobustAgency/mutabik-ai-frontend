@@ -30,6 +30,8 @@ export interface IncidentAlert {
 export interface IncidentAlertFilters {
   ai_incident_id?: number;
   source_type?: IncidentAlert["source_type"];
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
   per_page?: number;
 }

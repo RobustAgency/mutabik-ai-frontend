@@ -51,6 +51,8 @@ export interface CorrectivePreventiveActionFilters {
   owner_team?: CorrectivePreventiveAction["owner_team"];
   status?: CorrectivePreventiveAction["status"];
   verification_result?: CorrectivePreventiveAction["verification_result"];
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
   per_page?: number;
 }

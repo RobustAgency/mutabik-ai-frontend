@@ -22,6 +22,10 @@ export interface UserConsent {
 
 // Filter types for User Consents
 export interface UserConsentFilters {
+  consent_status?: string | null; // max:255
+  legal_basis?: string | null; // max:255
+  from?: string | null; // date
+  to?: string | null; // date
   per_page?: number | null; // min:1, max:100
 }
 

@@ -10,12 +10,15 @@ import {
   useGetIncidentNotificationsQuery,
   useDeleteIncidentNotificationMutation,
   IncidentNotification,
+  IncidentNotificationFilters,
 } from "@/app/lib/features/incidentNotificationsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const IncidentNotifications: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<IncidentNotificationFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     notificationId: number | null;
@@ -24,10 +27,13 @@ const IncidentNotifications: React.FC = () => {
     notificationId: null,
   });
 
-  const { data, isLoading } = useGetIncidentNotificationsQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetIncidentNotificationsQuery(queryParams);
   const [deleteNotification, { isLoading: isDeleting }] = useDeleteIncidentNotificationMutation();
 
   const notifications = data?.data ?? [];
@@ -103,12 +109,22 @@ const IncidentNotifications: React.FC = () => {
                 Manage stakeholder notifications
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/governance/incidents/notifications/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              Send Notification
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="incident-notifications"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as IncidentNotificationFilters);
+                  setCurrentPage(1);
+                }}
+              />
+              <Button
+                onClick={() => router.push("/governance/incidents/notifications/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                Send Notification
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable

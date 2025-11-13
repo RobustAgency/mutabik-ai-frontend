@@ -10,12 +10,15 @@ import {
   useGetIncidentAlertsQuery,
   useDeleteIncidentAlertMutation,
   IncidentAlert,
+  IncidentAlertFilters,
 } from "@/app/lib/features/incidentAlertsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const IncidentAlerts: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [filters, setFilters] = React.useState<IncidentAlertFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     alertId: number | null;
@@ -24,10 +27,13 @@ const IncidentAlerts: React.FC = () => {
     alertId: null,
   });
 
-  const { data, isLoading } = useGetIncidentAlertsQuery({
+  const queryParams = React.useMemo(() => ({
+    ...filters,
     page: currentPage,
     per_page: 15,
-  });
+  }), [filters, currentPage]);
+
+  const { data, isLoading } = useGetIncidentAlertsQuery(queryParams);
   const [deleteAlert, { isLoading: isDeleting }] = useDeleteIncidentAlertMutation();
 
   const alerts = data?.data ?? [];
@@ -165,12 +171,22 @@ const IncidentAlerts: React.FC = () => {
                 Manage incident alert signals
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/governance/incidents/alerts/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Alert
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="incident-alerts"
+                filters={filters}
+                onFiltersChange={(newFilters) => {
+                  setFilters(newFilters as IncidentAlertFilters);
+                  setCurrentPage(1);
+                }}
+              />
+              <Button
+                onClick={() => router.push("/governance/incidents/alerts/create")}
+                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Alert
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable

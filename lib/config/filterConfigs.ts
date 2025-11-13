@@ -183,6 +183,105 @@ export const ENUM_VALUES = {
     { value: "docker_image", label: "Docker Image" },
     { value: "sbom", label: "SBOM" },
   ],
+  dataType: [
+    { value: "string", label: "String" },
+    { value: "integer", label: "Integer" },
+    { value: "decimal", label: "Decimal" },
+    { value: "boolean", label: "Boolean" },
+    { value: "date", label: "Date" },
+    { value: "datetime", label: "DateTime" },
+    { value: "timestamp", label: "Timestamp" },
+    { value: "json", label: "JSON" },
+    { value: "binary", label: "Binary" },
+    { value: "array", label: "Array" },
+    { value: "other", label: "Other" },
+  ],
+  subjectRealm: [
+    { value: "customer", label: "Customer" },
+    { value: "prospect", label: "Prospect" },
+    { value: "employee", label: "Employee" },
+    { value: "vendor", label: "Vendor" },
+    { value: "other", label: "Other" },
+  ],
+  jurisdiction: [
+    { value: "AE", label: "AE" },
+    { value: "EU", label: "EU" },
+    { value: "KSA", label: "KSA" },
+    { value: "US", label: "US" },
+    { value: "UK", label: "UK" },
+    { value: "QA", label: "QA" },
+    { value: "JO", label: "JO" },
+    { value: "MA", label: "MA" },
+    { value: "BH", label: "BH" },
+    { value: "Other", label: "Other" },
+  ],
+  incidentAlertSourceType: [
+    { value: "kri", label: "KRI" },
+    { value: "monitoring_rule", label: "Monitoring Rule" },
+    { value: "human_report", label: "Human Report" },
+    { value: "vendor_notice", label: "Vendor Notice" },
+    { value: "security_tool", label: "Security Tool" },
+    { value: "other", label: "Other" },
+  ],
+  incidentActionType: [
+    { value: "kill_switch", label: "Kill Switch" },
+    { value: "rollback_release", label: "Rollback Release" },
+    { value: "key_rotation", label: "Key Rotation" },
+    { value: "blocklist_update", label: "Blocklist Update" },
+    { value: "traffic_throttle", label: "Traffic Throttle" },
+    { value: "model_disable_tool", label: "Model Disable Tool" },
+    { value: "policy_change", label: "Policy Change" },
+    { value: "communication", label: "Communication" },
+    { value: "data_purge", label: "Data Purge" },
+    { value: "other", label: "Other" },
+  ],
+  rcaMethod: [
+    { value: "5_whys", label: "5 Whys" },
+    { value: "fishbone", label: "Fishbone" },
+    { value: "timeline_analysis", label: "Timeline Analysis" },
+    { value: "fault_tree", label: "Fault Tree" },
+    { value: "other", label: "Other" },
+  ],
+  notificationAudienceType: [
+    { value: "internal_exec", label: "Internal Exec" },
+    { value: "internal_staff", label: "Internal Staff" },
+    { value: "customers", label: "Customers" },
+    { value: "regulator", label: "Regulator" },
+    { value: "vendor", label: "Vendor" },
+    { value: "media", label: "Media" },
+    { value: "other", label: "Other" },
+  ],
+  notificationChannel: [
+    { value: "email", label: "Email" },
+    { value: "portal", label: "Portal" },
+    { value: "status_page", label: "Status Page" },
+    { value: "phone", label: "Phone" },
+    { value: "meeting", label: "Meeting" },
+    { value: "legal_letter", label: "Legal Letter" },
+    { value: "other", label: "Other" },
+  ],
+  capaStatus: [
+    { value: "new", label: "New" },
+    { value: "in_progress", label: "In Progress" },
+    { value: "blocked", label: "Blocked" },
+    { value: "pending_verification", label: "Pending Verification" },
+    { value: "closed", label: "Closed" },
+  ],
+  capaSourceType: [
+    { value: "incident", label: "Incident" },
+    { value: "risk", label: "Risk" },
+    { value: "feedback", label: "Feedback" },
+    { value: "override", label: "Override" },
+    { value: "audit", label: "Audit" },
+    { value: "assessment", label: "Assessment" },
+    { value: "other", label: "Other" },
+  ],
+  capaPriority: [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+    { value: "critical", label: "Critical" },
+  ],
 };
 
 // Filter configurations for each API
@@ -462,6 +561,225 @@ export const FILTER_CONFIGS: Record<string, FilterConfig> = {
       type: "text",
       placeholder: "Search by name",
       maxLength: 255,
+    },
+  },
+  "data-elements": {
+    name: {
+      key: "name",
+      label: "Name",
+      type: "text",
+      placeholder: "Search by name",
+      maxLength: 255,
+    },
+    data_type: {
+      key: "data_type",
+      label: "Data Type",
+      type: "select",
+      options: ENUM_VALUES.dataType,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+    },
+  },
+  "dataset-subject-populations": {
+    subject_realm: {
+      key: "subject_realm",
+      label: "Subject Realm",
+      type: "select",
+      options: ENUM_VALUES.subjectRealm,
+    },
+    jurisdiction: {
+      key: "jurisdiction",
+      label: "Jurisdiction",
+      type: "select",
+      options: ENUM_VALUES.jurisdiction,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "user-consents": {
+    consent_status: {
+      key: "consent_status",
+      label: "Consent Status",
+      type: "text",
+      placeholder: "Enter consent status",
+      maxLength: 255,
+    },
+    legal_basis: {
+      key: "legal_basis",
+      label: "Legal Basis",
+      type: "text",
+      placeholder: "Enter legal basis",
+      maxLength: 255,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+    },
+  },
+  "incident-alerts": {
+    source_type: {
+      key: "source_type",
+      label: "Source Type",
+      type: "select",
+      options: ENUM_VALUES.incidentAlertSourceType,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "incident-actions": {
+    action_type: {
+      key: "action_type",
+      label: "Action Type",
+      type: "select",
+      options: ENUM_VALUES.incidentActionType,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "incident-root-cause-analyses": {
+    rca_method: {
+      key: "rca_method",
+      label: "RCA Method",
+      type: "select",
+      options: ENUM_VALUES.rcaMethod,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "incident-notifications": {
+    audience_type: {
+      key: "audience_type",
+      label: "Audience Type",
+      type: "select",
+      options: ENUM_VALUES.notificationAudienceType,
+    },
+    channel: {
+      key: "channel",
+      label: "Channel",
+      type: "select",
+      options: ENUM_VALUES.notificationChannel,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+  },
+  "corrective-preventive-actions": {
+    status: {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ENUM_VALUES.capaStatus,
+    },
+    source_type: {
+      key: "source_type",
+      label: "Source Type",
+      type: "select",
+      options: ENUM_VALUES.capaSourceType,
+    },
+    priority: {
+      key: "priority",
+      label: "Priority",
+      type: "select",
+      options: ENUM_VALUES.capaPriority,
+    },
+    from: {
+      key: "from",
+      label: "From Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
+    },
+    to: {
+      key: "to",
+      label: "To Date",
+      type: "date",
+      dateConstraints: {
+        disableFuture: true,
+      },
     },
   },
 };

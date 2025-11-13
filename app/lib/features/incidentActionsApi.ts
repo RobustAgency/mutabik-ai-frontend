@@ -43,6 +43,8 @@ export interface IncidentActionFilters {
   ai_incident_id?: number;
   action_type?: IncidentAction["action_type"];
   validation_result?: IncidentAction["validation_result"];
+  from?: string | null; // date, before_or_equal:today
+  to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
   per_page?: number;
 }
