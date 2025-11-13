@@ -19,6 +19,11 @@ export interface DatasetSnapshot {
   residency_zone: string;
   storage_uri: string;
   created_at: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
 }
 
 // Filter types for Dataset Snapshots

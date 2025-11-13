@@ -20,6 +20,16 @@ export interface ConsentCoverage {
   updated_at?: string;
   dataset_name?: string;
   snapshot_version_tag?: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+  snapshot?: {
+    id: number;
+    version_tag: string;
+    [key: string]: unknown;
+  };
 }
 
 // Filter types for Consent Coverages

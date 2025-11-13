@@ -13,6 +13,11 @@ export interface ConsentScope {
   effective_from: string;
   effective_to: string | null;
   created_at: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
 }
 
 // Filter types for Consent Scopes

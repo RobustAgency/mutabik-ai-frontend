@@ -22,13 +22,13 @@ const AiAssetForm: React.FC<AiAssetFormProps> = ({ formData, setFormData, errors
   };
 
   // Vendors
-  const { data: vendorsData, isLoading: isVendorsLoading } = useGetVendorsQuery({ per_page: 1000 });
+  const { data: vendorsData, isLoading: isVendorsLoading } = useGetVendorsQuery({ per_page: 100 });
   const vendorOptions = (vendorsData?.data || []).map((v: any) => ({ id: v.id, label: v.vendor_name, value: String(v.id) }));
 
   // Agreements filtered by vendor when selected
   const vendorIdNumber = formData.vendor_id ?? undefined;
   const { data: agreementsData, isLoading: isAgreementsLoading } = useGetAgreementsQuery(
-    vendorIdNumber ? { per_page: 1000, vendor_id: vendorIdNumber } : { per_page: 1000 }
+    vendorIdNumber ? { per_page: 100, vendor_id: vendorIdNumber } : { per_page: 100 }
   );
   const agreementOptions = (agreementsData?.data || []).map((a: any) => ({ id: a.id, label: `#${a.id} • ${a.agreement_type?.toUpperCase?.() || "Agreement"}`, value: String(a.id) }));
 

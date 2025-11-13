@@ -8,7 +8,7 @@ export interface ModelDatasetLink {
   ai_model_id: string;
   ai_model_version_id: number;
   dataset_id: string | null;
-  dataset_snapshot_id: string;
+  dataset_snapshot_id: string | null;
   role: string;
   access_path: string | null;
   transform_pack_link: string | null;
@@ -19,6 +19,26 @@ export interface ModelDatasetLink {
   created_by: string;
   source_created_at: string;
   created_at: string;
+  ai_model?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+  ai_model_version?: {
+    id: number;
+    version_number: string;
+    [key: string]: unknown;
+  };
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+  dataset_snapshot?: {
+    id: number;
+    version_tag: string;
+    [key: string]: unknown;
+  };
 }
 
 // Filter types for AI Model Datasets (Model Dataset Links)
@@ -33,7 +53,7 @@ export interface CreateModelDatasetLinkData {
   ai_model_id: string;
   ai_model_version_id: number | null;
   dataset_id?: string;
-  dataset_snapshot_id: string;
+  dataset_snapshot_id: string | null;
   role: string;
   access_path?: string;
   transform_pack_link?: string;

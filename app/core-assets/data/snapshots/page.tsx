@@ -78,14 +78,18 @@ const DatasetSnapshotsPage: React.FC = () => {
       accessorKey: "dataset_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Dataset ID
+          Dataset
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const datasetName = row.original.dataset?.name;
+        const datasetId = row.original.dataset_id;
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {datasetName || datasetId}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "residency_zone",

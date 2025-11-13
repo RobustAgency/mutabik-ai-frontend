@@ -28,10 +28,12 @@ const ModelDatasetLinksPage: React.FC = () => {
 
   const handleDeleteClick = (e: React.MouseEvent, link: ModelDatasetLink) => {
     e.stopPropagation();
+    const modelName = link.ai_model?.name || link.ai_model_id;
+    const versionNumber = link.ai_model_version?.version_number || link.ai_model_version_id.toString();
     setDeleteDialogState({
       isOpen: true,
       linkId: link.id,
-      linkName: `${link.ai_model_version_id} - ${link.role}`,
+      linkName: `${modelName} (${versionNumber}) - ${link.role}`,
     });
   };
 
@@ -65,27 +67,35 @@ const ModelDatasetLinksPage: React.FC = () => {
       accessorKey: "ai_model_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Model ID
+          Model
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const modelName = row.original.ai_model?.name;
+        const modelId = row.original.ai_model_id;
+        return (
+          <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+            {modelName || modelId}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "ai_model_version_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Version ID
+          Version
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const versionNumber = row.original.ai_model_version?.version_number;
+        const versionId = row.original.ai_model_version_id;
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {versionNumber || versionId}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "role",
@@ -107,14 +117,28 @@ const ModelDatasetLinksPage: React.FC = () => {
       accessorKey: "dataset_snapshot_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Snapshot ID
+          Snapshot
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const snapshotVersion = row.original.dataset_snapshot?.version_tag;
+        const snapshotId = row.original.dataset_snapshot_id;
+        const datasetName = row.original.dataset?.name;
+
+        if (!snapshotId) {
+          return <span className="text-[#667085]">—</span>;
+        }
+
+        // Show version tag if available, otherwise show ID, with dataset name if available
+        const displayValue = snapshotVersion || snapshotId;
+        const prefix = datasetName ? `${datasetName} - ` : "";
+
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {prefix}{displayValue}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "eligibility_status",
