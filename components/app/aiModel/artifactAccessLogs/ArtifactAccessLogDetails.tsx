@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGetArtifactAccessLogQuery } from "@/app/lib/features/artifactAccessLogsApi";
 import { ArrowLeft } from "lucide-react";
 import { formatDateISO } from "@/lib/helpers/date";
-import { AccessAction, AccessContext } from "@/service/app/artifactAccessLogs";
 
 interface ArtifactAccessLogDetailsProps {
     logId: number | string;

@@ -11,7 +11,7 @@ import {
 import { Trash2, Eye } from "lucide-react";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
-import { AccessAction, AccessContext, ArtifactAccessLogFilters } from "@/service/app/artifactAccessLogs";
+import { ArtifactAccessLogFilters } from "@/service/app/artifactAccessLogs";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const ArtifactAccessLogsList = () => {
@@ -87,7 +87,7 @@ const ArtifactAccessLogsList = () => {
                     logId: null,
                 });
                 refetch();
-            } catch (error) {
+            } catch {
                 // Error is handled by the mutation's onQueryStarted
             }
         }

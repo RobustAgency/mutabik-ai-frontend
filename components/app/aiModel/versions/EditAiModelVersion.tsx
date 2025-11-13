@@ -23,6 +23,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
     const [formData, setFormData] = useState<CreateAiModelVersionData>({
         // Core identifiers
         version_number: '',
+        version: '',
         version_type: 'minor',
         ai_model_id: 0,
         description: '',
@@ -66,6 +67,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
             setFormData({
                 // Core identifiers
                 version_number: aiModelVersion.version_number,
+                version: aiModelVersion.version || aiModelVersion.version_number,
                 version_type: aiModelVersion.version_type,
                 ai_model_id: aiModelVersion.ai_model_id,
                 description: aiModelVersion.description || '',

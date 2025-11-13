@@ -182,7 +182,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                     <SelectWithInlineCreate
                         value={formData.source_org_stakeholder_id ? String(formData.source_org_stakeholder_id) : ""}
                         onValueChange={(value) => {
-                            setFormData((prev) => ({ ...prev, source_org_stakeholder_id: value ? Number(value) : null }));
+                            setFormData((prev) => ({ ...prev, source_org_stakeholder_id: value || null }));
                         }}
                         options={stakeholders.map((stakeholder) => ({
                             id: stakeholder.id,
@@ -213,7 +213,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                     <SelectWithInlineCreate
                         value={formData.owner_stakeholder_id ? String(formData.owner_stakeholder_id) : ""}
                         onValueChange={(value) => {
-                            setFormData((prev) => ({ ...prev, owner_stakeholder_id: value ? Number(value) : null }));
+                            setFormData((prev) => ({ ...prev, owner_stakeholder_id: value || null }));
                         }}
                         options={stakeholders.map((custodian) => ({
                             id: custodian.id,
@@ -247,7 +247,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                             setVendorInput(value);
                             setFormData((prev) => ({
                                 ...prev,
-                                vendor_id: value === "none" ? null : value
+                                vendor_id: value === "none" ? null : value || null
                             }));
                         }}
                         options={[

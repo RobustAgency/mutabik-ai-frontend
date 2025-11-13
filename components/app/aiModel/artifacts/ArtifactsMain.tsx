@@ -94,14 +94,13 @@ const ArtifactsMain = () => {
                     artifactUri: "",
                 });
                 refetch();
-            } catch (error) {
+            } catch {
                 // Error is handled by the mutation's onQueryStarted
             }
         }
     };
 
     const artifacts = data?.data || [];
-    const totalPages = data?.last_page || 1;
 
     const columns: ColumnDef<AiModelArtifact>[] = [
         {

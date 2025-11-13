@@ -19,6 +19,7 @@ const CreateAiModelVersion: React.FC = () => {
     const [formData, setFormData] = useState<CreateAiModelVersionData>({
         // Core identifiers
         version_number: '',
+        version: '',
         version_type: 'minor',
         ai_model_id: 0,
         description: '',

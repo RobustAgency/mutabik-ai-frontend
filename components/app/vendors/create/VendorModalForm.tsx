@@ -6,7 +6,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateVendorMutation, CreateVendorData, Vendor } from "@/app/lib/features/vendorsApi";
 import VendorForm from "./VendorForm";
-import { toast } from "react-toastify";
 
 const initialFormData: CreateVendorData = {
     vendor_name: "",

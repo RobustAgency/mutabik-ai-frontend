@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button'
-import { DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -18,13 +16,13 @@ import { useRouter } from 'next/navigation'
 interface LinkUseCaseFormProps {
     aiModelId?: number // Make optional since we'll select it in the form
     onSuccess?: () => void
-    formRef?: React.RefObject<HTMLFormElement>
+    formRef?: React.RefObject<HTMLFormElement | null>
     onValidityChange?: (isValid: boolean) => void
     isSubmitting?: boolean
     setIsSubmitting?: (value: boolean) => void
 }
 
-const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess, formRef, onValidityChange, isSubmitting, setIsSubmitting }) => {
+const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess, formRef, onValidityChange, setIsSubmitting }) => {
     const router = useRouter()
     const [formData, setFormData] = useState({
         ai_model_id: aiModelId ? String(aiModelId) : '',
@@ -55,7 +53,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
     const { data: useCases = [], isLoading: useCasesLoading } = useGetUseCasesQuery()
 
     // Create mutation
-    const [createLink, { isLoading: isCreating }] = useCreateAiModelUseCaseMutation()
+    const [createLink] = useCreateAiModelUseCaseMutation()
 
     // Clear ai_model_version_id when ai_model_id changes
     useEffect(() => {
@@ -164,12 +162,14 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
     }))
 
     // Check if form is valid for submit button
-    const isFormValid = formData.ai_model_id &&
+    const isFormValid = !!(
+        formData.ai_model_id &&
         formData.use_case_id &&
         formData.created_by?.trim() &&
         formData.ai_model_id !== 'loading' &&
         formData.use_case_id !== 'loading' &&
-        formData.use_case_id !== 'no-use-cases';
+        formData.use_case_id !== 'no-use-cases'
+    );
 
     // Notify parent of validity changes
     useEffect(() => {

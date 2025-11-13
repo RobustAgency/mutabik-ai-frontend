@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateAiModelArtifactMutation } from '@/app/lib/features/aiModelArtifactsApi';
-import { CreateAiModelArtifactData } from '@/service/app/aiModelArtifacts';
 import { toast } from "react-toastify";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";

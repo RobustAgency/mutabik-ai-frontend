@@ -6,7 +6,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateDatasetMutation, CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import DatasetForm from "./DatasetForm";
-import { toast } from "react-toastify";
 
 const initialFormData: CreateDatasetData = {
     name: "",

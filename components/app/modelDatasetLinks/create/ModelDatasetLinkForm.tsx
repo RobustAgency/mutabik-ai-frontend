@@ -29,11 +29,11 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
   const { data: modelsData, isLoading: isLoadingModels } = useGetAiModelsQuery();
   const models = modelsData || [];
   const { data: modelVersionsData, isLoading: isLoadingVersions } = useGetAiModelVersionsQuery();
-  const modelVersions = modelVersionsData || [];
+  const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
   const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
   const datasets = datasetsData || [];
   const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
-  const snapshots = snapshotsData || [];
+  const snapshots = React.useMemo(() => snapshotsData || [], [snapshotsData]);
 
   // Filter versions based on selected model
   const filteredVersions = React.useMemo(() => {

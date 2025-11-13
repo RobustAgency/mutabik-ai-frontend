@@ -11,7 +11,6 @@ import BasicInfo from "./sections/BasicInfo";
 import TechnicalDetails from "./sections/TechnicalDetails";
 import DeploymentInfo from "./sections/DeploymentInfo";
 import ReleaseNotes from "./sections/ReleaseNotes";
-import QuickActions from "./sections/QuickActions";
 import Metadata from "./sections/Metadata";
 
 interface AiModelVersionDetailsProps {

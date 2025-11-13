@@ -6,7 +6,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateStakeholderMutation, CreateStakeholderData, Stakeholder } from "@/app/lib/features/stakeholdersApi";
 import StakeholderForm from "./StakeholderForm";
-import { toast } from "react-toastify";
 
 const initialFormData: CreateStakeholderData = {
     type: "person",

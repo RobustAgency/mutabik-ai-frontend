@@ -8,7 +8,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useGetStakeholdersQuery, useDeleteStakeholderMutation, StakeholderFilters } from "@/app/lib/features/stakeholdersApi";
 import { Stakeholder } from "@/app/lib/features/stakeholdersApi";
-import Tab from "@/components/app/projects/Tab"
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
@@ -16,19 +15,8 @@ const Stakeholders: React.FC = () => {
   const router = useRouter();
   const [filters, setFilters] = React.useState<StakeholderFilters>({});
 
-  // Tabs: All, Person, Team, Committee, Vendor, Regulator
-  interface TabData { value: string; label: string }
-  const tabsData: TabData[] = [
-    { value: "all", label: "All" },
-    { value: "person", label: "Person" },
-    { value: "team", label: "Team" },
-    { value: "committee", label: "Committee" },
-    { value: "vendor", label: "Vendor" },
-    { value: "regulator", label: "Regulator" },
-  ];
-
-  type TabValue = TabData["value"];
-  const [activeTab, setActiveTab] = React.useState<string>("all");
+  type TabValue = "all" | "person" | "team" | "committee" | "vendor" | "regulator";
+  const [activeTab] = React.useState<TabValue>("all");
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     stakeholderId: string | null;

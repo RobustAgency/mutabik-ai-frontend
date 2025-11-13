@@ -9,7 +9,6 @@ import { FormDataType } from "../types/aiModelTypes";
 import BasicInfo from "./BasicInfo";
 import TechnicalDetails from "./TechnicalDetails";
 import OwnershipGovernance from "./OwnershipGovernance";
-import { toast } from "react-toastify";
 
 const initialFormData: FormDataType = {
     name: "",

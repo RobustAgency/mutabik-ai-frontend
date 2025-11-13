@@ -49,7 +49,7 @@ export const formatDateWithTime24h = (value: DateInput): string => {
 // Backward-compatible default common formatter
 export const formatDate = formatDateShort;
 
-export default {
+const dateHelpers = {
   formatDate,
   formatDateISO,
   formatDateShort,
@@ -57,5 +57,7 @@ export default {
   formatDateLongTime,
   formatDateWithTime24h,
 };
+
+export default dateHelpers;
 
 
