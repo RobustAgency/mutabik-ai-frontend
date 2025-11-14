@@ -32,11 +32,25 @@ export default function DatesReviewsSection({ formData, setFormData, errors = {}
                 </div>
                 <div className="space-y-2">
                     <Label>Last Review Date</Label>
-                    <Input type="date" placeholder="YYYY-MM-DD" value={formData.last_review_date || ""} onChange={set("last_review_date")} />
+                    <Input type="date"
+                        placeholder="YYYY-MM-DD"
+                        value={formData.last_review_date || ""}
+                        onChange={set("last_review_date")}
+                        max={formData.next_review_date || undefined}
+                    />
                 </div>
                 <div className="space-y-2">
                     <Label>Next Review Date</Label>
-                    <Input type="date" placeholder="YYYY-MM-DD" value={formData.next_review_date || ""} onChange={set("next_review_date")} />
+                    <Input type="date"
+                        placeholder="YYYY-MM-DD"
+                        value={formData.next_review_date || ""}
+                        min={formData.last_review_date || undefined}
+                        onChange={set("next_review_date")}
+                        className={hasError("next_review_date") ? "border-red-500" : ""}
+                    />
+                    {hasError("next_review_date") && (
+                        <p className="text-sm text-red-500">{getError("next_review_date")}</p>
+                    )}
                 </div>
             </div>
 
