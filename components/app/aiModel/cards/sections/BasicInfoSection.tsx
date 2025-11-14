@@ -89,7 +89,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                 <div className="space-y-2">
                     <Label>Creator Role <span className="text-red-500">*</span></Label>
                     <Select value={formData.creator_role || ""} onValueChange={(v) => setFormData({ creator_role: v })}>
-                        <SelectTrigger className={hasError("creator_role") ? "border-red-500" : "w-full"}>
+                        <SelectTrigger className={hasError("creator_role") ? "w-full border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select role" />
                         </SelectTrigger>
                         <SelectContent>
@@ -106,7 +106,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                 <div className="space-y-2">
                     <Label>Card Format <span className="text-red-500">*</span></Label>
                     <Select value={formData.format || ""} onValueChange={(v) => setFormData({ format: v })}>
-                        <SelectTrigger className={hasError("format") ? "border-red-500" : "w-full"}>
+                        <SelectTrigger className={hasError("format") ? "w-full border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select format" />
                         </SelectTrigger>
                         <SelectContent>
