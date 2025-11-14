@@ -116,7 +116,7 @@ const ArtifactAccessLogsList = () => {
                                 />
                                 <Button
                                     onClick={() => router.push("/core-assets/ai-models/artifact-access-logs/create")}
-                                    className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
                                 >
                                     New Access Log
                                 </Button>

@@ -151,9 +151,8 @@ const AiIncidents: React.FC = () => {
         const label = labelMap[severityCode] || severityCode;
         return (
           <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-              colorMap[severityCode] || "bg-[#F2F4F7] text-[#667085]"
-            }`}
+            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${colorMap[severityCode] || "bg-[#F2F4F7] text-[#667085]"
+              }`}
           >
             {label}
           </div>
@@ -185,9 +184,8 @@ const AiIncidents: React.FC = () => {
         };
         return (
           <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-              statusColors[code] || "bg-[#F2F4F7] text-[#667085]"
-            }`}
+            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${statusColors[code] || "bg-[#F2F4F7] text-[#667085]"
+              }`}
           >
             {labelMap[code] || code}
           </div>
@@ -274,7 +272,7 @@ const AiIncidents: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/governance/incidents/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 New Incident
               </Button>
@@ -290,11 +288,11 @@ const AiIncidents: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={handlePageChange}

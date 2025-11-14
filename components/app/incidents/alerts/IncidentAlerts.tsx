@@ -182,7 +182,7 @@ const IncidentAlerts: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/governance/incidents/alerts/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 New Alert
               </Button>
@@ -197,11 +197,11 @@ const IncidentAlerts: React.FC = () => {
               pagination={
                 pagination
                   ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
                   : undefined
               }
               onPageChange={handlePageChange}
