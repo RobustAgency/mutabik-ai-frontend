@@ -34,17 +34,17 @@ const EditAiAsset: React.FC<EditAiAssetProps> = ({ aiAssetId }) => {
 
   const isFormEmpty = () => {
     if (!formData) return true;
-    return !formData.vendor_id && 
-           !formData.vendor_effective_from && 
-           !formData.vendor_effective_to && 
-           !formData.vendor_agreement_id && 
-           !formData.vendor_assessment_id;
+    return !formData.vendor_id &&
+      !formData.vendor_effective_from &&
+      !formData.vendor_effective_to &&
+      !formData.vendor_agreement_id &&
+      !formData.vendor_assessment_id;
   };
 
   const handleSubmit = async () => {
     if (!formData) return;
     setErrors({});
-    
+
     if (isFormEmpty()) {
       setErrors({ form: ["Please fill in at least one field before submitting"] });
       return;
@@ -87,7 +87,7 @@ const EditAiAsset: React.FC<EditAiAssetProps> = ({ aiAssetId }) => {
               />
             )}
             <div className="flex justify-end">
-              <Button onClick={handleSubmit} disabled={isSubmitting} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4">
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
             </div>

@@ -111,7 +111,7 @@ const EditIncidentAction: React.FC<EditIncidentActionProps> = ({ actionId }) => 
               errors={errors}
             />
             <div className="flex justify-end">
-              <Button onClick={handleSubmit} disabled={isSubmitting} className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4">
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4">
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
             </div>

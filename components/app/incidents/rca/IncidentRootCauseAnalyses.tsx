@@ -116,7 +116,7 @@ const IncidentRootCauseAnalyses: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/governance/incidents/rca/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 New RCA
               </Button>

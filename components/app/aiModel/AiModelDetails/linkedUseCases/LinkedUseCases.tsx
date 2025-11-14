@@ -148,7 +148,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Linked Use Cases</h2>
                         <Button
-                            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
                             onClick={() => setDialogOpen(true)}
                         >
                             Link use case

@@ -237,7 +237,7 @@ const Agreements: React.FC = () => {
             </div>
             <Button
               onClick={() => router.push("/core-assets/agreements/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
             >
               New Agreement
             </Button>

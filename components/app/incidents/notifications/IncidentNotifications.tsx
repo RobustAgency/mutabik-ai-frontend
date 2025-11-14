@@ -120,7 +120,7 @@ const IncidentNotifications: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/governance/incidents/notifications/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 Send Notification
               </Button>

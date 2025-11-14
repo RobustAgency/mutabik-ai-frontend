@@ -204,7 +204,7 @@ const ModelDatasetLinksPage: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/core-assets/data/model-links/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 New Link
               </Button>

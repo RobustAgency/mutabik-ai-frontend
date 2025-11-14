@@ -129,6 +129,15 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
             next.updated_by = ["Updated by must be a valid email address"];
         }
 
+        if (formData.last_review_date && formData.next_review_date) {
+            const lastReviewDate = new Date(formData.last_review_date);
+            const nextReviewDate = new Date(formData.next_review_date);
+
+            if (nextReviewDate < lastReviewDate) {
+                next.next_review_date = ["Next review date cannot be before last review date"];
+            }
+        }
+
         setErrors(next);
         return Object.keys(next).length === 0;
     };
@@ -167,6 +176,7 @@ export default function AiModelCardForm({ mode, initial, onSubmit, loading }: Ai
                     >
                         {loading ? "Saving..." : "Save Model Version Card"}
                     </Button>
+
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
 

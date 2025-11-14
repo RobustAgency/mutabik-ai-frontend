@@ -214,7 +214,7 @@ const ConsentCoveragePage: React.FC = () => {
             </div>
             <Button
               onClick={() => router.push("/privacy/consent/coverage/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
             >
               New Coverage
             </Button>

@@ -121,9 +121,8 @@ const Datasets: React.FC = () => {
       cell: ({ getValue }) => {
         const containsPii = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            containsPii === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${containsPii === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {containsPii}
           </div>
         );
@@ -202,7 +201,7 @@ const Datasets: React.FC = () => {
               />
               <Button
                 onClick={() => router.push("/core-assets/data/registry/create")}
-                className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 New Dataset
               </Button>

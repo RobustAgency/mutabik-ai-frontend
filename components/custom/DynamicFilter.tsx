@@ -234,7 +234,9 @@ export function DynamicFilter({
                 )}
             >
                 <Filter className="w-4 h-4" />
-                Filters
+                <span className="hidden md:block">
+                    Filters
+                </span>
                 {activeFilterCount > 0 && (
                     <span className="ml-1 px-2 py-0.5 bg-[#4FD58F] text-white text-xs font-semibold rounded-full">
                         {activeFilterCount}
