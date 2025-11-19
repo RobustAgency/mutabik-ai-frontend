@@ -41,13 +41,34 @@ const IncidentRootCauseAnalyses: React.FC = () => {
 
   const columns: ColumnDef<IncidentRootCauseAnalysis>[] = [
     {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Root Cause Analysis ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
       accessorKey: "ai_incident_id",
-      header: "Incident ID",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Incident ID
+        </div>
+      ),
       cell: ({ getValue }) => `#${getValue() as number}`,
     },
     {
       accessorKey: "rca_method",
-      header: "Method",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Method
+        </div>
+      ),
       cell: ({ getValue }) => {
         const method = getValue() as string;
         return method.replace(/_/g, " ").toUpperCase();
@@ -55,16 +76,28 @@ const IncidentRootCauseAnalyses: React.FC = () => {
     },
     {
       accessorKey: "approved_by",
-      header: "Approved By",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Approved By
+        </div>
+      ),
     },
     {
       accessorKey: "approved_at",
-      header: "Approved At",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Approved At
+        </div>
+      ),
       cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -96,7 +129,7 @@ const IncidentRootCauseAnalyses: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                 Root Cause Analyses

@@ -41,13 +41,34 @@ const IncidentNotifications: React.FC = () => {
 
   const columns: ColumnDef<IncidentNotification>[] = [
     {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Notification ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
       accessorKey: "ai_incident_id",
-      header: "Incident ID",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Incident ID
+        </div>
+      ),
       cell: ({ getValue }) => `#${getValue() as number}`,
     },
     {
       accessorKey: "audience_type",
-      header: "Audience",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Audience
+        </div>
+      ),
       cell: ({ getValue }) => {
         const type = getValue() as string;
         return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -55,7 +76,11 @@ const IncidentNotifications: React.FC = () => {
     },
     {
       accessorKey: "channel",
-      header: "Channel",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Channel
+        </div>
+      ),
       cell: ({ getValue }) => {
         const channel = getValue() as string;
         return channel.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -63,12 +88,20 @@ const IncidentNotifications: React.FC = () => {
     },
     {
       accessorKey: "notified_at",
-      header: "Notified At",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Notified At
+        </div>
+      ),
       cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -100,7 +133,7 @@ const IncidentNotifications: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                 Incident Notifications

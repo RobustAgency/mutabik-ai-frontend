@@ -101,7 +101,7 @@ const ArtifactAccessLogsList = () => {
             <div className="max-w-7xl mx-auto">
                 <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
                     <CardContent className="flex flex-col flex-1 gap-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
                             <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                                 Artifact Access Logs
                             </h2>
@@ -127,6 +127,9 @@ const ArtifactAccessLogsList = () => {
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border-b border-[#E4E7EC]">
+                                        <th className="text-left py-3 px-4 text-xs font-medium text-[#667085]">
+                                            ID
+                                        </th>
                                         <th className="text-left py-3 px-4 text-xs font-medium text-[#667085]">
                                             Artifact
                                         </th>
@@ -169,6 +172,11 @@ const ArtifactAccessLogsList = () => {
                                                 key={log.id}
                                                 className="border-b border-[#E4E7EC] hover:bg-[#F9FAFB]"
                                             >
+                                                <td>
+                                                    <span className="text-sm font-medium text-[#101828]">
+                                                        {log.display_id}
+                                                    </span>
+                                                </td>
                                                 <td className="py-3 px-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-medium text-[#101828]">

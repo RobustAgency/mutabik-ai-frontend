@@ -63,13 +63,38 @@ const IncidentActions: React.FC = () => {
 
   const columns: ColumnDef<IncidentAction>[] = [
     {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Action ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
       accessorKey: "ai_incident_id",
-      header: "Incident ID",
-      cell: ({ getValue }) => `#${getValue() as number}`,
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Incident ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+          #{getValue() as number}
+        </div>
+      ),
     },
     {
       accessorKey: "action_type",
-      header: "Action Type",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Action Type
+        </div>
+      ),
       cell: ({ getValue }) => {
         const type = getValue() as string;
         return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -77,15 +102,27 @@ const IncidentActions: React.FC = () => {
     },
     {
       accessorKey: "performed_by",
-      header: "Performed By",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Performed By
+        </div>
+      ),
     },
     {
       accessorKey: "validation_result",
-      header: "Validation",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Validation
+        </div>
+      ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -110,7 +147,7 @@ const IncidentActions: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                 Incident Actions

@@ -25,10 +25,10 @@ const AiModels: React.FC = () => {
 
     const columns: ColumnDef<AiModel>[] = [
         {
-            accessorKey: "id",
+            accessorKey: "display_id",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    ID
+                    AI Model ID
                 </div>
             ),
             cell: ({ getValue }) => (

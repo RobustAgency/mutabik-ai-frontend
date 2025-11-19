@@ -104,6 +104,19 @@ const ArtifactsMain = () => {
 
     const columns: ColumnDef<AiModelArtifact>[] = [
         {
+            accessorKey: "display_id",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    Artifact ID
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans text-sm leading-5 tracking-normal text-[#1D2939]">
+                    {getValue() as string}
+                </div>
+            ),
+        },
+        {
             accessorKey: "name",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">

@@ -49,10 +49,10 @@ const AiModelVersions: React.FC = () => {
 
     const columns: ColumnDef<AiModelVersion>[] = [
         {
-            accessorKey: "id",
+            accessorKey: "display_id",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    ID
+                    AI Model Version ID
                 </div>
             ),
             cell: ({ getValue }) => (

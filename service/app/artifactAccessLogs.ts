@@ -13,6 +13,7 @@ export enum AccessContext {
 
 export interface ArtifactAccessLog {
   id: number;
+  display_id: string;
   artifact_id: number;
   accessor_stakeholder_id: number;
   action: AccessAction | string;

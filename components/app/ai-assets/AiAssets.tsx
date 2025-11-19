@@ -28,9 +28,17 @@ const AiAssets: React.FC = () => {
 
     const columns: ColumnDef<AiAsset>[] = [
         {
-            accessorKey: "id",
-            header: "ID",
-            cell: ({ getValue }) => `#${getValue() as number}`,
+            accessorKey: "display_id",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    AI Asset ID
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+                    {getValue() as string}
+                </div>
+            ),
         },
         {
             accessorKey: "vendor_id",
@@ -87,7 +95,7 @@ const AiAssets: React.FC = () => {
     return (
         <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
             <CardContent className="flex flex-col flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
                     <div>
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                             AI Assets
