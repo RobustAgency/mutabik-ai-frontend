@@ -86,6 +86,19 @@ const Vendors: React.FC = () => {
 
   const columns: ColumnDef<Vendor>[] = [
     {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Vendor ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
       accessorKey: "vendor_name",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">

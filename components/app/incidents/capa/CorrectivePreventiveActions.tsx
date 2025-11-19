@@ -41,6 +41,15 @@ const CorrectivePreventiveActions: React.FC = () => {
 
   const columns: ColumnDef<CorrectivePreventiveAction>[] = [
     {
+      accessorKey: "display_id",
+      header: "CAPA ID",
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
       accessorKey: "title",
       header: "Title",
       cell: ({ getValue }) => (

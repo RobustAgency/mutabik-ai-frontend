@@ -65,6 +65,19 @@ const LinkedUseCasesList: React.FC = () => {
 
     const columns: ColumnDef<AiModelUseCase>[] = [
         {
+            accessorKey: "display_id",
+            header: () => (
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+                    ID
+                </div>
+            ),
+            cell: ({ getValue }) => (
+                <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+                    {getValue() as string}
+                </div>
+            ),
+        },
+        {
             accessorKey: "ai_model_id",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">

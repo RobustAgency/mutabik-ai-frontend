@@ -2,6 +2,7 @@ import { api, ApiResponse } from "@/lib/api";
 
 export interface AiModel {
   id: number;
+  display_id: string;
   name: string;
   description: string | null;
   primary_category:

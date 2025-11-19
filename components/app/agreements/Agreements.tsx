@@ -63,15 +63,15 @@ const Agreements: React.FC = () => {
 
   const columns: ColumnDef<Agreement>[] = [
     {
-      accessorKey: "id",
+      accessorKey: "display_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          ID
+          Agreement ID
         </div>
       ),
       cell: ({ getValue }) => (
         <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
-          {getValue() as number}
+          {getValue() as string}
         </div>
       ),
     },

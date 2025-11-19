@@ -128,6 +128,9 @@ const ArtifactAccessLogsList = () => {
                                 <thead>
                                     <tr className="border-b border-[#E4E7EC]">
                                         <th className="text-left py-3 px-4 text-xs font-medium text-[#667085]">
+                                            ID
+                                        </th>
+                                        <th className="text-left py-3 px-4 text-xs font-medium text-[#667085]">
                                             Artifact
                                         </th>
                                         <th className="text-left py-3 px-4 text-xs font-medium text-[#667085]">
@@ -169,6 +172,11 @@ const ArtifactAccessLogsList = () => {
                                                 key={log.id}
                                                 className="border-b border-[#E4E7EC] hover:bg-[#F9FAFB]"
                                             >
+                                                <td>
+                                                    <span className="text-sm font-medium text-[#101828]">
+                                                        {log.display_id}
+                                                    </span>
+                                                </td>
                                                 <td className="py-3 px-4">
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-medium text-[#101828]">
