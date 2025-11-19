@@ -42,7 +42,11 @@ const CorrectivePreventiveActions: React.FC = () => {
   const columns: ColumnDef<CorrectivePreventiveAction>[] = [
     {
       accessorKey: "display_id",
-      header: "CAPA ID",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          CAPA ID
+        </div>
+      ),
       cell: ({ getValue }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
           {getValue() as string}
@@ -51,14 +55,24 @@ const CorrectivePreventiveActions: React.FC = () => {
     },
     {
       accessorKey: "title",
-      header: "Title",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Title
+        </div>
+      ),
       cell: ({ getValue }) => (
-        <div className="font-medium">{getValue() as string}</div>
+        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+          {getValue() as string}
+        </div>
       ),
     },
     {
       accessorKey: "capa_type",
-      header: "Type",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Type
+        </div>
+      ),
       cell: ({ getValue }) => {
         const type = getValue() as string;
         return type.replace(/\b\w/g, (l) => l.toUpperCase());
@@ -66,7 +80,11 @@ const CorrectivePreventiveActions: React.FC = () => {
     },
     {
       accessorKey: "priority",
-      header: "Priority",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Priority
+        </div>
+      ),
       cell: ({ getValue }) => {
         const priority = getValue() as string;
         const colors: Record<string, string> = {
@@ -84,7 +102,11 @@ const CorrectivePreventiveActions: React.FC = () => {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Status
+        </div>
+      ),
       cell: ({ getValue }) => {
         const status = getValue() as string;
         return status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -92,7 +114,11 @@ const CorrectivePreventiveActions: React.FC = () => {
     },
     {
       accessorKey: "owner_team",
-      header: "Owner Team",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Owner Team
+        </div>
+      ),
       cell: ({ getValue }) => {
         const team = getValue() as string;
         return team.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -100,12 +126,20 @@ const CorrectivePreventiveActions: React.FC = () => {
     },
     {
       accessorKey: "due_date",
-      header: "Due Date",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Due Date
+        </div>
+      ),
       cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
@@ -137,7 +171,7 @@ const CorrectivePreventiveActions: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                 Corrective & Preventive Actions (CAPA)
