@@ -29,13 +29,13 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
         description: '',
         release_date: null,
         release_notes: '',
-        version_role: 'original_development',
+        version_role: 'original_release',
         version_source: 'internal_development',
         our_involvement: 'full_development',
         architecture_type: 'transformer',
         model_file_size_gb: null,
         training_duration_hours: null,
-        complexity_level: 'moderate',
+        complexity_level: 'low',
         parameter_count: null,
         input_modalities: [],
         output_modalities: [],
@@ -44,6 +44,7 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
         deployment_environments: [],
         customizations_applied: [],
         has_performance_data: false,
+        approval_status: null,
         created_by: '',
         updated_by: null,
     });
@@ -59,6 +60,11 @@ const AiModelVersionModalForm: React.FC<AiModelVersionModalFormProps> = ({
 
         if (!formData.version_number?.trim()) {
             errors.version_number = ['Version number is required'];
+        }
+
+        // Approval status validation - required unless deployment_status is "production"
+        if (formData.deployment_status !== 'production' && (!formData.approval_status || !formData.approval_status.trim())) {
+            errors.approval_status = ["The approval status field is required unless deployment status is in production."];
         }
 
         setValidationErrors(errors);

@@ -31,7 +31,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         release_notes: '',
 
         // Version metadata
-        version_role: 'original_development',
+        version_role: 'original_release',
         version_source: 'internal_development',
         our_involvement: 'full_development',
 
@@ -39,7 +39,7 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         architecture_type: 'transformer',
         model_file_size_gb: null,
         training_duration_hours: null,
-        complexity_level: 'moderate',
+        complexity_level: 'low',
         parameter_count: null,
 
         // Modalities
@@ -50,6 +50,8 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         deployment_status: 'not_deployed',
         lifecycle_stage: 'development',
         deployment_environments: [],
+        customizations_applied: [],
+        approval_status: null,
 
         // Flags
         has_performance_data: false,
@@ -94,6 +96,8 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
                 deployment_status: aiModelVersion.deployment_status,
                 lifecycle_stage: aiModelVersion.lifecycle_stage,
                 deployment_environments: aiModelVersion.deployment_environments,
+                customizations_applied: [],
+                approval_status: aiModelVersion.approval_status || null,
 
                 // Flags
                 has_performance_data: aiModelVersion.has_performance_data,
@@ -140,6 +144,11 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
 
+        // Approval status validation - required unless deployment_status is "production"
+        if (formData.deployment_status !== 'production' && (!formData.approval_status || !formData.approval_status.trim())) {
+            errors.approval_status = ["The approval status field is required unless deployment status is in production."];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -154,7 +163,15 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
             'deployment_status': 'deployment_status',
             'lifecycle_stage': 'lifecycle_stage',
             'version_type': 'version_type',
-            'ai_model_id': 'ai_model_id'
+            'ai_model_id': 'ai_model_id',
+            'version_role': 'version_role',
+            'version_source': 'version_source',
+            'our_involvement': 'our_involvement',
+            'approval_status': 'approval_status',
+            // Backend field names (for error mapping)
+            'release_role': 'version_role',
+            'source_type': 'version_source',
+            'org_involvement': 'our_involvement'
         };
 
         const mappedErrors: Record<string, string[]> = {};

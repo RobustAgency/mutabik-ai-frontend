@@ -45,8 +45,8 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['original_development', 'imported_version', 'customized_version', 'fine_tuned_version', 'deployed_version'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              {['original_release', 'patch', 'hotfix', 'experimental_ab_test'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -64,8 +64,8 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['internal_development', 'vendor_update', 'community_release', 'custom_modification', 'fine_tuning'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              {['internal_development', 'vendor_model', 'open_source', 'foundation_model'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -83,8 +83,8 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['full_development', 'co_development', 'customization', 'integration_only', 'consumption_only'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              {['full_development', 'fine_tuning', 'configuration_only', 'integration_only'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -107,17 +107,12 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             <SelectContent>
               <SelectItem value="transformer">Transformer</SelectItem>
               <SelectItem value="cnn">CNN</SelectItem>
-              <SelectItem value="rnn">RNN</SelectItem>
-              <SelectItem value="lstm">LSTM</SelectItem>
-              <SelectItem value="gru">GRU</SelectItem>
-              <SelectItem value="bert">BERT</SelectItem>
-              <SelectItem value="gpt">GPT</SelectItem>
-              <SelectItem value="resnet">ResNet</SelectItem>
-              <SelectItem value="vgg">VGG</SelectItem>
-              <SelectItem value="efficientnet">EfficientNet</SelectItem>
-              <SelectItem value="yolo">YOLO</SelectItem>
-              <SelectItem value="unet">U-Net</SelectItem>
-              <SelectItem value="custom">Custom</SelectItem>
+              <SelectItem value="rnn_lstm_gru">RNN/LSTM/GRU</SelectItem>
+              <SelectItem value="gradient_boosting">Gradient Boosting</SelectItem>
+              <SelectItem value="random_forest">Random Forest</SelectItem>
+              <SelectItem value="logistic_regression">Logistic Regression</SelectItem>
+              <SelectItem value="linear_regression">Linear Regression</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
           {errors.architecture_type && (
@@ -134,8 +129,8 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['simple', 'moderate', 'complex', 'massive'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              {['low', 'moderate', 'high', 'very_high'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
               ))}
             </SelectContent>
           </Select>

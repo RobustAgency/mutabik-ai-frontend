@@ -6,6 +6,7 @@ import type {
   AiModelVersion,
   CreateAiModelVersionData,
 } from "@/service/app/aiModelVersions";
+import { mapToBackendFields, mapFromBackendFields } from "@/service/app/aiModelVersions";
 
 // Filter types for AI Model Versions (matching API spec)
 export interface AiModelVersionFilters {
@@ -114,10 +115,14 @@ export const aiModelVersionsApi = createApi({
           versions = response.data;
         }
         // Normalize: ensure version is always available from version_number
-        return versions.map((v) => ({
-          ...v,
-          version: v.version || v.version_number,
-        }));
+        // Also map backend field names to frontend field names
+        return versions.map((v) => {
+          const mapped = mapFromBackendFields(v);
+          return {
+            ...mapped,
+            version: mapped.version || mapped.version_number,
+          };
+        });
       },
     }),
 
@@ -134,10 +139,12 @@ export const aiModelVersionsApi = createApi({
       }) => {
         const version =
           response.data || (response as unknown as AiModelVersion);
+        // Map backend field names to frontend field names
+        const mapped = mapFromBackendFields(version);
         // Normalize: ensure version is always available (single API returns 'version', fallback to 'version_number')
         return {
-          ...version,
-          version: version.version || version.version_number,
+          ...mapped,
+          version: mapped.version || mapped.version_number,
         };
       },
     }),
@@ -149,7 +156,7 @@ export const aiModelVersionsApi = createApi({
       query: (data) => ({
         url: "/ai-model-versions",
         method: "POST",
-        data,
+        data: mapToBackendFields(data),
       }),
       invalidatesTags: [{ type: "AiModelVersion", id: "LIST" }],
       transformResponse: (response: {
@@ -158,9 +165,9 @@ export const aiModelVersionsApi = createApi({
         message?: string;
       }) => {
         if (response.data) {
-          return response.data;
+          return mapFromBackendFields(response.data);
         }
-        return response as unknown as AiModelVersion;
+        return mapFromBackendFields(response as unknown as AiModelVersion);
       },
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
@@ -182,7 +189,7 @@ export const aiModelVersionsApi = createApi({
       query: ({ id, data }) => ({
         url: `/ai-model-versions/${id}`,
         method: "POST",
-        data,
+        data: mapToBackendFields(data),
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: "AiModelVersion", id },
@@ -194,9 +201,9 @@ export const aiModelVersionsApi = createApi({
         message?: string;
       }) => {
         if (response.data) {
-          return response.data;
+          return mapFromBackendFields(response.data);
         }
-        return response as unknown as AiModelVersion;
+        return mapFromBackendFields(response as unknown as AiModelVersion);
       },
       async onQueryStarted(arg, { queryFulfilled }) {
         try {

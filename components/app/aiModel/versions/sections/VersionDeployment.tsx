@@ -73,7 +73,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['not_deployed', 'deploying', 'deployed', 'failed', 'rollback'].map(v => (
+              {['not_deployed', 'testing', 'staging', 'production', 'retired'].map(v => (
                 <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
               ))}
             </SelectContent>
@@ -93,13 +93,54 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['development', 'testing', 'staging', 'production', 'deprecated', 'retired'].map(v => (
+              {['development', 'design', 'validation', 'deployment', 'monitoring', 'retired'].map(v => (
                 <SelectItem key={v} value={v}>{v}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           {errors.lifecycle_stage && (
             <p className="text-xs text-red-600 mt-1">{errors.lifecycle_stage[0]}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2">
+            Approval Status
+            {formData.deployment_status !== 'production' && (
+              <span className="text-red-500"> *</span>
+            )}
+          </Label>
+          <Select
+            value={formData.approval_status || ""}
+            onValueChange={(value) =>
+              setFormData((prev) => ({
+                ...prev,
+                approval_status: (value || null) as CreateAiModelVersionData["approval_status"],
+              }))
+            }
+          >
+            <SelectTrigger className={errors.approval_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue placeholder="Select approval status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending_review">Pending Review</SelectItem>
+              <SelectItem value="approved_for_pilot">Approved for Pilot</SelectItem>
+              <SelectItem value="approved_for_production">Approved for Production</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="rolled_back">Rolled Back</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.approval_status && (
+            <p className="text-xs text-red-600 mt-1">
+              {errors.approval_status[0]}
+            </p>
+          )}
+          {formData.deployment_status !== 'production' && !errors.approval_status && (
+            <p className="text-xs text-gray-500 mt-1">
+              Required when deployment status is not production
+            </p>
           )}
         </div>
       </div>

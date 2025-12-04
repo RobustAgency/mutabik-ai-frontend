@@ -27,7 +27,7 @@ const CreateAiModelVersion: React.FC = () => {
         release_notes: '',
 
         // Version metadata
-        version_role: 'original_development',
+        version_role: 'original_release',
         version_source: 'internal_development',
         our_involvement: 'full_development',
 
@@ -35,7 +35,7 @@ const CreateAiModelVersion: React.FC = () => {
         architecture_type: 'transformer',
         model_file_size_gb: null,
         training_duration_hours: null,
-        complexity_level: 'moderate',
+        complexity_level: 'low',
         parameter_count: null,
 
         // Modalities
@@ -47,6 +47,7 @@ const CreateAiModelVersion: React.FC = () => {
         lifecycle_stage: 'development',
         deployment_environments: [],
         customizations_applied: [],
+        approval_status: null,
 
         // Flags
         has_performance_data: false,
@@ -100,6 +101,11 @@ const CreateAiModelVersion: React.FC = () => {
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
 
+        // Approval status validation - required unless deployment_status is "production"
+        if (formData.deployment_status !== 'production' && (!formData.approval_status || !formData.approval_status.trim())) {
+            errors.approval_status = ["The approval status field is required unless deployment status is in production."];
+        }
+
         // Created by validation - required
         if (!formData.created_by?.trim()) {
             errors.created_by = ["Created by email is required"];
@@ -126,7 +132,12 @@ const CreateAiModelVersion: React.FC = () => {
             'ai_model_id': 'ai_model_id',
             'version_role': 'version_role',
             'version_source': 'version_source',
-            'our_involvement': 'our_involvement'
+            'our_involvement': 'our_involvement',
+            'approval_status': 'approval_status',
+            // Backend field names (for error mapping)
+            'release_role': 'version_role',
+            'source_type': 'version_source',
+            'org_involvement': 'our_involvement'
         };
 
         const mappedErrors: Record<string, string[]> = {};
