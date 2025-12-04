@@ -3,39 +3,32 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { ArtifactType, type CreateAiModelArtifactData } from "@/service/app/aiModelArtifacts";
-import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import { type CreateAiModelArtifactData } from "@/service/app/aiModelArtifacts";
 import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
-import AiModelVersionModalForm from "../versions/AiModelVersionModalForm";
+
+// Section Components
+import BasicInformationSection from "./sections/BasicInformationSection";
+import StorageLocationSection from "./sections/StorageLocationSection";
+import IntegritySecuritySection from "./sections/IntegritySecuritySection";
+import MetadataSection from "./sections/MetadataSection";
+import FileUploadSection from "./sections/FileUploadSection";
+
+// Utils and Constants
+// import { calculateChecksum } from "./utils/checksumUtils";
+import {
+    artifactTypeOptions,
+    environmentOptions,
+    fileFormatOptions,
+    checksumAlgorithmOptions,
+    MAX_FILE_SIZE,
+} from "./constants/artifactConstants";
 
 interface ArtifactFormProps {
     onSubmit: (data: CreateAiModelArtifactData) => Promise<void> | void;
     loading?: boolean;
 }
-
-const artifactTypeOptions = [
-    { value: ArtifactType.MODEL_BINARY, label: "Model Binary" },
-    { value: ArtifactType.TOKENIZER, label: "Tokenizer" },
-    { value: ArtifactType.PROMPT_PACK, label: "Prompt Pack" },
-    { value: ArtifactType.INDEX, label: "Index" },
-    { value: ArtifactType.FEATURE_STORE_EXPORT, label: "Feature Store Export" },
-    { value: ArtifactType.CONFIG, label: "Config" },
-    { value: ArtifactType.DOCKER_IMAGE, label: "Docker Image" },
-    { value: ArtifactType.SBOM, label: "SBOM" },
-    { value: "others", label: "Others" },
-];
 
 export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
     const { aiModelVersions, loading: isLoadingVersions } = useAiModelVersions();
@@ -43,42 +36,177 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
     const [formData, setFormData] = useState<{
         ai_model_version_id: string;
         name: string;
-        uri: string;
-        checksum: string;
-        size_bytes: string;
         artifact_type: string;
         custom_artifact_type: string;
+        uri: string;
+        environment: string;
+        file_format: string;
+        size_bytes: string;
+        checksum_algorithm: string;
+        // checksum_value: string; // Backend calculates this automatically
         notes: string;
-        created_by: string;
     }>({
         ai_model_version_id: "",
         name: "",
-        uri: "",
-        checksum: "",
-        size_bytes: "",
         artifact_type: "",
         custom_artifact_type: "",
+        uri: "",
+        environment: "",
+        file_format: "",
+        size_bytes: "",
+        checksum_algorithm: "",
+        // checksum_value: "", // Backend calculates this automatically
         notes: "",
-        created_by: "",
     });
+
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [isCalculatingChecksum, setIsCalculatingChecksum] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
+
+    // Field change handler
+    const handleFieldChange = (field: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    // Error clear handler
+    const handleErrorClear = (field: string) => {
+        setErrors((prev) => {
+            const next = { ...prev };
+            delete next[field];
+            return next;
+        });
+    };
+
+    // Handle file upload
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+            setErrors((prev) => ({
+                ...prev,
+                file_upload: ["File size must be 25 MB or less"],
+            }));
+            return;
+        }
+
+        setUploadedFile(file);
+        setErrors((prev) => {
+            const next = { ...prev };
+            delete next.file_upload;
+            delete next.uri;
+            return next;
+        });
+
+        // Auto-calculate size
+        setFormData((prev) => ({
+            ...prev,
+            size_bytes: String(file.size),
+        }));
+
+        // TODO: Backend will calculate checksums automatically
+        // Checksum calculation temporarily disabled - backend handles it
+        /* 
+        if (formData.checksum_algorithm && formData.checksum_algorithm !== "none") {
+            setIsCalculatingChecksum(true);
+            try {
+                const hash = await calculateChecksum(file, formData.checksum_algorithm);
+                setFormData((prev) => ({
+                    ...prev,
+                    checksum_value: hash,
+                }));
+            } catch (error) {
+                console.error("Error calculating checksum:", error);
+                setErrors((prev) => ({
+                    ...prev,
+                    checksum_value: ["Failed to calculate checksum"],
+                }));
+            } finally {
+                setIsCalculatingChecksum(false);
+            }
+        }
+        */
+    };
+
+    const removeFile = () => {
+        setUploadedFile(null);
+        setFormData((prev) => ({
+            ...prev,
+            size_bytes: "",
+            // checksum_value: "", // Backend calculates this automatically
+        }));
+    };
+
+    // Handle checksum algorithm change
+    // TODO: Backend will calculate checksums automatically
+    // Temporarily disabled - backend handles checksum calculation
+    const handleChecksumAlgorithmChange = async (value: string) => {
+        setFormData((prev) => ({
+            ...prev,
+            checksum_algorithm: value,
+            // checksum_value: value === "none" ? "" : prev.checksum_value, // Backend calculates this automatically
+        }));
+        setErrors((prev) => {
+            const next = { ...prev };
+            delete next.checksum_value;
+            return next;
+        });
+
+        /* 
+        // Recalculate checksum if file is uploaded and algorithm changed
+        if (uploadedFile && value !== "none") {
+            setIsCalculatingChecksum(true);
+            try {
+                const hash = await calculateChecksum(uploadedFile, value);
+                setFormData((prev) => ({
+                    ...prev,
+                    checksum_value: hash,
+                }));
+            } catch (error) {
+                console.error("Error calculating checksum:", error);
+                setErrors((prev) => ({
+                    ...prev,
+                    checksum_value: ["Failed to calculate checksum"],
+                }));
+            } finally {
+                setIsCalculatingChecksum(false);
+            }
+        }
+        */
+    };
 
     const validate = (): boolean => {
         const next: Record<string, string[]> = {};
 
+        // Basic Information
         if (!formData.ai_model_version_id) {
-            next.ai_model_version_id = ["Version is required"];
+            next.ai_model_version_id = ["Model Version is required"];
         }
 
         if (!formData.name) {
-            next.name = ["Name is required"];
+            next.name = ["Artifact Name is required"];
         } else if (formData.name.length > 255) {
-            next.name = ["Name must be 255 characters or less"];
+            next.name = ["Artifact Name must be 255 characters or less"];
         }
 
-        if (!formData.uri) {
-            next.uri = ["URI is required"];
-        } else {
+        if (!formData.artifact_type) {
+            next.artifact_type = ["Artifact Type is required"];
+        } else if (formData.artifact_type === "other") {
+            if (!formData.custom_artifact_type) {
+                next.custom_artifact_type = ["Custom artifact type is required"];
+            } else if (formData.custom_artifact_type.length > 255) {
+                next.custom_artifact_type = ["Custom artifact type must be 255 characters or less"];
+            }
+        }
+
+        // Storage & Location - URI OR File Upload must exist
+        if (!formData.uri && !uploadedFile) {
+            next.uri = ["Either URI or File Upload is required"];
+            next.file_upload = ["Either URI or File Upload is required"];
+        }
+
+        if (formData.uri) {
             try {
                 new URL(formData.uri);
             } catch {
@@ -89,45 +217,29 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
             }
         }
 
-        // Checksum is required
-        if (!formData.checksum) {
-            next.checksum = ["Checksum is required"];
-        } else if (formData.checksum.length > 255) {
-            next.checksum = ["Checksum must be 255 characters or less"];
-        }
-
-        // Size bytes is required
-        if (!formData.size_bytes) {
-            next.size_bytes = ["Size in bytes is required"];
-        } else {
+        // Size bytes validation (nullable, but if provided must be >= 1)
+        if (formData.size_bytes) {
             const size = parseInt(formData.size_bytes, 10);
-            if (isNaN(size) || size < 0) {
-                next.size_bytes = ["Size must be a non-negative integer"];
+            if (isNaN(size) || size < 1) {
+                next.size_bytes = ["Size must be an integer greater than or equal to 1"];
             }
         }
 
-        if (!formData.artifact_type) {
-            next.artifact_type = ["Artifact type is required"];
-        } else if (formData.artifact_type === "others") {
-            if (!formData.custom_artifact_type) {
-                next.custom_artifact_type = ["Custom artifact type is required"];
-            } else if (formData.custom_artifact_type.length > 255) {
-                next.custom_artifact_type = ["Custom artifact type must be 255 characters or less"];
+        // Integrity & Security - Checksum validation disabled (backend calculates)
+        // TODO: Backend will calculate checksums automatically
+        /* 
+        if (formData.checksum_algorithm && formData.checksum_algorithm !== "none") {
+            if (!formData.checksum_value) {
+                next.checksum_value = ["Checksum Value is required when algorithm is selected"];
+            } else if (formData.checksum_value.length > 255) {
+                next.checksum_value = ["Checksum Value must be 255 characters or less"];
             }
         }
+        */
 
+        // Metadata
         if (formData.notes && formData.notes.length > 1000) {
             next.notes = ["Notes must be 1000 characters or less"];
-        }
-
-        if (formData.created_by) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.created_by)) {
-                next.created_by = ["Please enter a valid email address"];
-            }
-            if (formData.created_by.length > 255) {
-                next.created_by = ["Email must be 255 characters or less"];
-            }
         }
 
         setErrors(next);
@@ -138,22 +250,31 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
         e.preventDefault();
         if (!validate()) return;
 
-        await onSubmit({
+        // Prepare data for submission matching backend requirements
+        // Note: Backend will calculate checksum value automatically based on the algorithm
+        const submitData: CreateAiModelArtifactData = {
             ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
             name: formData.name,
-            uri: formData.uri,
-            checksum: formData.checksum,
-            size_bytes: parseInt(formData.size_bytes, 10),
-            artifact_type: formData.artifact_type === "others" ? formData.custom_artifact_type : formData.artifact_type,
+            uri: formData.uri || null,
+            file: uploadedFile || null,
+            checksum_algorithm: formData.checksum_algorithm && formData.checksum_algorithm !== "none" 
+                ? formData.checksum_algorithm 
+                : null,
+            // checksum_value: null, // Backend calculates value automatically - not sent to backend
+            environment: formData.environment || null,
+            file_format: formData.file_format || null,
+            size_bytes: formData.size_bytes ? parseInt(formData.size_bytes, 10) : null,
+            artifact_type: formData.artifact_type === "other" ? formData.custom_artifact_type : formData.artifact_type,
             notes: formData.notes || null,
-            created_by: formData.created_by || null,
-        });
+        };
+
+        await onSubmit(submitData);
     };
 
     return (
         <div className="max-w-7xl mx-auto">
             <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white mx-auto px-4 sm:px-6 py-4">
-                <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between">
+                <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-6">
                     <div>
                         <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                             New AI Model Artifact
@@ -196,259 +317,72 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                         </Alert>
                     )}
 
-                    <CardContent className="space-y-6">
-                        {/* Name */}
-                        <div className="space-y-2">
-                            <Label htmlFor="name">
-                                Name <span className="text-red-500">*</span>
-                            </Label>
-                            <Input
-                                id="name"
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => {
-                                    setFormData((prev) => ({ ...prev, name: e.target.value }));
-                                    setErrors((prev) => {
-                                        const next = { ...prev };
-                                        delete next.name;
-                                        return next;
-                                    });
-                                }}
-                                placeholder="Enter artifact name"
-                                className={errors.name ? "border-red-500" : ""}
-                            />
-                            {errors.name && (
-                                <p className="text-sm text-red-500">{errors.name[0]}</p>
-                            )}
-                            <p className="text-xs text-[#667085]">Maximum 255 characters</p>
-                        </div>
+                    <CardContent className="space-y-8">
+                        {/* Basic Information */}
+                        <BasicInformationSection
+                            formData={{
+                                ai_model_version_id: formData.ai_model_version_id,
+                                name: formData.name,
+                                artifact_type: formData.artifact_type,
+                                custom_artifact_type: formData.custom_artifact_type,
+                            }}
+                            errors={errors}
+                            aiModelVersions={aiModelVersions}
+                            isLoadingVersions={isLoadingVersions}
+                            artifactTypeOptions={artifactTypeOptions}
+                            onFieldChange={handleFieldChange}
+                            onErrorClear={handleErrorClear}
+                        />
 
-                        {/* Version ID */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="version_id">
-                                    Model Version <span className="text-red-500">*</span>
-                                </Label>
-                                <SelectWithInlineCreate
-                                    value={formData.ai_model_version_id}
-                                    onValueChange={(value) => {
-                                        setFormData((prev) => ({ ...prev, ai_model_version_id: value }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.ai_model_version_id;
-                                            return next;
-                                        });
-                                    }}
-                                    options={aiModelVersions.map((version) => ({
-                                        id: version.id,
-                                        label: `${version.ai_model?.name || "Model"} • ${version.version_number}`,
-                                        value: String(version.id),
-                                    }))}
-                                    isLoading={isLoadingVersions}
-                                    isEmpty={!isLoadingVersions && aiModelVersions.length === 0}
-                                    entityName="AI Model Version"
-                                    modalForm={AiModelVersionModalForm}
-                                    placeholder="Select a model version..."
-                                    triggerClassName={`w-full ${errors.ai_model_version_id ? "border-red-500" : ""}`}
-                                    error={!!errors.ai_model_version_id}
-                                />
-                                {errors.ai_model_version_id && (
-                                    <p className="text-sm text-red-500">{errors.ai_model_version_id[0]}</p>
-                                )}
-                            </div>
+                        {/* Storage & Location */}
+                        <StorageLocationSection
+                            formData={{
+                                uri: formData.uri,
+                                environment: formData.environment,
+                                file_format: formData.file_format,
+                                size_bytes: formData.size_bytes,
+                            }}
+                            errors={errors}
+                            uploadedFile={uploadedFile}
+                            environmentOptions={environmentOptions}
+                            fileFormatOptions={fileFormatOptions}
+                            onFieldChange={handleFieldChange}
+                            onErrorClear={handleErrorClear}
+                        />
 
-                            {/* Artifact Type */}
-                            <div className="space-y-2">
-                                <Label htmlFor="artifact_type">
-                                    Artifact Type <span className="text-red-500">*</span>
-                                </Label>
-                                <Select
-                                    value={formData.artifact_type}
-                                    onValueChange={(value) => {
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            artifact_type: value,
-                                            custom_artifact_type: value === "others" ? prev.custom_artifact_type : "",
-                                        }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.artifact_type;
-                                            delete next.custom_artifact_type;
-                                            return next;
-                                        });
-                                    }}
-                                >
-                                    <SelectTrigger
-                                        className={`w-full ${errors.artifact_type ? "border-red-500" : ""}`}
-                                    >
-                                        <SelectValue placeholder="Select artifact type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {artifactTypeOptions.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.artifact_type && (
-                                    <p className="text-sm text-red-500">{errors.artifact_type[0]}</p>
-                                )}
-                                {formData.artifact_type === "others" && (
-                                    <div className="mt-2">
-                                        <Input
-                                            id="custom_artifact_type"
-                                            type="text"
-                                            value={formData.custom_artifact_type}
-                                            onChange={(e) => {
-                                                setFormData((prev) => ({ ...prev, custom_artifact_type: e.target.value }));
-                                                setErrors((prev) => {
-                                                    const next = { ...prev };
-                                                    delete next.custom_artifact_type;
-                                                    return next;
-                                                });
-                                            }}
-                                            placeholder="Enter custom artifact type"
-                                            className={errors.custom_artifact_type ? "border-red-500" : ""}
-                                        />
-                                        {errors.custom_artifact_type && (
-                                            <p className="text-sm text-red-500 mt-1">{errors.custom_artifact_type[0]}</p>
-                                        )}
-                                        <p className="text-xs text-[#667085] mt-1">Maximum 255 characters</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        {/* Integrity & Security */}
+                        <IntegritySecuritySection
+                            formData={{
+                                checksum_algorithm: formData.checksum_algorithm,
+                                // checksum_value: formData.checksum_value, // Backend calculates this automatically
+                            }}
+                            errors={errors}
+                            uploadedFile={uploadedFile}
+                            isCalculatingChecksum={isCalculatingChecksum}
+                            checksumAlgorithmOptions={checksumAlgorithmOptions}
+                            onChecksumAlgorithmChange={handleChecksumAlgorithmChange}
+                            onFieldChange={handleFieldChange}
+                            onErrorClear={handleErrorClear}
+                        />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* URI */}
-                            <div className="space-y-2">
-                                <Label htmlFor="uri">
-                                    URI <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="uri"
-                                    type="url"
-                                    value={formData.uri}
-                                    onChange={(e) => {
-                                        setFormData((prev) => ({ ...prev, uri: e.target.value }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.uri;
-                                            return next;
-                                        });
-                                    }}
-                                    placeholder="https://example.com/artifact"
-                                    className={errors.uri ? "border-red-500" : ""}
-                                />
-                                {errors.uri && (
-                                    <p className="text-sm text-red-500">{errors.uri[0]}</p>
-                                )}
-                            </div>
+                        {/* Metadata */}
+                        <MetadataSection
+                            formData={{
+                                notes: formData.notes,
+                            }}
+                            errors={errors}
+                            onFieldChange={handleFieldChange}
+                            onErrorClear={handleErrorClear}
+                        />
 
-                            {/* Checksum */}
-                            <div className="space-y-2">
-                                <Label htmlFor="checksum">
-                                    Checksum <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="checksum"
-                                    type="text"
-                                    value={formData.checksum}
-                                    onChange={(e) => {
-                                        setFormData((prev) => ({ ...prev, checksum: e.target.value }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.checksum;
-                                            return next;
-                                        });
-                                    }}
-                                    placeholder="SHA-256 hash"
-                                    className={errors.checksum ? "border-red-500" : ""}
-                                />
-                                {errors.checksum && (
-                                    <p className="text-sm text-red-500">{errors.checksum[0]}</p>
-                                )}
-                                <p className="text-xs text-[#667085]">Maximum 255 characters</p>
-                            </div>
-
-
-                            {/* Size Bytes */}
-                            <div className="space-y-2">
-                                <Label htmlFor="size_bytes">
-                                    Size (bytes) <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="size_bytes"
-                                    type="number"
-                                    min="0"
-                                    value={formData.size_bytes}
-                                    onChange={(e) => {
-                                        setFormData((prev) => ({ ...prev, size_bytes: e.target.value }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.size_bytes;
-                                            return next;
-                                        });
-                                    }}
-                                    placeholder="0"
-                                    className={errors.size_bytes ? "border-red-500" : ""}
-                                />
-                                {errors.size_bytes && (
-                                    <p className="text-sm text-red-500">{errors.size_bytes[0]}</p>
-                                )}
-                                <p className="text-xs text-[#667085]">Must be a non-negative integer</p>
-                            </div>
-
-                            {/* Created By */}
-                            <div className="space-y-2">
-                                <Label htmlFor="created_by">Created By</Label>
-                                <Input
-                                    id="created_by"
-                                    type="email"
-                                    value={formData.created_by}
-                                    onChange={(e) => {
-                                        setFormData((prev) => ({ ...prev, created_by: e.target.value }));
-                                        setErrors((prev) => {
-                                            const next = { ...prev };
-                                            delete next.created_by;
-                                            return next;
-                                        });
-                                    }}
-                                    placeholder="creator@example.com"
-                                    className={errors.created_by ? "border-red-500" : ""}
-                                />
-                                {errors.created_by && (
-                                    <p className="text-sm text-red-500">{errors.created_by[0]}</p>
-                                )}
-                            </div>
-                        </div>
-
-
-                        {/* Notes */}
-                        <div className="space-y-2">
-                            <Label htmlFor="notes">Notes</Label>
-                            <Textarea
-                                id="notes"
-                                value={formData.notes}
-                                onChange={(e) => {
-                                    setFormData((prev) => ({ ...prev, notes: e.target.value }));
-                                    setErrors((prev) => {
-                                        const next = { ...prev };
-                                        delete next.notes;
-                                        return next;
-                                    });
-                                }}
-                                placeholder="Additional notes about this artifact..."
-                                className={`min-h-32 resize-none ${errors.notes ? "border-red-500" : ""}`}
-                            />
-                            {errors.notes && (
-                                <p className="text-sm text-red-500">{errors.notes[0]}</p>
-                            )}
-                            <p className="text-xs text-[#667085]">Maximum 1000 characters</p>
-                        </div>
-
-
+                        {/* Optional File Upload */}
+                        <FileUploadSection
+                            uploadedFile={uploadedFile}
+                            errors={errors}
+                            hasUri={!!formData.uri}
+                            onFileChange={handleFileChange}
+                            onRemoveFile={removeFile}
+                        />
                     </CardContent>
                 </form>
             </Card>

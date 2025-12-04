@@ -107,23 +107,51 @@ export const aiModelArtifactsApi = createApi({
       CreateAiModelArtifactData
     >({
       query: (data) => {
-        return {
-          url: "/ai-model-artifacts",
-          method: "POST",
-          data: {
-            ai_model_version_id: data.ai_model_version_id,
-            name: data.name,
-            uri: data.uri,
-            checksum: data.checksum,
-            size_bytes: data.size_bytes,
-            artifact_type: data.artifact_type,
-            notes: data.notes || null,
-            created_by: data.created_by || null,
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
+        // If file is present, use FormData; otherwise use JSON
+        if (data.file) {
+          const formData = new FormData();
+          formData.append("ai_model_version_id", String(data.ai_model_version_id));
+          formData.append("name", data.name);
+          formData.append("artifact_type", data.artifact_type);
+          formData.append("file", data.file);
+          
+          if (data.uri) formData.append("uri", data.uri);
+          if (data.checksum_algorithm) formData.append("checksum_algorithm", data.checksum_algorithm);
+          // if (data.checksum_value) formData.append("checksum_value", data.checksum_value); // Backend calculates this automatically
+          if (data.environment) formData.append("environment", data.environment);
+          if (data.file_format) formData.append("file_format", data.file_format);
+          if (data.size_bytes) formData.append("size_bytes", String(data.size_bytes));
+          if (data.notes) formData.append("notes", data.notes);
+
+          return {
+            url: "/ai-model-artifacts",
+            method: "POST",
+            data: formData,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          };
+        } else {
+          return {
+            url: "/ai-model-artifacts",
+            method: "POST",
+            data: {
+              ai_model_version_id: data.ai_model_version_id,
+              name: data.name,
+              uri: data.uri,
+              checksum_algorithm: data.checksum_algorithm,
+              // checksum_value: data.checksum_value, // Backend calculates this automatically
+              environment: data.environment,
+              file_format: data.file_format,
+              size_bytes: data.size_bytes,
+              artifact_type: data.artifact_type,
+              notes: data.notes || null,
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+        }
       },
       invalidatesTags: [{ type: "AiModelArtifact", id: "LIST" }],
       async onQueryStarted(_, { queryFulfilled }) {
