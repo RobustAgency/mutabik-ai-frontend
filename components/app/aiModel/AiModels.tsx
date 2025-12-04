@@ -40,7 +40,7 @@ const AiModels: React.FC = () => {
         {
             accessorKey: "name",
             header: () => (
-                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">Name</div>
+                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">Model Name</div>
             ),
             cell: ({ getValue }) => (
                 <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
@@ -49,17 +49,21 @@ const AiModels: React.FC = () => {
             ),
         },
         {
-            accessorKey: "primary_category",
+            accessorKey: "category",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Category
+                    Model Category
                 </div>
             ),
-            cell: ({ getValue }) => (
-                <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {formatCategory(getValue() as string)}
-                </div>
-            ),
+            cell: ({ getValue, row }) => {
+                // Fallback to model_category or primary_category for backward compatibility
+                const value = getValue() as string || (row.original as any).model_category || (row.original as any).primary_category || "";
+                return (
+                    <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+                        {formatCategory(value)}
+                    </div>
+                );
+            },
         },
         {
             accessorKey: "type",
@@ -75,53 +79,49 @@ const AiModels: React.FC = () => {
             ),
         },
         {
-            accessorKey: "ownership_type",
+            accessorKey: "ownership_category",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Ownership
+                    Ownership Category
                 </div>
             ),
-            cell: ({ getValue }) => (
-                <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {formatCategory(getValue() as string)}
-                </div>
-            ),
+            cell: ({ getValue, row }) => {
+                // Fallback to ownership_type for backward compatibility
+                const value = getValue() as string || (row.original as any).ownership_type || "";
+                return (
+                    <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+                        {formatCategory(value)}
+                    </div>
+                );
+            },
         },
         {
-            accessorKey: "business_status",
+            accessorKey: "business_adoption_status",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Business Status
+                    Business Adoption Status
                 </div>
             ),
-            cell: ({ getValue }) => (
-                <span className={getStatusBadge(getValue() as string, 'business')}>
-                    {formatCategory(getValue() as string)}
-                </span>
-            ),
+            cell: ({ getValue, row }) => {
+                // Fallback to business_status for backward compatibility
+                const value = getValue() as string || (row.original as any).business_status || "";
+                return (
+                    <span className={getStatusBadge(value, 'business')}>
+                        {formatCategory(value)}
+                    </span>
+                );
+            },
         },
         {
-            accessorKey: "operational_status",
+            accessorKey: "regulatory_risk_tier",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Operational Status
+                    Regulatory Risk Tier
                 </div>
             ),
-            cell: ({ getValue }) => (
-                <span className={getStatusBadge(getValue() as string, 'operational')}>
-                    {formatCategory(getValue() as string)}
-                </span>
-            ),
-        },
-        {
-            accessorKey: "regulatory_risk_classification",
-            header: () => (
-                <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Regulatory Risk
-                </div>
-            ),
-            cell: ({ getValue }) => {
-                const classification = (typeof getValue() === 'string' ? (getValue() as string) : "");
+            cell: ({ getValue, row }) => {
+                // Fallback to regulatory_risk_classification for backward compatibility
+                const classification = (getValue() as string) || (row.original as any).regulatory_risk_classification || "";
                 const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
                 let badgeClasses = baseClasses;
 
@@ -134,12 +134,6 @@ const AiModels: React.FC = () => {
                         break;
                     case 'high_risk':
                         badgeClasses += " bg-red-100 text-red-800";
-                        break;
-                    case 'unacceptable_risk':
-                        badgeClasses += " bg-red-100 text-red-800";
-                        break;
-                    case 'sector_specific':
-                        badgeClasses += " bg-purple-100 text-purple-800";
                         break;
                     default:
                         badgeClasses += " bg-gray-100 text-gray-800";
@@ -159,11 +153,15 @@ const AiModels: React.FC = () => {
                     Created
                 </div>
             ),
-            cell: ({ getValue }) => (
-                <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {formatDate(getValue() as string)}
-                </div>
-            ),
+            cell: ({ getValue, row }) => {
+                // Fallback to created_date for backward compatibility
+                const value = getValue() as string || (row.original as any).created_date || "";
+                return (
+                    <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+                        {value ? formatDate(value) : "-"}
+                    </div>
+                );
+            },
         },
     ];
 

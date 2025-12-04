@@ -141,11 +141,16 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
     }
 
     // Prepare AI model options for SelectWithInlineCreate
-    const aiModelOptions = aiModels.map((model) => ({
-        id: model.id,
-        label: `${model.name} (${model.primary_category?.replace('_', ' ') ?? 'N/A'})`,
-        value: String(model.id),
-    }))
+    const aiModelOptions = aiModels.map((model) => {
+        // Backward compatibility: support both new and old field names
+        const modelCategory = (model as any).model_category || (model as any).primary_category;
+        const categoryLabel = modelCategory?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) ?? 'N/A';
+        return {
+            id: model.id,
+            label: `${model.name} (${categoryLabel})`,
+            value: String(model.id),
+        };
+    })
 
     // Prepare version options for SelectWithInlineCreate
     const versionOptions = versions.map((version: any) => ({

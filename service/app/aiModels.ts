@@ -3,157 +3,121 @@ import { api, ApiResponse } from "@/lib/api";
 export interface AiModel {
   id: number;
   display_id: string;
-  name: string;
-  description: string | null;
-  primary_category:
+  name: string; // Model Name
+  model_category:
     | "traditional_ml"
-    | "deep_learning"
-    | "generative_ai"
-    | "ai_agents"
-    | "specialized_ai"
-    | "foundation_models"
-    | "multimodal_ai";
+    | "statistical_classical_model"
+    | "rule_based_expert_system"
+    | "hybrid_rules_ml"
+    | "generative_ai_foundation_llm"
+    | "generative_ai_fine_tuned_domain_model"
+    | "generative_ai_multimodal"
+    | "agentic_ai_agent"
+    | "autonomous_decision_system"
+    | "other";
   type:
     | "classification"
     | "regression"
     | "clustering"
-    | "generation"
-    | "translation"
-    | "summarization"
-    | "question_answering"
-    | "recommendation"
-    | "optimization"
-    | "forecasting";
-  domain_specialization:
-    | "general"
-    | "healthcare"
-    | "finance"
-    | "legal"
-    | "marketing"
-    | "hr"
-    | "manufacturing"
-    | "retail"
-    | "automotive"
-    | "energy"
-    | "telecom"
-    | "education";
-  organizational_role:
-    | "developer"
-    | "importer"
-    | "deployer"
-    | "integrator"
-    | "consumer"
-    | "collaborator";
-  ownership_type:
+    | "nlp_model"
+    | "computer_vision_model"
+    | "time_series_forecasting"
+    | "recommendation_model"
+    | "llm"
+    | "other";
+  technical_domain:
+    | "nlp"
+    | "computer_vision"
+    | "time_series"
+    | "tabular_structured_data"
+    | "multimodal"
+    | "anomaly_detection"
+    | "other";
+  model_purpose: string | null;
+  criticality_level: "critical" | "high" | "medium" | "low" | null;
+  regulatory_risk_tier: "minimal_risk" | "limited_risk" | "high_risk" | null;
+  eu_ai_category: "minimal_risk" | "limited_risk" | "high_risk" | "unacceptable_risk" | "not_applicable" | null;
+  ownership_category:
     | "internal"
     | "external"
     | "joint"
-    | "licensed"
-    | "open_source"
-    | "saas";
-  development_source:
-    | "internal_development"
-    | "external_vendor"
-    | "open_source_community"
-    | "cloud_provider"
-    | "partnership";
-  business_status: "planned" | "active" | "deprecated" | "retired";
-  operational_status: "not_deployed" | "development" | "testing" | "production";
-  strategic_importance?: "low" | "medium" | "high" | "critical";
-  regulatory_risk_classification:
-    | "minimal_risk"
-    | "limited_risk"
-    | "high_risk"
-    | "unacceptable_risk"
-    | "sector_specific";
-  source_organization: string | null;
-  current_owner: string | null;
-  vendor: string | null;
-  created_at: string;
-  updated_at: string;
+    | "open_source";
+  responsible_org_role:
+    | "developer"
+    | "deployer"
+    | "importer"
+    | "provider"
+    | "integrator";
+  business_owner_id: string | null;
+  steward_custodian_id: string | null;
+  current_version_id: string | null;
+  business_adoption_status: "planned" | "active" | "deprecated" | "retired";
+  created_by: string | null;
+  created_date: string;
+  updated_date: string;
   total_versions: number | null;
-  model_owner?: string | null;
-  regulatory_classification?: string | null;
 }
 
 // Data to create a new AI Model
 export interface CreateAiModelData {
-  name: string;
-  description: string | null;
-  primary_category:
+  name: string; // Model Name
+  category: // Model Category - maps to model_category in DB
     | "traditional_ml"
-    | "deep_learning"
-    | "generative_ai"
-    | "ai_agents"
-    | "specialized_ai"
-    | "foundation_models"
-    | "multimodal_ai";
+    | "statistical_classical_model"
+    | "rule_based_expert_system"
+    | "hybrid_rules_ml"
+    | "generative_ai_foundation_llm"
+    | "generative_ai_fine_tuned_domain_model"
+    | "generative_ai_multimodal"
+    | "agentic_ai_agent"
+    | "autonomous_decision_system"
+    | "other";
   type:
     | "classification"
     | "regression"
     | "clustering"
-    | "generation"
-    | "translation"
-    | "summarization"
-    | "question_answering"
-    | "recommendation"
-    | "optimization"
-    | "forecasting";
-  domain_specialization:
-    | "general"
-    | "healthcare"
-    | "finance"
-    | "legal"
-    | "marketing"
-    | "hr"
-    | "manufacturing"
-    | "retail"
-    | "automotive"
-    | "energy"
-    | "telecom"
-    | "education";
-  organizational_role:
-    | "developer"
-    | "importer"
-    | "deployer"
-    | "integrator"
-    | "consumer"
-    | "collaborator";
-  ownership_type:
+    | "nlp_model"
+    | "computer_vision_model"
+    | "time_series_forecasting"
+    | "recommendation_model"
+    | "llm"
+    | "other";
+  technical_domain:
+    | "nlp"
+    | "computer_vision"
+    | "time_series"
+    | "tabular_structured_data"
+    | "multimodal"
+    | "anomaly_detection"
+    | "other";
+  purpose?: string | null; // Model Purpose / Intended Use - maps to model_purpose
+  criticality_level?: "critical" | "high" | "medium" | "low" | null;
+  regulatory_risk_tier?: "minimal_risk" | "limited_risk" | "high_risk" | null;
+  eu_ai_category?: "minimal_risk" | "limited_risk" | "high_risk" | "unacceptable_risk" | "not_applicable" | null;
+  ownership_category:
     | "internal"
     | "external"
     | "joint"
-    | "licensed"
-    | "open_source"
-    | "saas";
-  development_source:
-    | "internal_development"
-    | "external_vendor"
-    | "open_source_community"
-    | "cloud_provider"
-    | "partnership";
-  business_status: "planned" | "active" | "deprecated" | "retired";
-  operational_status: "not_deployed" | "development" | "testing" | "production";
-  strategic_importance?: "low" | "medium" | "high" | "critical";
-  regulatory_risk_classification:
-    | "minimal_risk"
-    | "limited_risk"
-    | "high_risk"
-    | "unacceptable_risk"
-    | "sector_specific";
-  source_organization: string | null;
-  current_owner: string | null;
-  vendor: string | null;
+    | "open_source";
+  responsible_org_role:
+    | "developer"
+    | "deployer"
+    | "importer"
+    | "provider"
+    | "integrator";
+  business_owner_id?: string | null;
+  custodian_id?: string | null; // Maps to steward_custodian_id
+  business_adoption_status?: "planned" | "active" | "deprecated" | "retired";
 }
 
 export interface AiModelFilters {
   search?: string;
-  primary_category?: string;
+  model_category?: string;
   model_type?: string;
-  ownership_type?: string;
-  business_status?: string;
-  operational_status?: string;
-  regulatory_classification?: string;
+  ownership_category?: string;
+  business_adoption_status?: string;
+  regulatory_risk_tier?: string;
+  eu_ai_category?: string;
   page?: number;
   per_page?: number;
 }

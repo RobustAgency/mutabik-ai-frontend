@@ -33,11 +33,16 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
         <SelectWithInlineCreate
           value={formData.ai_model_id ? String(formData.ai_model_id) : "0"}
           onValueChange={(value) => setFormData(prev => ({ ...prev, ai_model_id: parseInt(value) }))}
-          options={aiModels.map((model) => ({
-            id: model.id,
-            label: `${model.name} (${model.primary_category.replace('_', ' ')})`,
-            value: String(model.id),
-          }))}
+          options={aiModels.map((model) => {
+            // Backward compatibility: support both new and old field names
+            const modelCategory = (model as any).category || (model as any).model_category || (model as any).primary_category || "";
+            const categoryLabel = modelCategory.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            return {
+              id: model.id,
+              label: `${model.name} (${categoryLabel || 'N/A'})`,
+              value: String(model.id),
+            };
+          })}
           isLoading={false}
           isEmpty={aiModels.length === 0}
           entityName="AI Model"
