@@ -19,24 +19,13 @@ import {
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
 import AiModelVersionModalForm from "../versions/AiModelVersionModalForm";
-import { ArtifactType } from "@/service/app/aiModelArtifacts";
+import { artifactTypeOptions as artifactTypeOptionsList } from "./constants/artifactConstants";
+import { checksumAlgorithmOptions } from "./constants/artifactConstants";
 
 interface ArtifactModalFormProps {
     onSuccess?: (artifact: any) => void;
     onCancel?: () => void;
 }
-
-const artifactTypeOptions = [
-    { value: ArtifactType.MODEL_BINARY, label: "Model Binary" },
-    { value: ArtifactType.TOKENIZER, label: "Tokenizer" },
-    { value: ArtifactType.PROMPT_PACK, label: "Prompt Pack" },
-    { value: ArtifactType.INDEX, label: "Index" },
-    { value: ArtifactType.FEATURE_STORE_EXPORT, label: "Feature Store Export" },
-    { value: ArtifactType.CONFIG, label: "Config" },
-    { value: ArtifactType.DOCKER_IMAGE, label: "Docker Image" },
-    { value: ArtifactType.SBOM, label: "SBOM" },
-    { value: "others", label: "Others" },
-];
 
 const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
     onSuccess,
@@ -49,22 +38,20 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
         ai_model_version_id: string;
         name: string;
         uri: string;
-        checksum: string;
+        checksum_algorithm: string;
         size_bytes: string;
         artifact_type: string;
         custom_artifact_type: string;
         notes: string;
-        created_by: string;
     }>({
         ai_model_version_id: "",
         name: "",
         uri: "",
-        checksum: "",
+        checksum_algorithm: "",
         size_bytes: "",
         artifact_type: "",
         custom_artifact_type: "",
         notes: "",
-        created_by: "",
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -82,6 +69,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
             errors.name = ["Name must be 255 characters or less"];
         }
 
+        // URI is required for modal form (doesn't support file upload)
         if (!formData.uri) {
             errors.uri = ["URI is required"];
         } else {
@@ -95,24 +83,17 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
             }
         }
 
-        if (!formData.checksum) {
-            errors.checksum = ["Checksum is required"];
-        } else if (formData.checksum.length > 255) {
-            errors.checksum = ["Checksum must be 255 characters or less"];
-        }
-
-        if (!formData.size_bytes) {
-            errors.size_bytes = ["Size in bytes is required"];
-        } else {
+        // Size bytes validation (nullable, but if provided must be >= 1)
+        if (formData.size_bytes) {
             const size = parseInt(formData.size_bytes, 10);
-            if (isNaN(size) || size < 0) {
-                errors.size_bytes = ["Size must be a non-negative integer"];
+            if (isNaN(size) || size < 1) {
+                errors.size_bytes = ["Size must be an integer greater than or equal to 1"];
             }
         }
 
         if (!formData.artifact_type) {
             errors.artifact_type = ["Artifact type is required"];
-        } else if (formData.artifact_type === "others") {
+        } else if (formData.artifact_type === "other") {
             if (!formData.custom_artifact_type) {
                 errors.custom_artifact_type = ["Custom artifact type is required"];
             } else if (formData.custom_artifact_type.length > 255) {
@@ -122,16 +103,6 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 
         if (formData.notes && formData.notes.length > 1000) {
             errors.notes = ["Notes must be 1000 characters or less"];
-        }
-
-        if (formData.created_by) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.created_by)) {
-                errors.created_by = ["Please enter a valid email address"];
-            }
-            if (formData.created_by.length > 255) {
-                errors.created_by = ["Email must be 255 characters or less"];
-            }
         }
 
         setValidationErrors(errors);
@@ -151,12 +122,17 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
             const result = await createAiModelArtifact({
                 ai_model_version_id: parseInt(formData.ai_model_version_id, 10),
                 name: formData.name,
-                uri: formData.uri,
-                checksum: formData.checksum,
-                size_bytes: parseInt(formData.size_bytes, 10),
-                artifact_type: formData.artifact_type === "others" ? formData.custom_artifact_type : formData.artifact_type,
+                uri: formData.uri || null,
+                file: null, // Modal form doesn't support file upload
+                checksum_algorithm: formData.checksum_algorithm && formData.checksum_algorithm !== "none" 
+                    ? formData.checksum_algorithm 
+                    : null,
+                // checksum_value: null, // Backend calculates this automatically
+                environment: null,
+                file_format: null,
+                size_bytes: formData.size_bytes ? parseInt(formData.size_bytes, 10) : null,
+                artifact_type: formData.artifact_type === "other" ? formData.custom_artifact_type : formData.artifact_type,
                 notes: formData.notes || null,
-                created_by: formData.created_by || null,
             }).unwrap();
 
             if (onSuccess) {
@@ -290,7 +266,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                                 <SelectValue placeholder="Select artifact type" />
                             </SelectTrigger>
                             <SelectContent>
-                                {artifactTypeOptions.map((option) => (
+                                {artifactTypeOptionsList.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
                                         {option.label}
                                     </SelectItem>
@@ -300,7 +276,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                         {hasError("artifact_type") && (
                             <p className="text-sm text-red-500">{getError("artifact_type")}</p>
                         )}
-                        {formData.artifact_type === "others" && (
+                        {formData.artifact_type === "other" && (
                             <div className="mt-2">
                                 <Input
                                     id="custom_artifact_type"
@@ -352,81 +328,64 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                         )}
                     </div>
 
-                    {/* Checksum */}
+                    {/* Checksum Algorithm */}
                     <div className="space-y-2">
-                        <Label htmlFor="checksum">
-                            Checksum <span className="text-red-500">*</span>
+                        <Label htmlFor="checksum_algorithm">
+                            Checksum Algorithm
                         </Label>
-                        <Input
-                            id="checksum"
-                            type="text"
-                            value={formData.checksum}
-                            onChange={(e) => {
-                                setFormData((prev) => ({ ...prev, checksum: e.target.value }));
+                        <Select
+                            value={formData.checksum_algorithm || undefined}
+                            onValueChange={(value) => {
+                                setFormData((prev) => ({ ...prev, checksum_algorithm: value }));
                                 setValidationErrors((prev) => {
                                     const next = { ...prev };
-                                    delete next.checksum;
+                                    delete next.checksum_algorithm;
                                     return next;
                                 });
                             }}
-                            placeholder="SHA-256 hash"
-                            className={hasError("checksum") ? "border-red-500" : ""}
-                        />
-                        {hasError("checksum") && (
-                            <p className="text-sm text-red-500">{getError("checksum")}</p>
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select checksum algorithm" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {checksumAlgorithmOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {hasError("checksum_algorithm") && (
+                            <p className="text-sm text-red-500">{getError("checksum_algorithm")}</p>
                         )}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Size Bytes */}
-                    <div className="space-y-2">
-                        <Label htmlFor="size_bytes">
-                            Size (bytes) <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                            id="size_bytes"
-                            type="number"
-                            min="0"
-                            value={formData.size_bytes}
-                            onChange={(e) => {
-                                setFormData((prev) => ({ ...prev, size_bytes: e.target.value }));
-                                setValidationErrors((prev) => {
-                                    const next = { ...prev };
-                                    delete next.size_bytes;
-                                    return next;
-                                });
-                            }}
-                            placeholder="0"
-                            className={hasError("size_bytes") ? "border-red-500" : ""}
-                        />
-                        {hasError("size_bytes") && (
-                            <p className="text-sm text-red-500">{getError("size_bytes")}</p>
-                        )}
-                    </div>
-
-                    {/* Created By */}
-                    <div className="space-y-2">
-                        <Label htmlFor="created_by">Created By</Label>
-                        <Input
-                            id="created_by"
-                            type="email"
-                            value={formData.created_by}
-                            onChange={(e) => {
-                                setFormData((prev) => ({ ...prev, created_by: e.target.value }));
-                                setValidationErrors((prev) => {
-                                    const next = { ...prev };
-                                    delete next.created_by;
-                                    return next;
-                                });
-                            }}
-                            placeholder="creator@example.com"
-                            className={hasError("created_by") ? "border-red-500" : ""}
-                        />
-                        {hasError("created_by") && (
-                            <p className="text-sm text-red-500">{getError("created_by")}</p>
-                        )}
-                    </div>
+                {/* Size Bytes */}
+                <div className="space-y-2">
+                    <Label htmlFor="size_bytes">
+                        Size (bytes)
+                    </Label>
+                    <Input
+                        id="size_bytes"
+                        type="number"
+                        min="1"
+                        value={formData.size_bytes}
+                        onChange={(e) => {
+                            setFormData((prev) => ({ ...prev, size_bytes: e.target.value }));
+                            setValidationErrors((prev) => {
+                                const next = { ...prev };
+                                delete next.size_bytes;
+                                return next;
+                            });
+                        }}
+                        placeholder="Enter size in bytes"
+                        className={hasError("size_bytes") ? "border-red-500" : ""}
+                    />
+                    {hasError("size_bytes") && (
+                        <p className="text-sm text-red-500">{getError("size_bytes")}</p>
+                    )}
+                    <p className="text-xs text-[#667085]">Must be an integer greater than or equal to 1</p>
                 </div>
 
                 {/* Notes */}

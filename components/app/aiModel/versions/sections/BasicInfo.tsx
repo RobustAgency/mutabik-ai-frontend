@@ -58,18 +58,18 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Version Role</p>
+                        <p className="text-sm font-medium text-gray-500">Release Role</p>
                         <p className="text-gray-900">{formatCategory(versionRole)}</p>
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Version Source</p>
+                        <p className="text-sm font-medium text-gray-500">Source Type</p>
                         <p className="text-gray-900">{formatCategory(versionSource)}</p>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-sm font-medium text-gray-500">Our Involvement</p>
+                        <p className="text-sm font-medium text-gray-500">Organization&apos;s Involvement</p>
                         <p className="text-gray-900">{formatCategory(ourInvolvement)}</p>
                     </div>
                     <div>

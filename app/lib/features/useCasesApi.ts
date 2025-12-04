@@ -6,12 +6,12 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 
 // Filter types for Use Cases
 export interface UseCaseFilters {
-  risk_level?: string | null;
+  preliminary_risk_level?: string | null;
   business_domain?: string | null;
   owner?: string | null;
-  roi_assessment?: string | null;
-  risk_assessment?: string | null;
-  data_assessment?: string | null;
+  roi_classification?: string | null;
+  priority?: string | null;
+  data_sensitivity?: string | null;
   to?: string | null; // date
   from?: string | null; // date, before_or_equal:to
   status?: string; // enum: UseCase\Status

@@ -2,20 +2,18 @@ import React from 'react'
 import { formatValue } from '../AiModelDetails';
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { AiModel } from '@/service/app/aiModels';
 
 interface BasicInfoModelDetailsProps {
-    aiModel: {
-        name: string;
-        primary_category: string | null;
-        type: string | null;
-        domain_specialization: string | null;
-        total_versions: number | null;
-        strategic_importance?: string | null;  // Changed to optional with ?
-        description: string | null;
-    };
+    aiModel: AiModel;
 }
 
 const BasicInfoModelDetails: React.FC<BasicInfoModelDetailsProps> = ({ aiModel }) => {
+    // Backward compatibility: support both new and old field names
+    const modelCategory = (aiModel as any).model_category || (aiModel as any).primary_category;
+    const technicalDomain = (aiModel as any).technical_domain || (aiModel as any).domain_specialization;
+    const modelPurpose = (aiModel as any).model_purpose || (aiModel as any).description;
+
     return (
         <Card className='border-none'>
             <CardHeader className="px-6 py-4 border-b border-[#E4E7EC]">
@@ -28,40 +26,36 @@ const BasicInfoModelDetails: React.FC<BasicInfoModelDetailsProps> = ({ aiModel }
                         <p className="font-sans font-medium text-sm text-[#1D2939]">{aiModel.name}</p>
                     </div>
                     <div>
-                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Primary Category</p>
+                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Model Category</p>
                         <Badge variant="light" className="bg-gray-100 text-gray-800 font-sans text-xs">
-                            {formatValue(aiModel.primary_category)}
+                            {formatValue(modelCategory)}
                         </Badge>
                     </div>
                     <div>
-                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Type</p>
+                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Model Type</p>
                         <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
                             {formatValue(aiModel.type)}
                         </Badge>
                     </div>
                     <div>
-                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Domain Specialization</p>
+                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Technical Domain</p>
                         <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
-                            {formatValue(aiModel.domain_specialization)}
+                            {formatValue(technicalDomain)}
                         </Badge>
                     </div>
                     <div>
                         <p className="font-sans font-medium text-xs text-[#667085] mb-2">Total Versions</p>
                         <p className="font-sans text-sm text-[#667085]">{aiModel.total_versions || 0}</p>
                     </div>
+                </div>
+                {modelPurpose && (
                     <div>
-                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Strategic Importance</p>
-                        <Badge variant="outlined" className="border-[#E4E7EC] text-[#667085] font-sans text-xs">
-                            {formatValue(aiModel.strategic_importance || null)}
-                        </Badge>
+                        <p className="font-sans font-medium text-xs text-[#667085] mb-2">Model Purpose / Intended Use</p>
+                        <p className="font-sans text-sm text-[#667085] leading-5">
+                            {modelPurpose}
+                        </p>
                     </div>
-                </div>
-                <div>
-                    <p className="font-sans font-medium text-xs text-[#667085] mb-2">Description</p>
-                    <p className="font-sans text-sm text-[#667085] leading-5">
-                        {aiModel.description || "No description provided"}
-                    </p>
-                </div>
+                )}
             </CardContent>
         </Card>
     )

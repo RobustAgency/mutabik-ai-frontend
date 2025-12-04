@@ -27,7 +27,7 @@ const CreateAiModelVersion: React.FC = () => {
         release_notes: '',
 
         // Version metadata
-        version_role: 'original_development',
+        version_role: 'original_release',
         version_source: 'internal_development',
         our_involvement: 'full_development',
 
@@ -35,7 +35,7 @@ const CreateAiModelVersion: React.FC = () => {
         architecture_type: 'transformer',
         model_file_size_gb: null,
         training_duration_hours: null,
-        complexity_level: 'moderate',
+        complexity_level: 'low',
         parameter_count: null,
 
         // Modalities
@@ -47,13 +47,7 @@ const CreateAiModelVersion: React.FC = () => {
         lifecycle_stage: 'development',
         deployment_environments: [],
         customizations_applied: [],
-
-        // Flags
-        has_performance_data: false,
-
-        // Audit fields
-        created_by: '',
-        updated_by: null,
+        approval_status: null,
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -67,6 +61,12 @@ const CreateAiModelVersion: React.FC = () => {
         }
         if (!formData.version_number?.trim()) {
             errors.version_number = ["Version number is required"];
+        } else {
+            // Enforce semantic versioning: major.minor.patch (e.g. 1.2.0)
+            const semverRegex = /^\d+\.\d+\.\d+$/;
+            if (!semverRegex.test(formData.version_number.trim())) {
+                errors.version_number = ["Version number must follow semantic versioning (major.minor.patch), e.g. 1.2.0"];
+            }
         }
         if (!formData.version_type) {
             errors.version_type = ["Version type is required"];
@@ -100,14 +100,35 @@ const CreateAiModelVersion: React.FC = () => {
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
 
-        // Created by validation - required
-        if (!formData.created_by?.trim()) {
-            errors.created_by = ["Created by email is required"];
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.created_by)) {
-            errors.created_by = ["Please enter a valid email address"];
+        // Lifecycle stage logical consistency with deployment status
+        if (formData.deployment_status && formData.lifecycle_stage) {
+            const allowedLifecycleByDeployment: Record<string, string[]> = {
+                not_deployed: ['design', 'development'],
+                testing: ['development', 'validation'],
+                staging: ['validation', 'deployment'],
+                production: ['deployment', 'monitoring'],
+                retired: ['retired'],
+            };
+
+            const allowed = allowedLifecycleByDeployment[formData.deployment_status] || [];
+            if (!allowed.includes(formData.lifecycle_stage)) {
+                errors.lifecycle_stage = [
+                    "Lifecycle stage must be logically consistent with deployment status.",
+                ];
+            }
         }
 
-        // Performance data checkbox is optional - no validation needed
+        // Approval status validation - always required, and must be Approved for Production when in production
+        if (!formData.approval_status || !formData.approval_status.trim()) {
+            errors.approval_status = ["Approval status is required."];
+        } else if (
+            formData.deployment_status === 'production' &&
+            formData.approval_status !== 'approved_for_production'
+        ) {
+            errors.approval_status = [
+                "When deployment status is Production, approval status must be 'Approved for Production'.",
+            ];
+        }
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
@@ -126,7 +147,12 @@ const CreateAiModelVersion: React.FC = () => {
             'ai_model_id': 'ai_model_id',
             'version_role': 'version_role',
             'version_source': 'version_source',
-            'our_involvement': 'our_involvement'
+            'our_involvement': 'our_involvement',
+            'approval_status': 'approval_status',
+            // Backend field names (for error mapping)
+            'release_role': 'version_role',
+            'source_type': 'version_source',
+            'org_involvement': 'our_involvement'
         };
 
         const mappedErrors: Record<string, string[]> = {};

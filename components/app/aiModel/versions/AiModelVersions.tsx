@@ -140,7 +140,7 @@ const AiModelVersions: React.FC = () => {
             accessorKey: "deployment_status",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Operational
+                    Deployment
                 </div>
             ),
             cell: ({ getValue }) => {
@@ -149,17 +149,20 @@ const AiModelVersions: React.FC = () => {
                 let badgeClasses = baseClasses;
 
                 switch (status) {
-                    case 'deployed':
+                    case 'production':
                         badgeClasses += " bg-green-100 text-green-800";
                         break;
-                    case 'deploying':
+                    case 'staging':
                         badgeClasses += " bg-blue-100 text-blue-800";
                         break;
-                    case 'failed':
-                        badgeClasses += " bg-red-100 text-red-800";
-                        break;
-                    case 'rollback':
+                    case 'testing':
                         badgeClasses += " bg-amber-100 text-amber-800";
+                        break;
+                    case 'not_deployed':
+                        badgeClasses += " bg-gray-100 text-gray-800";
+                        break;
+                    case 'retired':
+                        badgeClasses += " bg-gray-200 text-gray-700";
                         break;
                     default:
                         badgeClasses += " bg-gray-100 text-gray-800";
@@ -185,23 +188,23 @@ const AiModelVersions: React.FC = () => {
                 let badgeClasses = baseClasses;
 
                 switch (stage) {
-                    case 'production':
-                        badgeClasses += " bg-green-100 text-green-800";
-                        break;
-                    case 'staging':
-                        badgeClasses += " bg-blue-100 text-blue-800";
-                        break;
-                    case 'testing':
-                        badgeClasses += " bg-amber-100 text-amber-800";
+                    case 'design':
+                        badgeClasses += " bg-purple-100 text-purple-800";
                         break;
                     case 'development':
                         badgeClasses += " bg-gray-100 text-gray-800";
                         break;
-                    case 'deprecated':
-                        badgeClasses += " bg-red-100 text-red-800";
+                    case 'validation':
+                        badgeClasses += " bg-blue-100 text-blue-800";
+                        break;
+                    case 'deployment':
+                        badgeClasses += " bg-green-100 text-green-800";
+                        break;
+                    case 'monitoring':
+                        badgeClasses += " bg-amber-100 text-amber-800";
                         break;
                     case 'retired':
-                        badgeClasses += " bg-gray-100 text-gray-800";
+                        badgeClasses += " bg-gray-200 text-gray-700";
                         break;
                     default:
                         badgeClasses += " bg-gray-100 text-gray-800";

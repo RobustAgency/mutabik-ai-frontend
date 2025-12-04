@@ -17,8 +17,8 @@ import StakeholderModalForm from "@/components/app/stakeholders/create/Stakehold
 
 interface StakeholderSelectorWithInlineProps {
     label: string;
-    value: string | null;
-    onValueChange: (value: string | null) => void;
+    value: number | string | null;
+    onValueChange: (value: number | string | null) => void;
     placeholder?: string;
     description?: string;
     required?: boolean;
