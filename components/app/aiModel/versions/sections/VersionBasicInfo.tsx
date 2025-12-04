@@ -9,6 +9,7 @@ import type { CreateAiModelVersionData } from "@/service/app/aiModelVersions";
 import { useAiModels } from "@/hooks/app/useAiModels";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
+import { InfoTooltip } from "@/components/custom/InfoTooltip";
 
 interface Props {
   formData: CreateAiModelVersionData;
@@ -22,13 +23,17 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">Basic Info</h2>
-        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Provide general information for this model version</p>
+        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">
+          Basic Information
+        </h2>
+        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+          Provide general information for this model version.
+        </p>
       </div>
 
       <div>
-        <Label htmlFor="ai_model_id" className="text-sm font-medium text-gray-700 mb-2">
-          Parent Model <span className="text-red-500">*</span>
+        <Label htmlFor="ai_model_id" className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+          Parent Model <span className="text-red-500 ml-0.5">*</span>
         </Label>
         <SelectWithInlineCreate
           value={formData.ai_model_id ? String(formData.ai_model_id) : "0"}
@@ -57,25 +62,26 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="version_number" className="text-sm font-medium text-gray-700 mb-2">
-            Version Number <span className="text-red-500">*</span>
+          <Label htmlFor="version_number" className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Version Number <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="A semantic version number, e.g. 1.2.0." />
           </Label>
           <Input
             id="version_number"
             value={formData.version_number}
             onChange={(e) => setFormData(prev => ({ ...prev, version_number: e.target.value }))}
-            placeholder="v2.1.3"
+            placeholder="1.2.0"
             className={`w-full ${errors.version_number ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />
-          <p className="text-xs text-gray-500 mt-1">Semantic versioning (major.minor.patch)</p>
+          <p className="text-xs text-gray-500 mt-1">Semantic versioning (major.minor.patch).</p>
           {errors.version_number && (
             <p className="text-xs text-red-600 mt-1">{errors.version_number[0]}</p>
           )}
         </div>
 
         <div>
-          <Label htmlFor="version_type" className="text-sm font-medium text-gray-700 mb-2">
-            Version Type <span className="text-red-500">*</span>
+          <Label htmlFor="version_type" className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Version Type <span className="text-red-500 ml-0.5">*</span>
           </Label>
           <Select
             value={formData.version_type}

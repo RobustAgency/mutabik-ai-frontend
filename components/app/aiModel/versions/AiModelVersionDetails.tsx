@@ -93,9 +93,6 @@ const AiModelVersionDetails: React.FC<AiModelVersionDetailsProps> = ({ versionId
                         lifecycleStage={aiModelVersion.lifecycle_stage}
                         deploymentEnvironments={aiModelVersion.deployment_environments}
                         releaseDate={aiModelVersion.release_date || undefined}
-                        hasPerformanceData={aiModelVersion.has_performance_data}
-                        performanceBaselineEstablished={aiModelVersion.performance_baseline_established}
-                        complianceStatus={aiModelVersion.compliance_check_status}
                     />
 
                 </div>

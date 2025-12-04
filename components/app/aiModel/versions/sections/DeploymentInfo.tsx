@@ -10,9 +10,6 @@ interface DeploymentInfoProps {
     lifecycleStage: string;
     deploymentEnvironments: string[];
     releaseDate?: string;
-    hasPerformanceData: boolean;
-    performanceBaselineEstablished: boolean;
-    complianceStatus?: string;
 }
 
 const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
@@ -20,29 +17,11 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
     lifecycleStage,
     deploymentEnvironments,
     releaseDate,
-    hasPerformanceData,
-    performanceBaselineEstablished,
-    complianceStatus
 }) => {
     const getStatusBadge = (status: string, type: 'deployment' | 'lifecycle') => {
         const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
 
         if (type === 'deployment') {
-            switch (status) {
-                case 'deployed':
-                    return `${baseClasses} bg-green-100 text-green-800`;
-                case 'deploying':
-                    return `${baseClasses} bg-blue-100 text-blue-800`;
-                case 'failed':
-                    return `${baseClasses} bg-red-100 text-red-800`;
-                case 'rollback':
-                    return `${baseClasses} bg-amber-100 text-amber-800`;
-                default:
-                    return `${baseClasses} bg-gray-100 text-gray-800`;
-            }
-        }
-
-        if (type === 'lifecycle') {
             switch (status) {
                 case 'production':
                     return `${baseClasses} bg-green-100 text-green-800`;
@@ -50,8 +29,29 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
                     return `${baseClasses} bg-blue-100 text-blue-800`;
                 case 'testing':
                     return `${baseClasses} bg-amber-100 text-amber-800`;
-                case 'deprecated':
-                    return `${baseClasses} bg-red-100 text-red-800`;
+                case 'not_deployed':
+                    return `${baseClasses} bg-gray-100 text-gray-800`;
+                case 'retired':
+                    return `${baseClasses} bg-gray-200 text-gray-700`;
+                default:
+                    return `${baseClasses} bg-gray-100 text-gray-800`;
+            }
+        }
+
+        if (type === 'lifecycle') {
+            switch (status) {
+                case 'design':
+                    return `${baseClasses} bg-purple-100 text-purple-800`;
+                case 'development':
+                    return `${baseClasses} bg-gray-100 text-gray-800`;
+                case 'validation':
+                    return `${baseClasses} bg-blue-100 text-blue-800`;
+                case 'deployment':
+                    return `${baseClasses} bg-green-100 text-green-800`;
+                case 'monitoring':
+                    return `${baseClasses} bg-amber-100 text-amber-800`;
+                case 'retired':
+                    return `${baseClasses} bg-gray-200 text-gray-700`;
                 default:
                     return `${baseClasses} bg-gray-100 text-gray-800`;
             }
@@ -108,27 +108,7 @@ const DeploymentInfo: React.FC<DeploymentInfoProps> = ({
                     </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${hasPerformanceData ? 'bg-green-500' : 'bg-gray-300'
-                            }`}></div>
-                        <span className="text-sm text-gray-700">Has Performance Data</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${performanceBaselineEstablished ? 'bg-green-500' : 'bg-gray-300'
-                            }`}></div>
-                        <span className="text-sm text-gray-700">Performance Baseline Established</span>
-                    </div>
-                </div>
-
-                {complianceStatus && (
-                    <div>
-                        <p className="text-sm font-medium text-gray-500">Compliance Status</p>
-                        <Badge variant="outlined">
-                            {formatCategory(complianceStatus)}
-                        </Badge>
-                    </div>
-                )}
+                {/* Governance, performance, and incident details are shown in dedicated modules linked to this version. */}
             </CardContent>
         </Card>
     );

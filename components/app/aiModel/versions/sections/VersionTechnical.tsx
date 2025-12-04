@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CreateAiModelVersionData } from "@/service/app/aiModelVersions";
+import { InfoTooltip } from "@/components/custom/InfoTooltip";
 
 interface Props {
   formData: CreateAiModelVersionData;
@@ -30,13 +31,20 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">Technical</h2>
-        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Architecture, complexity and modalities</p>
+        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">
+          Technical Details
+        </h2>
+        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+          Architecture, complexity, and input/output modalities.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Version Role <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Release Role <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Defines whether this is an original release, patch, hotfix, or experimental version." />
+          </Label>
           <Select
             value={formData.version_role}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_role: value as any }))}
@@ -55,7 +63,10 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
           )}
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Version Source <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Source Type <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Whether the model comes from internal development, a vendor, open source, or a foundation model." />
+          </Label>
           <Select
             value={formData.version_source}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_source: value as any }))}
@@ -74,7 +85,9 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
           )}
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Our Involvement <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Organization&apos;s Involvement <span className="text-red-500 ml-0.5">*</span>
+          </Label>
           <Select
             value={formData.our_involvement}
             onValueChange={(value) => setFormData(prev => ({ ...prev, our_involvement: value as any }))}
@@ -96,7 +109,10 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Architecture Type <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Architecture Type <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Underlying structure of the model, such as Transformer, CNN, or Gradient Boosting." />
+          </Label>
           <Select
             value={formData.architecture_type}
             onValueChange={(value) => setFormData(prev => ({ ...prev, architecture_type: value as any }))}
@@ -120,7 +136,10 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
           )}
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Complexity Level <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Model Complexity Level <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Reflects architecture depth, parameter count, and compute needs." />
+          </Label>
           <Select
             value={formData.complexity_level}
             onValueChange={(value) => setFormData(prev => ({ ...prev, complexity_level: value as any }))}

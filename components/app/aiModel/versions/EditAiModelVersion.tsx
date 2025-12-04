@@ -52,13 +52,6 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         deployment_environments: [],
         customizations_applied: [],
         approval_status: null,
-
-        // Flags
-        has_performance_data: false,
-
-        // Audit fields
-        created_by: '',
-        updated_by: null,
     });
 
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -98,9 +91,6 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
                 deployment_environments: aiModelVersion.deployment_environments,
                 customizations_applied: [],
                 approval_status: aiModelVersion.approval_status || null,
-
-                // Flags
-                has_performance_data: aiModelVersion.has_performance_data,
             });
         }
     }, [aiModelVersion]);
@@ -109,11 +99,16 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
         const errors: Record<string, string[]> = {};
 
         // Core identifiers validation
-        if (!formData.ai_model_id) {
-            errors.ai_model_id = ["Parent model is required"];
+        if (!formData.ai_model_id || formData.ai_model_id <= 0) {
+            errors.ai_model_id = ["AI Model is required"];
         }
         if (!formData.version_number?.trim()) {
             errors.version_number = ["Version number is required"];
+        } else {
+            const semverRegex = /^\d+\.\d+\.\d+$/;
+            if (!semverRegex.test(formData.version_number.trim())) {
+                errors.version_number = ["Version number must follow semantic versioning (major.minor.patch), e.g. 1.2.0"];
+            }
         }
         if (!formData.version_type) {
             errors.version_type = ["Version type is required"];
@@ -121,19 +116,22 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
 
         // Technical characteristics validation
         if (!formData.architecture_type?.trim()) {
-            if (!formData.architecture_type || !formData.architecture_type.trim()) {
-                errors.architecture_type = ["Architecture type is required"];
-            }
-            if (
-                formData.model_file_size_gb === undefined ||
-                formData.model_file_size_gb === null ||
-                formData.model_file_size_gb < 0
-            ) {
-                errors.model_file_size_gb = ["Model file size is required and must be >= 0"];
-            }
-            if (!formData.complexity_level) {
-                errors.complexity_level = ["Complexity level is required"];
-            }
+            errors.architecture_type = ["Architecture type is required"];
+        }
+        if (formData.model_file_size_gb !== null && formData.model_file_size_gb !== undefined && formData.model_file_size_gb < 0) {
+            errors.model_file_size_gb = ["Model file size must be >= 0"];
+        }
+        if (!formData.complexity_level) {
+            errors.complexity_level = ["Complexity level is required"];
+        }
+        if (!formData.version_role) {
+            errors.version_role = ["Version role is required"];
+        }
+        if (!formData.version_source) {
+            errors.version_source = ["Version source is required"];
+        }
+        if (!formData.our_involvement) {
+            errors.our_involvement = ["Our involvement is required"];
         }
 
         // Deployment / lifecycle / compliance validation
@@ -144,9 +142,34 @@ const EditAiModelVersion: React.FC<EditAiModelVersionProps> = ({ versionId }) =>
             errors.lifecycle_stage = ["Lifecycle stage is required"];
         }
 
-        // Approval status validation - required unless deployment_status is "production"
-        if (formData.deployment_status !== 'production' && (!formData.approval_status || !formData.approval_status.trim())) {
-            errors.approval_status = ["The approval status field is required unless deployment status is in production."];
+        // Lifecycle stage logical consistency with deployment status
+        if (formData.deployment_status && formData.lifecycle_stage) {
+            const allowedLifecycleByDeployment: Record<string, string[]> = {
+                not_deployed: ['design', 'development'],
+                testing: ['development', 'validation'],
+                staging: ['validation', 'deployment'],
+                production: ['deployment', 'monitoring'],
+                retired: ['retired'],
+            };
+
+            const allowed = allowedLifecycleByDeployment[formData.deployment_status] || [];
+            if (!allowed.includes(formData.lifecycle_stage)) {
+                errors.lifecycle_stage = [
+                    "Lifecycle stage must be logically consistent with deployment status.",
+                ];
+            }
+        }
+
+        // Approval status validation - always required, and must be Approved for Production when in production
+        if (!formData.approval_status || !formData.approval_status.trim()) {
+            errors.approval_status = ["Approval status is required."];
+        } else if (
+            formData.deployment_status === 'production' &&
+            formData.approval_status !== 'approved_for_production'
+        ) {
+            errors.approval_status = [
+                "When deployment status is Production, approval status must be 'Approved for Production'.",
+            ];
         }
 
         setValidationErrors(errors);

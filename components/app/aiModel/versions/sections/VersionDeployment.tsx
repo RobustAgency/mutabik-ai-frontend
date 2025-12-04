@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CreateAiModelVersionData } from "@/service/app/aiModelVersions";
+import { InfoTooltip } from "@/components/custom/InfoTooltip";
 
 interface Props {
   formData: CreateAiModelVersionData;
@@ -58,13 +59,20 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">Deployment</h2>
-        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Deployment status, lifecycle and compliance</p>
+        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">
+          Deployment &amp; Lifecycle
+        </h2>
+        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+          Deployment configuration, lifecycle stage, and governance status.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Deployment Status <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Deployment Status <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Current deployment state: Not Deployed, Testing, Staging, Production, or Retired." />
+          </Label>
           <Select
             value={formData.deployment_status}
             onValueChange={(value) => setFormData(prev => ({ ...prev, deployment_status: value as any }))}
@@ -84,7 +92,9 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
         </div>
 
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Lifecycle Stage <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Lifecycle Stage <span className="text-red-500 ml-0.5">*</span>
+          </Label>
           <Select
             value={formData.lifecycle_stage}
             onValueChange={(value) => setFormData(prev => ({ ...prev, lifecycle_stage: value as any }))}
@@ -100,47 +110,6 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
           </Select>
           {errors.lifecycle_stage && (
             <p className="text-xs text-red-600 mt-1">{errors.lifecycle_stage[0]}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">
-            Approval Status
-            {formData.deployment_status !== 'production' && (
-              <span className="text-red-500"> *</span>
-            )}
-          </Label>
-          <Select
-            value={formData.approval_status || ""}
-            onValueChange={(value) =>
-              setFormData((prev) => ({
-                ...prev,
-                approval_status: (value || null) as CreateAiModelVersionData["approval_status"],
-              }))
-            }
-          >
-            <SelectTrigger className={errors.approval_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
-              <SelectValue placeholder="Select approval status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending_review">Pending Review</SelectItem>
-              <SelectItem value="approved_for_pilot">Approved for Pilot</SelectItem>
-              <SelectItem value="approved_for_production">Approved for Production</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-              <SelectItem value="rolled_back">Rolled Back</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.approval_status && (
-            <p className="text-xs text-red-600 mt-1">
-              {errors.approval_status[0]}
-            </p>
-          )}
-          {formData.deployment_status !== 'production' && !errors.approval_status && (
-            <p className="text-xs text-gray-500 mt-1">
-              Required when deployment status is not production
-            </p>
           )}
         </div>
       </div>
@@ -191,54 +160,44 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">
-            Performance Data
-          </Label>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="has_performance_data"
-              checked={formData.has_performance_data ?? false}
-              onCheckedChange={(checked) =>
-                setFormData(prev => ({ ...prev, has_performance_data: checked as boolean }))
-              }
-            />
-            <Label htmlFor="has_performance_data" className="text-sm text-gray-700">
-              Has Performance Data
-            </Label>
+        <div className="space-y-3">
+          <div>
+            <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">
+              Governance &amp; Monitoring
+            </h2>
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">
-            Created By <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            type="email"
-            value={formData.created_by || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, created_by: e.target.value }))}
-            placeholder="creator@example.com"
-            className={`w-full ${errors.created_by ? "border-red-500 focus:border-red-500" : ""}`}
-          />
-          {errors.created_by && (
-            <p className="text-xs text-red-600 mt-1">{errors.created_by[0]}</p>
-          )}
-        </div>
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Updated By</Label>
-          <Input
-            type="email"
-            value={formData.updated_by || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, updated_by: e.target.value || null }))}
-            placeholder="updater@example.com"
-            className={`w-full ${errors.updated_by ? "border-red-500 focus:border-red-500" : ""}`}
-          />
-          {errors.updated_by && (
-            <p className="text-xs text-red-600 mt-1">{errors.updated_by[0]}</p>
-          )}
+          <div>
+            <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              Approval Status <span className="text-red-500 ml-0.5">*</span>
+              <InfoTooltip content="Final governance decision for this version." />
+            </Label>
+            <Select
+              value={formData.approval_status || ""}
+              onValueChange={(value) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  approval_status: (value || null) as CreateAiModelVersionData["approval_status"],
+                }))
+              }
+            >
+              <SelectTrigger className={errors.approval_status ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+                <SelectValue placeholder="Select approval status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending_review">Pending Review</SelectItem>
+                <SelectItem value="approved_for_pilot">Approved for Pilot</SelectItem>
+                <SelectItem value="approved_for_production">Approved for Production</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="rolled_back">Rolled Back</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.approval_status && (
+              <p className="text-xs text-red-600 mt-1">
+                {errors.approval_status[0]}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </section>

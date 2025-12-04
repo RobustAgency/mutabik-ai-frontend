@@ -63,6 +63,7 @@ export interface AiModelVersion {
     | "approved_for_pilot"
     | "approved_for_production"
     | "rejected"
+    | "rolled_back"
     | null;
   compliance_check_status?:
     | "compliant"
@@ -159,6 +160,7 @@ export interface CreateAiModelVersionData {
     | "approved_for_pilot"
     | "approved_for_production"
     | "rejected"
+    | "rolled_back"
     | null;
 
   // Audit fields
