@@ -20,6 +20,16 @@ const UseCases: React.FC = () => {
   const [filters, setFilters] = React.useState<UseCaseFilters>({});
   const { useCases, loading } = useUseCases(filters);
 
+  // Helper function to format field values for display
+  const formatFieldValue = (value: string | null | undefined): string => {
+    if (!value) return "N/A";
+    // Convert snake_case to Title Case
+    return value
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const columns: ColumnDef<UseCase>[] = [
     {
       accessorKey: "display_id",
@@ -46,14 +56,16 @@ const UseCases: React.FC = () => {
       ),
     },
     {
-      accessorKey: "risk_level",
+      accessorKey: "preliminary_risk_level",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Risk Level
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085] ">{getValue() as string}</div>
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {formatFieldValue(getValue() as string)}
+        </div>
       ),
     },
     {
@@ -64,7 +76,9 @@ const UseCases: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">{getValue() as string}</div>
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {formatFieldValue(getValue() as string)}
+        </div>
       ),
     },
     {
@@ -75,14 +89,16 @@ const UseCases: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">{getValue() as string}</div>
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {formatFieldValue(getValue() as string)}
+        </div>
       ),
     },
     {
-      accessorKey: "target_go_live_date",
+      accessorKey: "target_deployment_date",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Target Go Live Date
+          Target Deployment
         </div>
       ),
       cell: ({ getValue }) => {
@@ -103,8 +119,8 @@ const UseCases: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => (
-        <div className="h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium">
-          {getValue() as string}
+        <div className="h-[24px] px-3 flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium capitalize">
+          {formatFieldValue(getValue() as string)}
         </div>
       ),
     },

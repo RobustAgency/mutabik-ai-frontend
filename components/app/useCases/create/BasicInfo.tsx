@@ -13,6 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { FormDataType } from "../types/useCaseTypes";
 import StakeholderSelectorWithInline from "./StakeholderSelectorWithInline";
+import MultiStakeholderSelector from "./MultiStakeholderSelector";
 
 interface BasicInfoProps {
   formData: FormDataType;
@@ -24,31 +25,46 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {} }) => {
   const [nameInput, setNameInput] = useState(formData.name);
   const [descriptionInput, setDescriptionInput] = useState(formData.description || "");
-  const [businessObjectiveInput, setBusinessObjectiveInput] = useState(formData.business_objective || "");
-  const [createdByInput, setCreatedByInput] = useState(formData.created_by || "");
-
-  // No need to fetch stakeholders here - StakeholderSelector handles it
+  const [problemStatementInput, setProblemStatementInput] = useState(formData.problem_statement || "");
+  const [expectedBusinessValueInput, setExpectedBusinessValueInput] = useState(formData.expected_business_value || "");
 
   useEffect(() => {
     setNameInput(formData.name);
     setDescriptionInput(formData.description || "");
-    setBusinessObjectiveInput(formData.business_objective || "");
-    setCreatedByInput(formData.created_by || "");
+    setProblemStatementInput(formData.problem_statement || "");
+    setExpectedBusinessValueInput(formData.expected_business_value || "");
   }, [formData]);
 
-  // Business domain options based on new schema
+  // Business domain options based on backend enums
   const businessDomainOptions = [
-    { value: "customer_service", label: "Customer Service" },
-    { value: "fraud_detection", label: "Fraud Detection" },
-    { value: "marketing", label: "Marketing" },
     { value: "operations", label: "Operations" },
-    { value: "risk_management", label: "Risk Management" },
-    { value: "hr", label: "HR" },
     { value: "finance", label: "Finance" },
-    { value: "legal", label: "Legal" },
-    { value: "product_development", label: "Product Development" },
+    { value: "risk", label: "Risk" },
+    { value: "compliance", label: "Compliance" },
+    { value: "customer_service", label: "Customer Service" },
+    { value: "hr", label: "HR" },
+    { value: "marketing", label: "Marketing" },
+    { value: "sales", label: "Sales" },
+    { value: "it", label: "IT" },
+    { value: "procurement", label: "Procurement" },
     { value: "supply_chain", label: "Supply Chain" },
+    { value: "legal", label: "Legal" },
+    { value: "strategy", label: "Strategy" },
+    { value: "other", label: "Other" },
   ];
+
+  // Status options based on backend enums
+  const statusOptions = [
+    { value: "draft", label: "Draft" },
+    { value: "staging", label: "Staging" },
+    { value: "under_review", label: "Under Review" },
+    { value: "approved", label: "Approved" },
+    { value: "rejected", label: "Rejected" },
+    { value: "on_hold", label: "On Hold" },
+    { value: "in_production", label: "In Production" },
+    { value: "retired", label: "Retired" },
+  ];
+
 
   // Helper to check if field has error
   const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
@@ -59,127 +75,160 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
       {/* Section Title */}
       <div className="flex flex-col gap-2">
         <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
-          Basic Info
+          Step 1: Basic Information
         </h2>
         <hr className="border-gray-200" />
       </div>
 
       <div className="gap-6 w-full flex flex-col">
-        {/* Name + Status */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Use Case Name <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              required
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, name: nameInput }))}
-              placeholder="Retail Credit Risk Scoring"
-              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
-                } focus:border-[#D0D5DD] focus:-ring-0`}
-            />
-            {hasError("name") && (
-              <p className="text-sm text-red-500">{getError("name")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label>Status <span className="text-red-500">*</span></Label>
-            <Select
-              required
-              value={formData.status}
-              onValueChange={(val) =>
-                setFormData((prev) => ({ ...prev, status: val as FormDataType["status"] }))
-              }
-            >
-              <SelectTrigger className="gap-2 w-full px-4 py-[22px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                <SelectValue placeholder="Draft" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="under_review">Under Review</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="in_development">In Development</SelectItem>
-                <SelectItem value="testing">Testing</SelectItem>
-                <SelectItem value="staging">Staging</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
-                <SelectItem value="deprecated">Deprecated</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Use Case Name */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Use Case Name <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            required
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onBlur={() => setFormData((prev) => ({ ...prev, name: nameInput }))}
+            placeholder="e.g., Retail Credit Risk Scoring"
+            className={`h-[44px] w-full px-4 rounded-lg border ${
+              hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
+            } focus:border-[#D0D5DD] focus:-ring-0`}
+          />
+          {hasError("name") && (
+            <p className="text-sm text-red-500">{getError("name")}</p>
+          )}
         </div>
 
-        {/* Description + Business Objective */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full min-w-0">
-            <Label>
-              Description <span className="text-red-500">*</span>
-            </Label>
-            <Textarea
-              required
-              value={descriptionInput}
-              onChange={(e) => setDescriptionInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
-              placeholder="Enter detailed scope (100-5000 characters)..."
-              className={`min-h-32 resize-none ${hasError("description") ? "border-red-500" : ""}`}
-            />
-            {hasError("description") && (
-              <p className="text-sm text-red-500">{getError("description")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2 w-full min-w-0">
-            <Label>
-              Business Objective <span className="text-red-500">*</span>
-            </Label>
-            <Textarea
-              required
-              value={businessObjectiveInput}
-              onChange={(e) => setBusinessObjectiveInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, business_objective: businessObjectiveInput }))}
-              placeholder="Enter expected outcomes (50-2000 characters)..."
-              className={`min-h-32 resize-none ${hasError("business_objective") ? "border-red-500" : ""}`}
-            />
-            {hasError("business_objective") && (
-              <p className="text-sm text-red-500">{getError("business_objective")}</p>
-            )}
-          </div>
+        {/* Problem Statement */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Problem Statement <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            required
+            value={problemStatementInput}
+            onChange={(e) => setProblemStatementInput(e.target.value)}
+            onBlur={() =>
+              setFormData((prev) => ({ ...prev, problem_statement: problemStatementInput }))
+            }
+            placeholder="Describe the problem this use case will solve (minimum 50 characters)..."
+            className={`min-h-24 resize-none ${
+              hasError("problem_statement") ? "border-red-500" : ""
+            }`}
+          />
+          {hasError("problem_statement") && (
+            <p className="text-sm text-red-500">{getError("problem_statement")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {problemStatementInput.length} / 2000 characters (minimum 50)
+          </p>
         </div>
 
-        {/* Domain + Stakeholder IDs */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Business Domain <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.business_domain}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, business_domain: value as FormDataType["business_domain"] }))}
-            >
-              <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("business_domain") ? "border-red-500" : "border-[#D0D5DD]"
-                } bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0`}>
-                <SelectValue placeholder="Select Business Domain" />
-              </SelectTrigger>
-              <SelectContent>
-                {businessDomainOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {hasError("business_domain") && (
-              <p className="text-sm text-red-500">{getError("business_domain")}</p>
-            )}
-          </div>
+        {/* Description (optional) */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>Description</Label>
+          <Textarea
+            value={descriptionInput}
+            onChange={(e) => setDescriptionInput(e.target.value)}
+            onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
+            placeholder="Enter detailed description (optional, 100-5000 characters if provided)..."
+            className={`min-h-24 resize-none ${hasError("description") ? "border-red-500" : ""}`}
+          />
+          {hasError("description") && (
+            <p className="text-sm text-red-500">{getError("description")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {descriptionInput.length} / 5000 characters {descriptionInput.length > 0 && descriptionInput.length < 100 ? "(minimum 100 if provided)" : ""}
+          </p>
+        </div>
 
+        {/* Expected Business Value */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Expected Business Value <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            required
+            value={expectedBusinessValueInput}
+            onChange={(e) => setExpectedBusinessValueInput(e.target.value)}
+            onBlur={() =>
+              setFormData((prev) => ({
+                ...prev,
+                expected_business_value: expectedBusinessValueInput,
+              }))
+            }
+            placeholder="Describe the expected business value and outcomes (minimum 50 characters)..."
+            className={`min-h-24 resize-none ${
+              hasError("expected_business_value") ? "border-red-500" : ""
+            }`}
+          />
+          {hasError("expected_business_value") && (
+            <p className="text-sm text-red-500">{getError("expected_business_value")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {expectedBusinessValueInput.length} / 2000 characters (minimum 50)
+          </p>
+        </div>
+
+        {/* Business Function/Domain */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>Business Function / Domain</Label>
+          <Select
+            value={formData.business_domain}
+            onValueChange={(value) =>
+              setFormData((prev) => ({
+                ...prev,
+                business_domain: value as FormDataType["business_domain"],
+              }))
+            }
+          >
+            <SelectTrigger
+              className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${
+                hasError("business_domain") ? "border-red-500" : "border-[#D0D5DD]"
+              } bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0`}
+            >
+              <SelectValue placeholder="Select Business Domain" />
+            </SelectTrigger>
+            <SelectContent>
+              {businessDomainOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {hasError("business_domain") && (
+            <p className="text-sm text-red-500">{getError("business_domain")}</p>
+          )}
+        </div>
+
+        {/* Stakeholders (Multi-select) */}
+        <MultiStakeholderSelector
+          label="Stakeholders"
+          value={formData.stakeholder_ids}
+          onValueChange={(values) =>
+            setFormData((prev) => ({ ...prev, stakeholder_ids: values }))
+          }
+          placeholder="Select stakeholders"
+          description="Select all stakeholders involved in this use case"
+          filterType="all"
+          required
+          error={hasError("stakeholder_ids") ? getError("stakeholder_ids") : undefined}
+        />
+
+        {/* Business Owner + Technical Owner */}
+        <div className="flex flex-col md:flex-row w-full gap-6">
           <StakeholderSelectorWithInline
             label="Business Owner"
             value={formData.business_owner_id}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, business_owner_id: value }))}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ 
+                ...prev, 
+                business_owner_id: typeof value === 'string' ? parseInt(value, 10) : value 
+              }))
+            }
             placeholder="Select Business Owner"
             description="Select the business stakeholder responsible for this use case"
             filterType="all"
@@ -189,7 +238,12 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
           <StakeholderSelectorWithInline
             label="Technical Owner"
             value={formData.technical_owner_id}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, technical_owner_id: value }))}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ 
+                ...prev, 
+                technical_owner_id: typeof value === 'string' ? parseInt(value, 10) : value 
+              }))
+            }
             placeholder="Select Technical Owner"
             description="Select the technical stakeholder responsible for this use case"
             filterType="all"
@@ -197,55 +251,39 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
           />
         </div>
 
-        {/* Data Sensitivity + Target Go Live Date + Created By */}
+        {/* Use Case Status + Target Deployment Date */}
         <div className="flex flex-col md:flex-row w-full gap-6">
           <div className="flex flex-col gap-2 w-full">
-            <Label>Data Sensitivity</Label>
+            <Label>Use Case Status</Label>
             <Select
-              value={formData.data_sensitivity}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, data_sensitivity: value as FormDataType["data_sensitivity"] }))
+              value={formData.status}
+              onValueChange={(val) =>
+                setFormData((prev) => ({ ...prev, status: val as FormDataType["status"] }))
               }
             >
-              <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0">
-                <SelectValue placeholder="Public" />
+              <SelectTrigger className="gap-2 w-full px-4 py-[22px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
+                <SelectValue placeholder="Draft" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="internal">Internal</SelectItem>
-                <SelectItem value="confidential">Confidential</SelectItem>
-                <SelectItem value="restricted">Restricted</SelectItem>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <Label>Target Go Live Date</Label>
+            <Label>Target Deployment Date</Label>
             <Input
               type="date"
-              value={formData.target_go_live_date || ""}
-              onChange={(e) => setFormData((prev) => ({ ...prev, target_go_live_date: e.target.value }))}
+              value={formData.target_deployment_date || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, target_deployment_date: e.target.value }))
+              }
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
-          </div>
-
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Created By <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              required
-              type="email"
-              value={createdByInput}
-              onChange={(e) => setCreatedByInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, created_by: createdByInput }))}
-              placeholder="creator@example.com"
-              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("created_by") ? "border-red-500" : "border-[#D0D5DD]"
-                } focus:border-[#D0D5DD] focus:-ring-0`}
-            />
-            {hasError("created_by") && (
-              <p className="text-sm text-red-500">{getError("created_by")}</p>
-            )}
           </div>
         </div>
       </div>
