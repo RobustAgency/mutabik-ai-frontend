@@ -39,6 +39,7 @@ const ProjectsTable: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>("all");
   const router = useRouter();
 
+
   const { projects, loading, fetchProjects } = useProjects();
 
   React.useEffect(() => {
@@ -216,12 +217,17 @@ const ProjectsTable: React.FC = () => {
             serverSide
             variant="projects"
             onRowClick={handleRowClick}
+            loading={loading}
+            emptyState={{
+              title: "No projects found",
+              description: "Get started by creating your first project",
+              action: (
+                <Button onClick={() => router.push('/projects/create?step=1')}>
+                  Create Project
+                </Button>
+              )
+            }}
           />
-          {loading && (
-            <div className="flex justify-center py-8">
-              <div className="text-sm text-gray-500">Loading projects...</div>
-            </div>
-          )}
         </Card>
       </CardContent>
     </Card>

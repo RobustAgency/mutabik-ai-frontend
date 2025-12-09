@@ -15,7 +15,7 @@ const ChooseFrameworks = () => {
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project_id');
 
-  const [selectedFrameworks, setSelectedFrameworks] = useState<number[]>([]);
+  const [selectedFramework, setSelectedFramework] = useState<number | null>(null);
   const [openCardId, setOpenCardId] = useState<number | null>(null);
 
   const { frameworks, loading: frameworksLoading, fetchFrameworks } = useFrameworks();
@@ -25,11 +25,9 @@ const ChooseFrameworks = () => {
     fetchFrameworks();
   }, [fetchFrameworks]);
 
-  // Toggle selection
+  // Toggle selection (only one at a time)
   const toggleFramework = (id: number) => {
-    setSelectedFrameworks((prev) =>
-      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
-    );
+    setSelectedFramework((prev) => (prev === id ? null : id));
   };
 
   // Toggle details expand (only one open at a time)
@@ -39,13 +37,13 @@ const ChooseFrameworks = () => {
 
   // Handle creating project with frameworks
   const handleCreateProject = async () => {
-    if (!projectId || selectedFrameworks.length === 0) {
-      console.error('Project ID and selected frameworks are required');
+    if (!projectId || !selectedFramework) {
+      console.error('Project ID and selected framework is required');
       return;
     }
 
     const success = await addFrameworks(parseInt(projectId), {
-      framework_ids: selectedFrameworks
+      framework_id: selectedFramework.toString()
     });
 
     if (success) {
@@ -76,7 +74,7 @@ const ChooseFrameworks = () => {
           {!frameworksLoading && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               {frameworks.map((framework) => {
-                const isSelected = selectedFrameworks.includes(framework.id);
+                const isSelected = selectedFramework === framework.id;
                 const isOpen = openCardId === framework.id;
 
                 return (
@@ -201,7 +199,7 @@ const ChooseFrameworks = () => {
       <div className="flex justify-end w-full mt-6">
         <Button
           onClick={handleCreateProject}
-          disabled={projectLoading || selectedFrameworks.length === 0}
+          disabled={projectLoading || !selectedFramework}
           className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {projectLoading ? 'Adding Frameworks...' : 'Create Project'}

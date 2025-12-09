@@ -55,7 +55,7 @@ html {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-outfit);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

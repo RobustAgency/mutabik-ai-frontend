@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreVertical, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { User } from "@/interfaces/User"
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog"
 

@@ -1,6 +1,6 @@
 import { UpdatePasswordForm } from "@/components/auth/UpdatePasswordForm"
 
-export const runtime = 'edge';
+
 
 export default function UpdatePasswordPage() {
     return (

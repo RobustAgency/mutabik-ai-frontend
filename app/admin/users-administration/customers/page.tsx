@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import React from 'react';
 import OrganizationsTable from '@/components/admin/organizations/OrganizationsTable';

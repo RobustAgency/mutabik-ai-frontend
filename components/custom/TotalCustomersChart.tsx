@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import ApexCharts from "apexcharts";
+import React, { useEffect, useRef, useState } from "react";
 
 const chartOptions = {
   chart: {
@@ -94,6 +93,7 @@ const titleStyle: React.CSSProperties = {
 
 const TotalCustomersChart: React.FC = () => {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [ApexCharts, setApexCharts] = useState<any>(null);
   const series = React.useMemo(() => [
     {
       name: "Customers",
@@ -102,48 +102,61 @@ const TotalCustomersChart: React.FC = () => {
   ], []);
 
   useEffect(() => {
-    let chart: ApexCharts | null = null;
-    if (chartRef.current) {
-      chart = new ApexCharts(chartRef.current, {
-        ...chartOptions,
-        series,
-        chart: {
-          ...chartOptions.chart,
-          height: '100%',
-          width: '100%',
+    // Dynamically import ApexCharts only when needed
+    import('apexcharts').then((mod) => {
+      setApexCharts(() => mod.default);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ApexCharts || !chartRef.current) return;
+
+    const chart = new ApexCharts(chartRef.current, {
+      ...chartOptions,
+      series,
+      chart: {
+        ...chartOptions.chart,
+        height: '100%',
+        width: '100%',
+      },
+      responsive: [
+        {
+          breakpoint: 768,
+          options: {
+            chart: { height: 200 },
+            legend: { fontSize: '12px' },
+            xaxis: { labels: { fontSize: '10px' } },
+            yaxis: { labels: { fontSize: '10px' } },
+          },
         },
-        responsive: [
-          {
-            breakpoint: 768,
-            options: {
-              chart: { height: 200 },
-              legend: { fontSize: '12px' },
-              xaxis: { labels: { fontSize: '10px' } },
-              yaxis: { labels: { fontSize: '10px' } },
-            },
+        {
+          breakpoint: 480,
+          options: {
+            chart: { height: 150 },
+            legend: { fontSize: '10px' },
+            xaxis: { labels: { fontSize: '8px' } },
+            yaxis: { labels: { fontSize: '8px' } },
           },
-          {
-            breakpoint: 480,
-            options: {
-              chart: { height: 150 },
-              legend: { fontSize: '10px' },
-              xaxis: { labels: { fontSize: '8px' } },
-              yaxis: { labels: { fontSize: '8px' } },
-            },
-          },
-        ],
-      });
-      chart.render();
-    }
+        },
+      ],
+    });
+    chart.render();
+
     return () => {
       chart?.destroy();
     };
-  }, [series]);
+  }, [ApexCharts, series]);
 
   return (
     <div style={{ ...cardStyle, width: '100%', maxWidth: '100%' }}>
       <div style={titleStyle}>Total customers</div>
-      <div ref={chartRef} style={{ width: '100%', minHeight: 150, overflow: 'hidden' }} />
+      {!ApexCharts ? (
+        <div style={{ width: '100%', minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: '#737373', fontSize: '14px' }}>Loading chart...</div>
+        </div>
+      ) : (
+        <div ref={chartRef} style={{ width: '100%', minHeight: 150, overflow: 'hidden' }} />
+      )}
     </div>
   );
 };

@@ -15,6 +15,7 @@ interface CustomMultiSelectProps {
     onChange: (value: string[]) => void;
     placeholder?: string;
     className?: string;
+    error?: boolean;
 }
 
 export function CustomMultiSelect({
@@ -23,6 +24,7 @@ export function CustomMultiSelect({
     onChange,
     placeholder = "Select items...",
     className,
+    error = false,
 }: CustomMultiSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +80,8 @@ export function CustomMultiSelect({
             <div
                 onClick={toggleDropdown}
                 className={cn(
-                    "flex min-h-[40px] w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer",
+                    "flex min-h-[40px] w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer",
+                    error ? "border-destructive" : "border-input",
                     isOpen && "ring-2 ring-ring ring-offset-2"
                 )}
             >

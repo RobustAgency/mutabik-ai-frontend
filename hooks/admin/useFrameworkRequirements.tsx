@@ -27,16 +27,16 @@ export function useFrameworkRequirements(id?: string | number): UseFrameworkRequ
     try {
       setLoading(true);
       setError(null);
-      
+
       // Load framework and requirements in parallel
       const [frameworkResponse, requirementsResponse] = await Promise.all([
         frameworkService.getFramework(frameworkId),
-        requirementService.getRequirements({ 
+        requirementService.getRequirements({
           framework_id: frameworkId,
-          per_page: 1000 // Get all requirements for this framework
+          per_page: 100
         } as RequirementFilters)
       ]);
-      
+
       if (frameworkResponse.error) {
         throw new Error(frameworkResponse.message);
       }

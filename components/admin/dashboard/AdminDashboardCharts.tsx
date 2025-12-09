@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
-import ApexCharts from 'apexcharts';
+import React, { useEffect, useRef, useState } from 'react';
 
 
 
@@ -101,7 +100,7 @@ const cardStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  
+
 };
 
 const containerStyle: React.CSSProperties = {
@@ -128,23 +127,39 @@ type ChartSeries = {
 
 const ChartCard: React.FC<{ title: string; series: ChartSeries[] }> = ({ title, series }) => {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [ApexCharts, setApexCharts] = useState<any>(null);
+
   useEffect(() => {
-    let chart: ApexCharts | null = null;
-    if (chartRef.current) {
-      chart = new ApexCharts(chartRef.current, {
-        ...chartOptions,
-        series,
-      });
-      chart.render();
-    }
+    // Dynamically import ApexCharts only when needed
+    import('apexcharts').then((mod) => {
+      setApexCharts(() => mod.default);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ApexCharts || !chartRef.current) return;
+
+    const chart = new ApexCharts(chartRef.current, {
+      ...chartOptions,
+      series,
+    });
+    chart.render();
+
     return () => {
       chart?.destroy();
     };
-  }, [series]);
+  }, [ApexCharts, series]);
+
   return (
     <div style={cardStyle}>
       <div style={titleStyle}>{title}</div>
-      <div ref={chartRef} style={{ width: '100%' }} />
+      {!ApexCharts ? (
+        <div style={{ width: '100%', minHeight: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: '#737373', fontSize: '14px' }}>Loading chart...</div>
+        </div>
+      ) : (
+        <div ref={chartRef} style={{ width: '100%' }} />
+      )}
     </div>
   );
 };
@@ -154,7 +169,7 @@ const AdminDashboardCharts: React.FC = () => (
     {chartDataArray.map((chart, idx) => (
       <React.Fragment key={idx}>
         <ChartCard title={chart.title} series={chart.series} />
-        
+
       </React.Fragment>
     ))}
   </div>

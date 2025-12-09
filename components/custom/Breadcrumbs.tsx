@@ -21,7 +21,7 @@ interface BreadcrumbsProps {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
     <Breadcrumb>
-      <BreadcrumbList className="text-base font-medium text-[#737373] gap-5">
+      <BreadcrumbList className="text-xs font-medium text-[#737373] gap-5">
         {items.map((item, index) => (
           <React.Fragment key={index}>
             <BreadcrumbItem>

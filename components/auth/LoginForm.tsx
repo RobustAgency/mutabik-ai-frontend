@@ -3,6 +3,7 @@ import Link from "next/link"
 import { useActionState, useEffect, useRef, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { toast } from "react-toastify"
+import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
 
 import { Button } from "@/components/ui/button"
@@ -28,22 +29,29 @@ function SubmitButton({ isProcessing }: { isProcessing: boolean }) {
     );
 }
 
+type LoginState =
+    | null
+    | { success: false; message: string; requiresEmailVerification?: boolean; email?: string }
+    | { success: true; data: User | null };
+
 export function LoginForm() {
+    const router = useRouter();
     const formRef = useRef<HTMLFormElement | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [state, formAction] = useActionState(
-        async (_prev: null | { success: false; message: string } | { success: true; data: User | null }, formData: FormData) => {
+        async (_prev: LoginState, formData: FormData) => {
             const result = await login(formData);
             return result;
         },
-        null as null | { success: false; message: string } | { success: true; data: User | null }
+        null as LoginState
     );
 
     useEffect(() => {
         if (!state) return;
         if (state.success) {
             setIsProcessing(true);
-            formRef.current?.reset();
 
             const userRole = state.data?.user_metadata?.role;
 
@@ -105,11 +113,21 @@ export function LoginForm() {
             };
 
             checkOrganizationStatus();
-        } else if (state.message) {
-            toast.error(state.message);
+        } else if (!state.success) {
+            // Check if this is an email verification error
+            if (state.requiresEmailVerification && state.email) {
+                // Redirect to verify-email page with the email parameter
+                router.push(`/verify-email?email=${encodeURIComponent(state.email)}`);
+                return;
+            }
+
+            // For all other errors, show toast
+            if (state.message) {
+                toast.error(state.message);
+            }
             setIsProcessing(false);
         }
-    }, [state]);
+    }, [state, router]);
 
     return (
         <div className="w-full">
@@ -131,6 +149,8 @@ export function LoginForm() {
                             type="email"
                             placeholder="Enter your email"
                             className="mt-1 border-gray-300"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
@@ -144,6 +164,8 @@ export function LoginForm() {
                             name="password"
                             placeholder="hello123"
                             className="mt-1 border-gray-300"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
