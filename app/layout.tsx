@@ -2,11 +2,13 @@ import "./globals.css";
 import { Outfit } from "next/font/google";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/server";
+import NextTopLoader from 'nextjs-toploader';
 import AppShell from "@/layouts/AppShell";
 import ToastProvider from "@/providers/ToastProvider";
 import StoreProvider from "./providers/StoreProvider";
 
-export const runtime = 'edge';
+// 
+export const dynamic = 'force-dynamic'
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -55,6 +57,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={outfit.variable} suppressHydrationWarning={true}>
         <AuthProvider initialUser={user} initialProfile={initialProfile}>
           <StoreProvider>
+            <NextTopLoader
+              color="#4FD58F"
+            />
             <AppShell>{children}</AppShell>
           </StoreProvider>
         </AuthProvider>

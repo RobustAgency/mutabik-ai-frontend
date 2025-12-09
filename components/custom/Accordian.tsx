@@ -81,8 +81,8 @@ const Accordian = ({
         href={child.href}
         onClick={onNavigate}
         className={`group flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${isChildItemActive
-            ? 'bg-primary/10 text-primary'
-            : 'text-gray-700 hover:bg-gray-100 hover:text-primary'
+          ? 'bg-primary/10 text-primary'
+          : 'text-gray-700 hover:bg-gray-100 hover:text-primary'
           }`}
       >
         {child.icon && (
@@ -101,7 +101,8 @@ const Accordian = ({
   }
 
   return (
-    <div className={depth > 0 ? "ml-2" : ""}>
+    // <div className={depth > 0 ? "ml-2" : ""}>
+    <div >
       <div className={`flex items-center gap-1 rounded-lg transition-all duration-200 ${(isActive || isChildActive) ? "bg-primary/10" : ""
         }`}>
         {/* Clickable parent link (if href exists) */}
@@ -110,25 +111,25 @@ const Accordian = ({
             href={href}
             onClick={onNavigate}
             className={`flex-1 flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
-                ? "text-primary"
-                : "text-gray-700 hover:text-primary"
+              ? "text-primary"
+              : "text-gray-700 hover:text-primary"
               }`}
           >
             <Icon
-              className="shrink-0 size-5"
+              className="shrink-0 size-4"
               color={(isActive || isChildActive) ? "currentColor" : "#737373"}
             />
-            <span className="flex-1">{label}</span>
+            <span className="flex-1 whitespace-nowrap">{label}</span>
           </Link>
         ) : (
           // Non-clickable parent (just label)
           <div className={`flex-1 flex items-center gap-3 px-4 py-2.5 text-sm font-medium ${isChildActive ? "text-primary" : "text-gray-700"
             }`}>
             <Icon
-              className="shrink-0 size-5"
+              className="shrink-0 size-4"
               color={isChildActive ? "currentColor" : "#737373"}
             />
-            <span className="flex-1">{label}</span>
+            <span className="flex-1 whitespace-nowrap">{label}</span>
           </div>
         )}
 
@@ -154,7 +155,7 @@ const Accordian = ({
         className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-[2000px] opacity-100 mt-1' : 'max-h-0 opacity-0'
           }`}
       >
-        <div className="flex flex-col gap-0.5 pl-2 border-l-2 border-gray-200 ml-6">
+        <div className="flex flex-col gap-0.5 pl-2 border-l-2 border-gray-200 ml-4">
           {items.map((child) => renderChild(child, depth))}
         </div>
       </div>

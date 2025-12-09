@@ -44,10 +44,9 @@ export function SignUpForm() {
 
     useEffect(() => {
         if (!state) return;
-        if (state.success) {
-            toast.success("A verification email has been sent.");
-            formRef.current?.reset();
-        } else if (state.message) {
+        // No need to handle success case since we redirect to verify-email page
+        // Only handle error cases
+        if (!state.success && state.message) {
             toast.error(state.message);
         }
     }, [state]);

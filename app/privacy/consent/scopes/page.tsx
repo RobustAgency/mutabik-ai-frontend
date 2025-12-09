@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,10 +33,11 @@ const ConsentScopesPage: React.FC = () => {
 
   const handleDeleteClick = (e: React.MouseEvent, scope: ConsentScope) => {
     e.stopPropagation();
+    const datasetName = scope.dataset?.name || scope.dataset_id;
     setDeleteDialogState({
       isOpen: true,
       scopeId: scope.id,
-      scopeName: `${scope.purpose.join(', ')} - ${scope.dataset_id}`,
+      scopeName: `${scope.purpose.join(', ')} - ${datasetName}`,
     });
   };
 
@@ -68,14 +71,18 @@ const ConsentScopesPage: React.FC = () => {
       accessorKey: "dataset_id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Dataset ID
+          Dataset
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const datasetName = row.original.dataset?.name;
+        const datasetId = row.original.dataset_id;
+        return (
+          <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+            {datasetName || datasetId}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "purpose",
@@ -170,14 +177,14 @@ const ConsentScopesPage: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Consent Scopes</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Policy definitions for consent coverage computation</p>
             </div>
             <Button
               onClick={() => router.push("/privacy/consent/scopes/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
             >
               New Scope
             </Button>

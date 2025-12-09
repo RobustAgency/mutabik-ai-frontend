@@ -8,27 +8,25 @@ import { AlertCircle } from "lucide-react";
 import { useCreateAiModelMutation } from "@/app/lib/features/aiModelsApi";
 import { FormDataType } from "../types/aiModelTypes";
 import BasicInfo from "./BasicInfo";
-import TechnicalDetails from "./TechnicalDetails";
+import GovernanceRegulatorySection from "./GovernanceRegulatorySection";
 import OwnershipGovernance from "./OwnershipGovernance";
+import TechnicalDetails from "./TechnicalDetails";
 import { useRouter } from "next/navigation";
 
 const initialFormData: FormDataType = {
     name: "",
-    description: null,
-    primary_category: "traditional_ml",
+    model_category: "traditional_ml",
     type: "classification",
-    domain_specialization: "general",
-    business_status: "planned",
-    operational_status: "not_deployed",
-    strategic_importance: "medium",
-    regulatory_risk_classification: "minimal_risk",
-    organizational_role: "developer",
-    ownership_type: "internal",
-    development_source: "internal_development",
-    source_organization_id: null,
-    custodian_id: null,
-    vendor_id: null,
-    current_owner: null,
+    technical_domain: "nlp",
+    model_purpose: null,
+    criticality_level: null,
+    regulatory_risk_tier: null,
+    eu_ai_category: null,
+    ownership_category: "internal",
+    responsible_org_role: "developer",
+    business_owner_id: null,
+    steward_custodian_id: null,
+    business_adoption_status: null,
 };
 
 const CreateAiModel: React.FC = () => {
@@ -41,50 +39,36 @@ const CreateAiModel: React.FC = () => {
     const validateForm = (): boolean => {
         const errors: Record<string, string[]> = {};
 
-        // Required fields
+        // Required fields per spec
         if (!formData.name?.trim()) {
             errors.name = ["Model name is required"];
         }
 
-        if (!formData.description?.trim()) {
-            errors.description = ["Description is required"];
-        }
-
-        if (!formData.primary_category) {
-            errors.primary_category = ["Primary category is required"];
+        if (!formData.model_category) {
+            errors.category = ["Model category is required"];
+            errors.model_category = ["Model category is required"];
         }
 
         if (!formData.type) {
             errors.type = ["Model type is required"];
         }
 
-        if (!formData.domain_specialization) {
-            errors.domain_specialization = ["Domain specialization is required"];
+        if (!formData.ownership_category) {
+            errors.ownership_category = ["Ownership category is required"];
+            errors.ownership_type = ["Ownership category is required"];
         }
 
-        if (!formData.business_status) {
-            errors.business_status = ["Business status is required"];
+        if (!formData.responsible_org_role) {
+            errors.responsible_org_role = ["Responsible organization role is required"];
+            errors.organizational_role = ["Responsible organization role is required"];
         }
 
-        if (!formData.operational_status) {
-            errors.operational_status = ["Operational status is required"];
-        }
-
-        if (!formData.regulatory_risk_classification) {
-            errors.regulatory_risk_classification = ["Regulatory classification is required"];
-        }
-
-        if (!formData.organizational_role) {
-            errors.organizational_role = ["Organizational role is required"];
-        }
-
-        if (!formData.ownership_type) {
-            errors.ownership_type = ["Ownership type is required"];
-        }
-
-        if (!formData.development_source) {
-            errors.development_source = ["Development source is required"];
-        }
+        // Optional fields - no validation needed
+        // model_purpose is optional
+        // technical_domain is optional
+        // criticality_level, regulatory_risk_tier, eu_ai_category are optional
+        // business_owner_id, steward_custodian_id are optional
+        // business_adoption_status is optional
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
@@ -101,23 +85,21 @@ const CreateAiModel: React.FC = () => {
         }
 
         try {
+            // Map form data to API payload according to backend expectations
             const payload = {
                 name: formData.name,
-                description: formData.description,
-                primary_category: formData.primary_category,
+                category: formData.model_category, // Maps to model_category in DB
                 type: formData.type,
-                domain_specialization: formData.domain_specialization,
-                organizational_role: formData.organizational_role,
-                ownership_type: formData.ownership_type,
-                development_source: formData.development_source,
-                business_status: formData.business_status,
-                operational_status: formData.operational_status,
-                strategic_importance: formData.strategic_importance,
-                regulatory_risk_classification: formData.regulatory_risk_classification,
-                // Map IDs to API fields that expect strings
-                source_organization: formData.source_organization_id,
-                current_owner: formData.current_owner,
-                vendor: formData.vendor_id,
+                technical_domain: formData.technical_domain || null,
+                purpose: formData.model_purpose || null, // Maps to model_purpose in DB
+                criticality_level: formData.criticality_level,
+                regulatory_risk_tier: formData.regulatory_risk_tier,
+                eu_ai_category: formData.eu_ai_category,
+                ownership_category: formData.ownership_category,
+                responsible_org_role: formData.responsible_org_role,
+                business_owner_id: formData.business_owner_id,
+                custodian_id: formData.steward_custodian_id, // Maps to steward_custodian_id in DB
+                business_adoption_status: formData.business_adoption_status || null,
             };
 
             await createAiModel(payload as any).unwrap();
@@ -183,12 +165,17 @@ const CreateAiModel: React.FC = () => {
                             setFormData={setFormData}
                             errors={validationErrors}
                         />
-                        <TechnicalDetails
+                        <GovernanceRegulatorySection
                             formData={formData}
                             setFormData={setFormData}
                             errors={validationErrors}
                         />
                         <OwnershipGovernance
+                            formData={formData}
+                            setFormData={setFormData}
+                            errors={validationErrors}
+                        />
+                        <TechnicalDetails
                             formData={formData}
                             setFormData={setFormData}
                             errors={validationErrors}

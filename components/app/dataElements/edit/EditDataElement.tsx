@@ -38,19 +38,19 @@ const EditDataElement: React.FC<EditDataElementProps> = ({ elementId }) => {
   useEffect(() => {
     if (element) {
       setFormData({
-        name: element.name,
-        business_definition: element.business_definition,
-        data_type: element.data_type,
-        format: element.format || "",
-        sensitivity: element.sensitivity,
-        pii_flag: element.pii_flag,
+        name: element.name ?? "",
+        business_definition: element.business_definition ?? "",
+        data_type: element.data_type ?? "",
+        format: element.format ?? "",
+        sensitivity: element.sensitivity ?? "",
+        pii_flag: element.pii_flag ?? "No",
         personal_data_category: element.personal_data_category || "",
         special_category_flag: element.special_category_flag,
-        cde_flag: element.cde_flag,
-        cde_category: element.cde_category || "",
-        owner_team: element.owner_team,
-        quality_rules_ref: element.quality_rules_ref || "",
-        catalog_column_id: element.catalog_column_id || "",
+        cde_flag: element.cde_flag ?? "No",
+        cde_category: element.cde_category ?? "",
+        owner_team: element.owner_team ?? "",
+        quality_rules_ref: element.quality_rules_ref ?? "",
+        catalog_column_id: element.catalog_column_id ?? "",
       });
     }
   }, [element]);

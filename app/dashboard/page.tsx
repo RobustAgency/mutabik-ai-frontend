@@ -1,10 +1,9 @@
 "use client"
 import React from 'react'
-import ContainerCard from '@/components/custom/ContainerCard'
 import Greetings from '@/components/app/dashboard/Greetings'
 import { Card } from '@/components/ui/card';
 
-export const runtime = 'edge';
+
 
 const DashboardPage = () => {
     return (

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import Description from "@/components/custom/Description";
 import FrameworkStatus from "./FrameworkStatus";
 import AdditionalInformation from "./AdditionalInformation";
@@ -48,13 +50,6 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         version: "",
     });
 
-    console.log("formData", formData)
-
-    // Debug: Track formData changes
-    useEffect(() => {
-        console.log('FormData changed:', formData);
-    }, [formData]);
-
     // Additional information state - will be managed by AdditionalInformation component
     const [additionalInfo, setAdditionalInfo] = useState({
         authority_publisher: undefined as AuthorityPublisher | undefined,
@@ -75,6 +70,9 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
     // File upload state
     const [preview, setPreview] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
+
+    // Validation errors state
+    const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
     const { creating, updating, createFramework, updateFramework } = useFrameworkMutations();
 
@@ -174,9 +172,41 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         }
     };
 
+    // Form validation
+    const validateForm = (): boolean => {
+        const errors: Record<string, string[]> = {};
+
+        // Required fields
+        if (!formData.name?.trim()) {
+            errors.name = ["Title is required"];
+        }
+
+        if (!formData.code?.trim()) {
+            errors.code = ["Code is required"];
+        }
+
+        if (!formData.type) {
+            errors.type = ["Type is required"];
+        }
+
+        if (!formData.category) {
+            errors.category = ["Category is required"];
+        }
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setValidationErrors({});
+
+        // Client-side validation
+        if (!validateForm()) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
 
         // Convert arrays to comma-separated strings for the backend
         const convertedAdditionalInfo = convertFrameworkArraysToStrings({
@@ -212,13 +242,20 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
             (finalRequestData as Record<string, unknown>).framework_logo = logoFile;
         }
 
-        if (isEditing && framework) {
-            await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
-        } else {
-            await createFramework(finalRequestData as CreateFrameworkRequest);
+        try {
+            if (isEditing && framework) {
+                await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
+            } else {
+                await createFramework(finalRequestData as CreateFrameworkRequest);
+            }
+            // Form will be redirected by the hook on success
+        } catch (err: any) {
+            // Handle backend validation errors
+            if (err?.data?.errors) {
+                setValidationErrors(err.data.errors);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         }
-
-        // Form will be redirected by the hook on success
     };
 
     // Memoized conversion of array data for AdditionalInformation component
@@ -248,8 +285,27 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
 
             <div className="flex flex-col md:flex-row gap-6 w-full">
                 {/* Main Form Card */}
-                <Card className="flex-1 border-0 rounded-xl py-0 !bg-transparent">
+                <Card className="flex-1 border-0 rounded-xl py-0 bg-transparent!">
                     <form className="space-y-6 w-full" onSubmit={handleSubmit}>
+                        {/* Show validation errors */}
+                        {Object.keys(validationErrors).length > 0 && (
+                            <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription>
+                                    <p className="font-semibold mb-2">Please fix the following errors:</p>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        {Object.entries(validationErrors).map(([field, errors]) => (
+                                            <li key={field}>
+                                                <span className="font-medium capitalize">
+                                                    {field.replace(/_/g, " ")}:
+                                                </span>{" "}
+                                                {errors[0]}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        )}
 
                         {/* Basic Information */}
                         <Card className="bg-white p-6">
@@ -298,9 +354,12 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             placeholder="Enter framework name"
                                             value={formData.name}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
-                                            className="mt-1"
+                                            className={`mt-1 ${validationErrors.name ? "border-red-500" : ""}`}
                                             required
                                         />
+                                        {validationErrors.name && (
+                                            <p className="text-sm text-red-500 mt-1">{validationErrors.name[0]}</p>
+                                        )}
                                     </div>
                                     <div>
                                         <Label className="text-[#171717] text-sm font-medium" htmlFor="code">
@@ -312,9 +371,12 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             placeholder="e.g., EU-AI-ACT"
                                             value={formData.code}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('code', e.target.value)}
-                                            className="mt-1"
+                                            className={`mt-1 ${validationErrors.code ? "border-red-500" : ""}`}
                                             required
                                         />
+                                        {validationErrors.code && (
+                                            <p className="text-sm text-red-500 mt-1">{validationErrors.code[0]}</p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -359,7 +421,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             value={formData.type}
                                             onValueChange={(value) => handleInputChange('type', value)}
                                         >
-                                            <SelectTrigger className="mt-1 w-full">
+                                            <SelectTrigger className={`mt-1 w-full ${validationErrors.type ? "border-red-500" : ""}`}>
                                                 <SelectValue placeholder="Select type" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -376,6 +438,9 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                                 <SelectItem value={FrameworkType.OTHER}>{FrameworkType.OTHER}</SelectItem>
                                             </SelectContent>
                                         </Select>
+                                        {validationErrors.type && (
+                                            <p className="text-sm text-red-500 mt-1">{validationErrors.type[0]}</p>
+                                        )}
                                     </div>
                                     <div>
                                         <Label className="text-[#171717] text-sm font-medium" htmlFor="category">
@@ -386,7 +451,7 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                             value={formData.category}
                                             onValueChange={(value) => handleInputChange('category', value)}
                                         >
-                                            <SelectTrigger className="mt-1 w-full">
+                                            <SelectTrigger className={`mt-1 w-full ${validationErrors.category ? "border-red-500" : ""}`}>
                                                 <SelectValue placeholder="Select category" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -394,6 +459,9 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                                                 <SelectItem value={FrameworkCategory.Voluntary}>{FrameworkCategory.Voluntary}</SelectItem>
                                             </SelectContent>
                                         </Select>
+                                        {validationErrors.category && (
+                                            <p className="text-sm text-red-500 mt-1">{validationErrors.category[0]}</p>
+                                        )}
                                     </div>
                                 </div>
 

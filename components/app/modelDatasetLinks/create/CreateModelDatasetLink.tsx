@@ -13,7 +13,7 @@ const CreateModelDatasetLink: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<CreateModelDatasetLinkData>({
     ai_model_id: "",
-    ai_model_version_id: 1,
+    ai_model_version_id: null,
     dataset_id: "",
     dataset_snapshot_id: "",
     role: "",
@@ -24,6 +24,7 @@ const CreateModelDatasetLink: React.FC = () => {
     eligibility_status: "",
     notes: "",
     created_by: "",
+    source_created_at: "",
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
@@ -33,14 +34,19 @@ const CreateModelDatasetLink: React.FC = () => {
     const errors: Record<string, string[]> = {};
 
     if (!formData.ai_model_id?.trim()) errors.ai_model_id = ["Model is required"];
-    if (!formData.ai_model_version_id) errors.ai_model_version_id = ["Model version is required"];
-    if (!formData.dataset_snapshot_id?.trim()) errors.dataset_snapshot_id = ["Snapshot is required (AC-05)"];
+    // Model version is required (form shows asterisk)
+    if (!formData.ai_model_version_id || (typeof formData.ai_model_version_id === 'number' && formData.ai_model_version_id <= 0)) {
+      errors.ai_model_version_id = ["Model version is required"];
+    }
+    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
     if (!formData.role?.trim()) errors.role = ["Role is required"];
     if (!formData.created_by?.trim()) errors.created_by = ["Created by is required"];
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
 
+    // Snapshot is only required for train, validation, test, and eval_benchmark roles
     const trainRoles = ["train", "validation", "test", "eval_benchmark"];
     if (trainRoles.includes(formData.role) && !formData.dataset_snapshot_id?.trim()) {
-      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles (AC-05)"];
+      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles"];
     }
 
     setValidationErrors(errors);

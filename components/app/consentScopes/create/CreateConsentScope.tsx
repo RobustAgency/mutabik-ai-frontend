@@ -16,6 +16,7 @@ const CreateConsentScope: React.FC = () => {
     purpose: [],
     subject_realm: "",
     jurisdiction: "",
+    source_created_at: "",
     effective_from: "",
     effective_to: "",
   });
@@ -30,6 +31,7 @@ const CreateConsentScope: React.FC = () => {
     if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];
 
     setValidationErrors(errors);

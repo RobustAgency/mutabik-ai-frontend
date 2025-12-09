@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { use } from "react";
 import EditConsentScope from "@/components/app/consentScopes/edit/EditConsentScope";
 

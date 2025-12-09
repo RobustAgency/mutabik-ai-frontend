@@ -11,15 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { ChevronsUpDown } from "lucide-react";
 import { FormDataType } from "../types/useCaseTypes";
+import StakeholderSelectorWithInline from "./StakeholderSelectorWithInline";
+import MultiStakeholderSelector from "./MultiStakeholderSelector";
 
 interface BasicInfoProps {
   formData: FormDataType;
@@ -27,40 +21,50 @@ interface BasicInfoProps {
   errors?: Record<string, string[]>;
 }
 
-const regulatoryOptions = [
-  "GDPR",
-  "CCPA",
-  "HIPAA",
-  "SOX",
-  "AI_ACT",
-  "FINRA",
-  "FDA",
-  "PCI_DSS",
-];
 
 const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {} }) => {
-  const [titleInput, setTitleInput] = useState(formData.title);
+  const [nameInput, setNameInput] = useState(formData.name);
   const [descriptionInput, setDescriptionInput] = useState(formData.description || "");
-  const [businessObjectiveInput, setBusinessObjectiveInput] = useState(formData.business_objective || "");
-  const [selectedScopes, setSelectedScopes] = useState<string[]>(formData.regulatory_scope || []);
-  const [openRegScope, setOpenRegScope] = useState(false);
+  const [problemStatementInput, setProblemStatementInput] = useState(formData.problem_statement || "");
+  const [expectedBusinessValueInput, setExpectedBusinessValueInput] = useState(formData.expected_business_value || "");
 
   useEffect(() => {
-    setTitleInput(formData.title);
+    setNameInput(formData.name);
     setDescriptionInput(formData.description || "");
-    setBusinessObjectiveInput(formData.business_objective || "");
-    setSelectedScopes(formData.regulatory_scope || []);
+    setProblemStatementInput(formData.problem_statement || "");
+    setExpectedBusinessValueInput(formData.expected_business_value || "");
   }, [formData]);
 
-  const toggleScope = (scope: string) => {
-    setSelectedScopes((prev) => {
-      const newScopes = prev.includes(scope)
-        ? prev.filter((s) => s !== scope)
-        : [...prev, scope];
-      setFormData((f) => ({ ...f, regulatory_scope: newScopes }));
-      return newScopes;
-    });
-  };
+  // Business domain options based on backend enums
+  const businessDomainOptions = [
+    { value: "operations", label: "Operations" },
+    { value: "finance", label: "Finance" },
+    { value: "risk", label: "Risk" },
+    { value: "compliance", label: "Compliance" },
+    { value: "customer_service", label: "Customer Service" },
+    { value: "hr", label: "HR" },
+    { value: "marketing", label: "Marketing" },
+    { value: "sales", label: "Sales" },
+    { value: "it", label: "IT" },
+    { value: "procurement", label: "Procurement" },
+    { value: "supply_chain", label: "Supply Chain" },
+    { value: "legal", label: "Legal" },
+    { value: "strategy", label: "Strategy" },
+    { value: "other", label: "Other" },
+  ];
+
+  // Status options based on backend enums
+  const statusOptions = [
+    { value: "draft", label: "Draft" },
+    { value: "staging", label: "Staging" },
+    { value: "under_review", label: "Under Review" },
+    { value: "approved", label: "Approved" },
+    { value: "rejected", label: "Rejected" },
+    { value: "on_hold", label: "On Hold" },
+    { value: "in_production", label: "In Production" },
+    { value: "retired", label: "Retired" },
+  ];
+
 
   // Helper to check if field has error
   const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
@@ -71,36 +75,187 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
       {/* Section Title */}
       <div className="flex flex-col gap-2">
         <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
-          Basic Info
+          Step 1: Basic Information
         </h2>
         <hr className="border-gray-200" />
       </div>
 
       <div className="gap-6 w-full flex flex-col">
-        {/* Title + Status */}
+        {/* Use Case Name */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Use Case Name <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            required
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onBlur={() => setFormData((prev) => ({ ...prev, name: nameInput }))}
+            placeholder="e.g., Retail Credit Risk Scoring"
+            className={`h-[44px] w-full px-4 rounded-lg border ${
+              hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
+            } focus:border-[#D0D5DD] focus:-ring-0`}
+          />
+          {hasError("name") && (
+            <p className="text-sm text-red-500">{getError("name")}</p>
+          )}
+        </div>
+
+        {/* Problem Statement */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Problem Statement <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            required
+            value={problemStatementInput}
+            onChange={(e) => setProblemStatementInput(e.target.value)}
+            onBlur={() =>
+              setFormData((prev) => ({ ...prev, problem_statement: problemStatementInput }))
+            }
+            placeholder="Describe the problem this use case will solve (minimum 50 characters)..."
+            className={`min-h-24 resize-none ${
+              hasError("problem_statement") ? "border-red-500" : ""
+            }`}
+          />
+          {hasError("problem_statement") && (
+            <p className="text-sm text-red-500">{getError("problem_statement")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {problemStatementInput.length} / 2000 characters (minimum 50)
+          </p>
+        </div>
+
+        {/* Description (optional) */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>Description</Label>
+          <Textarea
+            value={descriptionInput}
+            onChange={(e) => setDescriptionInput(e.target.value)}
+            onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
+            placeholder="Enter detailed description (optional, 100-5000 characters if provided)..."
+            className={`min-h-24 resize-none ${hasError("description") ? "border-red-500" : ""}`}
+          />
+          {hasError("description") && (
+            <p className="text-sm text-red-500">{getError("description")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {descriptionInput.length} / 5000 characters {descriptionInput.length > 0 && descriptionInput.length < 100 ? "(minimum 100 if provided)" : ""}
+          </p>
+        </div>
+
+        {/* Expected Business Value */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>
+            Expected Business Value <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            required
+            value={expectedBusinessValueInput}
+            onChange={(e) => setExpectedBusinessValueInput(e.target.value)}
+            onBlur={() =>
+              setFormData((prev) => ({
+                ...prev,
+                expected_business_value: expectedBusinessValueInput,
+              }))
+            }
+            placeholder="Describe the expected business value and outcomes (minimum 50 characters)..."
+            className={`min-h-24 resize-none ${
+              hasError("expected_business_value") ? "border-red-500" : ""
+            }`}
+          />
+          {hasError("expected_business_value") && (
+            <p className="text-sm text-red-500">{getError("expected_business_value")}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            {expectedBusinessValueInput.length} / 2000 characters (minimum 50)
+          </p>
+        </div>
+
+        {/* Business Function/Domain */}
+        <div className="flex flex-col gap-2 w-full">
+          <Label>Business Function / Domain</Label>
+          <Select
+            value={formData.business_domain}
+            onValueChange={(value) =>
+              setFormData((prev) => ({
+                ...prev,
+                business_domain: value as FormDataType["business_domain"],
+              }))
+            }
+          >
+            <SelectTrigger
+              className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${
+                hasError("business_domain") ? "border-red-500" : "border-[#D0D5DD]"
+              } bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0`}
+            >
+              <SelectValue placeholder="Select Business Domain" />
+            </SelectTrigger>
+            <SelectContent>
+              {businessDomainOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {hasError("business_domain") && (
+            <p className="text-sm text-red-500">{getError("business_domain")}</p>
+          )}
+        </div>
+
+        {/* Stakeholders (Multi-select) */}
+        <MultiStakeholderSelector
+          label="Stakeholders"
+          value={formData.stakeholder_ids}
+          onValueChange={(values) =>
+            setFormData((prev) => ({ ...prev, stakeholder_ids: values }))
+          }
+          placeholder="Select stakeholders"
+          description="Select all stakeholders involved in this use case"
+          filterType="all"
+          required
+          error={hasError("stakeholder_ids") ? getError("stakeholder_ids") : undefined}
+        />
+
+        {/* Business Owner + Technical Owner */}
+        <div className="flex flex-col md:flex-row w-full gap-6">
+          <StakeholderSelectorWithInline
+            label="Business Owner"
+            value={formData.business_owner_id}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ 
+                ...prev, 
+                business_owner_id: typeof value === 'string' ? parseInt(value, 10) : value 
+              }))
+            }
+            placeholder="Select Business Owner"
+            description="Select the business stakeholder responsible for this use case"
+            filterType="all"
+            error={hasError("business_owner_id") ? getError("business_owner_id") : undefined}
+          />
+
+          <StakeholderSelectorWithInline
+            label="Technical Owner"
+            value={formData.technical_owner_id}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ 
+                ...prev, 
+                technical_owner_id: typeof value === 'string' ? parseInt(value, 10) : value 
+              }))
+            }
+            placeholder="Select Technical Owner"
+            description="Select the technical stakeholder responsible for this use case"
+            filterType="all"
+            error={hasError("technical_owner_id") ? getError("technical_owner_id") : undefined}
+          />
+        </div>
+
+        {/* Use Case Status + Target Deployment Date */}
         <div className="flex flex-col md:flex-row w-full gap-6">
           <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Title <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              required
-              value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, title: titleInput }))}
-              placeholder="Retail Credit Risk Scoring"
-              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("title") ? "border-red-500" : "border-[#D0D5DD]"
-                } focus:border-[#D0D5DD] focus:-ring-0`}
-            />
-            {hasError("title") && (
-              <p className="text-sm text-red-500">{getError("title")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label>Status</Label>
+            <Label>Use Case Status</Label>
             <Select
-              required
               value={formData.status}
               onValueChange={(val) =>
                 setFormData((prev) => ({ ...prev, status: val as FormDataType["status"] }))
@@ -110,176 +265,23 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                 <SelectValue placeholder="Draft" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="under_review">Under Review</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="in_development">In Development</SelectItem>
-                <SelectItem value="testing">Testing</SelectItem>
-                <SelectItem value="staging">Staging</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
-                <SelectItem value="deprecated">Deprecated</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Description + Business Objective */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Label>Description</Label>
-            <Textarea
-              value={descriptionInput}
-              onChange={(e) => setDescriptionInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, description: descriptionInput }))}
-              placeholder="Enter a description..."
-              className="placeholder:text-muted-foreground border dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs outline-none transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-[74px] resize-none focus:outline-none focus:ring-0 focus:border-transparent"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 w-full">
-            <Label>Business Objective</Label>
-            <Textarea
-              value={businessObjectiveInput}
-              onChange={(e) => setBusinessObjectiveInput(e.target.value)}
-              onBlur={() => setFormData((prev) => ({ ...prev, business_objective: businessObjectiveInput }))}
-              placeholder="Enter the business objective..."
-              className="h-[74px] resize-none"
-            />
-          </div>
-        </div>
-
-        {/* Domain + Emails */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Business Domain <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.business_domain}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, business_domain: value }))}
-            >
-              <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("business_domain") ? "border-red-500" : "border-[#D0D5DD]"
-                } bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0`}>
-                <SelectValue placeholder="Customer Service" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Customer Service">Customer Service</SelectItem>
-                <SelectItem value="Finance">Finance</SelectItem>
-                <SelectItem value="Operations">Operations</SelectItem>
-              </SelectContent>
-            </Select>
-            {hasError("business_domain") && (
-              <p className="text-sm text-red-500">{getError("business_domain")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Business Owner Email <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              required
-              type="email"
-              value={formData.business_owner_email}
-              onChange={(e) => setFormData((prev) => ({ ...prev, business_owner_email: e.target.value }))}
-              placeholder="a.owner@business.com"
-              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("business_owner_email") ? "border-red-500" : "border-[#D0D5DD]"
-                } focus:border-[#D0D5DD] focus:-ring-0`}
-            />
-            {hasError("business_owner_email") && (
-              <p className="text-sm text-red-500">{getError("business_owner_email")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Technical Owner Email <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              required
-              type="email"
-              value={formData.technical_owner_email}
-              onChange={(e) => setFormData((prev) => ({ ...prev, technical_owner_email: e.target.value }))}
-              placeholder="a.tech@example.com"
-              className={`h-[44px] w-full px-4 rounded-lg border ${hasError("technical_owner_email") ? "border-red-500" : "border-[#D0D5DD]"
-                } focus:border-[#D0D5DD] focus:-ring-0`}
-            />
-            {hasError("technical_owner_email") && (
-              <p className="text-sm text-red-500">{getError("technical_owner_email")}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Regulatory Scope + Sensitivity + Go Live Date */}
-        <div className="flex flex-col md:flex-row w-full gap-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Label>
-              Regulatory Scope <span className="text-red-500">*</span>
-            </Label>
-            <Popover open={openRegScope} onOpenChange={setOpenRegScope}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={`justify-between w-full h-[44px] border ${hasError("regulatory_scope") ? "border-red-500" : "border-[#D0D5DD]"
-                    } text-left font-normal`}
-                >
-                  {selectedScopes.length > 0
-                    ? selectedScopes.join(", ")
-                    : "Select Regulatory Scopes"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[370px] max-h-[250px] overflow-y-auto">
-                {regulatoryOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2 py-1">
-                    <Checkbox
-                      className="cursor-pointer"
-                      id={option}
-                      checked={selectedScopes.includes(option)}
-                      onCheckedChange={() => toggleScope(option)}
-                    />
-                    <label
-                      htmlFor={option}
-                      className="text-sm font-medium leading-none cursor-pointer"
-                    >
-                      {option}
-                    </label>
-                  </div>
+                {statusOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
                 ))}
-              </PopoverContent>
-            </Popover>
-            {hasError("regulatory_scope") && (
-              <p className="text-sm text-red-500">{getError("regulatory_scope")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2 w-full">
-            <Label>Data Sensitivity</Label>
-            <Select
-              value={formData.data_sensitivity}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, data_sensitivity: value as FormDataType["data_sensitivity"] }))
-              }
-            >
-              <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] focus:border-[#D0D5DD] focus:-ring-0">
-                <SelectValue placeholder="Public" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="internal">Internal</SelectItem>
-                <SelectItem value="confidential">Confidential</SelectItem>
-                <SelectItem value="restricted">Restricted</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <Label>Go Live Date</Label>
+            <Label>Target Deployment Date</Label>
             <Input
               type="date"
-              value={formData.go_live_date || ""}
-              onChange={(e) => setFormData((prev) => ({ ...prev, go_live_date: e.target.value }))}
+              value={formData.target_deployment_date || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, target_deployment_date: e.target.value }))
+              }
               className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>

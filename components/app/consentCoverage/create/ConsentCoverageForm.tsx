@@ -51,7 +51,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
             <Label htmlFor="dataset_id">
               Dataset <span className="text-red-500">*</span>
             </Label>
-            <Select value={formData.dataset_id} onValueChange={(value) => {
+            <Select key={`dataset_id-${formData.dataset_id || 'empty'}`} value={formData.dataset_id || ""} onValueChange={(value) => {
               handleChange("dataset_id", value);
               // Clear snapshot when dataset changes
               handleChange("snapshot_id", "");
@@ -72,7 +72,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
 
           <div className="space-y-2">
             <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
-            <Select value={formData.snapshot_id || undefined} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
+            <Select key={`snapshot_id-${formData.snapshot_id || 'empty'}`} value={formData.snapshot_id || ""} onValueChange={(value) => handleChange("snapshot_id", value)} disabled={!formData.dataset_id}>
               <SelectTrigger id="snapshot_id" className={`w-full ${errors.snapshot_id ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select snapshot (optional)" />
               </SelectTrigger>
@@ -88,7 +88,7 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="purpose">Purpose *</Label>
+            <Label htmlFor="purpose">Purpose <span className="text-red-500">*</span></Label>
             <CustomMultiSelect
               options={purposeOptions}
               value={formData.purpose}
@@ -100,8 +100,8 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="jurisdiction">Jurisdiction *</Label>
-            <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
+            <Label htmlFor="jurisdiction">Jurisdiction <span className="text-red-500">*</span></Label>
+            <Select key={`jurisdiction-${formData.jurisdiction || 'empty'}`} value={formData.jurisdiction || ""} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>
@@ -122,7 +122,13 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="as_of">As Of (UTC) *</Label>
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input id="source_created_at" type="datetime-local" value={formData.source_created_at} onChange={(e) => handleChange("source_created_at", e.target.value)} className={errors.source_created_at ? "border-red-500" : ""} />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="as_of">As Of (UTC) <span className="text-red-500">*</span></Label>
             <Input id="as_of" type="datetime-local" value={formData.as_of} onChange={(e) => handleChange("as_of", e.target.value)} className={errors.as_of ? "border-red-500" : ""} />
             {errors.as_of && <p className="text-sm text-red-500">{errors.as_of[0]}</p>}
           </div>
@@ -133,25 +139,25 @@ const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, set
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Coverage Metrics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="subjects_total">Total Subjects *</Label>
+            <Label htmlFor="subjects_total">Total Subjects <span className="text-red-500">*</span></Label>
             <Input id="subjects_total" type="number" value={formData.subjects_total} onChange={(e) => handleChange("subjects_total", parseInt(e.target.value))} placeholder="e.g., 10000" className={errors.subjects_total ? "border-red-500" : ""} />
             {errors.subjects_total && <p className="text-sm text-red-500">{errors.subjects_total[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="subjects_with_valid_consent">Subjects with Valid Consent *</Label>
+            <Label htmlFor="subjects_with_valid_consent">Subjects with Valid Consent <span className="text-red-500">*</span></Label>
             <Input id="subjects_with_valid_consent" type="number" value={formData.subjects_with_valid_consent} onChange={(e) => handleChange("subjects_with_valid_consent", parseInt(e.target.value))} placeholder="e.g., 9500" className={errors.subjects_with_valid_consent ? "border-red-500" : ""} />
             {errors.subjects_with_valid_consent && <p className="text-sm text-red-500">{errors.subjects_with_valid_consent[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="coverage_pct">Coverage % *</Label>
+            <Label htmlFor="coverage_pct">Coverage % <span className="text-red-500">*</span></Label>
             <Input id="coverage_pct" type="number" step="0.01" min="0" max="100" value={formData.coverage_pct} onChange={(e) => handleChange("coverage_pct", parseFloat(e.target.value))} placeholder="e.g., 95.0" className={errors.coverage_pct ? "border-red-500" : ""} />
             {errors.coverage_pct && <p className="text-sm text-red-500">{errors.coverage_pct[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="evidence_ref">Evidence Reference *</Label>
+            <Label htmlFor="evidence_ref">Evidence Reference <span className="text-red-500">*</span></Label>
             <Input id="evidence_ref" value={formData.evidence_ref} onChange={(e) => handleChange("evidence_ref", e.target.value)} placeholder="Link to evidence" className={errors.evidence_ref ? "border-red-500" : ""} />
             {errors.evidence_ref && <p className="text-sm text-red-500">{errors.evidence_ref[0]}</p>}
           </div>

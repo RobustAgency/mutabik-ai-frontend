@@ -52,14 +52,14 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Processing Activity</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="purpose">Processing Purpose *</Label>
-            <Textarea id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="Describe the processing purpose" rows={2} className={errors.purpose ? "border-red-500" : ""} />
+            <Label htmlFor="purpose">Processing Purpose <span className="text-red-500">*</span></Label>
+            <Textarea id="purpose" value={formData.purpose} onChange={(e) => handleChange("purpose", e.target.value)} placeholder="Describe the processing purpose" className={`min-h-32 resize-none ${errors.purpose ? "border-red-500" : ""}`} />
             {errors.purpose && <p className="text-sm text-red-500">{errors.purpose[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="controller_role">Controller Role *</Label>
-            <Select value={formData.controller_role} onValueChange={(value) => handleChange("controller_role", value)}>
+            <Label htmlFor="controller_role">Controller Role <span className="text-red-500">*</span></Label>
+            <Select key={`controller_role-${formData.controller_role || 'empty'}`} value={formData.controller_role || ""} onValueChange={(value) => handleChange("controller_role", value)}>
               <SelectTrigger className={`w-full ${errors.controller_role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -73,13 +73,13 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="owner_team">Owner Team *</Label>
-            <Input id="owner_team" value={formData.owner_team} onChange={(e) => handleChange("owner_team", e.target.value)} placeholder="e.g., Data Governance" className={errors.owner_team ? "border-red-500" : ""} />
+            <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
+            <Input id="owner_team" value={formData.owner_team} onChange={(e) => handleChange("owner_team", e.target.value)} placeholder="e.g., Data Governance" className={`min-h-32 resize-none ${errors.owner_team ? "border-red-500" : ""}`} />
             {errors.owner_team && <p className="text-sm text-red-500">{errors.owner_team[0]}</p>}
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="data_subject_categories">Data Subject Categories *</Label>
+            <Label htmlFor="data_subject_categories">Data Subject Categories <span className="text-red-500">*</span></Label>
             <CustomMultiSelect
               options={dataSubjectCategories}
               value={formData.data_subject_categories}
@@ -91,7 +91,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="personal_data_categories">Personal Data Categories *</Label>
+            <Label htmlFor="personal_data_categories">Personal Data Categories <span className="text-red-500">*</span></Label>
             <CustomMultiSelect
               options={personalDataCategories}
               value={formData.personal_data_categories}
@@ -108,8 +108,8 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Legal Basis</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="lawful_basis">Lawful Basis *</Label>
-            <Select value={formData.lawful_basis} onValueChange={(value) => handleChange("lawful_basis", value)}>
+            <Label htmlFor="lawful_basis">Lawful Basis <span className="text-red-500">*</span></Label>
+            <Select key={`lawful_basis-${formData.lawful_basis || 'empty'}`} value={formData.lawful_basis || ""} onValueChange={(value) => handleChange("lawful_basis", value)}>
               <SelectTrigger className={`w-full ${errors.lawful_basis ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select basis" />
               </SelectTrigger>
@@ -137,7 +137,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="dpia_required_flag">DPIA Required</Label>
-            <Select value={formData.dpia_required_flag || ""} onValueChange={(value) => handleChange("dpia_required_flag", value)}>
+            <Select key={`dpia_required_flag-${formData.dpia_required_flag || 'empty'}`} value={formData.dpia_required_flag || ""} onValueChange={(value) => handleChange("dpia_required_flag", value)}>
               <SelectTrigger className={`w-full ${errors.dpia_required_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
@@ -149,8 +149,8 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status *</Label>
-            <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
+            <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
+            <Select key={`status-${formData.status || 'empty'}`} value={formData.status || ""} onValueChange={(value) => handleChange("status", value)}>
               <SelectTrigger className={`w-full ${errors.status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -190,7 +190,7 @@ const PdpProcessingRegisterForm: React.FC<PdpProcessingRegisterFormProps> = ({ f
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="effective_from">Effective From *</Label>
+            <Label htmlFor="effective_from">Effective From <span className="text-red-500">*</span></Label>
             <Input id="effective_from" type="date" value={formData.effective_from} onChange={(e) => handleChange("effective_from", e.target.value)} className={errors.effective_from ? "border-red-500" : ""} />
             {errors.effective_from && <p className="text-sm text-red-500">{errors.effective_from[0]}</p>}
           </div>

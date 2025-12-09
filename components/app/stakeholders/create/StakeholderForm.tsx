@@ -3,13 +3,14 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
 import { CountryDropdown } from "react-country-region-selector";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
 
 interface StakeholderFormProps {
   formData: CreateStakeholderData;
@@ -22,7 +23,8 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
   setFormData,
   errors,
 }) => {
-  const { data: vendors = [], isLoading: isVendorsLoading } = useGetVendorsQuery();
+  const { data: vendorsResponse, isLoading: isVendorsLoading } = useGetVendorsQuery();
+  const vendors = vendorsResponse?.data || [];
   const noVendorsAvailable = !isVendorsLoading && vendors.length === 0;
   const handleInputChange = (field: keyof CreateStakeholderData, value: any) => {
     setFormData((prev) => ({
@@ -70,9 +72,10 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 w-full">
-            <Label htmlFor="type">Type *</Label>
+            <Label htmlFor="type">Type <span className="text-red-500">*</span></Label>
             <Select
-              value={formData.type}
+              key={`type-${formData.type || 'empty'}`}
+              value={formData.type || ""}
               onValueChange={(value) => handleInputChange("type", value)}
             >
               <SelectTrigger className={errors.type ? "border-destructive w-full" : "w-full"}>
@@ -93,7 +96,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="display_name">Display Name *</Label>
+            <Label htmlFor="display_name">Display Name <span className="text-red-500">*</span></Label>
             <Input
               id="display_name"
               value={formData.display_name}
@@ -107,7 +110,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="legal_name">Legal Name *</Label>
+            <Label htmlFor="legal_name">Legal Name <span className="text-red-500">*</span></Label>
             <Input
               id="legal_name"
               value={formData.legal_name}
@@ -121,7 +124,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="org_unit">Organization Unit *</Label>
+            <Label htmlFor="org_unit">Organization Unit <span className="text-red-500">*</span></Label>
             <Input
               id="org_unit"
               value={formData.org_unit}
@@ -142,7 +145,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
             <Input
               id="email"
               type="email"
@@ -157,7 +160,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone *</Label>
+            <Label htmlFor="phone">Phone <span className="text-red-500">*</span></Label>
             <Input
               id="phone"
               value={formData.phone}
@@ -179,35 +182,32 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="vendor_id">Link Vendor</Label>
-            <Select
-              value={formData.vendor_id}
+            <SelectWithInlineCreate
+              key={`vendor_id-${formData.vendor_id || 'empty'}`}
+              value={formData.vendor_id || ""}
               onValueChange={(value) => handleInputChange("vendor_id", value)}
-              disabled={isVendorsLoading}
-            >
-              <SelectTrigger className={errors.vendor_id ? "border-destructive w-full" : "w-full"}>
-                <SelectValue placeholder={isVendorsLoading ? "Loading vendors..." : "Select vendor"} />
-              </SelectTrigger>
-              <SelectContent>
-                {noVendorsAvailable ? (
-                  <SelectItem disabled value="__no_vendors__">No vendors found</SelectItem>
-                ) : (
-                  vendors.map((v: any) => (
-                    <SelectItem key={v.id} value={String(v.id)}>
-                      {v.name}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+              options={vendors.map((v: any) => ({
+                id: v.id,
+                label: v.vendor_name,
+                value: String(v.id),
+              }))}
+              isLoading={isVendorsLoading}
+              isEmpty={noVendorsAvailable}
+              entityName="Vendor"
+              modalForm={VendorModalForm}
+              placeholder="Select vendor"
+              error={!!errors.vendor_id}
+            />
             {errors.vendor_id && (
               <p className="text-sm text-destructive">{errors.vendor_id[0]}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="classification">Classification *</Label>
+            <Label htmlFor="classification">Classification <span className="text-red-500">*</span></Label>
             <Select
-              value={formData.classification}
+              key={`classification-${formData.classification || 'empty'}`}
+              value={formData.classification || ""}
               onValueChange={(value) => handleInputChange("classification", value)}
             >
               <SelectTrigger className={errors.classification ? "border-destructive w-full" : "w-full"}>
@@ -224,14 +224,15 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">Country *</Label>
+            <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
             <div className={errors.country ? "border-destructive rounded-md" : ""}>
               <CountryDropdown
+                id="country"
                 valueType="short"
                 value={formData.country}
                 onChange={(val) => handleInputChange("country", val)}
                 aria-label="Select country"
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-[36px] text-gray-500 rounded-md border border-input bg-background px-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             {errors.country && (
@@ -240,9 +241,10 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone *</Label>
+            <Label htmlFor="timezone">Timezone <span className="text-red-500">*</span></Label>
             <Select
-              value={formData.timezone}
+              key={`timezone-${formData.timezone || 'empty'}`}
+              value={formData.timezone || ""}
               onValueChange={(value) => handleInputChange("timezone", value)}
             >
               <SelectTrigger className={errors.timezone ? "border-destructive w-full" : "w-full"}>
@@ -274,9 +276,12 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="role_tags_picker">Select role tag</Label>
+            <Label htmlFor="role_tags_picker">Select role tag <span className="text-red-500">*</span></Label>
             <Select onValueChange={(value) => handleRoleTagAdd(value)}>
-              <SelectTrigger id="role_tags_picker" className="w-full">
+              <SelectTrigger
+                id="role_tags_picker"
+                className={`w-full ${errors.role_tags ? "border-destructive" : ""}`}
+              >
                 <SelectValue placeholder="Choose a role tag" />
               </SelectTrigger>
               <SelectContent>
@@ -287,6 +292,9 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {errors.role_tags && (
+              <p className="text-sm text-destructive">{errors.role_tags[0]}</p>
+            )}
             <p className="text-sm text-muted-foreground">Selected tags appear below. Click x to remove.</p>
           </div>
         </div>
@@ -312,31 +320,38 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
       {/* Additional Information */}
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Additional Information</h3>
-
-        <div className="space-y-2">
-          <Label htmlFor="external_ref">External Reference</Label>
-          <Input
-            id="external_ref"
-            value={formData.external_ref}
-            onChange={(e) => handleInputChange("external_ref", e.target.value)}
-            placeholder="Enter external reference"
-          />
-          <p className="text-sm text-muted-foreground">
-            Optional external reference or ID
-          </p>
-        </div>
-
-        <div className="space-y-2 w-full md:w-1/2">
-          <Label htmlFor="active">Active</Label>
-          <div className="flex items-center gap-3">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => handleInputChange("active", checked)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="external_ref">External Reference</Label>
+            <Input
+              id="external_ref"
+              value={formData.external_ref}
+              onChange={(e) => handleInputChange("external_ref", e.target.value)}
+              placeholder="Enter external reference"
             />
-            <span className="text-sm text-muted-foreground">
-              {formData.active ? "Active" : "Inactive"}
-            </span>
+            <p className="text-sm text-muted-foreground">
+              Optional external reference or ID
+            </p>
+          </div>
+
+          <div className="space-y-2 w-full">
+            <Label htmlFor="active">Active Status <span className="text-red-500">*</span></Label>
+            <Select
+              key={`active-${formData.active || 'empty'}`}
+              value={formData.active !== undefined && formData.active !== null ? (formData.active ? "true" : "false") : ""}
+              onValueChange={(value) => handleInputChange("active", value === "true")}
+            >
+              <SelectTrigger className={`w-full ${errors.active ? "border-destructive" : ""}`}>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Active</SelectItem>
+                <SelectItem value="false">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.active && (
+              <p className="text-sm text-destructive">{errors.active[0]}</p>
+            )}
           </div>
         </div>
       </div>

@@ -1,42 +1,52 @@
+// Import types from service layer
+import type {
+  UseCaseStatus,
+  BusinessDomain,
+  ROIClassification,
+  Priority,
+  DataSensitivity,
+  RiskLevel,
+  HumanOversightMode,
+  DataAvailabilityStatus,
+  DataReadiness,
+} from "@/service/app/useCases";
+
 export interface FormDataType {
-  title: string;
+  // Step 1: Basic Information
+  name: string;
   description: string | null;
-  status:
-    | "draft"
-    | "under_review"
-    | "approved"
-    | "in_development"
-    | "testing"
-    | "staging"
-    | "active"
-    | "suspended"
-    | "deprecated";
-  business_domain: string;
-  business_objective: string;
-  business_owner_email: string;
-  technical_owner_email: string;
-  regulatory_scope: string[];
-  data_sensitivity: "public" | "internal" | "confidential" | "restricted";
-  go_live_date: string | null;
-
+  problem_statement: string;
+  expected_business_value: string;
+  stakeholder_ids: number[];
+  business_domain: BusinessDomain | "";
+  business_owner_id: number | null;
+  technical_owner_id: number | null;
+  status: UseCaseStatus;
+  target_deployment_date: string | null;
+  
+  // Step 2: ROI & Business Impact
   expected_roi: number | null;
-  implementation_cost: number | null;
-  reduction_in_time: number | null;
-  reduction_in_cost: number | null;
-  increase_in_revenue: number | null;
-  risk_avoidance: number | null;
-  fte_capacity_saved: number | null;
-
-  use_case_type: string;
-  value_driver: string;
-
-  overall_risk_score: number | null;
-  risk_level: "low" | "medium" | "high" | "critical";
-  human_oversight_mode: string;
-  dpia: boolean;
-  aia: boolean;
-
-  data_availability_status: string;
-  data_readiness_level: string;
-  data_freshness: string;
+  budget_allocated: number | null;
+  estimated_implementation_cost: number | null;
+  estimated_time_savings: number | null;
+  estimated_cost_savings: number | null;
+  estimated_revenue_impact: number | null;
+  estimated_fte_saving: number | null;
+  success_metrics: string;
+  
+  // Step 3: Use Case Classification
+  roi_classification: ROIClassification | "";
+  priority: Priority | "";
+  
+  // Step 4: Governance & Risk
+  preliminary_risk_level: RiskLevel;
+  regulatory_impact: boolean;
+  potential_harm: string;
+  human_oversight_mode: HumanOversightMode | "";
+  
+  // Step 5: Data Assessment
+  data_sensitivity: DataSensitivity;
+  data_availability_status: DataAvailabilityStatus | "";
+  data_readiness: DataReadiness | "";
+  dependencies: string;
 }

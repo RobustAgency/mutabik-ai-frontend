@@ -49,7 +49,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
             ),
         },
         {
-            accessorKey: "ai_model_version.version",
+            accessorKey: "ai_model_version.version_number",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
                     Model Version
@@ -57,7 +57,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
             ),
             cell: ({ row }) => (
                 <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                    {row.original.ai_model_version?.version || 'N/A'}
+                    {row.original.ai_model_version?.version_number || 'N/A'}
                 </div>
             ),
         },
@@ -148,7 +148,7 @@ const LinkedUseCases: React.FC<LinkedUseCasesProps> = ({ aiModelId }) => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Linked Use Cases</h2>
                         <Button
-                            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
                             onClick={() => setDialogOpen(true)}
                         >
                             Link use case

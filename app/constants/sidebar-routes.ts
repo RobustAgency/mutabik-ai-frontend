@@ -36,6 +36,7 @@ import {
   CheckCircle2,
   FileBarChart,
   Lock,
+  Link2,
 } from "lucide-react";
 
 export type RouteItem = {
@@ -80,7 +81,7 @@ export const userRoutes: RouteItem[] = [
     href: "/dashboard",
     label: "Dashboard",
     icon: House,
-    children: [{ href: "/dashboard", label: "My Workspace", icon: LayoutGrid }],
+    // children: [{ href: "/dashboard", label: "My Workspace", icon: LayoutGrid }],
   },
 
   {
@@ -104,6 +105,21 @@ export const userRoutes: RouteItem[] = [
             label: "Model Cards",
             icon: FileCog,
           },
+          {
+            href: "/core-assets/ai-models/link-use-case",
+            label: "Link Use Case",
+            icon: Link2,
+          },
+          {
+            href: "/core-assets/ai-models/artifacts",
+            label: "Model Artifacts",
+            icon: Layers3,
+          },
+          {
+            href: "/core-assets/ai-models/artifact-access-logs",
+            label: "Artifact Access Logs",
+            icon: Layers3,
+          },
         ],
       },
       {
@@ -112,7 +128,7 @@ export const userRoutes: RouteItem[] = [
         icon: Users,
       },
       {
-        href: "/core-assets/data",
+        href: "/core-assets/data/registry",
         label: "Datasets & Data Sources",
         icon: Database,
         children: [
@@ -152,6 +168,16 @@ export const userRoutes: RouteItem[] = [
         href: "/core-assets/vendors",
         label: "Vendors & Third Parties",
         icon: Building2,
+      },
+      {
+        href: "/core-assets/agreements",
+        label: "Agreements",
+        icon: FileBox,
+      },
+      {
+        href: "/core-assets/ai-assets",
+        label: "AI Assets",
+        icon: Brain,
       },
     ],
   },
@@ -282,9 +308,41 @@ export const userRoutes: RouteItem[] = [
         icon: BarChart3,
       },
       {
-        href: "/governance/incidents",
         label: "Incident Management",
+        href: "/governance/incidents",
         icon: Activity,
+        children: [
+          // {
+          //   href: "/governance/incidents",
+          //   label: "AI Incidents",
+          //   icon: Activity,
+          // },
+          {
+            href: "/governance/incidents/alerts",
+            label: "Incident Alerts",
+            icon: BellDot,
+          },
+          {
+            href: "/governance/incidents/actions",
+            label: "Incident Actions",
+            icon: CheckCircle2,
+          },
+          {
+            href: "/governance/incidents/rca",
+            label: "Root Cause Analyses",
+            icon: FileSearch,
+          },
+          {
+            href: "/governance/incidents/notifications",
+            label: "Notifications",
+            icon: BellDot,
+          },
+          {
+            href: "/governance/incidents/capa",
+            label: "CAPA",
+            icon: FileCheck2,
+          },
+        ],
       },
     ],
   },

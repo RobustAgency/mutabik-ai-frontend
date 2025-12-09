@@ -20,6 +20,7 @@ const EditConsentCoverage: React.FC<EditConsentCoverageProps> = ({ coverageId })
     snapshot_id: "",
     purpose: [],
     jurisdiction: "",
+    source_created_at: "",
     as_of: "",
     subjects_total: 0,
     subjects_with_valid_consent: 0,
@@ -38,6 +39,7 @@ const EditConsentCoverage: React.FC<EditConsentCoverageProps> = ({ coverageId })
         snapshot_id: coverage.snapshot_id ? String(coverage.snapshot_id) : "",
         purpose: coverage.purpose,
         jurisdiction: coverage.jurisdiction,
+        source_created_at: coverage.source_created_at,
         as_of: coverage.as_of,
         subjects_total: coverage.subjects_total,
         subjects_with_valid_consent: coverage.subjects_with_valid_consent,
@@ -53,6 +55,7 @@ const EditConsentCoverage: React.FC<EditConsentCoverageProps> = ({ coverageId })
     if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
     if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.as_of?.trim()) errors.as_of = ["As of date is required"];
     if (formData.subjects_total < 0) errors.subjects_total = ["Subjects total must be non-negative"];
     if (formData.subjects_with_valid_consent < 0) errors.subjects_with_valid_consent = ["Subjects with valid consent must be non-negative"];

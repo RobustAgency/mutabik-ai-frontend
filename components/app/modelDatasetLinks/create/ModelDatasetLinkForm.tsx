@@ -7,8 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateModelDatasetLinkData } from "@/app/lib/features/modelDatasetLinksApi";
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
+import { useGetAiModelVersionsQuery } from "@/app/lib/features/aiModelVersionsApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
 import { useGetDatasetSnapshotsQuery } from "@/app/lib/features/datasetSnapshotsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
+import AiModelVersionModalForm from "@/components/app/aiModel/versions/AiModelVersionModalForm";
+import DatasetSnapshotModalForm from "@/components/app/datasetSnapshots/create/DatasetSnapshotModalForm";
 
 interface ModelDatasetLinkFormProps {
   formData: CreateModelDatasetLinkData;
@@ -21,14 +26,31 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: models = [], isLoading: isLoadingModels, isError: isModelsError } = useGetAiModelsQuery();
-  const { data: datasets = [], isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
-  const { data: snapshots = [], isLoading: isLoadingSnapshots, isError: isSnapshotsError } = useGetDatasetSnapshotsQuery();
+  const { data: modelsData, isLoading: isLoadingModels } = useGetAiModelsQuery();
+  const models = modelsData || [];
+  const { data: modelVersionsData, isLoading: isLoadingVersions } = useGetAiModelVersionsQuery();
+  const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
+  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const datasets = datasetsData || [];
+  const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
+  const snapshots = React.useMemo(() => snapshotsData || [], [snapshotsData]);
+
+  // Filter versions based on selected model
+  const filteredVersions = React.useMemo(() => {
+    if (!formData.ai_model_id) return modelVersions;
+    return modelVersions.filter((version: any) => String(version.ai_model_id) === String(formData.ai_model_id));
+  }, [modelVersions, formData.ai_model_id]);
 
   const filteredSnapshots = React.useMemo(() => {
     if (!formData.dataset_id) return snapshots;
     return snapshots.filter((s: any) => String(s.dataset_id) === String(formData.dataset_id));
   }, [snapshots, formData.dataset_id]);
+
+  // Determine if snapshot is required based on role
+  const isSnapshotRequired = React.useMemo(() => {
+    const trainRoles = ["train", "validation", "test", "eval_benchmark"];
+    return trainRoles.includes(formData.role);
+  }, [formData.role]);
 
   return (
     <div className="space-y-6 pt-6">
@@ -37,80 +59,77 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Link Identification</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="ai_model_id">Model *</Label>
-            <Select
+            <Label htmlFor="ai_model_id">Model <span className="text-red-500">*</span></Label>
+            <SelectWithInlineCreate
               value={formData.ai_model_id || undefined}
-              onValueChange={(value) => handleChange("ai_model_id", value)}
-              disabled={isLoadingModels || isModelsError}
-            >
-              <SelectTrigger id="ai_model_id" className={`w-full ${errors.ai_model_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingModels
-                      ? "Loading models..."
-                      : isModelsError
-                        ? "Failed to load models"
-                        : "Select a model"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {models.map((m: any) => (
-                  <SelectItem key={m.id} value={String(m.id)}>
-                    {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onValueChange={(value) => {
+                handleChange("ai_model_id", value);
+                // Reset version when model changes
+                if (value !== formData.ai_model_id) {
+                  handleChange("ai_model_version_id", 1);
+                }
+              }}
+              options={models.map((m: any) => ({
+                id: m.id,
+                label: m.name,
+                value: String(m.id),
+              }))}
+              isLoading={isLoadingModels}
+              isEmpty={!isLoadingModels && models.length === 0}
+              entityName="AI Model"
+              modalForm={AiModelModalForm}
+              placeholder={isLoadingModels ? "Loading models..." : "Select a model"}
+              error={!!errors.ai_model_id}
+            />
             {errors.ai_model_id && <p className="text-sm text-red-500">{errors.ai_model_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="ai_model_version_id">Model Version ID *</Label>
-            <Input
-              type="number"
-              id="ai_model_version_id"
-              value={formData.ai_model_version_id}
-              onChange={(e) => handleChange("ai_model_version_id", e.target.value)}
-              placeholder="1"
-              className={errors.ai_model_version_id ? "border-red-500" : ""}
+            <Label htmlFor="ai_model_version_id">Model Version <span className="text-red-500">*</span></Label>
+            <SelectWithInlineCreate
+              key={`model_version_id-${formData.ai_model_version_id ?? 'none'}`}
+              value={formData.ai_model_version_id ? String(formData.ai_model_version_id) : undefined}
+              onValueChange={(value) => handleChange("ai_model_version_id", value ? Number(value) : 1)}
+              options={filteredVersions.map((version: any) => ({
+                id: version.id,
+                label: version.version_number || `Version ${version.id}`,
+                value: String(version.id),
+              }))}
+              isLoading={isLoadingVersions}
+              isEmpty={!isLoadingVersions && filteredVersions.length === 0}
+              entityName="Model Version"
+              modalForm={AiModelVersionModalForm}
+              placeholder={!formData.ai_model_id ? "Select model first" : isLoadingVersions ? "Loading versions..." : "Select a version"}
+              error={!!errors.ai_model_version_id}
+              disabled={!formData.ai_model_id}
             />
             {errors.ai_model_version_id && <p className="text-sm text-red-500">{errors.ai_model_version_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_snapshot_id">Snapshot * (Required for AC-05)</Label>
-            <Select
+            <Label htmlFor="dataset_snapshot_id">
+              Snapshot {isSnapshotRequired ? <span className="text-red-500">*</span> : <span className="text-gray-500"></span>}
+            </Label>
+            <SelectWithInlineCreate
               value={formData.dataset_snapshot_id || undefined}
               onValueChange={(value) => handleChange("dataset_snapshot_id", value)}
-              disabled={isLoadingSnapshots || isSnapshotsError}
-            >
-              <SelectTrigger id="dataset_snapshot_id" className={`w-full ${errors.dataset_snapshot_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingSnapshots
-                      ? "Loading snapshots..."
-                      : isSnapshotsError
-                        ? "Failed to load snapshots"
-                        : filteredSnapshots.length === 0 && formData.dataset_id
-                          ? "No snapshots for selected dataset"
-                          : "Select a snapshot"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredSnapshots.map((s: any) => (
-                  <SelectItem key={s.id} value={String(s.id)}>
-                    {s.version_tag} {s.dataset_id ? ` (ds ${s.dataset_id})` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={filteredSnapshots.map((s: any) => ({
+                id: s.id,
+                label: `${s.version_tag}${s.dataset_id ? ` (ds ${s.dataset_id})` : ""}`,
+                value: String(s.id),
+              }))}
+              isLoading={isLoadingSnapshots}
+              isEmpty={!isLoadingSnapshots && filteredSnapshots.length === 0}
+              entityName="Snapshot"
+              modalForm={DatasetSnapshotModalForm}
+              placeholder={isLoadingSnapshots ? "Loading snapshots..." : "Select a snapshot"}
+              error={!!errors.dataset_snapshot_id}
+            />
             {errors.dataset_snapshot_id && <p className="text-sm text-red-500">{errors.dataset_snapshot_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset (optional)</Label>
+            <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <Select
               value={formData.dataset_id || undefined}
               onValueChange={(value) => {
@@ -132,7 +151,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                       ? "Loading datasets..."
                       : isDatasetsError
                         ? "Failed to load datasets"
-                        : "Select a dataset (optional)"
+                        : "Select a dataset"
                   }
                 />
               </SelectTrigger>
@@ -144,6 +163,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 ))}
               </SelectContent>
             </Select>
+            {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
         </div>
       </div>
@@ -153,29 +173,29 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Role & Usage</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="role">Role *</Label>
+            <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
             <Select value={formData.role} onValueChange={(value) => handleChange("role", value)}>
               <SelectTrigger className={`w-full ${errors.role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pretrain">pretrain</SelectItem>
-                <SelectItem value="train">train</SelectItem>
-                <SelectItem value="fine_tune">fine_tune</SelectItem>
-                <SelectItem value="align_rlhf">align_rlhf</SelectItem>
-                <SelectItem value="validation">validation</SelectItem>
-                <SelectItem value="test">test</SelectItem>
-                <SelectItem value="eval_benchmark">eval_benchmark</SelectItem>
-                <SelectItem value="rag_corpus">rag_corpus</SelectItem>
-                <SelectItem value="drift_baseline">drift_baseline</SelectItem>
-                <SelectItem value="online_feedback">online_feedback</SelectItem>
+                <SelectItem value="pretrain">Pretrain</SelectItem>
+                <SelectItem value="train">Train</SelectItem>
+                <SelectItem value="fine_tune">Fine tune</SelectItem>
+                <SelectItem value="align_rlhf">Align RLHF</SelectItem>
+                <SelectItem value="validation">Validation</SelectItem>
+                <SelectItem value="test">Test</SelectItem>
+                <SelectItem value="eval_benchmark">Eval benchmark</SelectItem>
+                <SelectItem value="rag_corpus">RAG corpus</SelectItem>
+                <SelectItem value="drift_baseline">Drift baseline</SelectItem>
+                <SelectItem value="online_feedback">Online feedback</SelectItem>
               </SelectContent>
             </Select>
             {errors.role && <p className="text-sm text-red-500">{errors.role[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="created_by">Created By *</Label>
+            <Label htmlFor="created_by">Created By <span className="text-red-500">*</span></Label>
             <Input
               id="created_by"
               value={formData.created_by}
@@ -184,6 +204,18 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
               className={errors.created_by ? "border-red-500" : ""}
             />
             {errors.created_by && <p className="text-sm text-red-500">{errors.created_by[0]}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input
+              id="source_created_at"
+              type="datetime-local"
+              value={formData.source_created_at}
+              onChange={(e) => handleChange("source_created_at", e.target.value)}
+              className={errors.source_created_at ? "border-red-500" : ""}
+            />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
           </div>
         </div>
       </div>
@@ -199,9 +231,9 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
                 <SelectValue placeholder="Select eligibility" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eligible">eligible</SelectItem>
-                <SelectItem value="eligible_with_conditions">eligible_with_conditions</SelectItem>
-                <SelectItem value="not_eligible">not_eligible</SelectItem>
+                <SelectItem value="eligible">Eligible</SelectItem>
+                <SelectItem value="eligible_with_conditions">Eligible with conditions</SelectItem>
+                <SelectItem value="not_eligible">Not eligible</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -254,7 +286,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
             value={formData.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
             placeholder="Additional notes about this link"
-            rows={3}
+            className="min-h-32 resize-none"
           />
         </div>
       </div>

@@ -7,7 +7,7 @@ import { AxiosRequestConfig, AxiosError } from "axios";
 export interface DataElement {
   id: string;
   name: string;
-  business_definition: string;
+  business_definition: string | null;
   data_type: string;
   format: string | null;
   sensitivity: string;
@@ -16,7 +16,7 @@ export interface DataElement {
   special_category_flag: string;
   cde_flag: string;
   cde_category: string | null;
-  owner_team: string;
+  owner_team: string | null;
   quality_rules_ref: string | null;
   catalog_column_id: string | null;
   created_at: string;
@@ -24,14 +24,19 @@ export interface DataElement {
 }
 
 export interface DataElementFilters {
+  per_page?: number | null; // min:1, max:100
+  from?: string | null; // date
+  to?: string | null; // date
+  name?: string | null; // max:255
+  data_type?: string | null; // max:255
+  // Legacy support
   search?: string;
   page?: number;
-  limit?: number;
 }
 
 export interface CreateDataElementData {
   name: string;
-  business_definition: string;
+  business_definition?: string;
   data_type: string;
   format?: string;
   sensitivity: string;
@@ -40,7 +45,7 @@ export interface CreateDataElementData {
   special_category_flag: string;
   cde_flag: string;
   cde_category?: string;
-  owner_team: string;
+  owner_team?: string;
   quality_rules_ref?: string;
   catalog_column_id?: string;
 }
@@ -234,4 +239,3 @@ export const {
   useUpdateDataElementMutation,
   useDeleteDataElementMutation,
 } = dataElementsApi;
-

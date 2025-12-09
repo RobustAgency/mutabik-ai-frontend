@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { use } from "react";
 import EditConsentCoverage from "@/components/app/consentCoverage/edit/EditConsentCoverage";
 

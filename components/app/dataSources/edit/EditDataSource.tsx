@@ -103,6 +103,10 @@ const EditDataSource: React.FC<EditDataSourceProps> = ({
             errors.cloud_provider = ["Cloud provider is required (AC-01)"];
         }
 
+        if (!formData.data_domains || formData.data_domains.length === 0) {
+            errors.data_domains = ["At least one data domain is required"];
+        }
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

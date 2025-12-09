@@ -6,11 +6,15 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDataElementsQuery, useDeleteDataElementMutation, DataElement } from "@/app/lib/features/dataElementsApi";
+import { useGetDataElementsQuery, useDeleteDataElementMutation, DataElement, DataElementFilters } from "@/app/lib/features/dataElementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import InlineCreateModal from "@/components/custom/InlineCreateModal";
+import AssociateElementWithDatasetModal from "@/components/app/dataElements/map/AssociateElementWithDatasetModal";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
+  const [filters, setFilters] = React.useState<DataElementFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     dataElementId: string | null;
@@ -22,7 +26,9 @@ const DataElements: React.FC = () => {
   });
 
   const [deleteDataElement, { isLoading: isDeleting }] = useDeleteDataElementMutation();
-  const { data: dataElements, isLoading } = useGetDataElementsQuery();
+  const { data: dataElements, isLoading } = useGetDataElementsQuery(filters);
+
+  const [associateState, setAssociateState] = React.useState<{ isOpen: boolean; dataElementId: number | null }>({ isOpen: false, dataElementId: null });
 
   const handleEditClick = (e: React.MouseEvent, dataElement: DataElement) => {
     e.stopPropagation();
@@ -64,6 +70,19 @@ const DataElements: React.FC = () => {
   };
 
   const columns: ColumnDef<DataElement>[] = [
+    {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Data Element ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
     {
       accessorKey: "name",
       header: () => (
@@ -116,9 +135,8 @@ const DataElements: React.FC = () => {
       cell: ({ getValue }) => {
         const piiFlag = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {piiFlag}
           </div>
         );
@@ -134,9 +152,8 @@ const DataElements: React.FC = () => {
       cell: ({ getValue }) => {
         const cdeFlag = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {cdeFlag}
           </div>
         );
@@ -168,6 +185,16 @@ const DataElements: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
+              }}
+            >
+              Associate
+            </Button>
+            <Button
+              variant={"outline"}
+              className="text-[#667085]"
               onClick={(e) => handleEditClick(e, row.original)}
             >
               Edit
@@ -189,17 +216,24 @@ const DataElements: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Data Elements</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Enterprise data dictionary with canonical definitions and PII/CDE stewardship</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/elements/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Data Element
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="data-elements"
+                filters={filters}
+                onFiltersChange={(newFilters) => setFilters(newFilters as DataElementFilters)}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/elements/create")}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Data Element
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable
@@ -240,6 +274,20 @@ const DataElements: React.FC = () => {
         isLoading={isDeleting}
         loadingText="Deleting..."
       />
+
+      <InlineCreateModal
+        isOpen={associateState.isOpen}
+        onClose={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        onSuccess={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        title="Associate Data Element with Dataset"
+        description="Create a mapping between this canonical element and a dataset column."
+      >
+        <AssociateElementWithDatasetModal
+          dataElementId={Number(associateState.dataElementId || 0)}
+          onClose={() => setAssociateState({ isOpen: false, dataElementId: null })}
+          onSuccess={() => setAssociateState({ isOpen: false, dataElementId: null })}
+        />
+      </InlineCreateModal>
     </>
   );
 };

@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { use } from "react";
 import StakeholderDetails from "@/components/app/stakeholders/details/StakeholderDetails";
 

@@ -6,12 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCreateDatasetSnapshotMutation, CreateDatasetSnapshotData } from "@/app/lib/features/datasetSnapshotsApi";
+import { useCreateDatasetSnapshotMutation } from "@/app/lib/features/datasetSnapshotsApi";
 import DatasetSnapshotForm from "./DatasetSnapshotForm";
 
 const CreateDatasetSnapshot: React.FC = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState<CreateDatasetSnapshotData>({
+  const [formData, setFormData] = useState({
     dataset_id: "",
     version_tag: "",
     time_range_start: "",
@@ -24,6 +24,7 @@ const CreateDatasetSnapshot: React.FC = () => {
     privacy_transform_evidence_ref: "",
     residency_zone: "",
     storage_uri: "",
+    source_created_at: "",
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
@@ -32,12 +33,41 @@ const CreateDatasetSnapshot: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: Record<string, string[]> = {};
 
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset ID is required"];
+    // dataset_id can be a number (when selected) or string (when empty)
+    if (typeof formData.dataset_id === 'number') {
+      if (formData.dataset_id <= 0) {
+        errors.dataset_id = ["Dataset ID is required"];
+      }
+    } else {
+      if (!formData.dataset_id?.trim()) {
+        errors.dataset_id = ["Dataset ID is required"];
+      }
+    }
     if (!formData.version_tag?.trim()) errors.version_tag = ["Version tag is required"];
-    if (!formData.time_range_start?.trim()) errors.time_range_start = ["Time range start is required"];
-    if (!formData.time_range_end?.trim()) errors.time_range_end = ["Time range end is required"];
+    if (formData.version_tag && formData.version_tag.length > 50) errors.version_tag = ["Max 50 characters"];
+    
+    if (!formData.time_range_start?.trim()) {
+      errors.time_range_start = ["Time range start is required"];
+    }
+    if (!formData.time_range_end?.trim()) {
+      errors.time_range_end = ["Time range end is required"];
+    }
+    // If both provided, enforce ordering
+    if (formData.time_range_start && formData.time_range_end) {
+      if (new Date(formData.time_range_end) < new Date(formData.time_range_start)) {
+        errors.time_range_end = ["Must be after or equal to start"];
+      }
+    }
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.residency_zone?.trim()) errors.residency_zone = ["Residency zone is required (AC-04)"];
     if (!formData.storage_uri?.trim()) errors.storage_uri = ["Storage URI is required (AC-04)"];
+    if (formData.storage_uri && formData.storage_uri.length > 500) errors.storage_uri = ["Max 500 characters"];
+    if (formData.quality_checksums && formData.quality_checksums.length > 255) errors.quality_checksums = ["Max 255 characters"];
+    if (formData.masking_anonymization_method && formData.masking_anonymization_method.length > 255) errors.masking_anonymization_method = ["Max 255 characters"];
+    if (formData.privacy_transform_evidence_ref && formData.privacy_transform_evidence_ref.length > 255) errors.privacy_transform_evidence_ref = ["Max 255 characters"];
+    if (formData.row_count !== undefined && formData.row_count !== null && Number(formData.row_count) < 0) errors.row_count = ["Must be >= 0"];
+    if (formData.pii_element_count !== undefined && formData.pii_element_count !== null && Number(formData.pii_element_count) < 0) errors.pii_element_count = ["Must be >= 0"];
+    if (formData.special_category_element_count !== undefined && formData.special_category_element_count !== null && Number(formData.special_category_element_count) < 0) errors.special_category_element_count = ["Must be >= 0"];
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -53,7 +83,11 @@ const CreateDatasetSnapshot: React.FC = () => {
     }
 
     try {
-      await createSnapshot(formData).unwrap();
+      const payload = {
+        ...formData,
+        dataset_id: Number(formData.dataset_id),
+      } as any;
+      await createSnapshot(payload).unwrap();
       router.push("/core-assets/data/snapshots");
     } catch (err: any) {
       if (err?.data?.errors) {
@@ -94,7 +128,7 @@ const CreateDatasetSnapshot: React.FC = () => {
               </Alert>
             )}
 
-            <DatasetSnapshotForm formData={formData} setFormData={setFormData} errors={validationErrors} />
+            <DatasetSnapshotForm formData={formData as any} setFormData={setFormData as any} errors={validationErrors} />
           </CardContent>
         </Card>
       </form>

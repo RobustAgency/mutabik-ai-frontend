@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { use } from "react";
 import DataElementDetails from "@/components/app/dataElements/details/DataElementDetails";
 

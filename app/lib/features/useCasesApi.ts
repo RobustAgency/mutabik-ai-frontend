@@ -4,6 +4,20 @@ import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
 import { apiClient } from "@/lib/api";
 import { AxiosRequestConfig, AxiosError } from "axios";
 
+// Filter types for Use Cases
+export interface UseCaseFilters {
+  preliminary_risk_level?: string | null;
+  business_domain?: string | null;
+  owner?: string | null;
+  roi_classification?: string | null;
+  priority?: string | null;
+  data_sensitivity?: string | null;
+  to?: string | null; // date
+  from?: string | null; // date, before_or_equal:to
+  status?: string; // enum: UseCase\Status
+  per_page?: number; // min:1, max:100
+}
+
 // Custom base query using existing Axios client
 const axiosBaseQuery =
   (): BaseQueryFn<
@@ -53,10 +67,11 @@ export const useCasesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["UseCase"],
   endpoints: (builder) => ({
-    getUseCases: builder.query<UseCase[], void>({
-      query: () => ({
+    getUseCases: builder.query<UseCase[], UseCaseFilters | void>({
+      query: (filters = {}) => ({
         url: "/use-cases",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result
@@ -66,13 +81,24 @@ export const useCasesApi = createApi({
             ]
           : [{ type: "UseCase", id: "LIST" }],
       transformResponse: (response: {
-        data: { data: UseCase[] };
+        data: { data: { data?: UseCase[] } | UseCase[] };
         error?: boolean;
         message?: string;
       }) => {
-        if (response.data?.data) {
+        // Handle paginated response: { data: { data: [...] } }
+        if (response.data?.data && Array.isArray(response.data.data)) {
           return response.data.data;
         }
+        // Handle nested paginated response: { data: { data: { data: [...] } } }
+        if (
+          response.data?.data &&
+          typeof response.data.data === "object" &&
+          "data" in response.data.data &&
+          Array.isArray((response.data.data as any).data)
+        ) {
+          return (response.data.data as any).data;
+        }
+        // Handle direct array response
         if (Array.isArray(response.data)) {
           return response.data;
         }
@@ -87,30 +113,25 @@ export const useCasesApi = createApi({
       }),
       providesTags: (result, error, id) => [{ type: "UseCase", id }],
       transformResponse: (response: {
-        data: UseCase;
+        data?: UseCase;
         error?: boolean;
         message?: string;
       }) => {
+        // Handle response structure: { data: UseCase, error: boolean, message: string }
         if (response.data) {
           return response.data;
         }
+        // Fallback: if response is the UseCase directly
         return response as any;
       },
     }),
 
     createUseCase: builder.mutation<UseCase, CreateUseCaseData>({
       query: (data) => {
-        const payload: CreateUseCaseData = {
-          ...data,
-          regulatory_scope: Array.isArray(data.regulatory_scope)
-            ? data.regulatory_scope.filter((x) => x.trim() !== "")
-            : [],
-        };
-
         return {
           url: "/use-cases",
           method: "POST",
-          data: payload,
+          data: data,
         };
       },
       invalidatesTags: [{ type: "UseCase", id: "LIST" }],

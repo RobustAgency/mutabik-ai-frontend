@@ -1,16 +1,11 @@
 "use client";
 
-// import { useRouter } from 'next/router';
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Edit, Eye, Trash2 } from 'lucide-react'
 import React from 'react'
+import { AiModel } from '@/service/app/aiModels';
 
 interface DetailsHeaderProps {
-    aiModel: {
-        id: string | number;
-        name: string;
-    };
+    aiModel: AiModel;
 }
 
 const DetailsHeader: React.FC<DetailsHeaderProps> = ({ aiModel }) => {
@@ -31,10 +26,10 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({ aiModel }) => {
                         </Button> */}
                         <div>
                             <h1 className="font-sans font-semibold text-xl sm:text-2xl text-[#1D2939]">{aiModel.name}</h1>
-                            <p className="font-sans text-xs sm:text-sm text-[#667085] mt-1">AI Model ID: {aiModel.id}</p>
+                            <p className="font-sans text-xs sm:text-sm text-[#667085] mt-1">AI Model ID: {aiModel.display_id || aiModel.id}</p>
                         </div>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                    {/* <div className="flex gap-2 flex-wrap">
                         <Button
                             variant="outline"
                             size="sm"
@@ -59,7 +54,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({ aiModel }) => {
                             <Trash2 className="w-4 h-4" />
                             <span className="font-sans text-sm">Delete</span>
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             </CardContent>
         </Card>

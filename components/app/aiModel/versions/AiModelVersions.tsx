@@ -7,8 +7,9 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
-import { AiModelVersion } from "@/service/app/aiModelVersions";
+import { AiModelVersion, AiModelVersionFilters } from "@/service/app/aiModelVersions";
 import { formatDate } from "@/lib/helpers/ui";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import {
     Dialog,
     DialogContent,
@@ -25,8 +26,9 @@ const formatCategory = (value: unknown): string => {
 };
 
 const AiModelVersions: React.FC = () => {
-    const { aiModelVersions, loading, deleteAiModelVersion } = useAiModelVersions();
     const router = useRouter();
+    const [filters, setFilters] = React.useState<AiModelVersionFilters>({});
+    const { aiModelVersions, loading, deleteAiModelVersion } = useAiModelVersions(filters);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [versionToDelete, setVersionToDelete] = React.useState<AiModelVersion | null>(null);
 
@@ -47,10 +49,10 @@ const AiModelVersions: React.FC = () => {
 
     const columns: ColumnDef<AiModelVersion>[] = [
         {
-            accessorKey: "id",
+            accessorKey: "display_id",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    ID
+                    AI Model Version ID
                 </div>
             ),
             cell: ({ getValue }) => (
@@ -138,7 +140,7 @@ const AiModelVersions: React.FC = () => {
             accessorKey: "deployment_status",
             header: () => (
                 <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-                    Operational
+                    Deployment
                 </div>
             ),
             cell: ({ getValue }) => {
@@ -147,17 +149,20 @@ const AiModelVersions: React.FC = () => {
                 let badgeClasses = baseClasses;
 
                 switch (status) {
-                    case 'deployed':
+                    case 'production':
                         badgeClasses += " bg-green-100 text-green-800";
                         break;
-                    case 'deploying':
+                    case 'staging':
                         badgeClasses += " bg-blue-100 text-blue-800";
                         break;
-                    case 'failed':
-                        badgeClasses += " bg-red-100 text-red-800";
-                        break;
-                    case 'rollback':
+                    case 'testing':
                         badgeClasses += " bg-amber-100 text-amber-800";
+                        break;
+                    case 'not_deployed':
+                        badgeClasses += " bg-gray-100 text-gray-800";
+                        break;
+                    case 'retired':
+                        badgeClasses += " bg-gray-200 text-gray-700";
                         break;
                     default:
                         badgeClasses += " bg-gray-100 text-gray-800";
@@ -183,23 +188,23 @@ const AiModelVersions: React.FC = () => {
                 let badgeClasses = baseClasses;
 
                 switch (stage) {
-                    case 'production':
-                        badgeClasses += " bg-green-100 text-green-800";
-                        break;
-                    case 'staging':
-                        badgeClasses += " bg-blue-100 text-blue-800";
-                        break;
-                    case 'testing':
-                        badgeClasses += " bg-amber-100 text-amber-800";
+                    case 'design':
+                        badgeClasses += " bg-purple-100 text-purple-800";
                         break;
                     case 'development':
                         badgeClasses += " bg-gray-100 text-gray-800";
                         break;
-                    case 'deprecated':
-                        badgeClasses += " bg-red-100 text-red-800";
+                    case 'validation':
+                        badgeClasses += " bg-blue-100 text-blue-800";
+                        break;
+                    case 'deployment':
+                        badgeClasses += " bg-green-100 text-green-800";
+                        break;
+                    case 'monitoring':
+                        badgeClasses += " bg-amber-100 text-amber-800";
                         break;
                     case 'retired':
-                        badgeClasses += " bg-gray-100 text-gray-800";
+                        badgeClasses += " bg-gray-200 text-gray-700";
                         break;
                     default:
                         badgeClasses += " bg-gray-100 text-gray-800";
@@ -233,12 +238,19 @@ const AiModelVersions: React.FC = () => {
                 <CardContent className="flex flex-col flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">All Model Versions</h2>
-                        <Button
-                            onClick={() => router.push("/core-assets/ai-models/versions/create")}
-                            className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-                        >
-                            New AI Model Version
-                        </Button>
+                        <div className="flex items-center gap-4">
+                            <DynamicFilter
+                                filterType="ai-model-versions"
+                                filters={filters}
+                                onFiltersChange={(newFilters) => setFilters(newFilters as AiModelVersionFilters)}
+                            />
+                            <Button
+                                onClick={() => router.push("/core-assets/ai-models/versions/create")}
+                                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            >
+                                New AI Model Version
+                            </Button>
+                        </div>
                     </div>
                     <Card className="bg-white w-full rounded-xl border-0 py-0">
                         <DataTable

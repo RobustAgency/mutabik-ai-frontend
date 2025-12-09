@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+
 
 import React from 'react'
 import ContainerCard from '@/components/custom/ContainerCard'
@@ -10,7 +10,7 @@ const PlansPage = () => {
         <ContainerCard
             title="Plans & Billing"
             description="Choose the perfect plan for your needs"
-        
+
         >
             <Plans />
         </ContainerCard>

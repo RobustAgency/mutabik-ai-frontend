@@ -9,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import { useGetDataSourcesQuery } from "@/app/lib/features/dataSourcesApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DataSourceModalForm from "@/components/app/dataSources/create/DataSourceModalForm";
+import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
 
 interface DatasetFormProps {
     formData: CreateDatasetData;
@@ -21,7 +24,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     setFormData,
     errors,
 }) => {
-    const { data: dataSources = [], isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
+    const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
+    const dataSources = dataSourcesData || [];
 
     const handleInputChange = (field: keyof CreateDatasetData, value: any) => {
         setFormData((prev) => ({
@@ -31,28 +35,45 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     };
 
     const handleArrayAdd = (field: "source_ids" | "data_subject_categories" | "content_types", value: string) => {
-        // Convert to string and trim (handles numeric IDs from API)
-        const stringValue = String(value).trim();
-        if (stringValue && !formData[field]?.includes(stringValue)) {
-            setFormData((prev) => ({
-                ...prev,
-                [field]: [...(prev[field] || []), stringValue],
-            }));
+        if (field === "source_ids") {
+            // Convert to integer for source_ids
+            const intValue = parseInt(value, 10);
+            if (!isNaN(intValue) && !formData.source_ids.includes(intValue)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    source_ids: [...prev.source_ids, intValue],
+                }));
+            }
+        } else {
+            // For other fields, use string
+            const stringValue = String(value).trim();
+            if (stringValue && !formData[field]?.includes(stringValue)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    [field]: [...(prev[field] || []), stringValue],
+                }));
+            }
         }
     };
 
-    const handleArrayRemove = (field: "source_ids" | "data_subject_categories" | "content_types", valueToRemove: string) => {
-        setFormData((prev) => ({
-            ...prev,
-            [field]: (prev[field] || []).filter((item) => item !== valueToRemove),
-        }));
+    const handleArrayRemove = (field: "source_ids" | "data_subject_categories" | "content_types", valueToRemove: string | number) => {
+        if (field === "source_ids") {
+            const intValue = typeof valueToRemove === 'string' ? parseInt(valueToRemove, 10) : valueToRemove;
+            setFormData((prev) => ({
+                ...prev,
+                source_ids: prev.source_ids.filter((id) => id !== intValue),
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [field]: (prev[field] || []).filter((item) => item !== valueToRemove),
+            }));
+        }
     };
 
     // Show consent fields only when lawful_basis is "Consent"
     const showConsentFields = formData.lawful_basis === "Consent";
 
-    // Show lawful basis when contains_pii is "Yes"
-    const showLawfulBasis = formData.contains_pii === "Yes";
 
     return (
         <div className="space-y-6">
@@ -62,7 +83,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Dataset Name *</Label>
+                        <Label htmlFor="name">Dataset Name <span className="text-red-500">*</span></Label>
                         <Input
                             id="name"
                             value={formData.name}
@@ -76,29 +97,27 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="purpose">Purpose *</Label>
-                        <Select
-                            value={formData.purpose}
-                            onValueChange={(value) => handleInputChange("purpose", value)}
-                        >
-                            <SelectTrigger className={errors.purpose ? "border-destructive w-full" : "w-full"}>
-                                <SelectValue placeholder="Select purpose" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="train">Train</SelectItem>
-                                <SelectItem value="val">Validation</SelectItem>
-                                <SelectItem value="test">Test</SelectItem>
-                                <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="analytics">Analytics</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Label htmlFor="purpose">Purpose <span className="text-red-500">*</span></Label>
+                        <CustomMultiSelect
+                            options={[
+                                { value: "train", label: "Train" },
+                                { value: "val", label: "Validation" },
+                                { value: "test", label: "Test" },
+                                { value: "online", label: "Online" },
+                                { value: "analytics", label: "Analytics" },
+                            ]}
+                            value={formData.purpose || []}
+                            onChange={(value) => handleInputChange("purpose", value)}
+                            placeholder="Select purpose(s)"
+                            error={!!errors.purpose}
+                        />
                         {errors.purpose && (
                             <p className="text-sm text-destructive">{errors.purpose[0]}</p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="owner_team">Owner Team *</Label>
+                        <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
                         <Input
                             id="owner_team"
                             value={formData.owner_team}
@@ -119,28 +138,31 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                         value={formData.schema_summary || ""}
                         onChange={(e) => handleInputChange("schema_summary", e.target.value)}
                         placeholder="Optional schema description"
-                        rows={3}
+                        className={`min-h-32 resize-none ${errors.schema_summary ? "border-red-500" : ""}`}
                     />
                 </div>
             </div>
 
             {/* Data Sources */}
             <div className="space-y-4">
-                <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Data Sources *</h3>
+                <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Data Sources <span className="text-red-500">*</span></h3>
                 <div className="space-y-2">
                     <Label htmlFor="source_ids_picker">Select data source</Label>
-                    <Select onValueChange={(value) => handleArrayAdd("source_ids", value)} disabled={isDataSourcesLoading}>
-                        <SelectTrigger id="source_ids_picker" className="w-full">
-                            <SelectValue placeholder={isDataSourcesLoading ? "Loading sources..." : "Choose a data source"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {dataSources.map((source) => (
-                                <SelectItem key={source.id} value={source.id}>
-                                    {source.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <SelectWithInlineCreate
+                        value=""
+                        onValueChange={(value) => handleArrayAdd("source_ids", value)}
+                        options={dataSources.map((source) => ({
+                            id: source.id,
+                            label: source.name,
+                            value: source.id,
+                        }))}
+                        isLoading={isDataSourcesLoading}
+                        isEmpty={!isDataSourcesLoading && dataSources.length === 0}
+                        entityName="Data Source"
+                        modalForm={DataSourceModalForm}
+                        placeholder={isDataSourcesLoading ? "Loading sources..." : "Choose a data source"}
+                        error={!!errors.source_ids}
+                    />
                     {errors.source_ids && (
                         <p className="text-sm text-destructive">{errors.source_ids[0]}</p>
                     )}
@@ -149,7 +171,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                 {formData.source_ids && formData.source_ids.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                         {formData.source_ids.map((sourceId) => {
-                            const source = dataSources.find((s) => s.id === sourceId);
+                            const source = dataSources.find((s) => String(s.id) === String(sourceId));
                             return (
                                 <Badge key={sourceId} variant="light" className="flex items-center gap-1">
                                     {source?.name || sourceId}
@@ -173,9 +195,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="sensitivity">Sensitivity *</Label>
+                        <Label htmlFor="sensitivity">Sensitivity <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.sensitivity}
+                            key={`sensitivity-${formData.sensitivity || 'empty'}`}
+                            value={formData.sensitivity || ""}
                             onValueChange={(value) => handleInputChange("sensitivity", value)}
                         >
                             <SelectTrigger className={errors.sensitivity ? "border-destructive w-full" : "w-full"}>
@@ -194,9 +217,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="contains_pii">Contains PII *</Label>
+                        <Label htmlFor="contains_pii">Contains PII <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.contains_pii}
+                            key={`contains_pii-${formData.contains_pii || 'empty'}`}
+                            value={formData.contains_pii || ""}
                             onValueChange={(value) => handleInputChange("contains_pii", value)}
                         >
                             <SelectTrigger className={errors.contains_pii ? "border-destructive w-full" : "w-full"}>
@@ -213,9 +237,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="controller_role">Controller Role *</Label>
+                        <Label htmlFor="controller_role">Controller Role <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.controller_role}
+                            key={`controller_role-${formData.controller_role || 'empty'}`}
+                            value={formData.controller_role || ""}
                             onValueChange={(value) => handleInputChange("controller_role", value)}
                         >
                             <SelectTrigger className={errors.controller_role ? "border-destructive w-full" : "w-full"}>
@@ -233,12 +258,12 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
                 </div>
 
-                {/* Data Subject Categories */}
+                {/* Data Subject Categories (Optional) */}
                 <div className="space-y-2">
-                    <Label htmlFor="data_subject_categories_picker">Data Subject Categories *</Label>
+                    <Label htmlFor="data_subject_categories_picker">Data Subject Categories</Label>
                     <Select onValueChange={(value) => handleArrayAdd("data_subject_categories", value)}>
                         <SelectTrigger id="data_subject_categories_picker" className="w-full">
-                            <SelectValue placeholder="Choose categories" />
+                            <SelectValue placeholder="Choose categories (optional)" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Customers">Customers</SelectItem>
@@ -272,69 +297,82 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                 )}
             </div>
 
-            {/* Lawful Basis (Required if PII=Yes, AC-02) */}
-            {showLawfulBasis && (
-                <div className="space-y-4">
-                    <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Lawful Basis (Required for PII)</h3>
+            {/* Lawful Basis (Always Required) */}
+            <div className="space-y-4">
+                <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Lawful Basis</h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2 w-full">
-                            <Label htmlFor="lawful_basis">Lawful Basis *</Label>
-                            <Select
-                                value={formData.lawful_basis || ""}
-                                onValueChange={(value) => handleInputChange("lawful_basis", value)}
-                            >
-                                <SelectTrigger className={errors.lawful_basis ? "border-destructive w-full" : "w-full"}>
-                                    <SelectValue placeholder="Select lawful basis" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Consent">Consent</SelectItem>
-                                    <SelectItem value="Contract">Contract</SelectItem>
-                                    <SelectItem value="Legal Obligation">Legal Obligation</SelectItem>
-                                    <SelectItem value="Legitimate Interests">Legitimate Interests</SelectItem>
-                                    <SelectItem value="Public Task">Public Task</SelectItem>
-                                    <SelectItem value="Vital Interests">Vital Interests</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.lawful_basis && (
-                                <p className="text-sm text-destructive">{errors.lawful_basis[0]}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="lawful_basis_detail">Lawful Basis Detail</Label>
-                            <Input
-                                id="lawful_basis_detail"
-                                value={formData.lawful_basis_detail || ""}
-                                onChange={(e) => handleInputChange("lawful_basis_detail", e.target.value)}
-                                placeholder="Optional detail or link to justification"
-                            />
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 w-full">
+                        <Label htmlFor="lawful_basis">Lawful Basis <span className="text-red-500">*</span></Label>
+                        <Select
+                            key={`lawful_basis-${formData.lawful_basis || 'empty'}`}
+                            value={formData.lawful_basis || ""}
+                            onValueChange={(value) => handleInputChange("lawful_basis", value)}
+                        >
+                            <SelectTrigger className={errors.lawful_basis ? "border-destructive w-full" : "w-full"}>
+                                <SelectValue placeholder="Select lawful basis" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Consent">Consent</SelectItem>
+                                <SelectItem value="Contract">Contract</SelectItem>
+                                <SelectItem value="Legal Obligation">Legal Obligation</SelectItem>
+                                <SelectItem value="Legitimate Interests">Legitimate Interests</SelectItem>
+                                <SelectItem value="Public Task">Public Task</SelectItem>
+                                <SelectItem value="Vital Interests">Vital Interests</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {errors.lawful_basis && (
+                            <p className="text-sm text-destructive">{errors.lawful_basis[0]}</p>
+                        )}
                     </div>
 
-                    {/* Info message about consent_required */}
-                    {formData.lawful_basis === "Consent" && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                            <p className="text-sm text-blue-800">
-                                <strong>Note:</strong> When Lawful Basis is "Consent", the consent_required flag will be automatically set to true. Please provide consent coverage details below.
-                            </p>
-                        </div>
-                    )}
+                    <div className="space-y-2">
+                        <Label htmlFor="lawful_basis_detail">Lawful Basis Detail</Label>
+                        <Input
+                            id="lawful_basis_detail"
+                            value={formData.lawful_basis_detail || ""}
+                            onChange={(e) => handleInputChange("lawful_basis_detail", e.target.value)}
+                            placeholder="Optional detail or link to justification"
+                        />
+                    </div>
+                </div>
 
-                    {/* Consent-specific fields (AC-02) */}
-                    {showConsentFields && (
+                {/* Consent fields - Only shown when lawful_basis is "Consent" */}
+                {showConsentFields && (
+                    <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2 w-full">
+                                <Label htmlFor="consent_required">Consent Required <span className="text-red-500">*</span></Label>
+                                <Select
+                                    key={`consent_required-${formData.consent_required ? 'true' : 'false'}`}
+                                    value={formData.consent_required ? "Yes" : "No"}
+                                    onValueChange={(value) => handleInputChange("consent_required", value === "Yes")}
+                                >
+                                    <SelectTrigger className={errors.consent_required ? "border-destructive w-full" : "w-full"}>
+                                        <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Yes">Yes</SelectItem>
+                                        <SelectItem value="No">No</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.consent_required && (
+                                    <p className="text-sm text-destructive">{errors.consent_required[0]}</p>
+                                )}
+                            </div>
+
                             <div className="space-y-2">
-                                <Label htmlFor="consent_coverage_pct">Consent Coverage % *</Label>
+                                <Label htmlFor="consent_coverage_pct">Consent Coverage % (0-100) <span className="text-red-500">*</span></Label>
                                 <Input
+                                    required
                                     id="consent_coverage_pct"
                                     type="number"
                                     min="0"
                                     max="100"
-                                    value={formData.consent_coverage_pct || ""}
-                                    onChange={(e) => handleInputChange("consent_coverage_pct", parseInt(e.target.value) || 0)}
+                                    value={formData.consent_coverage_pct !== undefined && formData.consent_coverage_pct !== null ? formData.consent_coverage_pct : ""}
+                                    onChange={(e) => handleInputChange("consent_coverage_pct", e.target.value ? parseInt(e.target.value, 10) : undefined)}
                                     className={errors.consent_coverage_pct ? "border-destructive" : ""}
-                                    placeholder="0-100"
+                                    placeholder="0-100 (optional)"
                                 />
                                 {errors.consent_coverage_pct && (
                                     <p className="text-sm text-destructive">{errors.consent_coverage_pct[0]}</p>
@@ -342,22 +380,23 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="consent_source_ref">Consent Source Reference *</Label>
+                                <Label htmlFor="consent_source_ref">Consent Source Reference <span className="text-red-500">*</span></Label>
                                 <Input
+                                    required
                                     id="consent_source_ref"
                                     value={formData.consent_source_ref || ""}
                                     onChange={(e) => handleInputChange("consent_source_ref", e.target.value)}
                                     className={errors.consent_source_ref ? "border-destructive" : ""}
-                                    placeholder="Link to consent artifacts"
+                                    placeholder="Link to consent artifacts (optional)"
                                 />
                                 {errors.consent_source_ref && (
                                     <p className="text-sm text-destructive">{errors.consent_source_ref[0]}</p>
                                 )}
                             </div>
                         </div>
-                    )}
-                </div>
-            )}
+                    </>
+                )}
+            </div>
 
             {/* Licensing */}
             <div className="space-y-4">
@@ -375,12 +414,13 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="license_type">License Type</Label>
+                        <Label htmlFor="license_type">License Type <span className="text-red-500">*</span></Label>
                         <Select
+                            key={`license_type-${formData.license_type || 'empty'}`}
                             value={formData.license_type || ""}
                             onValueChange={(value) => handleInputChange("license_type", value)}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className={errors.license_type ? "border-destructive w-full" : "w-full"}>
                                 <SelectValue placeholder="Select license type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -391,6 +431,9 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                                 <SelectItem value="Dataset EULA">Dataset EULA</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.license_type && (
+                            <p className="text-sm text-destructive">{errors.license_type[0]}</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -401,9 +444,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="data_structure">Data Structure *</Label>
+                        <Label htmlFor="data_structure">Data Structure <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.data_structure}
+                            key={`data_structure-${formData.data_structure || 'empty'}`}
+                            value={formData.data_structure || ""}
                             onValueChange={(value) => handleInputChange("data_structure", value)}
                         >
                             <SelectTrigger className={errors.data_structure ? "border-destructive w-full" : "w-full"}>
@@ -421,9 +465,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="storage_format">Storage Format *</Label>
+                        <Label htmlFor="storage_format">Storage Format <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.storage_format}
+                            key={`storage_format-${formData.storage_format || 'empty'}`}
+                            value={formData.storage_format || ""}
                             onValueChange={(value) => handleInputChange("storage_format", value)}
                         >
                             <SelectTrigger className={errors.storage_format ? "border-destructive w-full" : "w-full"}>
@@ -450,9 +495,10 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                     </div>
 
                     <div className="space-y-2 w-full">
-                        <Label htmlFor="cross_border_transfer">Cross-Border Transfer *</Label>
+                        <Label htmlFor="cross_border_transfer">Cross-Border Transfer <span className="text-red-500">*</span></Label>
                         <Select
-                            value={formData.cross_border_transfer}
+                            key={`cross_border_transfer-${formData.cross_border_transfer || 'empty'}`}
+                            value={formData.cross_border_transfer || ""}
                             onValueChange={(value) => handleInputChange("cross_border_transfer", value)}
                         >
                             <SelectTrigger className={errors.cross_border_transfer ? "border-destructive w-full" : "w-full"}>

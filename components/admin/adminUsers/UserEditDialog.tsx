@@ -183,6 +183,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = ({
                         <Label htmlFor="role">Role</Label>
                         <div className="mt-1">
                             <Select
+                                key={`role-${formData.role || 'empty'}`}
                                 value={formData.role || ''}
                                 onValueChange={(value) => handleInputChange('role', value)}
                                 disabled={saving}

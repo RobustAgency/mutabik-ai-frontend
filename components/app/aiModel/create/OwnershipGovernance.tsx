@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -10,8 +10,16 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { FormDataType } from "../types/aiModelTypes";
-import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
-import { useGetStakeholdersByTypeQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import StakeholderModalForm from "@/components/app/stakeholders/create/StakeholderModalForm";
+import { HelpCircle } from "lucide-react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface OwnershipGovernanceProps {
     formData: FormDataType;
@@ -24,20 +32,8 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
     setFormData,
     errors = {},
 }) => {
-    const [sourceOrgInput, setSourceOrgInput] = useState(formData.source_organization_id || "");
-    const [modelOwnerInput, setModelOwnerInput] = useState(formData.custodian_id || "");
-    const [vendorInput, setVendorInput] = useState(formData.vendor_id || "none");
-
     // Fetch data from APIs
-    const { data: vendors = [], isLoading: vendorsLoading, error: vendorsError } = useGetVendorsQuery();
-    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersByTypeQuery('vendor_org');
-    const { data: custodians = [], isLoading: custodiansLoading, error: custodiansError } = useGetStakeholdersByTypeQuery('person');
-
-    useEffect(() => {
-        setSourceOrgInput(formData.source_organization_id || "");
-        setModelOwnerInput(formData.custodian_id || "");
-        setVendorInput(formData.vendor_id || "none");
-    }, [formData]);
+    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersQuery();
 
     // Helper to check if field has error
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
@@ -51,244 +47,147 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
             {/* Section Title */}
             <div className="flex flex-col gap-2">
                 <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
-                    Ownership
+                    Ownership & Responsibility
                 </h2>
                 <hr className="border-gray-200" />
             </div>
 
             {/* Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {/* Organizational Role */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Ownership Category */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Organizational Role <span className="text-red-500">*</span>
+                        Ownership Category <span className="text-red-500">*</span>
                     </Label>
                     <Select
-                        value={formData.organizational_role}
+                        value={formData.ownership_category}
                         onValueChange={(value) =>
                             setFormData((prev) => ({
                                 ...prev,
-                                organizational_role: value as FormDataType["organizational_role"],
+                                ownership_category: value as FormDataType["ownership_category"],
                             }))
                         }
                     >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("organizational_role") ? "border-red-500" : "border-[#D0D5DD]"
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("ownership_category") || hasError("ownership_type") ? "border-red-500" : "border-[#D0D5DD]"
                             } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Developer" />
+                            <SelectValue placeholder="Select Ownership Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="internal">Internal</SelectItem>
+                            <SelectItem value="external">External</SelectItem>
+                            <SelectItem value="joint">Joint</SelectItem>
+                            <SelectItem value="open_source">Open Source</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {(hasError("ownership_category") || hasError("ownership_type")) && (
+                        <p className="text-sm text-red-500">{getError("ownership_category") || getError("ownership_type")}</p>
+                    )}
+                </div>
+
+                {/* Responsible Organization Role */}
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1">
+                        <Label className="text-sm text-[#344054] font-medium">
+                            Responsible Organization Role <span className="text-red-500">*</span>
+                        </Label>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs">Defines our legal function e.g., Developer or Deployer.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                    <Select
+                        value={formData.responsible_org_role}
+                        onValueChange={(value) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                responsible_org_role: value as FormDataType["responsible_org_role"],
+                            }))
+                        }
+                    >
+                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("responsible_org_role") || hasError("organizational_role") ? "border-red-500" : "border-[#D0D5DD]"
+                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
+                            <SelectValue placeholder="Select Role" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="developer">Developer</SelectItem>
-                            <SelectItem value="importer">Importer</SelectItem>
                             <SelectItem value="deployer">Deployer</SelectItem>
+                            <SelectItem value="importer">Importer</SelectItem>
+                            <SelectItem value="provider">Provider</SelectItem>
                             <SelectItem value="integrator">Integrator</SelectItem>
-                            <SelectItem value="consumer">Consumer</SelectItem>
-                            <SelectItem value="collaborator">Collaborator</SelectItem>
                         </SelectContent>
                     </Select>
-                    {hasError("organizational_role") && (
-                        <p className="text-sm text-red-500">{getError("organizational_role")}</p>
+                    {(hasError("responsible_org_role") || hasError("organizational_role")) && (
+                        <p className="text-sm text-red-500">{getError("responsible_org_role") || getError("organizational_role")}</p>
                     )}
                 </div>
 
-                {/* Ownership Type */}
+                {/* Business Owner */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Ownership Type <span className="text-red-500">*</span>
+                        Business Owner
                     </Label>
-                    <Select
-                        value={formData.ownership_type}
-                        onValueChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                ownership_type: value as FormDataType["ownership_type"],
-                            }))
-                        }
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("ownership_type") ? "border-red-500" : "border-[#D0D5DD]"
-                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Internal" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="internal">Internal</SelectItem>
-                            <SelectItem value="external">External</SelectItem>
-                            <SelectItem value="joint">Joint</SelectItem>
-                            <SelectItem value="licensed">Licensed</SelectItem>
-                            <SelectItem value="open_source">Open Source</SelectItem>
-                            <SelectItem value="saas">SaaS</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {hasError("ownership_type") && (
-                        <p className="text-sm text-red-500">{getError("ownership_type")}</p>
-                    )}
-                </div>
-
-                {/* Current Owner */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Current Owner
-                    </Label>
-                    <Select
-                        value="internal"
-                        onValueChange={() => { }}
-                    >
-                        <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                            <SelectValue placeholder="Internal" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="internal">Internal</SelectItem>
-                            <SelectItem value="external">External</SelectItem>
-                            <SelectItem value="joint">Joint</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-
-            </div>
-
-            {/* Additional Fields Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Development Source */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Development Source <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                        value={formData.development_source}
-                        onValueChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                development_source: value as FormDataType["development_source"],
-                            }))
-                        }
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("development_source") ? "border-red-500" : "border-[#D0D5DD]"
-                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder="Internal Development" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="internal_development">Internal Development</SelectItem>
-                            <SelectItem value="external_vendor">External Vendor</SelectItem>
-                            <SelectItem value="open_source_community">Open Source Community</SelectItem>
-                            <SelectItem value="cloud_provider">Cloud Provider</SelectItem>
-                            <SelectItem value="partnership">Partnership</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {hasError("development_source") && (
-                        <p className="text-sm text-red-500">{getError("development_source")}</p>
-                    )}
-                </div>
-                {/* Source Organization / Stakeholder */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Source Organization / Stakeholder <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                        value={sourceOrgInput || ""}
+                    <SelectWithInlineCreate
+                        value={formData.business_owner_id ? String(formData.business_owner_id) : ""}
                         onValueChange={(value) => {
-                            setSourceOrgInput(value);
-                            setFormData((prev) => ({ ...prev, source_organization_id: value }));
+                            setFormData((prev) => ({ ...prev, business_owner_id: value || null }));
                         }}
-                        disabled={stakeholdersLoading}
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("source_organization_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder={stakeholdersLoading ? "Loading..." : "Select stakeholder..."} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {stakeholders.length > 0 ? (
-                                stakeholders.map((stakeholder) => (
-                                    <SelectItem key={stakeholder.id} value={stakeholder.id}>
-                                        {stakeholder.display_name}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    No stakeholders available
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
-                    {hasError("source_organization_id") && (
-                        <p className="text-sm text-red-500">{getError("source_organization_id")}</p>
+                        options={stakeholders.map((stakeholder) => ({
+                            id: stakeholder.id,
+                            label: stakeholder.display_name,
+                            value: String(stakeholder.id),
+                        }))}
+                        isLoading={stakeholdersLoading}
+                        isEmpty={!stakeholdersLoading && stakeholders.length === 0}
+                        entityName="Stakeholder"
+                        modalForm={StakeholderModalForm}
+                        placeholder={stakeholdersLoading ? "Loading stakeholders..." : "Select business owner..."}
+                        triggerClassName={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("business_owner_id") ? "border-red-500" : "border-[#D0D5DD]"
+                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}
+                        error={hasError("business_owner_id")}
+                    />
+                    {hasError("business_owner_id") && (
+                        <p className="text-sm text-red-500">{getError("business_owner_id")}</p>
                     )}
                     {hasApiError(stakeholdersError) && (
-                        <p className="text-sm text-red-500">Failed to load stakeholders</p>
+                        <p className="text-sm text-red-500">Failed to load stakeholders. Check API connection.</p>
                     )}
                 </div>
 
-                {/* Current Owner / Custodian */}
+                {/* Model Steward / Custodian */}
                 <div className="flex flex-col gap-1">
                     <Label className="text-sm text-[#344054] font-medium">
-                        Model Owner / Custodian <span className="text-red-500">*</span>
+                        Model Steward / Custodian
                     </Label>
-                    <Select
-                        value={modelOwnerInput || ""}
+                    <SelectWithInlineCreate
+                        value={formData.steward_custodian_id ? String(formData.steward_custodian_id) : ""}
                         onValueChange={(value) => {
-                            setModelOwnerInput(value);
-                            setFormData((prev) => ({ ...prev, custodian_id: value }));
+                            setFormData((prev) => ({ ...prev, steward_custodian_id: value || null }));
                         }}
-                        disabled={custodiansLoading}
-                    >
-                        <SelectTrigger className={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("custodian_id") ? "border-red-500" : "border-[#D0D5DD]"} bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}>
-                            <SelectValue placeholder={custodiansLoading ? "Loading..." : "Select owner..."} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {custodians.length > 0 ? (
-                                custodians.map((custodian) => (
-                                    <SelectItem key={custodian.id} value={custodian.id}>
-                                        {custodian.display_name}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    No custodians available
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
-                    {hasError("custodian_id") && (
-                        <p className="text-sm text-red-500">{getError("custodian_id")}</p>
+                        options={stakeholders.map((custodian) => ({
+                            id: custodian.id,
+                            label: custodian.display_name,
+                            value: String(custodian.id),
+                        }))}
+                        isLoading={stakeholdersLoading}
+                        isEmpty={!stakeholdersLoading && stakeholders.length === 0}
+                        entityName="Stakeholder"
+                        modalForm={StakeholderModalForm}
+                        placeholder={stakeholdersLoading ? "Loading custodians..." : "Select steward..."}
+                        triggerClassName={`w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border ${hasError("steward_custodian_id") || hasError("custodian_id") ? "border-red-500" : "border-[#D0D5DD]"
+                            } bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0`}
+                        error={hasError("steward_custodian_id") || hasError("custodian_id")}
+                    />
+                    {(hasError("steward_custodian_id") || hasError("custodian_id")) && (
+                        <p className="text-sm text-red-500">{getError("steward_custodian_id") || getError("custodian_id")}</p>
                     )}
-                    {hasApiError(custodiansError) && (
-                        <p className="text-sm text-red-500">Failed to load custodians</p>
-                    )}
-                </div>
-
-                {/* Vendor */}
-                <div className="flex flex-col gap-1">
-                    <Label className="text-sm text-[#344054] font-medium">
-                        Vendor (if applicable)
-                    </Label>
-                    <Select
-                        value={vendorInput || "none"}
-                        onValueChange={(value) => {
-                            setVendorInput(value);
-                            setFormData((prev) => ({
-                                ...prev,
-                                vendor_id: value === "none" ? null : value
-                            }));
-                        }}
-                        disabled={vendorsLoading}
-                    >
-                        <SelectTrigger className="w-full gap-2 opacity-100 px-4 py-5.5 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] cursor-pointer focus:border-[#D0D5DD] focus:-ring-0">
-                            <SelectValue placeholder={vendorsLoading ? "Loading..." : "None / Internal"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="none">None / Internal</SelectItem>
-                            {vendors.length > 0 ? (
-                                vendors.map((vendor) => (
-                                    <SelectItem key={vendor.id} value={vendor.id}>
-                                        {vendor.name}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <div className="px-2 py-1.5 text-sm text-gray-500">
-                                    No vendors available
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
-                    {hasApiError(vendorsError) && (
-                        <p className="text-sm text-red-500">Failed to load vendors</p>
+                    {hasApiError(stakeholdersError) && (
+                        <p className="text-sm text-red-500">Failed to load custodians. Check API connection.</p>
                     )}
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm'
 import Link from 'next/link';
 
-export const runtime = 'edge';
+
 
 export default function ForgotPasswordPage() {
     return (

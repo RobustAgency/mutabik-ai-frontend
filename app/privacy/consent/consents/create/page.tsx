@@ -1,3 +1,5 @@
+
+
 import CreateUserConsent from "@/components/app/userConsents/create/CreateUserConsent";
 
 const CreateUserConsentPage = () => {

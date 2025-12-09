@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Stakeholder } from "@/app/lib/features/stakeholdersApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
+import { formatDateLongTime } from "@/lib/helpers/date";
 
 interface StakeholderFormReadOnlyProps {
     stakeholder: Stakeholder;
@@ -13,7 +14,8 @@ interface StakeholderFormReadOnlyProps {
 const StakeholderFormReadOnly: React.FC<StakeholderFormReadOnlyProps> = ({
     stakeholder,
 }) => {
-    const { data: vendors = [] } = useGetVendorsQuery();
+    const { data: vendorsResponse } = useGetVendorsQuery();
+    const vendors = vendorsResponse?.data ?? [];
 
     // Get vendor name if vendor_id exists
     const vendor = stakeholder.vendor_id
@@ -34,19 +36,7 @@ const StakeholderFormReadOnly: React.FC<StakeholderFormReadOnlyProps> = ({
     };
 
     // Helper to format date
-    const formatDate = (dateString: string): string => {
-        try {
-            return new Date(dateString).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            });
-        } catch {
-            return dateString;
-        }
-    };
+    const formatDate = (dateString: string): string => formatDateLongTime(dateString);
 
     return (
         <div className="space-y-6">
@@ -120,7 +110,7 @@ const StakeholderFormReadOnly: React.FC<StakeholderFormReadOnlyProps> = ({
                     <div className="space-y-2">
                         <Label htmlFor="vendor_id-display">Linked Vendor</Label>
                         <p className="font-sans font-normal text-base leading-6 tracking-normal text-[#1D2939]">
-                            {vendor ? vendor.name : stakeholder.vendor_id || "Not linked"}
+                            {vendor ? vendor.vendor_name : stakeholder.vendor_id || "Not linked"}
                         </p>
                     </div>
 
@@ -183,8 +173,8 @@ const StakeholderFormReadOnly: React.FC<StakeholderFormReadOnlyProps> = ({
                         <p className="font-sans font-normal text-base leading-6 tracking-normal text-[#1D2939]">
                             <span
                                 className={`inline-flex items-center justify-center h-[24px] rounded-full text-xs font-medium px-2 ${stakeholder.active
-                                        ? "bg-[#ECF3FF] text-[#465FFF]"
-                                        : "bg-[#F2F4F7] text-[#667085]"
+                                    ? "bg-[#ECF3FF] text-[#465FFF]"
+                                    : "bg-[#F2F4F7] text-[#667085]"
                                     }`}
                             >
                                 {stakeholder.active ? "Active" : "Inactive"}

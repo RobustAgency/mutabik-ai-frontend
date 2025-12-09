@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDatasetsQuery, useDeleteDatasetMutation } from "@/app/lib/features/datasetsApi";
+import { useGetDatasetsQuery, useDeleteDatasetMutation, DatasetFilters } from "@/app/lib/features/datasetsApi";
 import { Dataset } from "@/app/lib/features/datasetsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const Datasets: React.FC = () => {
   const router = useRouter();
+  const [filters, setFilters] = React.useState<DatasetFilters>({});
 
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
@@ -25,7 +27,7 @@ const Datasets: React.FC = () => {
 
   const [deleteDataset, { isLoading: isDeleting }] = useDeleteDatasetMutation();
 
-  const { data: datasets, isLoading } = useGetDatasetsQuery();
+  const { data: datasets, isLoading } = useGetDatasetsQuery(filters);
 
   const handleEditClick = (e: React.MouseEvent, dataset: Dataset) => {
     e.stopPropagation();
@@ -67,6 +69,19 @@ const Datasets: React.FC = () => {
   };
 
   const columns: ColumnDef<Dataset>[] = [
+    {
+      accessorKey: "display_id",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Dataset ID
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {getValue() as string}
+        </div>
+      ),
+    },
     {
       accessorKey: "name",
       header: () => (
@@ -119,9 +134,8 @@ const Datasets: React.FC = () => {
       cell: ({ getValue }) => {
         const containsPii = getValue() as string;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
-            containsPii === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
-          }`}>
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${containsPii === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+            }`}>
             {containsPii}
           </div>
         );
@@ -187,17 +201,24 @@ const Datasets: React.FC = () => {
     <>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EC] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Datasets Registry</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Privacy posture and structure registry for AI eligibility</p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/data/registry/create")}
-              className="h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Dataset
-            </Button>
+            <div className="flex items-center gap-3">
+              <DynamicFilter
+                filterType="datasets"
+                filters={filters}
+                onFiltersChange={(newFilters) => setFilters(newFilters as DatasetFilters)}
+              />
+              <Button
+                onClick={() => router.push("/core-assets/data/registry/create")}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Dataset
+              </Button>
+            </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable

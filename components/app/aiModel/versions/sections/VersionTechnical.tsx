@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CreateAiModelVersionData } from "@/service/app/aiModelVersions";
+import { InfoTooltip } from "@/components/custom/InfoTooltip";
 
 interface Props {
   formData: CreateAiModelVersionData;
@@ -30,25 +31,115 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">Technical</h2>
-        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">Architecture, complexity and modalities</p>
+        <h2 className="font-sans font-semibold text-base tracking-normal text-[#1D2939]">
+          Technical Details
+        </h2>
+        <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+          Architecture, complexity, and input/output modalities.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Release Role <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Defines whether this is an original release, patch, hotfix, or experimental version." />
+          </Label>
+          <Select
+            value={formData.version_role}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, version_role: value as any }))}
+          >
+            <SelectTrigger className={errors.version_role ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['original_release', 'patch', 'hotfix', 'experimental_ab_test'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.version_role && (
+            <p className="text-xs text-red-600 mt-1">{errors.version_role[0]}</p>
+          )}
+        </div>
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Source Type <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Whether the model comes from internal development, a vendor, open source, or a foundation model." />
+          </Label>
+          <Select
+            value={formData.version_source}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, version_source: value as any }))}
+          >
+            <SelectTrigger className={errors.version_source ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['internal_development', 'vendor_model', 'open_source', 'foundation_model'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.version_source && (
+            <p className="text-xs text-red-600 mt-1">{errors.version_source[0]}</p>
+          )}
+        </div>
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Organization&apos;s Involvement <span className="text-red-500 ml-0.5">*</span>
+          </Label>
+          <Select
+            value={formData.our_involvement}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, our_involvement: value as any }))}
+          >
+            <SelectTrigger className={errors.our_involvement ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {['full_development', 'fine_tuning', 'configuration_only', 'integration_only'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.our_involvement && (
+            <p className="text-xs text-red-600 mt-1">{errors.our_involvement[0]}</p>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Architecture Type <span className="text-red-500">*</span></Label>
-          <Input
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Architecture Type <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Underlying structure of the model, such as Transformer, CNN, or Gradient Boosting." />
+          </Label>
+          <Select
             value={formData.architecture_type}
-            onChange={(e) => setFormData(prev => ({ ...prev, architecture_type: e.target.value }))}
-            placeholder="transformer, cnn, rnn, etc."
-            className={`w-full ${errors.architecture_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
-          />
+            onValueChange={(value) => setFormData(prev => ({ ...prev, architecture_type: value as any }))}
+          >
+            <SelectTrigger className={errors.architecture_type ? "border-red-500 focus:border-red-500 w-full" : "w-full"}>
+              <SelectValue placeholder="Select architecture type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="transformer">Transformer</SelectItem>
+              <SelectItem value="cnn">CNN</SelectItem>
+              <SelectItem value="rnn_lstm_gru">RNN/LSTM/GRU</SelectItem>
+              <SelectItem value="gradient_boosting">Gradient Boosting</SelectItem>
+              <SelectItem value="random_forest">Random Forest</SelectItem>
+              <SelectItem value="logistic_regression">Logistic Regression</SelectItem>
+              <SelectItem value="linear_regression">Linear Regression</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
           {errors.architecture_type && (
             <p className="text-xs text-red-600 mt-1">{errors.architecture_type[0]}</p>
           )}
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Complexity Level <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            Model Complexity Level <span className="text-red-500 ml-0.5">*</span>
+            <InfoTooltip content="Reflects architecture depth, parameter count, and compute needs." />
+          </Label>
           <Select
             value={formData.complexity_level}
             onValueChange={(value) => setFormData(prev => ({ ...prev, complexity_level: value as any }))}
@@ -57,8 +148,8 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['simple', 'moderate', 'complex', 'massive'].map(v => (
-                <SelectItem key={v} value={v}>{v.replace('_', ' ')}</SelectItem>
+              {['low', 'moderate', 'high', 'very_high'].map(v => (
+                <SelectItem key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -79,12 +170,12 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
           />
         </div>
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2">Model File Size (GB) <span className="text-red-500">*</span></Label>
+          <Label className="text-sm font-medium text-gray-700 mb-2">Model File Size (GB)</Label>
           <Input
             type="number"
             step="0.001"
             value={formData.model_file_size_gb ?? ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, model_file_size_gb: e.target.value ? parseFloat(e.target.value) : 0 }))}
+            onChange={(e) => setFormData(prev => ({ ...prev, model_file_size_gb: e.target.value ? parseFloat(e.target.value) : null }))}
             placeholder="2.5"
             className={`w-full ${errors.model_file_size_gb ? "border-red-500 focus:border-red-500 w-full" : "w-full"}`}
           />

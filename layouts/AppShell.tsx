@@ -24,6 +24,7 @@ export default function AppShell({ children }: AppShellProps) {
             "/auth/confirm",
             "/logout",
             "/error",
+            "/verify-email",
         ];
         return authRoutes.some(
             (route) => pathname === route || pathname.startsWith(`${route}/`)

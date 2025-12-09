@@ -7,6 +7,7 @@ export interface DatasetSnapshot {
   id: string;
   dataset_id: string;
   version_tag: string;
+  source_created_at: string;
   time_range_start: string;
   time_range_end: string;
   row_count: number | null;
@@ -18,11 +19,24 @@ export interface DatasetSnapshot {
   residency_zone: string;
   storage_uri: string;
   created_at: string;
+  dataset?: {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+  };
+}
+
+// Filter types for Dataset Snapshots
+export interface DatasetSnapshotFilters {
+  per_page?: number | null; // min:1, max:100
+  from?: string | null; // date
+  to?: string | null; // date, after_or_equal:from
 }
 
 export interface CreateDatasetSnapshotData {
-  dataset_id: string;
+  dataset_id: number;
   version_tag: string;
+  source_created_at: string;
   time_range_start: string;
   time_range_end: string;
   row_count?: number;
@@ -93,15 +107,22 @@ export const datasetSnapshotsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["DatasetSnapshot"],
   endpoints: (builder) => ({
-    getDatasetSnapshots: builder.query<DatasetSnapshot[], void>({
-      query: () => ({
+    getDatasetSnapshots: builder.query<
+      DatasetSnapshot[],
+      DatasetSnapshotFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/dataset-snapshots",
         method: "GET",
+        params: filters,
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "DatasetSnapshot" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "DatasetSnapshot" as const,
+                id,
+              })),
               { type: "DatasetSnapshot", id: "LIST" },
             ]
           : [{ type: "DatasetSnapshot", id: "LIST" }],
@@ -123,9 +144,7 @@ export const datasetSnapshotsApi = createApi({
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "DatasetSnapshot", id }],
-      transformResponse: (response: {
-        data: DatasetSnapshot;
-      }) => {
+      transformResponse: (response: { data: DatasetSnapshot }) => {
         if (response.data) {
           return response.data;
         }
@@ -133,7 +152,10 @@ export const datasetSnapshotsApi = createApi({
       },
     }),
 
-    createDatasetSnapshot: builder.mutation<DatasetSnapshot, CreateDatasetSnapshotData>({
+    createDatasetSnapshot: builder.mutation<
+      DatasetSnapshot,
+      CreateDatasetSnapshotData
+    >({
       query: (data) => ({
         url: "/dataset-snapshots",
         method: "POST",
@@ -217,4 +239,3 @@ export const {
   useUpdateDatasetSnapshotMutation,
   useDeleteDatasetSnapshotMutation,
 } = datasetSnapshotsApi;
-

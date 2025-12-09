@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateDatasetSnapshotData } from "@/app/lib/features/datasetSnapshotsApi";
 import { useGetDatasetsQuery } from "@/app/lib/features/datasetsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DatasetModalForm from "@/components/app/datasets/create/DatasetModalForm";
 
 interface DatasetSnapshotFormProps {
   formData: CreateDatasetSnapshotData;
@@ -18,7 +20,8 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const { data: datasets = [], isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
+  const { data: datasetsData, isLoading: isLoadingDatasets } = useGetDatasetsQuery();
+  const datasets = datasetsData || [];
 
   return (
     <div className="space-y-6 pt-6">
@@ -27,36 +30,27 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Snapshot Identification</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="dataset_id">Dataset *</Label>
-            <Select
-              value={formData.dataset_id || undefined}
-              onValueChange={(value) => handleChange("dataset_id", value)}
-              disabled={isLoadingDatasets || isDatasetsError}
-            >
-              <SelectTrigger id="dataset_id" className={`w-full ${errors.dataset_id ? "border-red-500" : ""}`}>
-                <SelectValue
-                  placeholder={
-                    isLoadingDatasets
-                      ? "Loading datasets..."
-                      : isDatasetsError
-                        ? "Failed to load datasets"
-                        : "Select a dataset"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {datasets.map((ds) => (
-                  <SelectItem key={ds.id} value={String(ds.id)}>
-                    {ds.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
+            <SelectWithInlineCreate
+              value={formData.dataset_id ? String(formData.dataset_id) : undefined}
+              onValueChange={(value) => handleChange("dataset_id", value ? Number(value) : undefined)}
+              options={datasets.map((ds) => ({
+                id: String(ds.id),
+                label: ds.name,
+                value: String(ds.id),
+              }))}
+              isLoading={isLoadingDatasets}
+              isEmpty={!isLoadingDatasets && datasets.length === 0}
+              entityName="Dataset"
+              modalForm={DatasetModalForm}
+              placeholder={isLoadingDatasets ? "Loading datasets..." : "Select a dataset"}
+              error={!!errors.dataset_id}
+            />
             {errors.dataset_id && <p className="text-sm text-red-500">{errors.dataset_id[0]}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="version_tag">Version Tag *</Label>
+            <Label htmlFor="version_tag">Version Tag <span className="text-red-500">*</span></Label>
             <Input
               id="version_tag"
               value={formData.version_tag}
@@ -68,7 +62,19 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="time_range_start">Time Range Start *</Label>
+            <Label htmlFor="source_created_at">Created At <span className="text-red-500">*</span></Label>
+            <Input
+              id="source_created_at"
+              type="datetime-local"
+              value={formData.source_created_at}
+              onChange={(e) => handleChange("source_created_at", e.target.value)}
+              className={errors.source_created_at ? "border-red-500" : ""}
+            />
+            {errors.source_created_at && <p className="text-sm text-red-500">{errors.source_created_at[0]}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="time_range_start">Time Range Start <span className="text-red-500">*</span></Label>
             <Input
               id="time_range_start"
               type="datetime-local"
@@ -80,7 +86,7 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="time_range_end">Time Range End *</Label>
+            <Label htmlFor="time_range_end">Time Range End <span className="text-red-500">*</span></Label>
             <Input
               id="time_range_end"
               type="datetime-local"
@@ -147,8 +153,8 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Privacy & Storage</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="residency_zone">Residency Zone *</Label>
-            <Select value={formData.residency_zone} onValueChange={(value) => handleChange("residency_zone", value)}>
+            <Label htmlFor="residency_zone">Residency Zone <span className="text-red-500">*</span></Label>
+            <Select key={`residency_zone-${formData.residency_zone || 'empty'}`} value={formData.residency_zone || ""} onValueChange={(value) => handleChange("residency_zone", value)}>
               <SelectTrigger className={`w-full ${errors.residency_zone ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select residency zone" />
               </SelectTrigger>
@@ -169,7 +175,7 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="storage_uri">Storage URI *</Label>
+            <Label htmlFor="storage_uri">Storage URI <span className="text-red-500">*</span></Label>
             <Input
               id="storage_uri"
               value={formData.storage_uri}

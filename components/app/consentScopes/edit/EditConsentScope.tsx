@@ -20,6 +20,7 @@ const EditConsentScope: React.FC<EditConsentScopeProps> = ({ scopeId }) => {
     purpose: [],
     subject_realm: "",
     jurisdiction: "",
+    source_created_at: "",
     effective_from: "",
     effective_to: "",
   });
@@ -35,6 +36,7 @@ const EditConsentScope: React.FC<EditConsentScopeProps> = ({ scopeId }) => {
         purpose: scope.purpose,
         subject_realm: scope.subject_realm,
         jurisdiction: scope.jurisdiction,
+        source_created_at: scope.source_created_at,
         effective_from: scope.effective_from,
         effective_to: scope.effective_to || "",
       });
@@ -48,6 +50,7 @@ const EditConsentScope: React.FC<EditConsentScopeProps> = ({ scopeId }) => {
     if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
     if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
     if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
+    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
     if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];
 
     setValidationErrors(errors);

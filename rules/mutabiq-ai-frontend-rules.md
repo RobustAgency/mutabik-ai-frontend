@@ -369,7 +369,7 @@
 - - Consistent padding and font styling
     \*/
     const BUTTON_STANDARDS = {
-    primary: 'h-[40px] bg-[#4FD58F] text-white text-sm font-medium px-4',
+    primary: 'h-10 bg-[#4FD58F] text-white text-sm font-medium px-4',
     outline: 'h-[44px] border border-[#D0D5DD] bg-[#F9FAFB] text-sm',
     height: '40px (action buttons), 44px (filter buttons)'
     };

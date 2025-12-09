@@ -84,6 +84,15 @@ const CreateStakeholder: React.FC = () => {
       errors.country = ["Country is required"];
     }
 
+    if (!formData.role_tags || formData.role_tags.length === 0) {
+      errors.role_tags = ["At least one role tag is required"];
+    }
+
+    // Active status validation - required
+    if (formData.active === undefined || formData.active === null) {
+      errors.active = ["Active status is required"];
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

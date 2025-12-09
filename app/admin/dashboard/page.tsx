@@ -1,6 +1,6 @@
 import React from "react";
 
-export const runtime = 'edge';
+
 
 import DashboardInfoCards from "@/components/admin/dashboard/DashboardInfoCards";
 import ProjectsTable from "@/components/admin/dashboard/ProjectsTable";
@@ -25,7 +25,7 @@ const AdminDashboardPage = () => {
           </div>
           <div className="bg-white rounded-xl shadow p-4 flex flex-col min-h-[340px]">
             <h1 className="text-lg font-bold ml-4 text-[#171717]">Total Customers</h1>
-             <Separator />
+            <Separator />
             <TotalCustomersChart />
           </div>
         </div>
