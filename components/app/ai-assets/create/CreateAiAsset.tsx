@@ -8,6 +8,10 @@ import { AlertCircle } from "lucide-react";
 import { useCreateAiAssetMutation, CreateAiAssetData } from "@/app/lib/features/aiAssetsApi";
 import AiAssetForm from "@/components/app/ai-assets/create/AiAssetForm";
 import { useRouter } from "next/navigation";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 const CreateAiAsset: React.FC = () => {
   const router = useRouter();
   const [createAsset, { isLoading }] = useCreateAiAssetMutation();
@@ -15,38 +19,48 @@ const CreateAiAsset: React.FC = () => {
   const [errors, setErrors] = React.useState<Record<string, string[]>>({});
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {};
 
-    // At least one field must be filled
-    if (!formData.vendor_id &&
-      !formData.vendor_effective_from &&
-      !formData.vendor_effective_to &&
-      !formData.vendor_agreement_id &&
-      !formData.vendor_assessment_id) {
-      validationErrors.form = ["Please fill in at least one field before submitting"];
+    const atLeastOneFilled =
+      formData.vendor_id ||
+      formData.vendor_effective_from ||
+      formData.vendor_effective_to ||
+      formData.vendor_agreement_id ||
+      formData.vendor_assessment_id;
+    if (!atLeastOneFilled) {
+      fieldErrors.form = ["Please fill in at least one field before submitting"];
     }
 
-    // If vendor_effective_from is provided, validate it
-    if (formData.vendor_effective_from && !formData.vendor_effective_from.trim()) {
-      validationErrors.vendor_effective_from = ["Vendor effective from date is required if provided"];
+    if (formData.vendor_effective_from !== undefined) {
+      const errs = validateTextField(formData.vendor_effective_from, {
+        required: false,
+        messages: { required: "Vendor effective from date is required if provided" },
+      });
+      if (errs.length) fieldErrors.vendor_effective_from = errs;
     }
 
-    // If vendor_effective_to is provided, validate it
-    if (formData.vendor_effective_to && !formData.vendor_effective_to.trim()) {
-      validationErrors.vendor_effective_to = ["Vendor effective to date is required if provided"];
+    if (formData.vendor_effective_to !== undefined) {
+      const errs = validateTextField(formData.vendor_effective_to, {
+        required: false,
+        messages: { required: "Vendor effective to date is required if provided" },
+      });
+      if (errs.length) fieldErrors.vendor_effective_to = errs;
     }
 
-    // If both dates are provided, validate that to is after from
     if (formData.vendor_effective_from && formData.vendor_effective_to) {
       const fromDate = new Date(formData.vendor_effective_from);
       const toDate = new Date(formData.vendor_effective_to);
       if (toDate <= fromDate) {
-        validationErrors.vendor_effective_to = ["Vendor effective to date must be after effective from date"];
+        fieldErrors.vendor_effective_to = [
+          ...(fieldErrors.vendor_effective_to ?? []),
+          "Vendor effective to date must be after effective from date",
+        ];
       }
     }
 
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+    const errors = createValidationErrors(fieldErrors);
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async () => {

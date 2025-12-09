@@ -6,6 +6,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateDataSourceMutation, CreateDataSourceData } from "@/app/lib/features/dataSourcesApi";
 import DataSourceForm from "./DataSourceForm";
+import {
+    validateTextField,
+    validateArrayField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 
 const initialFormData: CreateDataSourceData = {
     name: "",
@@ -39,24 +44,26 @@ const DataSourceModalForm: React.FC<DataSourceModalFormProps> = ({
     const [createDataSource, { isLoading }] = useCreateDataSourceMutation();
 
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            name: validateTextField(formData.name, {
+                required: true,
+                messages: { required: "Data source name is required" },
+            }),
+            system_type: validateTextField(formData.system_type, {
+                required: true,
+                messages: { required: "System type is required" },
+            }),
+            owner_team: validateTextField(formData.owner_team, {
+                required: true,
+                messages: { required: "Owner team is required" },
+            }),
+            data_domains: validateArrayField(formData.data_domains, {
+                required: true,
+                messages: { required: "At least one data domain is required" },
+            }),
+        };
 
-        if (!formData.name?.trim()) {
-            errors.name = ["Data source name is required"];
-        }
-
-        if (!formData.system_type?.trim()) {
-            errors.system_type = ["System type is required"];
-        }
-
-        if (!formData.owner_team?.trim()) {
-            errors.owner_team = ["Owner team is required"];
-        }
-
-        if (!formData.data_domains || formData.data_domains.length === 0) {
-            errors.data_domains = ["At least one data domain is required"];
-        }
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

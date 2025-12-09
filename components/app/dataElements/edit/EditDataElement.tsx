@@ -8,6 +8,10 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGetDataElementQuery, useUpdateDataElementMutation, CreateDataElementData } from "@/app/lib/features/dataElementsApi";
 import DataElementForm from "../create/DataElementForm";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface EditDataElementProps {
   elementId: string;
@@ -56,25 +60,66 @@ const EditDataElement: React.FC<EditDataElementProps> = ({ elementId }) => {
   }, [element]);
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      name: validateTextField(formData.name, {
+        required: true,
+        messages: { required: "Name is required" },
+      }),
+      business_definition: validateTextField(formData.business_definition, {
+        required: true,
+        messages: { required: "Business definition is required" },
+      }),
+      data_type: validateTextField(formData.data_type, {
+        required: true,
+        messages: { required: "Data type is required" },
+      }),
+      sensitivity: validateTextField(formData.sensitivity, {
+        required: true,
+        messages: { required: "Sensitivity is required" },
+      }),
+      pii_flag: validateTextField(formData.pii_flag, {
+        required: true,
+        messages: { required: "PII flag is required" },
+      }),
+      special_category_flag: validateTextField(formData.special_category_flag, {
+        required: true,
+        messages: { required: "Special category flag is required" },
+      }),
+      cde_flag: validateTextField(formData.cde_flag, {
+        required: true,
+        messages: { required: "CDE flag is required" },
+      }),
+      owner_team: validateTextField(formData.owner_team, {
+        required: true,
+        messages: { required: "Owner team is required" },
+      }),
+    };
 
-    if (!formData.name?.trim()) errors.name = ["Name is required"];
-    if (!formData.business_definition?.trim()) errors.business_definition = ["Business definition is required"];
-    if (!formData.data_type?.trim()) errors.data_type = ["Data type is required"];
-    if (!formData.sensitivity?.trim()) errors.sensitivity = ["Sensitivity is required"];
-    if (!formData.pii_flag?.trim()) errors.pii_flag = ["PII flag is required"];
-    if (!formData.special_category_flag?.trim()) errors.special_category_flag = ["Special category flag is required"];
-    if (!formData.cde_flag?.trim()) errors.cde_flag = ["CDE flag is required"];
-    if (!formData.owner_team?.trim()) errors.owner_team = ["Owner team is required"];
-
-    if (formData.pii_flag === "Yes" && !formData.personal_data_category?.trim()) {
-      errors.personal_data_category = ["Personal data category is required when PII flag is Yes"];
+    if (formData.pii_flag === "Yes") {
+      const personalCategoryErrors = validateTextField(formData.personal_data_category, {
+        required: true,
+        messages: {
+          required: "Personal data category is required when PII flag is Yes",
+        },
+      });
+      if (personalCategoryErrors.length) {
+        fieldErrors.personal_data_category = personalCategoryErrors;
+      }
     }
 
-    if (formData.cde_flag === "Yes" && !formData.cde_category?.trim()) {
-      errors.cde_category = ["CDE category is required when CDE flag is Yes"];
+    if (formData.cde_flag === "Yes") {
+      const cdeCategoryErrors = validateTextField(formData.cde_category, {
+        required: true,
+        messages: {
+          required: "CDE category is required when CDE flag is Yes",
+        },
+      });
+      if (cdeCategoryErrors.length) {
+        fieldErrors.cde_category = cdeCategoryErrors;
+      }
     }
 
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

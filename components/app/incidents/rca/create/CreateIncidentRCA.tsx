@@ -8,6 +8,10 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import IncidentRCAForm from "./IncidentRCAForm";
 import { CreateIncidentRootCauseAnalysisData, useCreateIncidentRootCauseAnalysisMutation } from "@/app/lib/features/incidentRootCauseAnalysesApi";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateIncidentRCA: React.FC = () => {
   const router = useRouter();
@@ -30,17 +34,42 @@ const CreateIncidentRCA: React.FC = () => {
   });
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      ai_incident_id: validateTextField(formData.ai_incident_id ? String(formData.ai_incident_id) : "", {
+        required: true,
+        messages: { required: "Incident is required" },
+      }),
+      rca_method: validateTextField(formData.rca_method, {
+        required: true,
+        messages: { required: "RCA method is required" },
+      }),
+      immediate_cause: validateTextField(formData.immediate_cause, {
+        required: true,
+        messages: { required: "Immediate cause is required" },
+      }),
+      latent_causes: validateTextField(formData.latent_causes, {
+        required: true,
+        messages: { required: "Latent causes is required" },
+      }),
+      lessons_learned: validateTextField(formData.lessons_learned, {
+        required: true,
+        messages: { required: "Lessons learned is required" },
+      }),
+      recommendations: validateTextField(formData.recommendations, {
+        required: true,
+        messages: { required: "Recommendations is required" },
+      }),
+      approved_by: validateTextField(formData.approved_by, {
+        required: true,
+        messages: { required: "Approved by is required" },
+      }),
+      approved_at: validateTextField(formData.approved_at, {
+        required: true,
+        messages: { required: "Approved at is required" },
+      }),
+    };
 
-    if (!formData.ai_incident_id) validationErrors.ai_incident_id = ["Incident is required"];
-    if (!formData.rca_method?.trim()) validationErrors.rca_method = ["RCA method is required"];
-    if (!formData.immediate_cause?.trim()) validationErrors.immediate_cause = ["Immediate cause is required"];
-    if (!formData.latent_causes?.trim()) validationErrors.latent_causes = ["Latent causes is required"];
-    if (!formData.lessons_learned?.trim()) validationErrors.lessons_learned = ["Lessons learned is required"];
-    if (!formData.recommendations?.trim()) validationErrors.recommendations = ["Recommendations is required"];
-    if (!formData.approved_by?.trim()) validationErrors.approved_by = ["Approved by is required"];
-    if (!formData.approved_at?.trim()) validationErrors.approved_at = ["Approved at is required"];
-
+    const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };

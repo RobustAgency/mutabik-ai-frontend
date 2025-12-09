@@ -1,45 +1,12 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { apiClient } from "@/lib/api";
+import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 import type {
   ArtifactAccessLog,
   CreateArtifactAccessLogData,
   ArtifactAccessLogFilters,
   PaginatedArtifactAccessLogsResponse,
 } from "@/service/app/artifactAccessLogs";
-
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-      headers?: AxiosRequestConfig["headers"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params, headers }) => {
-    try {
-      const result = await apiClient({ url, method, data, params, headers });
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        message?: string;
-        errors?: Record<string, string[]>;
-      }>;
-      return {
-        error: {
-          status: err.response?.status || 500,
-          data: err.response?.data || {
-            message: err.message || "Request failed",
-          },
-        },
-      };
-    }
-  };
 
 export const artifactAccessLogsApi = createApi({
   reducerPath: "artifactAccessLogsApi",
@@ -117,10 +84,11 @@ export const artifactAccessLogsApi = createApi({
             toast.success(result.data.message || "Access log created successfully");
           }
         } catch (error: any) {
-          if (!error?.error?.data?.errors) {
-            toast.error(
-              error?.error?.data?.message || "Failed to create access log"
-            );
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
+            const errorMessage =
+              mutationError?.error?.data?.message || "Failed to create access log";
+            toast.error(errorMessage);
           }
         }
       },

@@ -10,6 +10,10 @@ import {
   CreateIncidentAlertData,
   useCreateIncidentAlertMutation,
 } from "@/app/lib/features/incidentAlertsApi";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface IncidentAlertModalFormProps {
   isOpen: boolean;
@@ -37,12 +41,22 @@ const IncidentAlertModalForm: React.FC<IncidentAlertModalFormProps> = ({
   });
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      ai_incident_id: validateTextField(formData.ai_incident_id ? String(formData.ai_incident_id) : "", {
+        required: true,
+        messages: { required: "Incident is required" },
+      }),
+      source_type: validateTextField(formData.source_type, {
+        required: true,
+        messages: { required: "Source type is required" },
+      }),
+      first_seen_at: validateTextField(formData.first_seen_at, {
+        required: true,
+        messages: { required: "First seen at is required" },
+      }),
+    };
 
-    if (!formData.ai_incident_id) validationErrors.ai_incident_id = ["Incident is required"];
-    if (!formData.source_type?.trim()) validationErrors.source_type = ["Source type is required"];
-    if (!formData.first_seen_at?.trim()) validationErrors.first_seen_at = ["First seen at is required"];
-
+    const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };

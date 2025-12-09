@@ -10,6 +10,10 @@ import BasicInfo from "./BasicInfo";
 import GovernanceRegulatorySection from "./GovernanceRegulatorySection";
 import OwnershipGovernance from "./OwnershipGovernance";
 import TechnicalDetails from "./TechnicalDetails";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const initialFormData: FormDataType = {
     name: "",
@@ -41,29 +45,30 @@ const AiModelModalForm: React.FC<AiModelModalFormProps> = ({
     const [createAiModel, { isLoading }] = useCreateAiModelMutation();
 
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            name: validateTextField(formData.name, {
+                required: true,
+                messages: { required: "Model name is required" },
+            }),
+            model_category: validateTextField(formData.model_category, {
+                required: true,
+                messages: { required: "Model category is required" },
+            }),
+            type: validateTextField(formData.type, {
+                required: true,
+                messages: { required: "Model type is required" },
+            }),
+            ownership_category: validateTextField(formData.ownership_category, {
+                required: true,
+                messages: { required: "Ownership category is required" },
+            }),
+            responsible_org_role: validateTextField(formData.responsible_org_role, {
+                required: true,
+                messages: { required: "Responsible organization role is required" },
+            }),
+        };
 
-        if (!formData.name?.trim()) {
-            errors.name = ["Model name is required"];
-        }
-
-        if (!formData.model_category) {
-            errors.category = ["Model category is required"];
-            errors.model_category = ["Model category is required"];
-        }
-
-        if (!formData.type) {
-            errors.type = ["Model type is required"];
-        }
-
-        if (!formData.ownership_category) {
-            errors.ownership_category = ["Ownership category is required"];
-        }
-
-        if (!formData.responsible_org_role) {
-            errors.responsible_org_role = ["Responsible organization role is required"];
-        }
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

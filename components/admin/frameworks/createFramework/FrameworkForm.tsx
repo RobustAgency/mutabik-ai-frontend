@@ -14,6 +14,10 @@ import AdditionalInformation from "./AdditionalInformation";
 import { useFrameworkMutations } from "@/hooks/admin/useFrameworks";
 import { convertFrameworkArraysToStrings, convertFrameworkStringsToArrays } from "@/utils/frameworkUtils";
 import {
+    validateTextField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
+import {
     Framework,
     FrameworkCategory,
     FrameworkType,
@@ -172,27 +176,28 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         }
     };
 
-    // Form validation
+    // Form validation using shared utilities
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            name: validateTextField(formData.name, {
+                required: true,
+                messages: { required: "Title is required" },
+            }),
+            code: validateTextField(formData.code, {
+                required: true,
+                messages: { required: "Code is required" },
+            }),
+            type: validateTextField(formData.type, {
+                required: true,
+                messages: { required: "Type is required" },
+            }),
+            category: validateTextField(formData.category, {
+                required: true,
+                messages: { required: "Category is required" },
+            }),
+        };
 
-        // Required fields
-        if (!formData.name?.trim()) {
-            errors.name = ["Title is required"];
-        }
-
-        if (!formData.code?.trim()) {
-            errors.code = ["Code is required"];
-        }
-
-        if (!formData.type) {
-            errors.type = ["Type is required"];
-        }
-
-        if (!formData.category) {
-            errors.category = ["Category is required"];
-        }
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
