@@ -22,8 +22,6 @@ import {
   createValidationErrors,
 } from "@/lib/utils/validation";
 
-type FormMode = "create" | "edit";
-
 type FormState = {
   ai_risk_register_id: string;
   treatment_type: TreatmentType;
@@ -55,7 +53,6 @@ const getInitialState = (initial?: AiRiskTreatment): FormState => ({
 });
 
 interface AiRiskTreatmentFormProps {
-  mode: FormMode;
   initialData?: AiRiskTreatment;
   serverErrors?: Record<string, string[]>;
   isSubmitting?: boolean;
@@ -65,7 +62,6 @@ interface AiRiskTreatmentFormProps {
 }
 
 export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
-  mode,
   initialData,
   serverErrors,
   isSubmitting = false,
@@ -91,7 +87,7 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
 
     if (step === 1) {
       fieldErrors.ai_risk_register_id = validateNumericField(
-        formState.ai_risk_register_id,
+        Number(formState.ai_risk_register_id),
         { required: true, integer: true, messages: { required: "Risk register ID is required" } }
       );
       fieldErrors.plan_summary = validateTextField(formState.plan_summary, {
@@ -99,7 +95,7 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
         messages: { required: "Plan summary is required" },
       });
       fieldErrors.owner_stakeholder_id = validateNumericField(
-        formState.owner_stakeholder_id,
+        Number(formState.owner_stakeholder_id),
         { required: true, integer: true, messages: { required: "Owner stakeholder is required" } }
       );
       fieldErrors.due_date = validateTextField(formState.due_date, {
@@ -133,11 +129,6 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const parseNumber = (value: string) => {
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? undefined : parsed;
-  };
-
   const handleSubmit = async () => {
     setValidationErrors({});
     if (!validateStep(currentStep)) {
@@ -164,7 +155,7 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
 
     try {
       await onSubmit(payload);
-    } catch (_err) {
+    } catch {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };

@@ -1,10 +1,11 @@
 import RiskMethodologyDetails from "@/components/app/riskMethodologies/details/RiskMethodologyDetails";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default function RiskMethodologyDetailsPage({ params }: PageProps) {
-  return <RiskMethodologyDetails methodologyId={params.id} />;
+export default async function RiskMethodologyDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <RiskMethodologyDetails methodologyId={id} />;
 }
 

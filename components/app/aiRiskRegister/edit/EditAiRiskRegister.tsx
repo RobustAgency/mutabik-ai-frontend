@@ -68,7 +68,6 @@ const EditAiRiskRegister: React.FC<EditAiRiskRegisterProps> = ({ riskId }) => {
       </div>
 
       <AiRiskRegisterForm
-        mode="edit"
         initialData={data}
         onSubmit={handleSubmit}
         isSubmitting={isLoading}

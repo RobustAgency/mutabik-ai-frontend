@@ -66,7 +66,6 @@ const EditKriIndicator: React.FC<EditKriIndicatorProps> = ({ indicatorId }) => {
       </div>
 
       <KriIndicatorForm
-        mode="edit"
         initialData={data}
         onSubmit={handleSubmit}
         isSubmitting={isLoading}

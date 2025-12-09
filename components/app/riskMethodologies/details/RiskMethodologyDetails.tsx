@@ -30,11 +30,11 @@ const RiskMethodologyDetails: React.FC<RiskMethodologyDetailsProps> = ({
     },
     isDeleting,
     entityTypeName: "Risk Methodology",
-    onSuccess: () => router.push("/governance/risk-methodologies"),
+    onSuccess: () => router.push("/risk-compliance/ai-risk-management/methodologies"),
   });
 
   const handleEdit = () => {
-    router.push(`/governance/risk-methodologies/${methodologyId}/edit`);
+        router.push(`/risk-compliance/ai-risk-management/methodologies/${methodologyId}/edit`);
   };
 
   const handleDelete = () => {

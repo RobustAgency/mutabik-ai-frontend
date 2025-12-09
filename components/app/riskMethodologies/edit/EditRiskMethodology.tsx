@@ -29,7 +29,7 @@ const EditRiskMethodology: React.FC<EditRiskMethodologyProps> = ({
     setServerErrors({});
     try {
       await updateRiskMethodology({ id: Number(methodologyId), data: payload }).unwrap();
-      router.push(`/governance/risk-methodologies/${methodologyId}/details`);
+      router.push(`/risk-compliance/ai-risk-management/methodologies/${methodologyId}/details`);
     } catch (err: any) {
       if (err?.data?.errors) {
         setServerErrors(err.data.errors);
@@ -70,7 +70,6 @@ const EditRiskMethodology: React.FC<EditRiskMethodologyProps> = ({
       </div>
 
       <RiskMethodologyForm
-        mode="edit"
         initialData={data}
         onSubmit={handleSubmit}
         isSubmitting={isLoading}

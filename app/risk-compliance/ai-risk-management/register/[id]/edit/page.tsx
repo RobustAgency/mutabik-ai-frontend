@@ -1,10 +1,11 @@
 import EditAiRiskRegister from "@/components/app/aiRiskRegister/edit/EditAiRiskRegister";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default function EditAiRiskRegisterPage({ params }: PageProps) {
-  return <EditAiRiskRegister riskId={params.id} />;
+export default async function EditAiRiskRegisterPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <EditAiRiskRegister riskId={id} />;
 }
 

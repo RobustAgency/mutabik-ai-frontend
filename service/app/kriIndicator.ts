@@ -3,8 +3,7 @@
  * Handles API calls for KRI indicator management
  */
 
-import api from "@/lib/api";
-import { ApiResponse } from "@/lib/api";
+import { api, ApiResponse } from "@/lib/api";
 import {
   KriIndicator,
   CreateKriIndicatorData,

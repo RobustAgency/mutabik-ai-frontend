@@ -1,10 +1,11 @@
 import EditRiskMethodology from "@/components/app/riskMethodologies/edit/EditRiskMethodology";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default function EditRiskMethodologyPage({ params }: PageProps) {
-  return <EditRiskMethodology methodologyId={params.id} />;
+export default async function EditRiskMethodologyPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <EditRiskMethodology methodologyId={id} />;
 }
 

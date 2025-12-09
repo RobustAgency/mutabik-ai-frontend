@@ -124,8 +124,6 @@ const CAPAModalFormAdapter: React.FC<{ onSuccess: (item: any) => void; onCancel:
   );
 };
 
-type FormMode = "create" | "edit";
-
 type FormState = {
   title: string;
   risk_category: RiskCategory;
@@ -185,7 +183,6 @@ const getInitialState = (initial?: AiRiskRegister): FormState => ({
 });
 
 interface AiRiskRegisterFormProps {
-  mode: FormMode;
   initialData?: AiRiskRegister;
   serverErrors?: Record<string, string[]>;
   isSubmitting?: boolean;
@@ -195,7 +192,6 @@ interface AiRiskRegisterFormProps {
 }
 
 export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
-  mode,
   initialData,
   serverErrors,
   isSubmitting = false,
@@ -389,7 +385,7 @@ export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
 
     try {
       await onSubmit(payload);
-    } catch (_err) {
+    } catch {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -641,20 +637,30 @@ export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="likelihood_code">Likelihood Code <span className="text-red-500">*</span></Label>
-                <Input
-                  id="likelihood_code"
+                <Select
                   value={formState.likelihood_code}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setFormState((prev) => ({
                       ...prev,
-                      likelihood_code: e.target.value,
+                      likelihood_code: value,
                     }))
                   }
-                  placeholder="M"
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
-                    validationErrors.likelihood_code ? "border-red-500" : "border-[#D0D5DD]"
-                  } focus:border-[#D0D5DD] focus:-ring-0`}
-                />
+                >
+                  <SelectTrigger
+                    className={`h-[44px] w-full px-4 rounded-lg border ${
+                      validationErrors.likelihood_code ? "border-red-500" : "border-[#D0D5DD]"
+                    } focus:border-[#D0D5DD] focus:-ring-0`}
+                  >
+                    <SelectValue placeholder="Select likelihood" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["rare", "unlikely", "possible", "likely", "almost_certain"].map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.likelihood_code && (
                   <p className="text-sm text-red-500">
                     {validationErrors.likelihood_code[0]}
@@ -663,17 +669,27 @@ export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="impact_code">Impact Code <span className="text-red-500">*</span></Label>
-                <Input
-                  id="impact_code"
+                <Select
                   value={formState.impact_code}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, impact_code: e.target.value }))
+                  onValueChange={(value) =>
+                    setFormState((prev) => ({ ...prev, impact_code: value }))
                   }
-                  placeholder="H"
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
-                    validationErrors.impact_code ? "border-red-500" : "border-[#D0D5DD]"
-                  } focus:border-[#D0D5DD] focus:-ring-0`}
-                />
+                >
+                  <SelectTrigger
+                    className={`h-[44px] w-full px-4 rounded-lg border ${
+                      validationErrors.impact_code ? "border-red-500" : "border-[#D0D5DD]"
+                    } focus:border-[#D0D5DD] focus:-ring-0`}
+                  >
+                    <SelectValue placeholder="Select impact" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["rare", "unlikely", "possible", "likely", "almost_certain"].map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.impact_code && (
                   <p className="text-sm text-red-500">{validationErrors.impact_code[0]}</p>
                 )}

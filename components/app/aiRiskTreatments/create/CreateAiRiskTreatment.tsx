@@ -39,7 +39,6 @@ const CreateAiRiskTreatment: React.FC = () => {
       </div>
 
       <AiRiskTreatmentForm
-        mode="create"
         onSubmit={handleSubmit}
         isSubmitting={isLoading}
         serverErrors={serverErrors}

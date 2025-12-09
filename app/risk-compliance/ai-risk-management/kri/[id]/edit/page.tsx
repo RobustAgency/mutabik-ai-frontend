@@ -1,10 +1,11 @@
 import EditKriIndicator from "@/components/app/kriIndicators/edit/EditKriIndicator";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default function EditKriIndicatorPage({ params }: PageProps) {
-  return <EditKriIndicator indicatorId={params.id} />;
+export default async function EditKriIndicatorPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <EditKriIndicator indicatorId={id} />;
 }
 

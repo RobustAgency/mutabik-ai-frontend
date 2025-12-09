@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { MultiStepWizard } from "@/components/app/useCases/create/MultiStepWizard";
@@ -17,8 +18,6 @@ import {
   validateTextField,
   createValidationErrors,
 } from "@/lib/utils/validation";
-
-type FormMode = "create" | "edit";
 
 type FormState = {
   name: string;
@@ -36,12 +35,8 @@ type FormState = {
 
 const getInitialState = (initial?: RiskMethodology): FormState => ({
   name: initial?.name ?? "",
-  likelihood_scale: initial
-    ? JSON.stringify(initial.likelihood_scale, null, 2)
-    : "{\n  \"L\": \"Low\",\n  \"M\": \"Medium\",\n  \"H\": \"High\"\n}",
-  impact_scale: initial
-    ? JSON.stringify(initial.impact_scale, null, 2)
-    : "{\n  \"L\": \"Low\",\n  \"M\": \"Medium\",\n  \"H\": \"High\"\n}",
+  likelihood_scale: initial ? Object.values(initial.likelihood_scale)[0] ?? "" : "",
+  impact_scale: initial ? Object.values(initial.impact_scale)[0] ?? "" : "",
   matrix_rule: initial
     ? JSON.stringify(initial.matrix_rule, null, 2)
     : "{\n  \"L_L\": \"Low\",\n  \"M_M\": \"Medium\",\n  \"H_H\": \"High\"\n}",
@@ -55,7 +50,6 @@ const getInitialState = (initial?: RiskMethodology): FormState => ({
 });
 
 interface RiskMethodologyFormProps {
-  mode: FormMode;
   initialData?: RiskMethodology;
   serverErrors?: Record<string, string[]>;
   isSubmitting?: boolean;
@@ -65,7 +59,6 @@ interface RiskMethodologyFormProps {
 }
 
 export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
-  mode,
   initialData,
   serverErrors,
   isSubmitting = false,
@@ -83,10 +76,12 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
     }
   }, [initialData]);
 
+  const SCALE_OPTIONS = ["rare", "unlikely", "possible", "likely", "almost_certain"];
+
   const steps = [
     {
       id: 1,
-      title: "Basic Info",
+      title: "Basic Information",
       description: "Core details for the methodology",
     },
     {
@@ -151,7 +146,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
   const parseJsonField = (value: string, field: string) => {
     try {
       return JSON.parse(value || "{}");
-    } catch (_err) {
+    } catch {
       setValidationErrors({
         [field]: ["Invalid JSON. Please provide valid JSON structure."],
       });
@@ -159,18 +154,38 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
     }
   };
 
+  const validateForm = (): boolean => {
+    let isValid = true;
+    for (let step = 1; step <= steps.length; step++) {
+      if (!validateStep(step)) {
+        isValid = false;
+        break;
+      }
+    }
+    return isValid;
+  };
+
   const handleSubmit = async () => {
     setValidationErrors({});
-    if (!validateStep(currentStep)) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    
+    // Validate entire form
+    if (!validateForm()) {
+      // Find first step with errors
+      for (let step = 1; step <= steps.length; step++) {
+        if (!validateStep(step)) {
+          setCurrentStep(step);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+      }
       return;
     }
 
     try {
       const payload: CreateRiskMethodologyData | UpdateRiskMethodologyData = {
         name: formState.name.trim(),
-        likelihood_scale: parseJsonField(formState.likelihood_scale, "likelihood_scale"),
-        impact_scale: parseJsonField(formState.impact_scale, "impact_scale"),
+        likelihood_scale: formState.likelihood_scale || "",
+        impact_scale: formState.impact_scale || "",
         matrix_rule: parseJsonField(formState.matrix_rule, "matrix_rule"),
         acceptance_thresholds: formState.acceptance_thresholds.trim(),
         aggregation_logic: formState.aggregation_logic.trim() || undefined,
@@ -182,7 +197,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
       };
 
       await onSubmit(payload);
-    } catch (_err) {
+    } catch {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -192,9 +207,16 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
       case 1:
         return (
           <div className="space-y-6">
+            <div className="flex flex-col gap-2">
+              <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+                Basic Information
+              </h3>
+              <hr className="border-gray-200" />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name">Name <span className="text-red-500">*</span></Label>
                 <Input
                   id="name"
                   value={formState.name}
@@ -202,13 +224,16 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     setFormState((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="ISO 31010 Risk Matrix"
+                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                    validationErrors.name ? "border-red-500" : "border-[#D0D5DD]"
+                  } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
                 {validationErrors.name && (
                   <p className="text-sm text-red-500">{validationErrors.name[0]}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="owner_team">Owner Team *</Label>
+                <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
                 <Input
                   id="owner_team"
                   value={formState.owner_team}
@@ -216,6 +241,9 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     setFormState((prev) => ({ ...prev, owner_team: e.target.value }))
                   }
                   placeholder="Risk Management"
+                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                    validationErrors.owner_team ? "border-red-500" : "border-[#D0D5DD]"
+                  } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
                 {validationErrors.owner_team && (
                   <p className="text-sm text-red-500">{validationErrors.owner_team[0]}</p>
@@ -225,7 +253,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="acceptance_thresholds">Acceptance Thresholds *</Label>
+                <Label htmlFor="acceptance_thresholds">Acceptance Thresholds <span className="text-red-500">*</span></Label>
                 <Input
                   id="acceptance_thresholds"
                   value={formState.acceptance_thresholds}
@@ -236,6 +264,9 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     }))
                   }
                   placeholder="Medium"
+                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                    validationErrors.acceptance_thresholds ? "border-red-500" : "border-[#D0D5DD]"
+                  } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
                 {validationErrors.acceptance_thresholds && (
                   <p className="text-sm text-red-500">
@@ -255,12 +286,13 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     }))
                   }
                   placeholder="Maximum inherent risk across all identified risks"
+                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="review_policy">Review Policy *</Label>
+              <Label htmlFor="review_policy">Review Policy <span className="text-red-500">*</span></Label>
               <Textarea
                 id="review_policy"
                 value={formState.review_policy}
@@ -268,11 +300,17 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   setFormState((prev) => ({ ...prev, review_policy: e.target.value }))
                 }
                 placeholder="Annual review with ad-hoc updates"
-                rows={3}
+                rows={4}
+                className={`min-h-24 resize-none ${
+                  validationErrors.review_policy ? "border-red-500" : ""
+                }`}
               />
               {validationErrors.review_policy && (
                 <p className="text-sm text-red-500">{validationErrors.review_policy[0]}</p>
               )}
+              <p className="text-xs text-gray-500">
+                {formState.review_policy.length} characters
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -285,6 +323,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   onChange={(e) =>
                     setFormState((prev) => ({ ...prev, effective_from: e.target.value }))
                   }
+                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
               <div className="space-y-2">
@@ -296,10 +335,11 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   onChange={(e) =>
                     setFormState((prev) => ({ ...prev, effective_to: e.target.value }))
                   }
+                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="source_created_at">Source Created At *</Label>
+                <Label htmlFor="source_created_at">Source Created At <span className="text-red-500">*</span></Label>
                 <Input
                   id="source_created_at"
                   type="date"
@@ -310,6 +350,9 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                       source_created_at: e.target.value,
                     }))
                   }
+                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                    validationErrors.source_created_at ? "border-red-500" : "border-[#D0D5DD]"
+                  } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
                 {validationErrors.source_created_at && (
                   <p className="text-sm text-red-500">
@@ -324,19 +367,32 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
       case 2:
         return (
           <div className="space-y-6">
+            <div className="flex flex-col gap-2">
+              <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+                Scales & Matrix
+              </h3>
+              <hr className="border-gray-200" />
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="likelihood_scale">Likelihood Scale (JSON)</Label>
-              <Textarea
-                id="likelihood_scale"
-                value={formState.likelihood_scale}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    likelihood_scale: e.target.value,
-                  }))
+              <Label htmlFor="likelihood_scale">Likelihood Scale</Label>
+              <Select
+                value={formState.likelihood_scale || undefined}
+                onValueChange={(value) =>
+                  setFormState((prev) => ({ ...prev, likelihood_scale: value }))
                 }
-                rows={6}
-              />
+              >
+                <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+                  <SelectValue placeholder="Select likelihood (e.g., likely)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SCALE_OPTIONS.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {validationErrors.likelihood_scale && (
                 <p className="text-sm text-red-500">
                   {validationErrors.likelihood_scale[0]}
@@ -345,18 +401,24 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="impact_scale">Impact Scale (JSON)</Label>
-              <Textarea
-                id="impact_scale"
-                value={formState.impact_scale}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    impact_scale: e.target.value,
-                  }))
+              <Label htmlFor="impact_scale">Impact Scale</Label>
+              <Select
+                value={formState.impact_scale || undefined}
+                onValueChange={(value) =>
+                  setFormState((prev) => ({ ...prev, impact_scale: value }))
                 }
-                rows={6}
-              />
+              >
+                <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+                  <SelectValue placeholder="Select impact (e.g., high)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SCALE_OPTIONS.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {validationErrors.impact_scale && (
                 <p className="text-sm text-red-500">{validationErrors.impact_scale[0]}</p>
               )}
@@ -370,11 +432,18 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                 onChange={(e) =>
                   setFormState((prev) => ({ ...prev, matrix_rule: e.target.value }))
                 }
-                rows={6}
+                rows={8}
+                placeholder='{\n  "L_L": "Low",\n  "M_M": "Medium",\n  "H_H": "High"\n}'
+                className={`min-h-32 resize-none font-mono text-sm ${
+                  validationErrors.matrix_rule ? "border-red-500" : ""
+                }`}
               />
               {validationErrors.matrix_rule && (
                 <p className="text-sm text-red-500">{validationErrors.matrix_rule[0]}</p>
               )}
+              <p className="text-xs text-gray-500">
+                {formState.matrix_rule.length} characters
+              </p>
             </div>
           </div>
         );

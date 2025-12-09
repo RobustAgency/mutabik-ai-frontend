@@ -25,8 +25,6 @@ import {
   createValidationErrors,
 } from "@/lib/utils/validation";
 
-type FormMode = "create" | "edit";
-
 type FormState = {
   ai_risk_register_id: string;
   name: string;
@@ -66,7 +64,6 @@ const getInitialState = (initial?: KriIndicator): FormState => ({
 });
 
 interface KriIndicatorFormProps {
-  mode: FormMode;
   initialData?: KriIndicator;
   serverErrors?: Record<string, string[]>;
   isSubmitting?: boolean;
@@ -76,7 +73,6 @@ interface KriIndicatorFormProps {
 }
 
 export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
-  mode,
   initialData,
   serverErrors,
   isSubmitting = false,
@@ -102,7 +98,7 @@ export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
 
     if (step === 1) {
       fieldErrors.ai_risk_register_id = validateNumericField(
-        formState.ai_risk_register_id,
+        Number(formState.ai_risk_register_id),
         { required: true, integer: true, messages: { required: "Risk register ID is required" } }
       );
       fieldErrors.name = validateTextField(formState.name, {
@@ -124,12 +120,15 @@ export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
     }
 
     if (step === 2) {
-      fieldErrors.threshold_warning = validateNumericField(formState.threshold_warning, {
-        required: true,
-        messages: { required: "Warning threshold is required" },
-      });
+      fieldErrors.threshold_warning = validateNumericField(
+        Number(formState.threshold_warning),
+        {
+          required: true,
+          messages: { required: "Warning threshold is required" },
+        }
+      );
       fieldErrors.threshold_critical = validateNumericField(
-        formState.threshold_critical,
+        Number(formState.threshold_critical),
         {
           required: true,
           messages: { required: "Critical threshold is required" },
@@ -162,11 +161,6 @@ export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const parseNumber = (value: string) => {
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? undefined : parsed;
-  };
-
   const handleSubmit = async () => {
     setValidationErrors({});
     if (!validateStep(currentStep)) {
@@ -195,7 +189,7 @@ export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
 
     try {
       await onSubmit(payload);
-    } catch (_err) {
+    } catch {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };

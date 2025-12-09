@@ -66,7 +66,6 @@ const EditAiRiskTreatment: React.FC<EditAiRiskTreatmentProps> = ({ treatmentId }
       </div>
 
       <AiRiskTreatmentForm
-        mode="edit"
         initialData={data}
         onSubmit={handleSubmit}
         isSubmitting={isLoading}

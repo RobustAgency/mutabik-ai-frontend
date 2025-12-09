@@ -17,11 +17,23 @@ import {
   RiskMethodologyFilters,
 } from "@/interfaces/RiskMethodology";
 
-interface RiskMethodologyResponse {
-  data: RiskMethodology[];
-  message: string;
-  error: boolean;
-}
+type RiskMethodologyResponse =
+  | {
+      data: RiskMethodology[];
+      message: string;
+      error: boolean;
+    }
+  | {
+      data: {
+        data: RiskMethodology[];
+        current_page?: number;
+        last_page?: number;
+        per_page?: number;
+        total?: number;
+      };
+      message: string;
+      error: boolean;
+    };
 
 interface SingleRiskMethodologyResponse {
   data: RiskMethodology;
@@ -49,7 +61,17 @@ export const riskMethodologyApi = createApi({
         };
       },
       transformResponse: (response: RiskMethodologyResponse) => {
-        return response.data || [];
+        // Handle both flat array and paginated { data: { data: [...] } } shapes
+        if (Array.isArray((response as any)?.data)) {
+          return (response as { data: RiskMethodology[] }).data;
+        }
+        if (
+          (response as any)?.data?.data &&
+          Array.isArray((response as any).data.data)
+        ) {
+          return (response as { data: { data: RiskMethodology[] } }).data.data;
+        }
+        return [];
       },
       providesTags: (result) =>
         result

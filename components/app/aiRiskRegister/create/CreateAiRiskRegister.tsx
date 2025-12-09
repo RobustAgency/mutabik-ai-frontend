@@ -4,17 +4,22 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import AiRiskRegisterForm from "./AiRiskRegisterForm";
 import { useCreateAiRiskRegisterMutation } from "@/app/lib/features/aiRiskRegisterApi";
-import { CreateAiRiskRegisterData } from "@/interfaces/AiRiskRegister";
+import {
+  CreateAiRiskRegisterData,
+  UpdateAiRiskRegisterData,
+} from "@/interfaces/AiRiskRegister";
 
 const CreateAiRiskRegister: React.FC = () => {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
   const [createRisk, { isLoading }] = useCreateAiRiskRegisterMutation();
 
-  const handleSubmit = async (payload: CreateAiRiskRegisterData) => {
+  const handleSubmit = async (
+    payload: CreateAiRiskRegisterData | UpdateAiRiskRegisterData
+  ) => {
     setServerErrors({});
     try {
-      await createRisk(payload).unwrap();
+      await createRisk(payload as CreateAiRiskRegisterData).unwrap();
       router.push("/risk-compliance/ai-risk-management/register");
     } catch (err: any) {
       if (err?.data?.errors) {
@@ -36,7 +41,6 @@ const CreateAiRiskRegister: React.FC = () => {
       </div>
 
       <AiRiskRegisterForm
-        mode="create"
         onSubmit={handleSubmit}
         isSubmitting={isLoading}
         serverErrors={serverErrors}

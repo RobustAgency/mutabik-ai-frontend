@@ -4,18 +4,23 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RiskMethodologyForm } from "./RiskMethodologyForm";
 import { useCreateRiskMethodologyMutation } from "@/app/lib/features/riskMethodologyApi";
-import { CreateRiskMethodologyData } from "@/interfaces/RiskMethodology";
+import {
+  CreateRiskMethodologyData,
+  UpdateRiskMethodologyData,
+} from "@/interfaces/RiskMethodology";
 
 const CreateRiskMethodology: React.FC = () => {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
   const [createRiskMethodology, { isLoading }] = useCreateRiskMethodologyMutation();
 
-  const handleSubmit = async (payload: CreateRiskMethodologyData) => {
+  const handleSubmit = async (
+    payload: CreateRiskMethodologyData | UpdateRiskMethodologyData
+  ) => {
     setServerErrors({});
     try {
-      await createRiskMethodology(payload).unwrap();
-      router.push("/governance/risk-methodologies");
+      await createRiskMethodology(payload as CreateRiskMethodologyData).unwrap();
+      router.push("/risk-compliance/ai-risk-management/methodologies");
     } catch (err: any) {
       if (err?.data?.errors) {
         setServerErrors(err.data.errors);
@@ -36,7 +41,6 @@ const CreateRiskMethodology: React.FC = () => {
       </div>
 
       <RiskMethodologyForm
-        mode="create"
         onSubmit={handleSubmit}
         isSubmitting={isLoading}
         serverErrors={serverErrors}

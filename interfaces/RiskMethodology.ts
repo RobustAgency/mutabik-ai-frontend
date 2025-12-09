@@ -23,8 +23,8 @@ export interface RiskMethodology {
 
 export interface CreateRiskMethodologyData {
   name: string;
-  likelihood_scale: Record<string, string>;
-  impact_scale: Record<string, string>;
+  likelihood_scale: Record<string, string> | string;
+  impact_scale: Record<string, string> | string;
   matrix_rule: Record<string, string>;
   acceptance_thresholds: string;
   aggregation_logic?: string;
@@ -37,8 +37,8 @@ export interface CreateRiskMethodologyData {
 
 export interface UpdateRiskMethodologyData {
   name?: string;
-  likelihood_scale?: Record<string, string>;
-  impact_scale?: Record<string, string>;
+  likelihood_scale?: Record<string, string> | string;
+  impact_scale?: Record<string, string> | string;
   matrix_rule?: Record<string, string>;
   acceptance_thresholds?: string;
   aggregation_logic?: string;

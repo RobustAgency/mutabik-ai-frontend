@@ -4,17 +4,22 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import KriIndicatorForm from "./KriIndicatorForm";
 import { useCreateKriIndicatorMutation } from "@/app/lib/features/kriIndicatorApi";
-import { CreateKriIndicatorData } from "@/interfaces/KriIndicator";
+import {
+  CreateKriIndicatorData,
+  UpdateKriIndicatorData,
+} from "@/interfaces/KriIndicator";
 
 const CreateKriIndicator: React.FC = () => {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
   const [createIndicator, { isLoading }] = useCreateKriIndicatorMutation();
 
-  const handleSubmit = async (payload: CreateKriIndicatorData) => {
+  const handleSubmit = async (
+    payload: CreateKriIndicatorData | UpdateKriIndicatorData
+  ) => {
     setServerErrors({});
     try {
-      await createIndicator(payload).unwrap();
+      await createIndicator(payload as CreateKriIndicatorData).unwrap();
       router.push("/governance/kri-indicators");
     } catch (err: any) {
       if (err?.data?.errors) setServerErrors(err.data.errors);
@@ -34,7 +39,6 @@ const CreateKriIndicator: React.FC = () => {
       </div>
 
       <KriIndicatorForm
-        mode="create"
         onSubmit={handleSubmit}
         isSubmitting={isLoading}
         serverErrors={serverErrors}
