@@ -6,6 +6,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateDatasetSnapshotMutation } from "@/app/lib/features/datasetSnapshotsApi";
 import DatasetSnapshotForm from "./DatasetSnapshotForm";
+import {
+    validateTextField,
+    validateNumericField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 
 const initialFormData = {
     dataset_id: "",
@@ -37,56 +42,79 @@ const DatasetSnapshotModalForm: React.FC<DatasetSnapshotModalFormProps> = ({
     const [createSnapshot, { isLoading }] = useCreateDatasetSnapshotMutation();
 
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            dataset_id: validateTextField(String(formData.dataset_id ?? ""), {
+                required: true,
+                messages: { required: "Dataset is required" },
+            }),
+            version_tag: validateTextField(formData.version_tag, {
+                required: true,
+                maxLength: 50,
+                messages: { required: "Version tag is required", maxLength: "Max 50 characters" },
+            }),
+            source_created_at: validateTextField(formData.source_created_at, {
+                required: true,
+                messages: { required: "Created at is required" },
+            }),
+            time_range_start: validateTextField(formData.time_range_start, {
+                required: true,
+                messages: { required: "Time range start is required" },
+            }),
+            time_range_end: validateTextField(formData.time_range_end, {
+                required: true,
+                messages: { required: "Time range end is required" },
+            }),
+            residency_zone: validateTextField(formData.residency_zone, {
+                required: true,
+                messages: { required: "Residency zone is required" },
+            }),
+            storage_uri: validateTextField(formData.storage_uri, {
+                required: true,
+                maxLength: 500,
+                messages: { required: "Storage URI is required", maxLength: "Max 500 characters" },
+            }),
+            quality_checksums: validateTextField(formData.quality_checksums, {
+                maxLength: 255,
+                messages: { maxLength: "Max 255 characters" },
+            }),
+            masking_anonymization_method: validateTextField(formData.masking_anonymization_method, {
+                maxLength: 255,
+                messages: { maxLength: "Max 255 characters" },
+            }),
+            privacy_transform_evidence_ref: validateTextField(formData.privacy_transform_evidence_ref, {
+                maxLength: 255,
+                messages: { maxLength: "Max 255 characters" },
+            }),
+        };
 
-        if (!formData.dataset_id) {
-            errors.dataset_id = ["Dataset is required"];
-        }
-
-        if (!formData.version_tag?.trim()) {
-            errors.version_tag = ["Version tag is required"];
-        }
-
-        if (!formData.source_created_at?.trim()) {
-            errors.source_created_at = ["Created at is required"];
-        }
-
-        if (!formData.time_range_start?.trim()) {
-            errors.time_range_start = ["Time range start is required"];
-        }
-        if (!formData.time_range_end?.trim()) {
-            errors.time_range_end = ["Time range end is required"];
-        }
-        // If both provided, enforce ordering
         if (formData.time_range_start && formData.time_range_end) {
             if (new Date(formData.time_range_end) < new Date(formData.time_range_start)) {
-                errors.time_range_end = ["Must be after or equal to start"];
+                fieldErrors.time_range_end = [
+                    ...(fieldErrors.time_range_end ?? []),
+                    "Must be after or equal to start",
+                ];
             }
         }
 
-        if (!formData.residency_zone) {
-            errors.residency_zone = ["Residency zone is required"];
-        }
+        const numericFields: Array<[keyof typeof formData, number | undefined | null, string]> = [
+            ["row_count", formData.row_count, "Must be >= 0"],
+            ["pii_element_count", formData.pii_element_count, "Must be >= 0"],
+            ["special_category_element_count", formData.special_category_element_count, "Must be >= 0"],
+        ];
+        numericFields.forEach(([field, value, message]) => {
+            if (value !== undefined && value !== null) {
+                const errs = validateNumericField(Number(value), {
+                    min: 0,
+                    messages: { min: message },
+                });
+                if (errs.length) {
+                    const key = field as string;
+                    fieldErrors[key] = errs;
+                }
+            }
+        });
 
-        if (!formData.storage_uri?.trim()) {
-            errors.storage_uri = ["Storage URI is required"];
-        }
-        if (formData.version_tag && formData.version_tag.length > 50) {
-            errors.version_tag = ["Max 50 characters"];
-        }
-        if (formData.storage_uri && formData.storage_uri.length > 500) {
-            errors.storage_uri = ["Max 500 characters"];
-        }
-        if (formData.quality_checksums && formData.quality_checksums.length > 255) {
-            errors.quality_checksums = ["Max 255 characters"];
-        }
-        if (formData.masking_anonymization_method && formData.masking_anonymization_method.length > 255) {
-            errors.masking_anonymization_method = ["Max 255 characters"];
-        }
-        if (formData.privacy_transform_evidence_ref && formData.privacy_transform_evidence_ref.length > 255) {
-            errors.privacy_transform_evidence_ref = ["Max 255 characters"];
-        }
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

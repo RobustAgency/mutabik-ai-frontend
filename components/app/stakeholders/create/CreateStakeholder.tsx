@@ -9,6 +9,12 @@ import { useRouter } from "next/navigation";
 import { useCreateStakeholderMutation } from "@/app/lib/features/stakeholdersApi";
 import { CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
 import StakeholderForm from "./StakeholderForm";
+import {
+  validateTextField,
+  validateEmail,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const initialFormData: CreateStakeholderData = {
   type: "person",
@@ -35,64 +41,60 @@ const CreateStakeholder: React.FC = () => {
   >({});
   const [createStakeholder, { isLoading }] = useCreateStakeholderMutation();
 
-  // Email validation helper
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Form validation
+  // Form validation using validation utilities
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      type: validateTextField(formData.type, {
+        required: true,
+        messages: { required: "Type is required" },
+      }),
+      display_name: validateTextField(formData.display_name, {
+        required: true,
+        messages: { required: "Display name is required" },
+      }),
+      legal_name: validateTextField(formData.legal_name, {
+        required: true,
+        messages: { required: "Legal name is required" },
+      }),
+      org_unit: validateTextField(formData.org_unit, {
+        required: true,
+        messages: { required: "Organization unit is required" },
+      }),
+      email: [
+        ...validateTextField(formData.email, {
+          required: true,
+          messages: { required: "Email is required" },
+        }),
+        ...validateEmail(formData.email),
+      ],
+      phone: validateTextField(formData.phone, {
+        required: true,
+        messages: { required: "Phone is required" },
+      }),
+      timezone: validateTextField(formData.timezone, {
+        required: true,
+        messages: { required: "Timezone is required" },
+      }),
+      classification: validateTextField(formData.classification, {
+        required: true,
+        messages: { required: "Classification is required" },
+      }),
+      country: validateTextField(formData.country, {
+        required: true,
+        messages: { required: "Country is required" },
+      }),
+      role_tags: validateArrayField(formData.role_tags, {
+        required: true,
+        messages: { required: "At least one role tag is required" },
+      }),
+    };
 
-    // Required fields
-    if (!formData.type?.trim()) {
-      errors.type = ["Type is required"];
-    }
-
-    if (!formData.display_name?.trim()) {
-      errors.display_name = ["Display name is required"];
-    }
-
-    if (!formData.legal_name?.trim()) {
-      errors.legal_name = ["Legal name is required"];
-    }
-
-    if (!formData.org_unit?.trim()) {
-      errors.org_unit = ["Organization unit is required"];
-    }
-
-    if (!formData.email?.trim()) {
-      errors.email = ["Email is required"];
-    } else if (!isValidEmail(formData.email)) {
-      errors.email = ["Please enter a valid email address"];
-    }
-
-    if (!formData.phone?.trim()) {
-      errors.phone = ["Phone is required"];
-    }
-
-    if (!formData.timezone?.trim()) {
-      errors.timezone = ["Timezone is required"];
-    }
-
-    if (!formData.classification?.trim()) {
-      errors.classification = ["Classification is required"];
-    }
-
-    if (!formData.country?.trim()) {
-      errors.country = ["Country is required"];
-    }
-
-    if (!formData.role_tags || formData.role_tags.length === 0) {
-      errors.role_tags = ["At least one role tag is required"];
-    }
-
-    // Active status validation - required
+    // Active status validation
     if (formData.active === undefined || formData.active === null) {
-      errors.active = ["Active status is required"];
+      fieldErrors.active = ["Active status is required"];
     }
 
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

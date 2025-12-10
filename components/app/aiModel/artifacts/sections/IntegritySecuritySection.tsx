@@ -16,24 +16,14 @@ interface IntegritySecuritySectionProps {
         checksum_algorithm: string;
         // checksum_value: string; // Backend calculates this automatically
     };
-    errors: Record<string, string[]>;
-    uploadedFile: File | null;
-    isCalculatingChecksum: boolean;
     checksumAlgorithmOptions: { value: string; label: string }[];
     onChecksumAlgorithmChange: (value: string) => void;
-    onFieldChange: (field: string, value: string) => void;
-    onErrorClear: (field: string) => void;
 }
 
 export default function IntegritySecuritySection({
     formData,
-    errors,
-    uploadedFile,
-    isCalculatingChecksum,
     checksumAlgorithmOptions,
     onChecksumAlgorithmChange,
-    onFieldChange,
-    onErrorClear,
 }: IntegritySecuritySectionProps) {
     return (
         <div className="space-y-4">

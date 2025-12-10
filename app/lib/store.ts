@@ -29,6 +29,10 @@ import { incidentNotificationsApi } from "./features/incidentNotificationsApi";
 import { correctivePreventiveActionsApi } from "./features/correctivePreventiveActionsApi";
 import { aiAssetsApi } from "./features/aiAssetsApi";
 import { datasetElementMapApi } from "./features/datasetElementMapApi";
+import { riskMethodologyApi } from "./features/riskMethodologyApi";
+import { aiRiskRegisterApi } from "./features/aiRiskRegisterApi";
+import { aiRiskTreatmentApi } from "./features/aiRiskTreatmentApi";
+import { kriIndicatorApi } from "./features/kriIndicatorApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -65,6 +69,10 @@ export const makeStore = () => {
         correctivePreventiveActionsApi.reducer,
       [aiAssetsApi.reducerPath]: aiAssetsApi.reducer,
       [datasetElementMapApi.reducerPath]: datasetElementMapApi.reducer,
+      [riskMethodologyApi.reducerPath]: riskMethodologyApi.reducer,
+      [aiRiskRegisterApi.reducerPath]: aiRiskRegisterApi.reducer,
+      [aiRiskTreatmentApi.reducerPath]: aiRiskTreatmentApi.reducer,
+      [kriIndicatorApi.reducerPath]: kriIndicatorApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -96,7 +104,11 @@ export const makeStore = () => {
         incidentNotificationsApi.middleware,
         correctivePreventiveActionsApi.middleware,
         aiAssetsApi.middleware,
-        datasetElementMapApi.middleware
+        datasetElementMapApi.middleware,
+        riskMethodologyApi.middleware,
+        aiRiskRegisterApi.middleware,
+        aiRiskTreatmentApi.middleware,
+        kriIndicatorApi.middleware
       ),
   });
 };

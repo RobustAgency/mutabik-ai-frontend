@@ -1,16 +1,6 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { apiClient } from "@/lib/api";
-import { AxiosRequestConfig, AxiosError } from "axios";
-
-interface PaginationMeta {
-  current_page: number;
-  per_page: number;
-  total: number;
-  last_page: number;
-  from: number;
-  to: number;
-}
+import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Types for vendors
 export interface Vendor {
@@ -81,61 +71,6 @@ export interface CreateVendorData {
   }>;
   metadata?: Record<string, unknown>;
   notes?: string | null;
-}
-
-// Custom base query using existing Axios client
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params }) => {
-    try {
-      const result = await apiClient({
-        url,
-        method,
-        data,
-        params,
-      });
-
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        data?: unknown;
-        message?: string;
-        error?: boolean;
-        errors?: Record<string, string[]>;
-      }>;
-
-      const error = {
-        status: err.response?.status || 500,
-        data: err.response?.data || {
-          message: err.message || "An error occurred",
-          error: true,
-        },
-      };
-
-      return {
-        error,
-      };
-    }
-  };
-
-// Type for RTK Query mutation errors
-interface MutationError {
-  error?: {
-    status: number;
-    data?: {
-      message?: string;
-      errors?: Record<string, string[]>;
-    };
-  };
 }
 
 export const vendorsApi = createApi({
@@ -232,8 +167,8 @@ export const vendorsApi = createApi({
           await queryFulfilled;
           toast.success("Vendor created successfully");
         } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
               mutationError?.error?.data?.message || "Failed to create vendor";
             toast.error(errorMessage);
@@ -260,8 +195,8 @@ export const vendorsApi = createApi({
           await queryFulfilled;
           toast.success("Vendor updated successfully");
         } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
               mutationError?.error?.data?.message || "Failed to update vendor";
             toast.error(errorMessage);

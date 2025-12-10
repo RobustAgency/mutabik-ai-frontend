@@ -169,11 +169,19 @@
 - - Use getStatusBadge utility for business/operational status
 - - Implement custom badge logic for regulatory classifications
 - - Use consistent color schemes: green (active/success), blue (info), red (danger), gray (neutral)
+- - IMPORTANT: Badge component only supports three variants: "filled", "light", "outlined"
+- - Always use one of these valid variants when implementing Badge components
     \*/
     const STATUS_BADGE_RULES = {
     business: 'Use getStatusBadge(status, "business")',
     operational: 'Use getStatusBadge(status, "operational")',
     regulatory: 'Custom switch statement with color mapping',
+    variants: {
+    filled: 'Solid background badge (default)',
+    light: 'Light background badge with colored text',
+    outlined: 'Outlined badge with border'
+    },
+    usage: 'ONLY use "filled", "light", or "outlined" as variant prop',
     colors: {
     success: 'bg-green-100 text-green-800',
     info: 'bg-blue-100 text-blue-800',
@@ -275,6 +283,64 @@
     loading: 'Combine loading states from queries and mutations',
     errors: 'Extract error messages with fallbacks',
     callbacks: 'Use useCallback for all returned functions'
+    };
+
+// ============================================================================
+// 3.5 SHARED RTK QUERY UTILITIES
+// ============================================================================
+
+/**
+ * RULE 3.5: Shared RTK Query Base Query and Helpers
+ * - Use shared axiosBaseQuery from lib/api/rtkQueryBase.ts
+ * - Use shared MutationError, PaginationMeta types
+ * - Use helper functions: extractErrorMessage, hasValidationErrors, extractValidationErrors
+ * - Eliminates duplication of 40+ lines per API file
+    */
+    const SHARED_RTK_QUERY_RULES = {
+    baseQuery: {
+    import: 'import { axiosBaseQuery } from "@/lib/api/rtkQueryBase"',
+    usage: 'baseQuery: axiosBaseQuery()',
+    benefits: 'Eliminates 40+ lines of duplicated code per API file'
+    },
+    types: {
+    mutationError: 'import { MutationError } from "@/lib/api/rtkQueryBase"',
+    pagination: 'import { PaginationMeta } from "@/lib/api/rtkQueryBase"',
+    usage: 'Use MutationError type in error handling'
+    },
+    helpers: {
+    hasValidationErrors: 'Check if error contains validation errors',
+    extractErrorMessage: 'Extract error message with fallback',
+    extractValidationErrors: 'Get validation errors object'
+    },
+    example: `
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { toast } from "react-toastify";
+import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+
+export const entityApi = createApi({
+  reducerPath: "entityApi",
+  baseQuery: axiosBaseQuery(),
+  tagTypes: ["Entity"],
+  endpoints: (builder) => ({
+    createEntity: builder.mutation<Entity, CreateEntityData>({
+      query: (data) => ({ url: "/entities", method: "POST", data }),
+      invalidatesTags: [{ type: "Entity", id: "LIST" }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          toast.success("Entity created successfully");
+        } catch (error) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
+            const errorMessage = mutationError?.error?.data?.message || "Failed to create entity";
+            toast.error(errorMessage);
+          }
+        }
+      },
+    }),
+  }),
+});
+    `
     };
 
 // ============================================================================
@@ -426,6 +492,168 @@
     detail: '/core-assets/entity-type/{id}/details',
     create: '/core-assets/entity-type/create'
     }
+    };
+
+// ============================================================================
+// 7.5 SHARED UI COMPONENTS AND HOOKS
+// ============================================================================
+
+/**
+ * RULE 7.5: Shared Delete Confirmation Hook
+ * - Use useDeleteConfirmation hook from hooks/useDeleteConfirmation.tsx
+ * - Eliminates repetitive delete dialog state management
+ * - Provides consistent delete confirmation UX
+ * - Reduces 20+ lines of boilerplate per component
+    */
+    const DELETE_CONFIRMATION_HOOK_RULES = {
+    import: 'import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation"',
+    usage: {
+    setup: 'Initialize hook with delete mutation and options',
+    handlers: 'openDeleteDialog(id, name), closeDeleteDialog',
+    component: 'Render DeleteConfirmationDialog component'
+    },
+    example: `
+// Instead of manual state management:
+const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+const [deleteId, setDeleteId] = useState<string | null>(null);
+const [deleteName, setDeleteName] = useState("");
+
+const handleDeleteClick = (id: string, name: string) => {
+  setDeleteId(id);
+  setDeleteName(name);
+  setShowDeleteDialog(true);
+};
+
+const handleConfirmDelete = async () => {
+  if (!deleteId) return;
+  try {
+    await deleteEntity(deleteId).unwrap();
+    router.push("/entities");
+  } catch (error) {
+    console.error(error);
+  }
+  setShowDeleteDialog(false);
+};
+
+// And render ConfirmationDialog with all props...
+
+// Use useDeleteConfirmation hook:
+const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
+  deleteMutation: async (id: string) => {
+    await deleteEntity(id).unwrap();
+  },
+  isDeleting,
+  entityTypeName: "Entity",
+  onSuccess: () => router.push("/entities"),
+});
+
+// In render:
+<Button onClick={() => openDeleteDialog(entity.id, entity.name)}>Delete</Button>
+<DeleteConfirmationDialog />
+    `,
+    benefits: [
+    'Eliminates 400+ lines of duplicated delete dialog code',
+    'Consistent delete confirmation UX',
+    'Type-safe with proper error handling',
+    'Automatic loading states'
+    ]
+    };
+
+/**
+ * RULE 7.6: EntityDetailsLayout Component
+ * - Use EntityDetailsLayout from components/custom/EntityDetailsLayout.tsx
+ * - Standardized layout for all detail pages
+ * - Eliminates repetitive Card + header + action button structure
+ * - Reduces 50+ lines of boilerplate per detail page
+    */
+    const ENTITY_DETAILS_LAYOUT_RULES = {
+    import: 'import { EntityDetailsLayout } from "@/components/custom/EntityDetailsLayout"',
+    usage: {
+    basic: 'Wrap content in EntityDetailsLayout with props',
+    loading: 'Built-in loading state handling',
+    error: 'Built-in error state handling',
+    actions: 'Built-in Edit/Delete buttons with handlers'
+    },
+    example: `
+// Instead of manual layout:
+if (isLoading) {
+  return (
+    <div className="max-w-7xl mx-auto">
+      <Card className="p-6 border-[#E4E7EC] shadow-none">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div className="max-w-7xl mx-auto">
+      <Card className="p-6 border-[#E4E7EC] shadow-none">
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+return (
+  <div className="max-w-7xl mx-auto">
+    <Card className="p-6 border-[#E4E7EC] shadow-none">
+      <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-6">
+        <div>
+          <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
+            Entity Details
+          </h1>
+          <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+            View and manage entity information
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button onClick={handleEdit}>Edit</Button>
+          <Button onClick={handleDelete}>Delete</Button>
+        </div>
+      </div>
+      <CardContent className="space-y-6">
+        {/* Content */}
+      </CardContent>
+    </Card>
+  </div>
+);
+
+// Use EntityDetailsLayout:
+<EntityDetailsLayout
+  title="Entity Details"
+  description="View and manage entity information"
+  loading={isLoading}
+  error={error ? "Failed to load entity" : null}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+>
+  <EntityFormReadOnly entity={entity} />
+</EntityDetailsLayout>
+    `,
+    props: {
+    title: 'Page title (required)',
+    description: 'Page description (required)',
+    loading: 'Loading state (optional)',
+    error: 'Error message (optional)',
+    onEdit: 'Edit button handler (optional)',
+    onDelete: 'Delete button handler (optional)',
+    customActions: 'Custom action buttons (optional)',
+    showEdit: 'Show edit button (default: true if onEdit provided)',
+    showDelete: 'Show delete button (default: true if onDelete provided)',
+    children: 'Main content (required)'
+    },
+    benefits: [
+    'Eliminates 600+ lines of duplicated layout code',
+    'Consistent detail page UX across the app',
+    'Built-in loading and error states',
+    'Type-safe with clear props interface'
+    ]
     };
 
 // ============================================================================
@@ -625,6 +853,477 @@
     required: 'Mark required fields with asterisk',
     help: 'Provide helpful descriptions where needed',
     accessibility: 'Proper label association with inputs'
+    }
+    };
+
+/**
+ * RULE 13.3A: Validation Utilities (RECOMMENDED)
+ * - Use shared validation utilities from lib/utils/validation.ts
+ * - Eliminates duplicated validation logic across 50+ form components
+ * - Provides consistent validation messages and behavior
+ * - Type-safe validation with clear error messages
+    */
+    const VALIDATION_UTILITIES_RULES = {
+    import: 'import { validateTextField, validateNumericField, validateEmail, validateArrayField, createValidationErrors } from "@/lib/utils/validation"',
+    functions: {
+    validateTextField: 'Validate text with min/max length, required, pattern',
+    validateNumericField: 'Validate numbers with min/max, integer, positive',
+    validateEmail: 'Validate email format',
+    validatePhone: 'Validate phone number format',
+    validateUrl: 'Validate URL format',
+    validateDate: 'Validate date and date ranges',
+    validateArrayField: 'Validate array length (min/max items)',
+    createValidationErrors: 'Filter and create validation errors object',
+    combineValidations: 'Combine multiple validation results'
+    },
+    example: `
+// Instead of manual validation:
+const validateForm = (): boolean => {
+  const errors: Record<string, string[]> = {};
+  if (!formData.name?.trim()) {
+    errors.name = ["Name is required"];
+  } else if (formData.name.trim().length < 5) {
+    errors.name = ["Name must be at least 5 characters"];
+  }
+  if (!formData.email?.trim()) {
+    errors.email = ["Email is required"];
+  } else if (!emailRegex.test(formData.email)) {
+    errors.email = ["Invalid email"];
+  }
+  setValidationErrors(errors);
+  return Object.keys(errors).length === 0;
+};
+
+// Use validation utilities:
+const validateForm = (): boolean => {
+  const fieldErrors: Record<string, string[]> = {
+    name: validateTextField(formData.name, {
+      required: true,
+      minLength: 5,
+      maxLength: 255,
+      messages: {
+        required: "Name is required",
+        length: "Name must be between 5-255 characters"
+      }
+    }),
+    email: [
+      ...validateTextField(formData.email, {
+        required: true,
+        messages: { required: "Email is required" }
+      }),
+      ...validateEmail(formData.email)
+    ],
+    tags: validateArrayField(formData.tags, {
+      required: true,
+      minLength: 1,
+      messages: { required: "At least one tag is required" }
+    })
+  };
+  
+  const errors = createValidationErrors(fieldErrors);
+  setValidationErrors(errors);
+  return Object.keys(errors).length === 0;
+};
+    `,
+    benefits: [
+    'Eliminates 2000+ lines of duplicated validation code',
+    'Consistent validation messages across the app',
+    'Type-safe validation with clear error handling',
+    'Easy to test validation logic in isolation',
+    'Reduces bugs from inconsistent validation'
+    ]
+    };
+
+/**
+ * RULE 13.4: Multi-Step Wizard Form Pattern (Standard for All New Modules)
+ * - All new modules with complex forms MUST follow the CreateUseCases wizard pattern
+ * - Use MultiStepWizard component for consistent UI/UX across all modules
+ * - Implement step-by-step validation with clear error messaging
+ * - Maintain consistent Card structure and styling
+ * - Note: Draft functionality is optional and module-specific
+    */
+    const MULTI_STEP_WIZARD_RULES = {
+    structure: {
+    pattern: 'Use MultiStepWizard wrapper component',
+    steps: 'Define WIZARD_STEPS array with id, title, description',
+    state: 'Manage currentStep with useState',
+    navigation: 'Implement handleNext, handlePrevious, handleSubmit'
+    },
+    validation: {
+    stepValidation: 'Implement validateStep(step: number) function',
+    formValidation: 'Implement validateForm() for final submission',
+    errorState: 'Use validationErrors state: Record<string, string[]>',
+    display: 'Show errors in Alert component at top of form',
+    navigation: 'Navigate to first step with errors on submission'
+    },
+    layout: {
+    wrapper: 'max-w-7xl mx-auto px-4 py-6',
+    card: 'Card with p-6 border-[#E4E7EC] shadow-none',
+    header: 'h1 with font-sans font-semibold text-2xl text-[#1D2939]',
+    description: 'p with font-sans font-normal text-sm text-[#667085]',
+    content: 'CardContent with space-y-8 w-full p-0'
+    },
+    stepContent: {
+    pattern: 'Use switch/case in renderStepContent()',
+    components: 'Create separate component for each step',
+    props: 'Pass formData, setFormData, errors to each step component',
+    consistency: 'All step components follow same prop interface'
+    },
+    formData: {
+    interface: 'Define FormDataType interface with all fields',
+    initial: 'Create initialFormData constant with default values',
+    state: 'Use useState<FormDataType>(initialFormData)',
+    updates: 'Use setFormData to update form state'
+    },
+    validation_rules: {
+    required: 'Validate required fields with clear error messages',
+    length: 'Validate string length constraints (min/max)',
+    format: 'Validate email, URL, date formats where applicable',
+    numeric: 'Validate numeric ranges and integer constraints',
+    arrays: 'Validate array length (e.g., at least one stakeholder)',
+    conditional: 'Validate conditional fields based on other field values'
+    },
+    submission: {
+    clientValidation: 'Validate entire form before API call',
+    apiCall: 'Use RTK Query mutation for submission',
+    loading: 'Pass isLoading to MultiStepWizard',
+    success: 'Reset form and navigate to list page on success',
+    error: 'Handle server errors and navigate to error step',
+    scrollTop: 'Scroll to top on navigation: window.scrollTo({ top: 0, behavior: "smooth" })'
+    },
+    userExperience: {
+    progressIndicator: 'Show clear step progress in wizard',
+    navigation: 'Enable Previous/Next buttons with proper state',
+    disableNext: 'Disable Next until step validation passes',
+    errorFeedback: 'Show all validation errors in Alert at top',
+    fieldErrors: 'Also show inline errors on individual fields',
+    smoothTransitions: 'Smooth scroll to top on step changes'
+    },
+    optional_features: {
+    saveDraft: 'Draft functionality is optional per module requirements',
+    autosave: 'Autosave functionality is optional per module',
+    progressPersistence: 'LocalStorage persistence is optional'
+    },
+    consistency: {
+    allModules: 'ALL new modules MUST follow this exact pattern',
+    validation: 'Validation patterns MUST be consistent across modules',
+    ui: 'UI/UX MUST match CreateUseCases component styling',
+    structure: 'File structure and naming MUST be consistent'
+    }
+    };
+
+/**
+ * RULE 13.5: Multi-Step Wizard Implementation Example
+ * 
+ * const WIZARD_STEPS = [
+ *   { id: 1, title: "Step 1", description: "Description" },
+ *   { id: 2, title: "Step 2", description: "Description" }
+ * ];
+ * 
+ * const [currentStep, setCurrentStep] = useState(1);
+ * const [formData, setFormData] = useState<FormDataType>(initialFormData);
+ * const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+ * 
+ * const validateStep = (step: number): boolean => {
+ *   const errors: Record<string, string[]> = {};
+ *   switch (step) {
+ *     case 1:
+ *       if (!formData.name?.trim()) errors.name = ["Name is required"];
+ *       break;
+ *   }
+ *   setValidationErrors(errors);
+ *   return Object.keys(errors).length === 0;
+ * };
+ * 
+ * const handleNext = () => {
+ *   if (validateStep(currentStep)) {
+ *     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+ *     window.scrollTo({ top: 0, behavior: "smooth" });
+ *   }
+ * };
+ * 
+ * const handleSubmit = async () => {
+ *   if (!validateForm()) return;
+ *   try {
+ *     await createMutation(formData).unwrap();
+ *     router.push("/list-page");
+ *   } catch (err: any) {
+ *     if (err?.data?.errors) {
+ *       setValidationErrors(err.data.errors);
+ *     }
+ *   }
+ * };
+    */
+
+/**
+ * RULE 13.6: Multi-Step Form Component Structure (MANDATORY for Complex Forms)
+ * - ALL complex multi-step forms MUST follow the AiRiskRegisterForm structure
+ * - Break large forms into smaller, maintainable step components
+ * - Extract shared types and validation logic into separate files
+ * - Keep main form component as a lightweight coordinator
+ * - This pattern reduces file size by 70-80% and improves maintainability
+    */
+    const MULTI_STEP_FORM_STRUCTURE_RULES = {
+    fileOrganization: {
+    pattern: 'Organize form files in create/ directory with subdirectories',
+    structure: {
+    mainForm: 'EntityForm.tsx - Main coordinator component (200-300 lines)',
+    types: 'types.ts - Shared FormState type and getInitialState helper',
+    validation: 'validation.ts - Step validation logic and helper functions',
+    steps: 'steps/ directory - Individual step components (100-200 lines each)'
+    },
+    example: `
+components/app/entityName/create/
+├── EntityForm.tsx (main coordinator)
+├── types.ts (FormState type, getInitialState)
+├── validation.ts (validateStep, parseNumber, etc.)
+└── steps/
+    ├── BasicInformationStep.tsx
+    ├── AdditionalDetailsStep.tsx
+    ├── ReviewStep.tsx
+    └── ConfirmationStep.tsx
+    `
+    },
+    mainFormComponent: {
+    responsibilities: {
+    state: 'Manage formState, currentStep, validationErrors',
+    dataFetching: 'Fetch dropdown data (models, versions, etc.)',
+    navigation: 'Handle step navigation (handleNext, handlePrevious)',
+    submission: 'Handle form submission and payload transformation',
+    coordination: 'Render appropriate step component based on currentStep'
+    },
+    structure: {
+    imports: 'Import step components, types, validation utilities',
+    state: 'useState for formState, currentStep, validationErrors',
+    queries: 'RTK Query hooks for dropdown data',
+    handlers: 'handleNext, handlePrevious, handleSubmit, handleValidateStep',
+    render: 'renderStepContent() with switch/case for step components',
+    wrapper: 'Card + MultiStepWizard wrapper'
+    },
+    targetSize: '200-300 lines maximum (down from 1000+ lines)'
+    },
+    typesFile: {
+    purpose: 'Centralize FormState type definition and initialization',
+    exports: {
+    FormState: 'Type definition for all form fields',
+    getInitialState: 'Function to initialize form state from initialData'
+    },
+    example: `
+// types.ts
+import { Entity, FieldType } from "@/interfaces/Entity";
+
+export type FormState = {
+  field1: string;
+  field2: FieldType;
+  // ... all form fields
+};
+
+export const getInitialState = (initial?: Entity): FormState => ({
+  field1: initial?.field1 ?? "",
+  field2: initial?.field2 ?? FieldType.DEFAULT,
+  // ... initialize all fields
+});
+    `
+    },
+    validationFile: {
+    purpose: 'Extract validation logic from main form component',
+    exports: {
+    validateStep: 'Function to validate a specific step, returns { isValid, errors }',
+    parseNumber: 'Helper function for number parsing',
+    otherHelpers: 'Any other validation-related utilities'
+    },
+    example: `
+// validation.ts
+import { validateTextField, validateNumericField, createValidationErrors } from "@/lib/utils/validation";
+import { FormState } from "./types";
+
+export const validateStep = (
+  step: number,
+  formState: FormState
+): { isValid: boolean; errors: Record<string, string[]> } => {
+  const fieldErrors: Record<string, string[]> = {};
+  
+  if (step === 1) {
+    fieldErrors.field1 = validateTextField(formState.field1, {
+      required: true,
+      messages: { required: "Field1 is required" }
+    });
+  }
+  
+  const errors = createValidationErrors(fieldErrors);
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
+export const parseNumber = (value: string) => {
+  if (!value || value.trim() === "" || value === "0") return undefined;
+  const parsed = Number(value);
+  return Number.isNaN(parsed) || parsed <= 0 ? undefined : parsed;
+};
+    `
+    },
+    stepComponents: {
+    pattern: 'Each step is a separate component in steps/ directory',
+    naming: 'Use descriptive names: BasicInformationStep, RiskAssessmentStep, etc.',
+    props: {
+    required: [
+    'formState: FormState',
+    'setFormState: React.Dispatch<React.SetStateAction<FormState>>',
+    'validationErrors: Record<string, string[]>'
+    ],
+    optional: [
+    'Data for dropdowns (models, versions, etc.)',
+    'Loading states for async data',
+    'Any step-specific props'
+    ]
+    },
+    structure: {
+    imports: 'Import UI components, types, utilities',
+    interface: 'Define StepProps interface',
+    component: 'Export step component with consistent props',
+    content: 'Render step-specific form fields',
+    styling: 'Use consistent Card/div structure with section headers'
+    },
+    example: `
+// steps/BasicInformationStep.tsx
+"use client";
+
+import React from "react";
+import { Input, Label, Select } from "@/components/ui/...";
+import { FormState } from "../types";
+
+interface BasicInformationStepProps {
+  formState: FormState;
+  setFormState: React.Dispatch<React.SetStateAction<FormState>>;
+  validationErrors: Record<string, string[]>;
+  // Step-specific props (dropdowns, loading states, etc.)
+}
+
+export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
+  formState,
+  setFormState,
+  validationErrors,
+  // ... other props
+}) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2">
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+          Basic Information
+        </h3>
+        <hr className="border-gray-200" />
+      </div>
+      {/* Step-specific form fields */}
+    </div>
+  );
+};
+    `,
+    targetSize: '100-200 lines per step component'
+    },
+    benefits: {
+    maintainability: 'Each step is isolated and easy to modify',
+    readability: 'Main form is clean and focused on coordination',
+    reusability: 'Step components can be reused or tested independently',
+    scalability: 'Easy to add new steps or modify existing ones',
+    sizeReduction: 'Reduces main form from 1000+ lines to 200-300 lines (70-80% reduction)'
+    },
+    implementationChecklist: {
+    structure: [
+    '[ ] Create types.ts with FormState and getInitialState',
+    '[ ] Create validation.ts with validateStep and helpers',
+    '[ ] Create steps/ directory',
+    '[ ] Extract each step into separate component file',
+    '[ ] Update main form to import and use step components'
+    ],
+    mainForm: [
+    '[ ] Import step components from steps/',
+    '[ ] Import types from types.ts',
+    '[ ] Import validation from validation.ts',
+    '[ ] Replace renderStepContent() switch cases with step components',
+    '[ ] Pass required props to each step component',
+    '[ ] Keep main form under 300 lines'
+    ],
+    stepComponents: [
+    '[ ] Define StepProps interface with required props',
+    '[ ] Extract step JSX into component',
+    '[ ] Pass formState, setFormState, validationErrors as props',
+    '[ ] Pass step-specific data (dropdowns, loading states) as props',
+    '[ ] Use consistent section header styling',
+    '[ ] Keep each step component under 200 lines'
+    ],
+    validation: [
+    '[ ] Move validateStep logic to validation.ts',
+    '[ ] Update to return { isValid, errors } object',
+    '[ ] Extract helper functions (parseNumber, etc.)',
+    '[ ] Import validation utilities from lib/utils/validation'
+    ],
+    types: [
+    '[ ] Define FormState type with all form fields',
+    '[ ] Create getInitialState function',
+    '[ ] Export both for use in main form and step components'
+    ]
+    },
+    exampleStructure: `
+// Main Form (EntityForm.tsx) - ~250 lines
+import { FormState, getInitialState } from "./types";
+import { validateStep, parseNumber } from "./validation";
+import { BasicInformationStep } from "./steps/BasicInformationStep";
+import { AdditionalDetailsStep } from "./steps/AdditionalDetailsStep";
+
+export const EntityForm: React.FC<Props> = ({ initialData, onSubmit }) => {
+  const [formState, setFormState] = useState<FormState>(getInitialState(initialData));
+  const [currentStep, setCurrentStep] = useState(1);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  
+  // Data fetching
+  const { data: models } = useGetModelsQuery();
+  
+  const handleValidateStep = (step: number): boolean => {
+    const { isValid, errors } = validateStep(step, formState);
+    setValidationErrors(errors);
+    return isValid;
+  };
+  
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <BasicInformationStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+            models={models}
+          />
+        );
+      case 2:
+        return (
+          <AdditionalDetailsStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+  
+  return (
+    <Card>
+      <MultiStepWizard {...wizardProps}>
+        {renderStepContent()}
+      </MultiStepWizard>
+    </Card>
+  );
+};
+    `,
+    consistency: {
+    mandatory: 'ALL new complex forms MUST follow this exact structure',
+    existing: 'Refactor existing large forms (>500 lines) to use this structure',
+    exceptions: 'Simple single-step forms (<200 lines) may remain in single file',
+    enforcement: 'Code reviews should enforce this structure for complex forms'
     }
     };
 
@@ -993,16 +1692,25 @@
 - - [ ] ColumnDef<EntityType>[] typing
 - - [ ] Consistent header and cell styling
 -
+- ✅ Detail Pages (RECOMMENDED):
+- - [ ] Use EntityDetailsLayout from components/custom/EntityDetailsLayout.tsx
+- - [ ] Use useDeleteConfirmation hook for delete dialogs
+- - [ ] Pass loading/error states to EntityDetailsLayout
+- - [ ] Render DeleteConfirmationDialog component
+- - [ ] Remove manual Card + header boilerplate
+-
 - ✅ State Management Decision:
 - - [ ] Choose RTK Query for simple CRUD
 - - [ ] Choose Traditional Redux for complex state
 - - [ ] Implement appropriate patterns
 -
 - ✅ RTK Query Implementation (if applicable):
-- - [ ] Custom base query with error handling
+- - [ ] Import axiosBaseQuery from lib/api/rtkQueryBase.ts
+- - [ ] Import MutationError, hasValidationErrors from shared utilities
+- - [ ] Use shared base query instead of duplicating
 - - [ ] Proper tag invalidation
 - - [ ] Response transformation
-- - [ ] Toast notifications
+- - [ ] Toast notifications with hasValidationErrors check
 -
 - ✅ Traditional Redux Implementation (if applicable):
 - - [ ] State interface definition
@@ -1025,9 +1733,41 @@
 - ✅ Form Handling:
 - - [ ] FormDataType interface definition
 - - [ ] Controlled components with useState
-- - [ ] Client-side validation
+- - [ ] Client-side validation using validation utilities
 - - [ ] Server error handling
 - - [ ] Consistent form layout
+-
+- ✅ Validation Utilities (RECOMMENDED):
+- - [ ] Import validation utilities from lib/utils/validation.ts
+- - [ ] Use validateTextField for text inputs
+- - [ ] Use validateNumericField for numeric inputs
+- - [ ] Use validateEmail for email validation
+- - [ ] Use validateArrayField for array validation
+- - [ ] Use createValidationErrors to filter errors
+- - [ ] Remove manual validation functions
+-
+- ✅ Multi-Step Wizard (for complex forms):
+- - [ ] WIZARD_STEPS array with step definitions
+- - [ ] MultiStepWizard wrapper component
+- - [ ] Step-by-step validation with validateStep()
+- - [ ] Form validation with validateForm()
+- - [ ] Validation errors in Alert component
+- - [ ] Separate step components with consistent props
+- - [ ] Next/Previous/Submit navigation handlers
+- - [ ] Smooth scroll on step changes
+- - [ ] Navigate to error step on validation failure
+-
+- ✅ Multi-Step Form Structure (MANDATORY for complex forms >500 lines):
+- - [ ] Create types.ts with FormState type and getInitialState helper
+- - [ ] Create validation.ts with validateStep function and helper utilities
+- - [ ] Create steps/ directory for step components
+- - [ ] Extract each step into separate component file (100-200 lines each)
+- - [ ] Main form component acts as coordinator (200-300 lines max)
+- - [ ] Step components receive formState, setFormState, validationErrors as props
+- - [ ] Pass step-specific data (dropdowns, loading states) as props to steps
+- - [ ] Use consistent section header styling in step components
+- - [ ] Import step components in main form renderStepContent()
+- - [ ] Keep main form under 300 lines (70-80% size reduction)
 -
 - ✅ Filtering & Pagination:
 - - [ ] Server-side or client-side filtering decision
@@ -1184,4 +1924,140 @@
 - {validationErrors.name && (
 - <p className="text-red-500 text-sm mt-1">{validationErrors.name[0]}</p>
 - )}
+-
+- Multi-Step Wizard Example (STANDARD FOR ALL NEW MODULES):
+- NOTE: For complex forms (>500 lines), MUST follow RULE 13.6 structure pattern
+- (types.ts, validation.ts, steps/ directory). See RULE 13.6 for details.
+-
+- // 1. Define steps
+- const WIZARD_STEPS = [
+-   { id: 1, title: "Basic Information", description: "Core details" },
+-   { id: 2, title: "Additional Details", description: "Extra info" }
+- ];
+-
+- // 2. Setup state
+- const [currentStep, setCurrentStep] = useState(1);
+- const [formData, setFormData] = useState<FormDataType>(initialFormData);
+- const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+- const [createEntity, { isLoading }] = useCreateEntityMutation();
+-
+- // 3. Step validation (extract to validation.ts for complex forms)
+- const validateStep = (step: number): boolean => {
+-   const errors: Record<string, string[]> = {};
+-   switch (step) {
+-     case 1:
+-       if (!formData.name?.trim()) {
+-         errors.name = ["Name is required"];
+-       } else if (formData.name.trim().length < 5) {
+-         errors.name = ["Name must be at least 5 characters"];
+-       }
+-       break;
+-     case 2:
+-       if (!formData.description?.trim()) {
+-         errors.description = ["Description is required"];
+-       }
+-       break;
+-   }
+-   setValidationErrors(errors);
+-   return Object.keys(errors).length === 0;
+- };
+-
+- // 4. Navigation handlers
+- const handleNext = () => {
+-   if (validateStep(currentStep)) {
+-     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+-     setValidationErrors({});
+-     window.scrollTo({ top: 0, behavior: "smooth" });
+-   } else {
+-     window.scrollTo({ top: 0, behavior: "smooth" });
+-   }
+- };
+-
+- const handlePrevious = () => {
+-   setCurrentStep((prev) => Math.max(prev - 1, 1));
+-   setValidationErrors({});
+-   window.scrollTo({ top: 0, behavior: "smooth" });
+- };
+-
+- // 5. Form submission
+- const handleSubmit = async () => {
+-   setValidationErrors({});
+-   if (!validateForm()) {
+-     // Navigate to first step with errors
+-     for (let step = 1; step <= WIZARD_STEPS.length; step++) {
+-       if (!validateStep(step)) {
+-         setCurrentStep(step);
+-         window.scrollTo({ top: 0, behavior: "smooth" });
+-         return;
+-       }
+-     }
+-     return;
+-   }
+-   try {
+-     await createEntity(formData).unwrap();
+-     setFormData(initialFormData);
+-     router.push("/entity-list");
+-   } catch (err: any) {
+-     if (err?.data?.errors) {
+-       setValidationErrors(err.data.errors);
+-     }
+-   }
+- };
+-
+- // 6. Render with MultiStepWizard
+- // For complex forms, extract renderStepContent() cases into step components
+- const renderStepContent = () => {
+-   switch (currentStep) {
+-     case 1:
+-       return <BasicInformationStep formData={formData} setFormData={setFormData} errors={validationErrors} />;
+-     case 2:
+-       return <AdditionalDetailsStep formData={formData} setFormData={setFormData} errors={validationErrors} />;
+-     default:
+-       return null;
+-   }
+- };
+-
+- return (
+-   <div className="max-w-7xl mx-auto px-4 py-6">
+-     <Card className="p-6 border-[#E4E7EC] shadow-none">
+-       <CardContent className="space-y-8 w-full p-0">
+-         {Object.keys(validationErrors).length > 0 && (
+-           <Alert variant="destructive">
+-             <AlertCircle className="h-4 w-4" />
+-             <AlertDescription>
+-               <p className="font-semibold mb-2">Please fix the following errors:</p>
+-               <ul className="list-disc list-inside space-y-1">
+-                 {Object.entries(validationErrors).map(([field, errors]) => (
+-                   <li key={field}>{field}: {errors[0]}</li>
+-                 ))}
+-               </ul>
+-             </AlertDescription>
+-           </Alert>
+-         )}
+-         <MultiStepWizard
+-           currentStep={currentStep}
+-           steps={WIZARD_STEPS}
+-           onNext={handleNext}
+-           onPrevious={handlePrevious}
+-           onSubmit={handleSubmit}
+-           isLoading={isLoading}
+-         >
+-           {renderStepContent()}
+-         </MultiStepWizard>
+-       </CardContent>
+-     </Card>
+-   </div>
+- );
+-
+- Badge Variants Example:
+-
+- // CORRECT - Use only these three variants
+- <Badge variant="filled">Active</Badge>
+- <Badge variant="light">Pending</Badge>
+- <Badge variant="outlined">Draft</Badge>
+-
+- // INCORRECT - These variants DO NOT exist
+- <Badge variant="solid">Active</Badge>  // ❌ Wrong
+- <Badge variant="default">Active</Badge>  // ❌ Wrong
+- <Badge variant="subtle">Active</Badge>  // ❌ Wrong
   \*/

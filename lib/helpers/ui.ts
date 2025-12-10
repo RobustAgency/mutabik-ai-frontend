@@ -52,4 +52,17 @@ export const getRiskBadge = (classification: string) => {
   }
 };
 
+/**
+ * Human-friendly formatter for enum-like category strings.
+ * - Returns "-" for empty/nullish values
+ * - Replaces underscores with spaces
+ * - Capitalizes each word
+ */
+export const formatCategory = (value?: string | null): string => {
+  if (!value || value.length === 0) return "-";
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+};
+
 export { formatDate, formatDateShort, formatDateISO, formatDateLong, formatDateLongTime, formatDateWithTime24h } from "@/lib/helpers/date";

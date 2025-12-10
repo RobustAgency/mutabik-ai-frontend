@@ -8,6 +8,10 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateModelDatasetLinkMutation, CreateModelDatasetLinkData } from "@/app/lib/features/modelDatasetLinksApi";
 import ModelDatasetLinkForm from "./ModelDatasetLinkForm";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateModelDatasetLink: React.FC = () => {
   const router = useRouter();
@@ -31,24 +35,42 @@ const CreateModelDatasetLink: React.FC = () => {
   const [createLink, { isLoading }] = useCreateModelDatasetLinkMutation();
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      ai_model_id: validateTextField(formData.ai_model_id, {
+        required: true,
+        messages: { required: "Model is required" },
+      }),
+      ai_model_version_id: validateTextField(
+        formData.ai_model_version_id ? String(formData.ai_model_version_id) : "",
+        {
+          required: true,
+          messages: { required: "Model version is required" },
+        }
+      ),
+      dataset_id: validateTextField(formData.dataset_id, {
+        required: true,
+        messages: { required: "Dataset is required" },
+      }),
+      role: validateTextField(formData.role, {
+        required: true,
+        messages: { required: "Role is required" },
+      }),
+      created_by: validateTextField(formData.created_by, {
+        required: true,
+        messages: { required: "Created by is required" },
+      }),
+      source_created_at: validateTextField(formData.source_created_at, {
+        required: true,
+        messages: { required: "Created at is required" },
+      }),
+    };
 
-    if (!formData.ai_model_id?.trim()) errors.ai_model_id = ["Model is required"];
-    // Model version is required (form shows asterisk)
-    if (!formData.ai_model_version_id || (typeof formData.ai_model_version_id === 'number' && formData.ai_model_version_id <= 0)) {
-      errors.ai_model_version_id = ["Model version is required"];
-    }
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
-    if (!formData.role?.trim()) errors.role = ["Role is required"];
-    if (!formData.created_by?.trim()) errors.created_by = ["Created by is required"];
-    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
-
-    // Snapshot is only required for train, validation, test, and eval_benchmark roles
     const trainRoles = ["train", "validation", "test", "eval_benchmark"];
     if (trainRoles.includes(formData.role) && !formData.dataset_snapshot_id?.trim()) {
-      errors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles"];
+      fieldErrors.dataset_snapshot_id = ["Snapshot is required for train/val/test/eval roles"];
     }
 
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

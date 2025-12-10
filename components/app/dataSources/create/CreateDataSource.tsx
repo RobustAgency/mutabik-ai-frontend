@@ -8,6 +8,11 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateDataSourceMutation } from "@/app/lib/features/dataSourcesApi";
 import { CreateDataSourceData } from "@/app/lib/features/dataSourcesApi";
+import {
+  validateTextField,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 import DataSourceForm from "./DataSourceForm";
 
 const initialFormData: CreateDataSourceData = {
@@ -39,49 +44,50 @@ const CreateDataSource: React.FC = () => {
 
   // Form validation
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      name: validateTextField(formData.name, {
+        required: true,
+        messages: { required: "Name is required" },
+      }),
+      system_type: validateTextField(formData.system_type, {
+        required: true,
+        messages: { required: "System type is required" },
+      }),
+      owner_team: validateTextField(formData.owner_team, {
+        required: true,
+        messages: { required: "Owner team is required" },
+      }),
+      access_method: validateTextField(formData.access_method, {
+        required: true,
+        messages: { required: "Access method is required" },
+      }),
+      residency: validateTextField(formData.residency, {
+        required: true,
+        messages: { required: "Residency is required (AC-01)" },
+      }),
+      classification: validateTextField(formData.classification, {
+        required: true,
+        messages: { required: "Classification is required (AC-01)" },
+      }),
+      hosting_model: validateTextField(formData.hosting_model, {
+        required: true,
+        messages: { required: "Hosting model is required (AC-01)" },
+      }),
+      service_model: validateTextField(formData.service_model, {
+        required: true,
+        messages: { required: "Service model is required (AC-01)" },
+      }),
+      cloud_provider: validateTextField(formData.cloud_provider, {
+        required: true,
+        messages: { required: "Cloud provider is required (AC-01)" },
+      }),
+      data_domains: validateArrayField(formData.data_domains, {
+        required: true,
+        messages: { required: "At least one data domain is required" },
+      }),
+    };
 
-    // Required fields (AC-01: enforce residency/classification + hosting/cloud fields)
-    if (!formData.name?.trim()) {
-      errors.name = ["Name is required"];
-    }
-
-    if (!formData.system_type?.trim()) {
-      errors.system_type = ["System type is required"];
-    }
-
-    if (!formData.owner_team?.trim()) {
-      errors.owner_team = ["Owner team is required"];
-    }
-
-    if (!formData.access_method?.trim()) {
-      errors.access_method = ["Access method is required"];
-    }
-
-    if (!formData.residency?.trim()) {
-      errors.residency = ["Residency is required (AC-01)"];
-    }
-
-    if (!formData.classification?.trim()) {
-      errors.classification = ["Classification is required (AC-01)"];
-    }
-
-    if (!formData.hosting_model?.trim()) {
-      errors.hosting_model = ["Hosting model is required (AC-01)"];
-    }
-
-    if (!formData.service_model?.trim()) {
-      errors.service_model = ["Service model is required (AC-01)"];
-    }
-
-    if (!formData.cloud_provider?.trim()) {
-      errors.cloud_provider = ["Cloud provider is required (AC-01)"];
-    }
-
-    if (!formData.data_domains || formData.data_domains.length === 0) {
-      errors.data_domains = ["At least one data domain is required"];
-    }
-
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

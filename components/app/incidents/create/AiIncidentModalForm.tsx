@@ -15,6 +15,11 @@ import {
   CreateAiIncidentData,
   useCreateAiIncidentMutation,
 } from "@/app/lib/features/aiIncidentsApi";
+import {
+  validateTextField,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface AiIncidentModalFormProps {
   onSuccess: (createdItem: any) => void;
@@ -51,23 +56,25 @@ const AiIncidentModalForm: React.FC<AiIncidentModalFormProps> = ({ onSuccess, on
   });
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      title: validateTextField(formData.title, { required: true, messages: { required: "Title is required" } }),
+      summary: validateTextField(formData.summary, { required: true, messages: { required: "Summary is required" } }),
+      category: validateTextField(formData.category, { required: true, messages: { required: "Category is required" } }),
+      severity: validateTextField(formData.severity, { required: true, messages: { required: "Severity is required" } }),
+      status: validateTextField(formData.status, { required: true, messages: { required: "Status is required" } }),
+      stage: validateTextField(formData.stage, { required: true, messages: { required: "Stage is required" } }),
+      ic_owner: validateTextField(formData.ic_owner, { required: true, messages: { required: "Incident commander is required" } }),
+      first_seen_at: validateTextField(formData.first_seen_at, { required: true, messages: { required: "First seen at is required" } }),
+      declared_at: validateTextField(formData.declared_at, { required: true, messages: { required: "Declared at is required" } }),
+      impacted_data: validateArrayField(formData.impacted_data, {
+        required: true,
+        messages: { required: "At least one impacted data type is required" },
+      }),
+    };
 
-    if (!formData.title?.trim()) validationErrors.title = ["Title is required"];
-    if (!formData.summary?.trim()) validationErrors.summary = ["Summary is required"];
-    if (!formData.category?.trim()) validationErrors.category = ["Category is required"];
-    if (!formData.severity?.trim()) validationErrors.severity = ["Severity is required"];
-    if (!formData.status?.trim()) validationErrors.status = ["Status is required"];
-    if (!formData.stage?.trim()) validationErrors.stage = ["Stage is required"];
-    if (!formData.ic_owner?.trim()) validationErrors.ic_owner = ["Incident commander is required"];
-    if (!formData.first_seen_at?.trim()) validationErrors.first_seen_at = ["First seen at is required"];
-    if (!formData.declared_at?.trim()) validationErrors.declared_at = ["Declared at is required"];
-    if (!formData.impacted_data || formData.impacted_data.length === 0) {
-      validationErrors.impacted_data = ["At least one impacted data type is required"];
-    }
-
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+    const errors = createValidationErrors(fieldErrors);
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

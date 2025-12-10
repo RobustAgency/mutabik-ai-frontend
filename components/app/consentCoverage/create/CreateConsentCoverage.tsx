@@ -8,6 +8,12 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateConsentCoverageMutation, CreateConsentCoverageData } from "@/app/lib/features/consentCoverageApi";
 import ConsentCoverageForm from "./ConsentCoverageForm";
+import {
+  validateTextField,
+  validateArrayField,
+  validateNumericField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateConsentCoverage: React.FC = () => {
   const router = useRouter();
@@ -28,18 +34,59 @@ const CreateConsentCoverage: React.FC = () => {
   const [createCoverage, { isLoading }] = useCreateConsentCoverageMutation();
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      dataset_id: validateTextField(formData.dataset_id, {
+        required: true,
+        messages: { required: "Dataset ID is required" },
+      }),
+      purpose: validateArrayField(formData.purpose, {
+        required: true,
+        messages: { required: "At least one purpose is required" },
+      }),
+      jurisdiction: validateTextField(formData.jurisdiction, {
+        required: true,
+        messages: { required: "Jurisdiction is required" },
+      }),
+      source_created_at: validateTextField(formData.source_created_at, {
+        required: true,
+        messages: { required: "Created at is required" },
+      }),
+      as_of: validateTextField(formData.as_of, {
+        required: true,
+        messages: { required: "As of date is required" },
+      }),
+      evidence_ref: validateTextField(formData.evidence_ref, {
+        required: true,
+        messages: { required: "Evidence reference is required" },
+      }),
+    };
 
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset ID is required"];
-    if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
-    if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
-    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
-    if (!formData.as_of?.trim()) errors.as_of = ["As of date is required"];
-    if (!formData.subjects_total || formData.subjects_total <= 0) errors.subjects_total = ["Total subjects must be greater than 0"];
-    if (formData.subjects_with_valid_consent < 0) errors.subjects_with_valid_consent = ["Subjects with consent cannot be negative"];
-    if (!formData.coverage_pct || formData.coverage_pct < 0 || formData.coverage_pct > 100) errors.coverage_pct = ["Coverage % must be between 0 and 100"];
-    if (!formData.evidence_ref?.trim()) errors.evidence_ref = ["Evidence reference is required"];
+    const subjectsTotalErrors = validateNumericField(formData.subjects_total, {
+      min: 1,
+      messages: { min: "Total subjects must be greater than 0" },
+    });
+    if (subjectsTotalErrors.length) {
+      fieldErrors.subjects_total = subjectsTotalErrors;
+    }
 
+    const subjectsConsentErrors = validateNumericField(formData.subjects_with_valid_consent, {
+      min: 0,
+      messages: { min: "Subjects with consent cannot be negative" },
+    });
+    if (subjectsConsentErrors.length) {
+      fieldErrors.subjects_with_valid_consent = subjectsConsentErrors;
+    }
+
+    const coverageErrors = validateNumericField(formData.coverage_pct, {
+      min: 0,
+      max: 100,
+      messages: { min: "Coverage % must be between 0 and 100", max: "Coverage % must be between 0 and 100" },
+    });
+    if (coverageErrors.length) {
+      fieldErrors.coverage_pct = coverageErrors;
+    }
+
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
