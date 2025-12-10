@@ -60,6 +60,7 @@ export interface AiRiskRegister {
   use_case_id: number | null;
   description: string;
   related_controls: string[];
+  risk_methodology_id: number;
   likelihood_code: string;
   impact_code: string;
   inherent_score: string | null;
@@ -91,6 +92,7 @@ export interface CreateAiRiskRegisterData {
   use_case_id?: number;
   description: string;
   related_controls?: string[];
+  risk_methodology_id: number;
   likelihood_code: string;
   impact_code: string;
   inherent_score?: string;
@@ -119,6 +121,7 @@ export interface UpdateAiRiskRegisterData {
   use_case_id?: number;
   description?: string;
   related_controls?: string[];
+  risk_methodology_id?: number;
   likelihood_code?: string;
   impact_code?: string;
   inherent_score?: string;

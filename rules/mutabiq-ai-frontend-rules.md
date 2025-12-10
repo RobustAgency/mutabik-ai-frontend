@@ -1055,6 +1055,278 @@ const validateForm = (): boolean => {
  * };
     */
 
+/**
+ * RULE 13.6: Multi-Step Form Component Structure (MANDATORY for Complex Forms)
+ * - ALL complex multi-step forms MUST follow the AiRiskRegisterForm structure
+ * - Break large forms into smaller, maintainable step components
+ * - Extract shared types and validation logic into separate files
+ * - Keep main form component as a lightweight coordinator
+ * - This pattern reduces file size by 70-80% and improves maintainability
+    */
+    const MULTI_STEP_FORM_STRUCTURE_RULES = {
+    fileOrganization: {
+    pattern: 'Organize form files in create/ directory with subdirectories',
+    structure: {
+    mainForm: 'EntityForm.tsx - Main coordinator component (200-300 lines)',
+    types: 'types.ts - Shared FormState type and getInitialState helper',
+    validation: 'validation.ts - Step validation logic and helper functions',
+    steps: 'steps/ directory - Individual step components (100-200 lines each)'
+    },
+    example: `
+components/app/entityName/create/
+├── EntityForm.tsx (main coordinator)
+├── types.ts (FormState type, getInitialState)
+├── validation.ts (validateStep, parseNumber, etc.)
+└── steps/
+    ├── BasicInformationStep.tsx
+    ├── AdditionalDetailsStep.tsx
+    ├── ReviewStep.tsx
+    └── ConfirmationStep.tsx
+    `
+    },
+    mainFormComponent: {
+    responsibilities: {
+    state: 'Manage formState, currentStep, validationErrors',
+    dataFetching: 'Fetch dropdown data (models, versions, etc.)',
+    navigation: 'Handle step navigation (handleNext, handlePrevious)',
+    submission: 'Handle form submission and payload transformation',
+    coordination: 'Render appropriate step component based on currentStep'
+    },
+    structure: {
+    imports: 'Import step components, types, validation utilities',
+    state: 'useState for formState, currentStep, validationErrors',
+    queries: 'RTK Query hooks for dropdown data',
+    handlers: 'handleNext, handlePrevious, handleSubmit, handleValidateStep',
+    render: 'renderStepContent() with switch/case for step components',
+    wrapper: 'Card + MultiStepWizard wrapper'
+    },
+    targetSize: '200-300 lines maximum (down from 1000+ lines)'
+    },
+    typesFile: {
+    purpose: 'Centralize FormState type definition and initialization',
+    exports: {
+    FormState: 'Type definition for all form fields',
+    getInitialState: 'Function to initialize form state from initialData'
+    },
+    example: `
+// types.ts
+import { Entity, FieldType } from "@/interfaces/Entity";
+
+export type FormState = {
+  field1: string;
+  field2: FieldType;
+  // ... all form fields
+};
+
+export const getInitialState = (initial?: Entity): FormState => ({
+  field1: initial?.field1 ?? "",
+  field2: initial?.field2 ?? FieldType.DEFAULT,
+  // ... initialize all fields
+});
+    `
+    },
+    validationFile: {
+    purpose: 'Extract validation logic from main form component',
+    exports: {
+    validateStep: 'Function to validate a specific step, returns { isValid, errors }',
+    parseNumber: 'Helper function for number parsing',
+    otherHelpers: 'Any other validation-related utilities'
+    },
+    example: `
+// validation.ts
+import { validateTextField, validateNumericField, createValidationErrors } from "@/lib/utils/validation";
+import { FormState } from "./types";
+
+export const validateStep = (
+  step: number,
+  formState: FormState
+): { isValid: boolean; errors: Record<string, string[]> } => {
+  const fieldErrors: Record<string, string[]> = {};
+  
+  if (step === 1) {
+    fieldErrors.field1 = validateTextField(formState.field1, {
+      required: true,
+      messages: { required: "Field1 is required" }
+    });
+  }
+  
+  const errors = createValidationErrors(fieldErrors);
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
+export const parseNumber = (value: string) => {
+  if (!value || value.trim() === "" || value === "0") return undefined;
+  const parsed = Number(value);
+  return Number.isNaN(parsed) || parsed <= 0 ? undefined : parsed;
+};
+    `
+    },
+    stepComponents: {
+    pattern: 'Each step is a separate component in steps/ directory',
+    naming: 'Use descriptive names: BasicInformationStep, RiskAssessmentStep, etc.',
+    props: {
+    required: [
+    'formState: FormState',
+    'setFormState: React.Dispatch<React.SetStateAction<FormState>>',
+    'validationErrors: Record<string, string[]>'
+    ],
+    optional: [
+    'Data for dropdowns (models, versions, etc.)',
+    'Loading states for async data',
+    'Any step-specific props'
+    ]
+    },
+    structure: {
+    imports: 'Import UI components, types, utilities',
+    interface: 'Define StepProps interface',
+    component: 'Export step component with consistent props',
+    content: 'Render step-specific form fields',
+    styling: 'Use consistent Card/div structure with section headers'
+    },
+    example: `
+// steps/BasicInformationStep.tsx
+"use client";
+
+import React from "react";
+import { Input, Label, Select } from "@/components/ui/...";
+import { FormState } from "../types";
+
+interface BasicInformationStepProps {
+  formState: FormState;
+  setFormState: React.Dispatch<React.SetStateAction<FormState>>;
+  validationErrors: Record<string, string[]>;
+  // Step-specific props (dropdowns, loading states, etc.)
+}
+
+export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
+  formState,
+  setFormState,
+  validationErrors,
+  // ... other props
+}) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2">
+        <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
+          Basic Information
+        </h3>
+        <hr className="border-gray-200" />
+      </div>
+      {/* Step-specific form fields */}
+    </div>
+  );
+};
+    `,
+    targetSize: '100-200 lines per step component'
+    },
+    benefits: {
+    maintainability: 'Each step is isolated and easy to modify',
+    readability: 'Main form is clean and focused on coordination',
+    reusability: 'Step components can be reused or tested independently',
+    scalability: 'Easy to add new steps or modify existing ones',
+    sizeReduction: 'Reduces main form from 1000+ lines to 200-300 lines (70-80% reduction)'
+    },
+    implementationChecklist: {
+    structure: [
+    '[ ] Create types.ts with FormState and getInitialState',
+    '[ ] Create validation.ts with validateStep and helpers',
+    '[ ] Create steps/ directory',
+    '[ ] Extract each step into separate component file',
+    '[ ] Update main form to import and use step components'
+    ],
+    mainForm: [
+    '[ ] Import step components from steps/',
+    '[ ] Import types from types.ts',
+    '[ ] Import validation from validation.ts',
+    '[ ] Replace renderStepContent() switch cases with step components',
+    '[ ] Pass required props to each step component',
+    '[ ] Keep main form under 300 lines'
+    ],
+    stepComponents: [
+    '[ ] Define StepProps interface with required props',
+    '[ ] Extract step JSX into component',
+    '[ ] Pass formState, setFormState, validationErrors as props',
+    '[ ] Pass step-specific data (dropdowns, loading states) as props',
+    '[ ] Use consistent section header styling',
+    '[ ] Keep each step component under 200 lines'
+    ],
+    validation: [
+    '[ ] Move validateStep logic to validation.ts',
+    '[ ] Update to return { isValid, errors } object',
+    '[ ] Extract helper functions (parseNumber, etc.)',
+    '[ ] Import validation utilities from lib/utils/validation'
+    ],
+    types: [
+    '[ ] Define FormState type with all form fields',
+    '[ ] Create getInitialState function',
+    '[ ] Export both for use in main form and step components'
+    ]
+    },
+    exampleStructure: `
+// Main Form (EntityForm.tsx) - ~250 lines
+import { FormState, getInitialState } from "./types";
+import { validateStep, parseNumber } from "./validation";
+import { BasicInformationStep } from "./steps/BasicInformationStep";
+import { AdditionalDetailsStep } from "./steps/AdditionalDetailsStep";
+
+export const EntityForm: React.FC<Props> = ({ initialData, onSubmit }) => {
+  const [formState, setFormState] = useState<FormState>(getInitialState(initialData));
+  const [currentStep, setCurrentStep] = useState(1);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  
+  // Data fetching
+  const { data: models } = useGetModelsQuery();
+  
+  const handleValidateStep = (step: number): boolean => {
+    const { isValid, errors } = validateStep(step, formState);
+    setValidationErrors(errors);
+    return isValid;
+  };
+  
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <BasicInformationStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+            models={models}
+          />
+        );
+      case 2:
+        return (
+          <AdditionalDetailsStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+  
+  return (
+    <Card>
+      <MultiStepWizard {...wizardProps}>
+        {renderStepContent()}
+      </MultiStepWizard>
+    </Card>
+  );
+};
+    `,
+    consistency: {
+    mandatory: 'ALL new complex forms MUST follow this exact structure',
+    existing: 'Refactor existing large forms (>500 lines) to use this structure',
+    exceptions: 'Simple single-step forms (<200 lines) may remain in single file',
+    enforcement: 'Code reviews should enforce this structure for complex forms'
+    }
+    };
+
 // ============================================================================
 // 14. FILTERING / PAGINATION RULES
 // ============================================================================
@@ -1485,6 +1757,18 @@ const validateForm = (): boolean => {
 - - [ ] Smooth scroll on step changes
 - - [ ] Navigate to error step on validation failure
 -
+- ✅ Multi-Step Form Structure (MANDATORY for complex forms >500 lines):
+- - [ ] Create types.ts with FormState type and getInitialState helper
+- - [ ] Create validation.ts with validateStep function and helper utilities
+- - [ ] Create steps/ directory for step components
+- - [ ] Extract each step into separate component file (100-200 lines each)
+- - [ ] Main form component acts as coordinator (200-300 lines max)
+- - [ ] Step components receive formState, setFormState, validationErrors as props
+- - [ ] Pass step-specific data (dropdowns, loading states) as props to steps
+- - [ ] Use consistent section header styling in step components
+- - [ ] Import step components in main form renderStepContent()
+- - [ ] Keep main form under 300 lines (70-80% size reduction)
+-
 - ✅ Filtering & Pagination:
 - - [ ] Server-side or client-side filtering decision
 - - [ ] Debounced search implementation
@@ -1642,6 +1926,8 @@ const validateForm = (): boolean => {
 - )}
 -
 - Multi-Step Wizard Example (STANDARD FOR ALL NEW MODULES):
+- NOTE: For complex forms (>500 lines), MUST follow RULE 13.6 structure pattern
+- (types.ts, validation.ts, steps/ directory). See RULE 13.6 for details.
 -
 - // 1. Define steps
 - const WIZARD_STEPS = [
@@ -1655,7 +1941,7 @@ const validateForm = (): boolean => {
 - const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 - const [createEntity, { isLoading }] = useCreateEntityMutation();
 -
-- // 3. Step validation
+- // 3. Step validation (extract to validation.ts for complex forms)
 - const validateStep = (step: number): boolean => {
 -   const errors: Record<string, string[]> = {};
 -   switch (step) {
@@ -1719,6 +2005,18 @@ const validateForm = (): boolean => {
 - };
 -
 - // 6. Render with MultiStepWizard
+- // For complex forms, extract renderStepContent() cases into step components
+- const renderStepContent = () => {
+-   switch (currentStep) {
+-     case 1:
+-       return <BasicInformationStep formData={formData} setFormData={setFormData} errors={validationErrors} />;
+-     case 2:
+-       return <AdditionalDetailsStep formData={formData} setFormData={setFormData} errors={validationErrors} />;
+-     default:
+-       return null;
+-   }
+- };
+-
 - return (
 -   <div className="max-w-7xl mx-auto px-4 py-6">
 -     <Card className="p-6 border-[#E4E7EC] shadow-none">
