@@ -59,9 +59,10 @@ export const adminRoutes: RouteItem[] = [
         label: "Frameworks",
         icon: House,
       },
-      { href: "/admin/compliance-library/requirements", label: "Requirements" },
+      { href: "/admin/compliance-library/requirements", label: "Requirements", icon: FileBox },
       // { href: "/admin/compliance-library/tags", label: "Tags" },
-      { href: "/admin/compliance-library/controls", label: "Controls" },
+      { href: "/admin/compliance-library/controls", label: "Controls", icon: FileBox },
+      { href: "/admin/compliance-library/requirement-controls", label: "Requirement Controls", icon: Link2 },
     ],
   },
   {

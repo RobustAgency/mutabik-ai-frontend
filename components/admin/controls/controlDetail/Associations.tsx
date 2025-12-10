@@ -52,7 +52,7 @@ const Associations: React.FC<AssociationsProps> = ({ controlId }) => {
               control.frameworks.map((framework) => (
                 <Badge
                   key={framework.id}
-                  className="rounded-[4px] text-[#171717] border-[#D9D9D9] p-1.5 text-sm bg-[#F5F5F5] flex-shrink-0"
+                  className="rounded-[4px] text-[#171717] border-[#D9D9D9] p-1.5 text-sm bg-[#F5F5F5] shrink-0"
                 >
                   {framework.code}
                 </Badge>
@@ -73,7 +73,7 @@ const Associations: React.FC<AssociationsProps> = ({ controlId }) => {
               control.requirements.map((requirement) => (
                 <Badge
                   key={requirement.id}
-                  className="rounded-[4px] p-1.5 text-sm text-[#171717] border border-[#D9D9D9] bg-[#F5F5F5] flex-shrink-0"
+                  className="rounded-[4px] p-1.5 text-sm text-[#171717] border border-[#D9D9D9] bg-[#F5F5F5] shrink-0"
                 >
                   {requirement.reference}
                 </Badge>
@@ -94,7 +94,7 @@ const Associations: React.FC<AssociationsProps> = ({ controlId }) => {
               control.tags.map((tag) => (
                 <Badge
                   key={tag.id}
-                  className="rounded-[4px] p-1.5 text-sm text-[#171717] border border-[#D9D9D9] bg-[#F5F5F5] flex-shrink-0"
+                  className="rounded-[4px] p-1.5 text-sm text-[#171717] border border-[#D9D9D9] bg-[#F5F5F5] shrink-0"
                 >
                   {tag.name}
                 </Badge>

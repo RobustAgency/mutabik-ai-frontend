@@ -36,6 +36,8 @@ import { kriIndicatorApi } from "./features/kriIndicatorApi";
 import { frameworksApi } from "./features/frameworksApi";
 import { requirementsApi } from "./features/requirementsApi";
 import { controlsApi } from "./features/controlsApi";
+import { requirementControlsApi } from "./features/requirementControlsApi";
+import { usersApi } from "./features/usersApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -79,6 +81,8 @@ export const makeStore = () => {
       [frameworksApi.reducerPath]: frameworksApi.reducer,
       [requirementsApi.reducerPath]: requirementsApi.reducer,
       [controlsApi.reducerPath]: controlsApi.reducer,
+      [requirementControlsApi.reducerPath]: requirementControlsApi.reducer,
+      [usersApi.reducerPath]: usersApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -117,7 +121,9 @@ export const makeStore = () => {
         kriIndicatorApi.middleware,
         frameworksApi.middleware,
         requirementsApi.middleware,
-        controlsApi.middleware
+        controlsApi.middleware,
+        requirementControlsApi.middleware,
+        usersApi.middleware
       ),
   });
 };
