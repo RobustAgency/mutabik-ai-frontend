@@ -4,48 +4,38 @@ import type {
     ControlFilters,
     CreateControlRequest,
     UpdateControlRequest,
-    ControlsApiResponse,
-    ControlApiResponse
+    ControlListResponse,
+    ControlSingleResponse
 } from '@/interfaces/Control';
 
 export class ControlsService {
     private baseUrl = '/admin/controls';
 
-    async getControls(filters: ControlFilters = {}): Promise<ControlsApiResponse> {
+    async getControls(filters: ControlFilters = {}): Promise<ControlListResponse> {
         try {
             const queryString = apiUtils.createQueryString(filters);
             const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
-            const response = await api.get<ControlsApiResponse['data']>(url);
+            const response = await api.get<ControlListResponse['data']>(url);
             return response;
         } catch (error: any) {
             console.error('Error fetching controls:', error);
             return {
                 data: {
                     data: [],
-                    current_page: 1,
-                    page: 1,
-                    limit: 10,
-                    last_page: 1,
-                    totalPages: 1,
-                    per_page: 10,
-                    total: 0,
-                    from: 0,
-                    to: 0,
-                    first_page_url: '',
-                    last_page_url: '',
-                    next_page_url: null,
-                    prev_page_url: null,
-                    path: '',
-                    links: []
+                    meta: {
+                        current_page: 1,
+                        per_page: 10,
+                        total: 0,
+                        last_page: 1
+                    }
                 },
-                status: error?.response?.status || 500,
                 message: error?.response?.data?.message || 'Failed to fetch controls',
                 error: true
             };
         }
     }
 
-    async getControl(id: string | number): Promise<ControlApiResponse> {
+    async getControl(id: string | number): Promise<ControlSingleResponse> {
         try {
             const response = await api.get<Control>(`${this.baseUrl}/${id}`);
             return response;
@@ -53,14 +43,13 @@ export class ControlsService {
             console.error('Error fetching control:', error);
             return {
                 data: {} as Control,
-                status: error?.response?.status || 500,
                 message: error?.response?.data?.message || 'Failed to fetch control',
                 error: true
             };
         }
     }
 
-    async createControl(data: CreateControlRequest): Promise<ControlApiResponse> {
+    async createControl(data: CreateControlRequest): Promise<ControlSingleResponse> {
         try {
             const response = await api.post<Control>(this.baseUrl, data);
             return response;
@@ -68,14 +57,13 @@ export class ControlsService {
             console.error('Error creating control:', error);
             return {
                 data: {} as Control,
-                status: error?.response?.status || 500,
                 message: error?.response?.data?.message || 'Failed to create control',
                 error: true
             };
         }
     }
 
-    async updateControl(id: string | number, data: UpdateControlRequest): Promise<ControlApiResponse> {
+    async updateControl(id: string | number, data: UpdateControlRequest): Promise<ControlSingleResponse> {
         try {
             const response = await api.post<Control>(`${this.baseUrl}/${id}`, data);
             return response;
@@ -83,7 +71,6 @@ export class ControlsService {
             console.error('Error updating control:', error);
             return {
                 data: {} as Control,
-                status: error?.response?.status || 500,
                 message: error?.response?.data?.message || 'Failed to update control',
                 error: true
             };

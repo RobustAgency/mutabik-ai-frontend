@@ -75,7 +75,7 @@ const Associations: React.FC<AssociationsProps> = ({ controlId }) => {
                   key={requirement.id}
                   className="rounded-[4px] p-1.5 text-sm text-[#171717] border border-[#D9D9D9] bg-[#F5F5F5] flex-shrink-0"
                 >
-                  {requirement.code}
+                  {requirement.reference}
                 </Badge>
               ))
             ) : (

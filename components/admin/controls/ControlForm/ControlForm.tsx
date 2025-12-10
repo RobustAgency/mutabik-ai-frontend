@@ -1,138 +1,365 @@
-"use client"
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Associations from './Associations'
-import Overview from './Overview'
-import Guidance from './Guidance'
-import SubmissionButtons from './SubmissionButtons'
-import { useControl, useControlMutations } from '@/hooks/admin/useControls'
-import { CreateControlRequest, UpdateControlRequest } from '@/interfaces/Control'
-import { toast } from 'react-toastify'
+"use client";
 
-interface ControlFormData {
-    name: string
-    code: string
-    question: string
-    summary: string
-    description: string
-    framework_ids: string[]
-    requirement_ids: string[]
-    tag_ids: string[]
-}
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useControl, useControlMutations } from "@/hooks/admin/useControls";
+import {
+  ControlStatusEnum,
+  ControlTestingFrequencyEnum,
+  ControlTestingMethodEnum,
+  CreateControlRequest,
+  UpdateControlRequest,
+} from "@/interfaces/Control";
+import { createValidationErrors, validateDateRange, validateTextField } from "@/lib/utils/validation";
+import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
+import FormActions from "@/components/admin/shared/FormActions";
+
+type ControlFormState = {
+  name: string;
+  reference: string;
+  objective?: string;
+  testing_method?: ControlTestingMethodEnum;
+  testing_frequency?: ControlTestingFrequencyEnum;
+  evidence_expectations?: string;
+  applicability_criteria?: string;
+  status?: ControlStatusEnum;
+  last_test_date?: string;
+  next_test_due?: string;
+};
 
 interface ControlFormProps {
-    controlId?: string;
-    mode?: 'create' | 'edit';
+  controlId?: string;
+  mode?: "create" | "edit";
 }
 
-const ControlForm = ({ controlId, mode = 'create' }: ControlFormProps) => {
-    const router = useRouter()
-    const { control, loading: controlLoading } = useControl(mode === 'edit' ? controlId : undefined)
-    const { createControl, updateControl, creating, updating } = useControlMutations()
+const testingMethodOptions = Object.values(ControlTestingMethodEnum).map((value) => ({
+  value,
+  label: value.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 
-    const [formData, setFormData] = useState<ControlFormData>({
-        name: '',
-        code: '',
-        question: '',
-        summary: '',
-        description: '',
-        framework_ids: [],
-        requirement_ids: [],
-        tag_ids: []
-    })
+const testingFrequencyOptions = Object.values(ControlTestingFrequencyEnum).map((value) => ({
+  value,
+  label: value.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 
-    // Initialize form data for edit mode
-    useEffect(() => {
-        if (mode === 'edit' && control) {
-            setFormData({
-                name: control.name || '',
-                code: control.code || '',
-                question: control.question || '',
-                summary: control.summary || '',
-                description: control.description || '',
-                framework_ids: control.frameworks?.map(f => f.id.toString()) || [],
-                requirement_ids: control.requirements?.map(r => r.id.toString()) || [],
-                tag_ids: control.tags?.map(t => t.id.toString()) || []
-            })
-        }
-    }, [mode, control])
+const statusOptions = Object.values(ControlStatusEnum).map((value) => ({
+  value,
+  label: value.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+}));
 
-    const handleFieldChange = (field: keyof ControlFormData, value: string | string[]) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }))
+const ControlForm = ({ controlId, mode = "create" }: ControlFormProps) => {
+  const router = useRouter();
+  const { control, loading: controlLoading } = useControl(mode === "edit" ? controlId : undefined);
+  const { createControl, updateControl, creating, updating } = useControlMutations();
+
+  const [formData, setFormData] = useState<ControlFormState>({
+    name: "",
+    reference: "",
+    objective: "",
+    testing_method: undefined,
+    testing_frequency: undefined,
+    evidence_expectations: "",
+    applicability_criteria: "",
+    status: undefined,
+    last_test_date: undefined,
+    next_test_due: undefined,
+  });
+
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    if (mode === "edit" && control) {
+      setFormData({
+        name: control.name || "",
+        reference: control.reference || "",
+        objective: control.objective || "",
+        testing_method: control.testing_method,
+        testing_frequency: control.testing_frequency,
+        evidence_expectations: control.evidence_expectations || "",
+        applicability_criteria: control.applicability_criteria || "",
+        status: control.status,
+        last_test_date: control.last_test_date ? control.last_test_date.split("T")[0] : undefined,
+        next_test_due: control.next_test_due ? control.next_test_due.split("T")[0] : undefined,
+      });
+    }
+  }, [mode, control]);
+
+  const combinedErrors = useMemo(
+    () => ({ ...validationErrors, ...(serverErrors || {}) }),
+    [validationErrors, serverErrors]
+  );
+
+  const handleInputChange = <K extends keyof ControlFormState>(field: K, value: ControlFormState[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const validateForm = (): boolean => {
+    const fieldErrors: Record<string, string[]> = {
+      name: validateTextField(formData.name, {
+        required: true,
+        maxLength: 255,
+        messages: { required: "Name is required", maxLength: "Name must be at most 255 characters" },
+      }),
+      reference: validateTextField(formData.reference, {
+        required: true,
+        maxLength: 255,
+        messages: { required: "Reference is required", maxLength: "Reference must be at most 255 characters" },
+      }),
+      testing_method: validateTextField(formData.testing_method, {
+        required: true,
+        messages: { required: "Testing method is required" },
+      }),
+      testing_frequency: validateTextField(formData.testing_frequency, {
+        required: true,
+        messages: { required: "Testing frequency is required" },
+      }),
+      status: validateTextField(formData.status, {
+        required: true,
+        messages: { required: "Status is required" },
+      }),
+      last_test_date: validateDateRange(formData.last_test_date, formData.next_test_due, {
+        messages: { invalidRange: "Next test due must be after or equal to last test date" },
+      }),
+      next_test_due: validateDateRange(formData.last_test_date, formData.next_test_due, {
+        messages: { invalidRange: "Next test due must be after or equal to last test date" },
+      }),
+    };
+
+    const errors = createValidationErrors(fieldErrors);
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidationErrors({});
+    setServerErrors({});
+
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
 
-    const handleSubmit = async () => {
-        // Validation
-        if (!formData.name.trim()) {
-            toast.error('Control name is required')
-            return
-        }
-        if (!formData.code.trim()) {
-            toast.error('Control code is required')
-            return
-        }
-        if (formData.framework_ids.length === 0) {
-            toast.error('At least one framework must be selected')
-            return
-        }
-        if (formData.requirement_ids.length === 0) {
-            toast.error('At least one requirement must be selected')
-            return
-        }
+    const payload: CreateControlRequest = {
+      name: formData.name,
+      reference: formData.reference,
+      objective: formData.objective,
+      testing_method: formData.testing_method as ControlTestingMethodEnum,
+      testing_frequency: formData.testing_frequency as ControlTestingFrequencyEnum,
+      evidence_expectations: formData.evidence_expectations,
+      applicability_criteria: formData.applicability_criteria,
+      status: formData.status as ControlStatusEnum,
+      last_test_date: formData.last_test_date || undefined,
+      next_test_due: formData.next_test_due || undefined,
+    };
 
-        const payload = {
-            name: formData.name,
-            code: formData.code,
-            question: formData.question,
-            summary: formData.summary,
-            description: formData.description,
-            framework_ids: formData.framework_ids.map(id => parseInt(id)),
-            requirement_ids: formData.requirement_ids.map(id => parseInt(id)),
-            tag_ids: formData.tag_ids.map(id => parseInt(id))
-        }
-
-        if (mode === 'create') {
-            await createControl(payload as CreateControlRequest)
-        } else if (mode === 'edit' && controlId) {
-            await updateControl(controlId, payload as UpdateControlRequest)
-        }
+    try {
+      if (mode === "create") {
+        await createControl(payload);
+      } else if (mode === "edit" && controlId) {
+        await updateControl(controlId, payload as UpdateControlRequest);
+      }
+    } catch (err: any) {
+      if (err?.data?.errors) {
+        setServerErrors(err.data.errors);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
 
-    const handleCancel = () => {
-        router.push('/admin/compliance-library/controls')
-    }
+  const isLoading = creating || updating || (mode === "edit" && controlLoading);
 
-    const isLoading = creating || updating || (mode === 'edit' && controlLoading)
+  const handleCancel = () => router.push("/admin/compliance-library/controls");
 
-    return (
-        <div className='w-full grid grid-cols-1 lg:grid-cols-3 gap-8'>
-            <div className='col-span-full lg:col-span-2 space-y-6'>
-                <Overview
-                    formData={formData}
-                    onFieldChange={handleFieldChange}
-                />
-                <Guidance
-                    formData={formData}
-                    onFieldChange={handleFieldChange}
-                />
-                <SubmissionButtons
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancel}
-                    loading={isLoading}
-                    mode={mode}
-                />
-            </div>
-            <div className='col-span-full lg:col-span-1'>
-                <Associations
-                    formData={formData}
-                    onFieldChange={handleFieldChange}
-                />
-            </div>
+  return (
+    <Card className="w-full shadow-none p-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <FormErrorAlert errors={combinedErrors} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-900">
+              Name <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              placeholder="Control name"
+              className={`mt-1 ${combinedErrors.name ? "border-red-500" : ""}`}
+              disabled={isLoading}
+            />
+            {combinedErrors.name && <p className="text-sm text-red-500 mt-1">{combinedErrors.name[0]}</p>}
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-900">
+              Reference <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              value={formData.reference}
+              onChange={(e) => handleInputChange("reference", e.target.value)}
+              placeholder="Unique reference"
+              className={`mt-1 ${combinedErrors.reference ? "border-red-500" : ""}`}
+              disabled={isLoading}
+            />
+            {combinedErrors.reference && <p className="text-sm text-red-500 mt-1">{combinedErrors.reference[0]}</p>}
+          </div>
         </div>
-    )
-}
 
-export default ControlForm
+        <div>
+          <Label className="text-sm font-medium text-gray-900">Objective</Label>
+          <Textarea
+            value={formData.objective || ""}
+            onChange={(e) => handleInputChange("objective", e.target.value)}
+            placeholder="Control objective"
+            disabled={isLoading}
+            className="mt-1 min-h-32 resize-none"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-900">
+              Testing Method <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              value={formData.testing_method}
+              onValueChange={(value) => handleInputChange("testing_method", value as ControlTestingMethodEnum)}
+              disabled={isLoading}
+            >
+              <SelectTrigger className={`mt-1 w-full ${combinedErrors.testing_method ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select method" />
+              </SelectTrigger>
+              <SelectContent>
+                {testingMethodOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {combinedErrors.testing_method && (
+              <p className="text-sm text-red-500 mt-1">{combinedErrors.testing_method[0]}</p>
+            )}
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-900">
+              Testing Frequency <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              value={formData.testing_frequency}
+              onValueChange={(value) =>
+                handleInputChange("testing_frequency", value as ControlTestingFrequencyEnum)
+              }
+              disabled={isLoading}
+            >
+              <SelectTrigger className={`mt-1 w-full ${combinedErrors.testing_frequency ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select frequency" />
+              </SelectTrigger>
+              <SelectContent>
+                {testingFrequencyOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {combinedErrors.testing_frequency && (
+              <p className="text-sm text-red-500 mt-1">{combinedErrors.testing_frequency[0]}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-900">Evidence Expectations</Label>
+            <Textarea
+              value={formData.evidence_expectations || ""}
+              onChange={(e) => handleInputChange("evidence_expectations", e.target.value)}
+              placeholder="Describe expected evidence"
+              disabled={isLoading}
+              className="min-h-32 mt-1 resize-none"
+            />
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-900">Applicability Criteria</Label>
+            <Textarea
+              value={formData.applicability_criteria || ""}
+              onChange={(e) => handleInputChange("applicability_criteria", e.target.value)}
+              placeholder="Define applicability criteria"
+              disabled={isLoading}
+              className="min-h-32 mt-1 resize-none"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-900">
+              Status <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) => handleInputChange("status", value as ControlStatusEnum)}
+              disabled={isLoading}
+            >
+              <SelectTrigger className={`mt-1 w-full ${combinedErrors.status ? "border-red-500" : ""}`}>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {combinedErrors.status && <p className="text-sm text-red-500 mt-1">{combinedErrors.status[0]}</p>}
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-900">Last Test Date</Label>
+            <Input
+              type="date"
+              value={formData.last_test_date || ""}
+              onChange={(e) => handleInputChange("last_test_date", e.target.value)}
+              className={`mt-1 ${combinedErrors.last_test_date ? "border-red-500" : ""}`}
+              disabled={isLoading}
+            />
+            {combinedErrors.last_test_date && (
+              <p className="text-sm text-red-500 mt-1">{combinedErrors.last_test_date[0]}</p>
+            )}
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-900">Next Test Due</Label>
+            <Input
+              type="date"
+              value={formData.next_test_due || ""}
+              onChange={(e) => handleInputChange("next_test_due", e.target.value)}
+              className={`mt-1 ${combinedErrors.next_test_due ? "border-red-500" : ""}`}
+              disabled={isLoading}
+            />
+            {combinedErrors.next_test_due && (
+              <p className="text-sm text-red-500 mt-1">{combinedErrors.next_test_due[0]}</p>
+            )}
+          </div>
+        </div>
+
+        <FormActions
+          isLoading={isLoading}
+          isEditing={mode === "edit"}
+          onCancel={handleCancel}
+          submitLabel={isLoading ? (mode === "create" ? "Creating..." : "Updating...") : undefined}
+          submitClassName="bg-primary text-white px-6 py-2 rounded-lg"
+          cancelClassName="px-6 py-2 rounded-lg"
+        />
+      </form>
+    </Card>
+  );
+};
+
+export default ControlForm;

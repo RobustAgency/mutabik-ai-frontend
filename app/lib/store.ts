@@ -33,6 +33,9 @@ import { riskMethodologyApi } from "./features/riskMethodologyApi";
 import { aiRiskRegisterApi } from "./features/aiRiskRegisterApi";
 import { aiRiskTreatmentApi } from "./features/aiRiskTreatmentApi";
 import { kriIndicatorApi } from "./features/kriIndicatorApi";
+import { frameworksApi } from "./features/frameworksApi";
+import { requirementsApi } from "./features/requirementsApi";
+import { controlsApi } from "./features/controlsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -73,6 +76,9 @@ export const makeStore = () => {
       [aiRiskRegisterApi.reducerPath]: aiRiskRegisterApi.reducer,
       [aiRiskTreatmentApi.reducerPath]: aiRiskTreatmentApi.reducer,
       [kriIndicatorApi.reducerPath]: kriIndicatorApi.reducer,
+      [frameworksApi.reducerPath]: frameworksApi.reducer,
+      [requirementsApi.reducerPath]: requirementsApi.reducer,
+      [controlsApi.reducerPath]: controlsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -108,7 +114,10 @@ export const makeStore = () => {
         riskMethodologyApi.middleware,
         aiRiskRegisterApi.middleware,
         aiRiskTreatmentApi.middleware,
-        kriIndicatorApi.middleware
+        kriIndicatorApi.middleware,
+        frameworksApi.middleware,
+        requirementsApi.middleware,
+        controlsApi.middleware
       ),
   });
 };
