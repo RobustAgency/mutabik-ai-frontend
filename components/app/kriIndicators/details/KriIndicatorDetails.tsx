@@ -27,11 +27,11 @@ const KriIndicatorDetails: React.FC<KriIndicatorDetailsProps> = ({ indicatorId }
     },
     isDeleting,
     entityTypeName: "KRI Indicator",
-    onSuccess: () => router.push("/governance/kri-indicators"),
+    onSuccess: () => router.push("/risk-compliance/ai-risk-management/kri"),
   });
 
   const handleEdit = () => {
-    router.push(`/governance/kri-indicators/${indicatorId}/edit`);
+    router.push(`/risk-compliance/ai-risk-management/kri/${indicatorId}/edit`);
   };
 
   const handleDelete = () => {
@@ -52,8 +52,13 @@ const KriIndicatorDetails: React.FC<KriIndicatorDetailsProps> = ({ indicatorId }
           <Card className="border-0 shadow-none">
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 p-0">
               <DetailItem
-                label="AI Risk Register ID"
-                value={data.ai_risk_register_id.toString()}
+                label="AI Risk Register"
+                value={
+                  (data as any)?.aiRiskRegister?.title ??
+                  (data as any)?.ai_risk_register?.title ??
+                  data.ai_risk_register_id?.toString() ??
+                  "-"
+                }
               />
               <DetailItem label="Status" value={formatCategory(data.status)} />
               <DetailItem label="Name" value={data.name} />

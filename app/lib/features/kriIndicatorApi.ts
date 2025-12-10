@@ -18,7 +18,15 @@ import {
 } from "@/interfaces/KriIndicator";
 
 interface KriIndicatorResponse {
+  data: {
   data: KriIndicator[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+  };
   message: string;
   error: boolean;
 }
@@ -52,10 +60,14 @@ export const kriIndicatorApi = createApi({
         };
       },
       transformResponse: (response: KriIndicatorResponse) => {
-        return response.data || [];
+        // Extract array from paginated response: response.data.data
+        if (response.data?.data && Array.isArray(response.data.data)) {
+          return response.data.data;
+        }
+        return [];
       },
       providesTags: (result) =>
-        result
+        result && Array.isArray(result)
           ? [
               ...result.map(({ id }) => ({ type: "KriIndicator" as const, id })),
               { type: "KriIndicator", id: "LIST" },

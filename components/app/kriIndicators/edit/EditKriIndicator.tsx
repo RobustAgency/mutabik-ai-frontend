@@ -27,7 +27,7 @@ const EditKriIndicator: React.FC<EditKriIndicatorProps> = ({ indicatorId }) => {
     setServerErrors({});
     try {
       await updateIndicator({ id: Number(indicatorId), data: payload }).unwrap();
-      router.push(`/governance/kri-indicators/${indicatorId}/details`);
+      router.push(`/risk-compliance/ai-risk-management/kri/${indicatorId}/details`);
     } catch (err: any) {
       if (err?.data?.errors) setServerErrors(err.data.errors);
       throw err;

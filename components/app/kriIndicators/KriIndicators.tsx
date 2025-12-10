@@ -7,13 +7,26 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/custom/DataTable";
-import { useGetKriIndicatorsQuery } from "@/app/lib/features/kriIndicatorApi";
+import {
+  useGetKriIndicatorsQuery,
+  useDeleteKriIndicatorMutation,
+} from "@/app/lib/features/kriIndicatorApi";
 import { KriIndicator, KriStatus } from "@/interfaces/KriIndicator";
 import { formatCategory } from "@/lib/helpers/ui";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function KriIndicatorsList() {
   const router = useRouter();
   const { data: indicators = [], isLoading } = useGetKriIndicatorsQuery();
+  const [deleteKriIndicator, { isLoading: isDeleting }] = useDeleteKriIndicatorMutation();
+
+  const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
+    deleteMutation: async (id: string) => {
+      await deleteKriIndicator(Number(id)).unwrap();
+    },
+    isDeleting,
+    entityTypeName: "KRI Indicator",
+  });
 
   const getStatusBadge = (status: KriStatus) => {
     const config: Record<KriStatus, { color: string; label: string }> = {
@@ -120,10 +133,45 @@ export default function KriIndicatorsList() {
         </div>
       ),
     },
+    {
+      id: "actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 px-3 text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/risk-compliance/ai-risk-management/kri/${row.original.id}/edit`);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 px-3 text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDeleteDialog(row.original.id.toString(), row.original.name);
+            }}
+            disabled={isDeleting}
+          >
+            Delete
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const handleRowClick = (indicator: KriIndicator) => {
-    router.push(`/governance/kri-indicators/${indicator.id}/details`);
+    router.push(`/risk-compliance/ai-risk-management/kri/${indicator.id}/details`);
   };
 
   return (
@@ -133,7 +181,7 @@ export default function KriIndicatorsList() {
           KRI Indicators
         </h2>
         <Button
-          onClick={() => router.push("/governance/kri-indicators/create")}
+          onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
           className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
         >
           Create KRI Indicator
@@ -150,7 +198,7 @@ export default function KriIndicatorsList() {
             description: "Get started by creating your first KRI indicator",
             action: (
               <Button
-                onClick={() => router.push("/governance/kri-indicators/create")}
+                onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
                 className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
                 Create KRI Indicator
@@ -159,6 +207,7 @@ export default function KriIndicatorsList() {
           }}
         />
       </Card>
+      <DeleteConfirmationDialog />
     </Card>
   );
 }

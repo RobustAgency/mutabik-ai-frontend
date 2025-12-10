@@ -20,7 +20,7 @@ const CreateKriIndicator: React.FC = () => {
     setServerErrors({});
     try {
       await createIndicator(payload as CreateKriIndicatorData).unwrap();
-      router.push("/governance/kri-indicators");
+      router.push("/risk-compliance/ai-risk-management/kri");
     } catch (err: any) {
       if (err?.data?.errors) setServerErrors(err.data.errors);
       throw err;
