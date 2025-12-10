@@ -16,16 +16,29 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { useRouter } from "next/navigation";
 
 export default function ComplianceEvidenceList() {
+  const router = useRouter();
   const [filters, setFilters] = useState<ComplianceEvidenceFilters>({
     page: 1,
     per_page: 10,
   });
 
-  const { complianceEvidences, loading, error, pagination, handlePageChange, handleSearch } =
+  const { complianceEvidences, loading, error, pagination, handlePageChange, handleSearch, refresh } =
     useComplianceEvidences(filters);
   const { deleteComplianceEvidence, deleting } = useComplianceEvidenceMutations();
+
+  const {
+    openDeleteDialog,
+    DeleteConfirmationDialog,
+  } = useDeleteConfirmation({
+    deleteMutation: deleteComplianceEvidence,
+    isDeleting: deleting,
+    entityTypeName: "Compliance Evidence",
+    onSuccess: () => refresh(),
+  });
 
   const breadcrumbItems = [
     { label: "Compliance Library", href: "/admin/compliance-library/frameworks" },
@@ -47,15 +60,17 @@ export default function ComplianceEvidenceList() {
     handlePageChange(page);
   };
 
-  const handleDelete = useCallback(async (id: string | number) => {
-    if (window.confirm("Are you sure you want to delete this compliance evidence?")) {
-      try {
-        await deleteComplianceEvidence(id);
-      } catch {
-        // Error handled by toast in hook
-      }
-    }
-  }, [deleteComplianceEvidence]);
+  const handleDelete = useCallback(
+    (ce: ComplianceEvidence) => {
+      const label =
+        ce.control?.reference ||
+        ce.requirement?.reference ||
+        ce.artifact_uri ||
+        `Evidence #${ce.id}`;
+      openDeleteDialog(ce.id, label);
+    },
+    [openDeleteDialog]
+  );
 
   const columns: ColumnDef<ComplianceEvidence>[] = useMemo(
     () => [
@@ -95,14 +110,15 @@ export default function ComplianceEvidenceList() {
         cell: ({ row }) => {
           const uri = row.getValue("artifact_uri") as string;
           return (
-            <a
-              href={uri}
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(uri, '_blank');
+              }}
               className="text-blue-600 hover:underline truncate max-w-xs block"
             >
               {uri}
-            </a>
+            </span>
           );
         },
       },
@@ -161,7 +177,7 @@ export default function ComplianceEvidenceList() {
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => handleDelete(ce.id)}
+                onClick={() => handleDelete(ce)}
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
@@ -209,8 +225,12 @@ export default function ComplianceEvidenceList() {
           pagination={pagination}
           onPageChange={handlePage}
           onSearch={handleSearchTerm}
+          onRowClick={(row) => {
+            router.push(`/admin/compliance-library/compliance-evidences/${row.id}`);
+          }}
         />
       </Card>
+      <DeleteConfirmationDialog />
     </div>
   );
 }

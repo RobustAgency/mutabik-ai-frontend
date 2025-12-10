@@ -40,6 +40,11 @@ export interface ComplianceEvidence {
   updated_at: string;
   control?: Control;
   requirement?: Requirement;
+  ai_model?: {
+    id: number;
+    name: string;
+    display_id?: string;
+  };
   aiModel?: {
     id: number;
     name: string;
@@ -47,6 +52,8 @@ export interface ComplianceEvidence {
   };
   collectedBy?: User;
   reviewedBy?: User;
+  collected_by_user?: User;
+  reviewed_by_user?: User;
 }
 
 export interface ComplianceEvidenceFilters extends Record<string, unknown> {

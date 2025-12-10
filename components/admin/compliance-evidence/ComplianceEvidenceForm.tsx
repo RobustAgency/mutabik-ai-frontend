@@ -155,24 +155,24 @@ export default function ComplianceEvidenceForm({
         label: `${user.name} (${user.email})`,
       })) || [];
 
-    if (complianceEvidence?.collectedBy) {
-      const rcCollectedBy = complianceEvidence.collectedBy;
-      const exists = base.some((opt) => opt.value === rcCollectedBy.id.toString());
+    const collected = complianceEvidence?.collected_by_user || complianceEvidence?.collectedBy;
+    if (collected) {
+      const exists = base.some((opt) => opt.value === collected.id.toString());
       if (!exists) {
         base.unshift({
-          value: rcCollectedBy.id.toString(),
-          label: `${rcCollectedBy.name} (${rcCollectedBy.email})`,
+          value: collected.id.toString(),
+          label: `${collected.name} (${collected.email})`,
         });
       }
     }
 
-    if (complianceEvidence?.reviewedBy) {
-      const rcReviewedBy = complianceEvidence.reviewedBy;
-      const exists = base.some((opt) => opt.value === rcReviewedBy.id.toString());
+    const reviewed = complianceEvidence?.reviewed_by_user || complianceEvidence?.reviewedBy;
+    if (reviewed) {
+      const exists = base.some((opt) => opt.value === reviewed.id.toString());
       if (!exists) {
         base.unshift({
-          value: rcReviewedBy.id.toString(),
-          label: `${rcReviewedBy.name} (${rcReviewedBy.email})`,
+          value: reviewed.id.toString(),
+          label: `${reviewed.name} (${reviewed.email})`,
         });
       }
     }
@@ -191,10 +191,11 @@ export default function ComplianceEvidenceForm({
       const rcAiModelId = complianceEvidence.ai_model_id;
       const exists = base.some((opt) => opt.value === rcAiModelId.toString());
       if (!exists) {
+        const aiModelData = (complianceEvidence as any).ai_model || complianceEvidence.aiModel;
         base.unshift({
           value: rcAiModelId.toString(),
-          label: complianceEvidence.aiModel
-            ? `${complianceEvidence.aiModel.name}${complianceEvidence.aiModel.display_id ? ` (${complianceEvidence.aiModel.display_id})` : ""}`
+          label: aiModelData
+            ? `${aiModelData.name}${aiModelData.display_id ? ` (${aiModelData.display_id})` : ""}`
             : `AI Model #${rcAiModelId}`,
         });
       }
