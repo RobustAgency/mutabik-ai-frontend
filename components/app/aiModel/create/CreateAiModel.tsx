@@ -11,6 +11,10 @@ import BasicInfo from "./BasicInfo";
 import GovernanceRegulatorySection from "./GovernanceRegulatorySection";
 import OwnershipGovernance from "./OwnershipGovernance";
 import TechnicalDetails from "./TechnicalDetails";
+import {
+    validateTextField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 
 const initialFormData: FormDataType = {
@@ -37,39 +41,30 @@ const CreateAiModel: React.FC = () => {
 
     // Form validation
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            name: validateTextField(formData.name, {
+                required: true,
+                messages: { required: "Model name is required" },
+            }),
+            model_category: validateTextField(formData.model_category, {
+                required: true,
+                messages: { required: "Model category is required" },
+            }),
+            type: validateTextField(formData.type, {
+                required: true,
+                messages: { required: "Model type is required" },
+            }),
+            ownership_category: validateTextField(formData.ownership_category, {
+                required: true,
+                messages: { required: "Ownership category is required" },
+            }),
+            responsible_org_role: validateTextField(formData.responsible_org_role, {
+                required: true,
+                messages: { required: "Responsible organization role is required" },
+            }),
+        };
 
-        // Required fields per spec
-        if (!formData.name?.trim()) {
-            errors.name = ["Model name is required"];
-        }
-
-        if (!formData.model_category) {
-            errors.category = ["Model category is required"];
-            errors.model_category = ["Model category is required"];
-        }
-
-        if (!formData.type) {
-            errors.type = ["Model type is required"];
-        }
-
-        if (!formData.ownership_category) {
-            errors.ownership_category = ["Ownership category is required"];
-            errors.ownership_type = ["Ownership category is required"];
-        }
-
-        if (!formData.responsible_org_role) {
-            errors.responsible_org_role = ["Responsible organization role is required"];
-            errors.organizational_role = ["Responsible organization role is required"];
-        }
-
-        // Optional fields - no validation needed
-        // model_purpose is optional
-        // technical_domain is optional
-        // criticality_level, regulatory_risk_tier, eu_ai_category are optional
-        // business_owner_id, steward_custodian_id are optional
-        // business_adoption_status is optional
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

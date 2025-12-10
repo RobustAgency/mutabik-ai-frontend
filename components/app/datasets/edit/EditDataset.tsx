@@ -8,6 +8,12 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGetDatasetQuery, useUpdateDatasetMutation, CreateDatasetData } from "@/app/lib/features/datasetsApi";
 import DatasetForm from "../create/DatasetForm";
+import {
+    validateTextField,
+    validateArrayField,
+    validateNumericField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface EditDatasetProps {
     datasetId: string;
@@ -86,38 +92,75 @@ const EditDataset: React.FC<EditDatasetProps> = ({ datasetId }) => {
     }, [dataset]);
 
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            name: validateTextField(formData.name, {
+                required: true,
+                messages: { required: "Name is required" },
+            }),
+            purpose: validateArrayField(formData.purpose, {
+                required: true,
+                messages: { required: "At least one purpose is required" },
+            }),
+            source_ids: validateArrayField(formData.source_ids, {
+                required: true,
+                messages: { required: "At least one data source is required" },
+            }),
+            sensitivity: validateTextField(formData.sensitivity, {
+                required: true,
+                messages: { required: "Sensitivity is required" },
+            }),
+            contains_pii: validateTextField(formData.contains_pii, {
+                required: true,
+                messages: { required: "Contains PII selection is required" },
+            }),
+            controller_role: validateTextField(formData.controller_role, {
+                required: true,
+                messages: { required: "Controller role is required" },
+            }),
+            lawful_basis: validateTextField(formData.lawful_basis, {
+                required: true,
+                messages: { required: "Lawful basis is required" },
+            }),
+            data_structure: validateTextField(formData.data_structure, {
+                required: true,
+                messages: { required: "Data structure is required" },
+            }),
+            storage_format: validateTextField(formData.storage_format, {
+                required: true,
+                messages: { required: "Storage format is required" },
+            }),
+            cross_border_transfer: validateTextField(formData.cross_border_transfer, {
+                required: true,
+                messages: { required: "Cross-border transfer is required" },
+            }),
+            owner_team: validateTextField(formData.owner_team, {
+                required: true,
+                messages: { required: "Owner team is required" },
+            }),
+        };
 
-        if (!formData.name?.trim()) errors.name = ["Name is required"];
-        if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
-        if (formData.source_ids.length === 0) errors.source_ids = ["At least one data source is required"];
-        if (!formData.sensitivity?.trim()) errors.sensitivity = ["Sensitivity is required"];
-        if (!formData.contains_pii?.trim()) errors.contains_pii = ["Contains PII selection is required"];
-        // data_subject_categories is optional (nullable) - no validation needed
-        if (!formData.controller_role?.trim()) errors.controller_role = ["Controller role is required"];
-        // lawful_basis is always required (not conditional on contains_pii)
-        if (!formData.lawful_basis?.trim()) errors.lawful_basis = ["Lawful basis is required"];
-        if (!formData.data_structure?.trim()) errors.data_structure = ["Data structure is required"];
-        if (!formData.storage_format?.trim()) errors.storage_format = ["Storage format is required"];
-        if (!formData.cross_border_transfer?.trim()) errors.cross_border_transfer = ["Cross-border transfer is required"];
-        if (!formData.owner_team?.trim()) errors.owner_team = ["Owner team is required"];
-
-        // If lawful basis is Consent, require consent_required field
         if (formData.lawful_basis === "Consent") {
-            // consent_required is required (boolean)
             if (formData.consent_required === undefined || formData.consent_required === null) {
-                errors.consent_required = ["Consent required is required when lawful basis is Consent"];
+                fieldErrors.consent_required = [
+                    "Consent required is required when lawful basis is Consent",
+                ];
             }
-
-            // consent_coverage_pct is optional, but if provided must be 0-100
             if (formData.consent_coverage_pct !== undefined && formData.consent_coverage_pct !== null) {
-                if (formData.consent_coverage_pct < 0 || formData.consent_coverage_pct > 100) {
-                    errors.consent_coverage_pct = ["Consent coverage percentage must be between 0 and 100"];
+                const pctErrors = validateNumericField(formData.consent_coverage_pct, {
+                    min: 0,
+                    max: 100,
+                    messages: {
+                        min: "Consent coverage percentage must be between 0 and 100",
+                        max: "Consent coverage percentage must be between 0 and 100",
+                    },
+                });
+                if (pctErrors.length) {
+                    fieldErrors.consent_coverage_pct = pctErrors;
                 }
             }
-            // consent_source_ref is optional - no validation needed
         }
 
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

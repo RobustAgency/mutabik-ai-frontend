@@ -1,7 +1,6 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { apiClient } from "@/lib/api";
-import { AxiosRequestConfig, AxiosError } from "axios";
+import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 
 // Types for data elements
 export interface DataElement {
@@ -48,59 +47,6 @@ export interface CreateDataElementData {
   owner_team?: string;
   quality_rules_ref?: string;
   catalog_column_id?: string;
-}
-
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params }) => {
-    try {
-      const result = await apiClient({
-        url,
-        method,
-        data,
-        params,
-      });
-
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        data?: unknown;
-        message?: string;
-        error?: boolean;
-        errors?: Record<string, string[]>;
-      }>;
-
-      const error = {
-        status: err.response?.status || 500,
-        data: err.response?.data || {
-          message: err.message || "An error occurred",
-          error: true,
-        },
-      };
-
-      return {
-        error,
-      };
-    }
-  };
-
-interface MutationError {
-  error?: {
-    status: number;
-    data?: {
-      message?: string;
-      errors?: Record<string, string[]>;
-    };
-  };
 }
 
 export const dataElementsApi = createApi({
@@ -167,8 +113,8 @@ export const dataElementsApi = createApi({
           await queryFulfilled;
           toast.success("Data element created successfully");
         } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
               mutationError?.error?.data?.message ||
               "Failed to create data element";
@@ -196,8 +142,8 @@ export const dataElementsApi = createApi({
           await queryFulfilled;
           toast.success("Data element updated successfully");
         } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
               mutationError?.error?.data?.message ||
               "Failed to update data element";

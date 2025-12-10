@@ -8,6 +8,11 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateConsentScopeMutation, CreateConsentScopeData } from "@/app/lib/features/consentScopesApi";
 import ConsentScopeForm from "./ConsentScopeForm";
+import {
+  validateTextField,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateConsentScope: React.FC = () => {
   const router = useRouter();
@@ -25,15 +30,34 @@ const CreateConsentScope: React.FC = () => {
   const [createScope, { isLoading }] = useCreateConsentScopeMutation();
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      dataset_id: validateTextField(formData.dataset_id, {
+        required: true,
+        messages: { required: "Dataset ID is required" },
+      }),
+      purpose: validateArrayField(formData.purpose, {
+        required: true,
+        messages: { required: "At least one purpose is required" },
+      }),
+      subject_realm: validateTextField(formData.subject_realm, {
+        required: true,
+        messages: { required: "Subject realm is required" },
+      }),
+      jurisdiction: validateTextField(formData.jurisdiction, {
+        required: true,
+        messages: { required: "Jurisdiction is required" },
+      }),
+      source_created_at: validateTextField(formData.source_created_at, {
+        required: true,
+        messages: { required: "Created at is required" },
+      }),
+      effective_from: validateTextField(formData.effective_from, {
+        required: true,
+        messages: { required: "Effective from date is required" },
+      }),
+    };
 
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset ID is required"];
-    if (!formData.purpose || formData.purpose.length === 0) errors.purpose = ["At least one purpose is required"];
-    if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
-    if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
-    if (!formData.source_created_at?.trim()) errors.source_created_at = ["Created at is required"];
-    if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];
-
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

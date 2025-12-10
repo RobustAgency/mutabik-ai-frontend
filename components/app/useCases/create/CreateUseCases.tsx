@@ -214,49 +214,6 @@ const CreateUseCases: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Handle save draft (no validation required)
-  const handleSaveDraft = async () => {
-    // Save as draft without validation
-    try {
-      const payload: CreateUseCaseData = {
-        name: formData.name.trim() || "Untitled Draft",
-        problem_statement: formData.problem_statement.trim() || "Draft in progress",
-        expected_business_value: formData.expected_business_value.trim() || "Draft in progress",
-        stakeholder_ids: formData.stakeholder_ids.length > 0 ? formData.stakeholder_ids : [],
-        status: "draft",
-        expected_roi: formData.expected_roi || 0,
-        estimated_time_savings: formData.estimated_time_savings || 0,
-        estimated_cost_savings: formData.estimated_cost_savings || 0,
-        estimated_revenue_impact: formData.estimated_revenue_impact || 0,
-        estimated_fte_saving: formData.estimated_fte_saving || 0,
-        success_metrics: formData.success_metrics.trim() || "Draft in progress",
-        preliminary_risk_level: formData.preliminary_risk_level,
-        regulatory_impact: formData.regulatory_impact ? "yes" : "no",
-        potential_harm: formData.potential_harm.trim() || "Draft in progress",
-        human_oversight_mode: formData.human_oversight_mode || "human_in_the_loop",
-        data_sensitivity: formData.data_sensitivity,
-        data_availability_status: formData.data_availability_status || "unknown",
-        dependencies: formData.dependencies.trim() || "",
-        // Optional fields
-        description: formData.description?.trim() || null,
-        business_domain: formData.business_domain || null,
-        business_owner_id: formData.business_owner_id,
-        technical_owner_id: formData.technical_owner_id,
-        target_deployment_date: formData.target_deployment_date,
-        budget_allocated: formData.budget_allocated,
-        estimated_implementation_cost: formData.estimated_implementation_cost,
-        roi_classification: formData.roi_classification || null,
-        priority: formData.priority || null,
-        data_readiness: formData.data_readiness || null,
-      };
-
-      await createUseCase(payload).unwrap();
-      router.push("/core-assets/ai-use-cases");
-    } catch (err: any) {
-      console.error("Failed to save draft:", err);
-    }
-  };
-
   // Handle final submit
   const handleSubmit = async () => {
     setValidationErrors({});
@@ -422,7 +379,6 @@ const CreateUseCases: React.FC = () => {
             steps={WIZARD_STEPS}
             onNext={handleNext}
             onPrevious={handlePrevious}
-            onSaveDraft={handleSaveDraft}
             onSubmit={handleSubmit}
             isLoading={isLoading}
             canProceed={true}

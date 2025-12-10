@@ -8,6 +8,10 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import IncidentActionForm from "./IncidentActionForm";
 import { CreateIncidentActionData, useCreateIncidentActionMutation } from "@/app/lib/features/incidentActionsApi";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateIncidentAction: React.FC = () => {
   const router = useRouter();
@@ -28,15 +32,34 @@ const CreateIncidentAction: React.FC = () => {
   });
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      ai_incident_id: validateTextField(formData.ai_incident_id ? String(formData.ai_incident_id) : "", {
+        required: true,
+        messages: { required: "Incident is required" },
+      }),
+      action_type: validateTextField(formData.action_type, {
+        required: true,
+        messages: { required: "Action type is required" },
+      }),
+      description: validateTextField(formData.description, {
+        required: true,
+        messages: { required: "Description is required" },
+      }),
+      performed_by: validateTextField(formData.performed_by, {
+        required: true,
+        messages: { required: "Performed by is required" },
+      }),
+      started_at: validateTextField(formData.started_at, {
+        required: true,
+        messages: { required: "Started at is required" },
+      }),
+      validation_result: validateTextField(formData.validation_result, {
+        required: true,
+        messages: { required: "Validation result is required" },
+      }),
+    };
 
-    if (!formData.ai_incident_id) validationErrors.ai_incident_id = ["Incident is required"];
-    if (!formData.action_type?.trim()) validationErrors.action_type = ["Action type is required"];
-    if (!formData.description?.trim()) validationErrors.description = ["Description is required"];
-    if (!formData.performed_by?.trim()) validationErrors.performed_by = ["Performed by is required"];
-    if (!formData.started_at?.trim()) validationErrors.started_at = ["Started at is required"];
-    if (!formData.validation_result?.trim()) validationErrors.validation_result = ["Validation result is required"];
-
+    const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };

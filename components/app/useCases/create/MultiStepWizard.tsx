@@ -15,7 +15,6 @@ interface MultiStepWizardProps {
   steps: Step[];
   onNext: () => void;
   onPrevious: () => void;
-  onSaveDraft?: () => void;
   onSubmit: () => void;
   isLoading?: boolean;
   canProceed?: boolean;
@@ -27,7 +26,6 @@ export const MultiStepWizard: React.FC<MultiStepWizardProps> = ({
   steps,
   onNext,
   onPrevious,
-  onSaveDraft, // Optional save draft handler
   onSubmit,
   isLoading = false,
   canProceed = true,

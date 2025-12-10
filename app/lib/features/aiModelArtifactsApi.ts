@@ -1,44 +1,11 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { apiClient } from "@/lib/api";
+import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 import type {
   AiModelArtifact,
   CreateAiModelArtifactData,
   PaginatedArtifactsResponse,
 } from "@/service/app/aiModelArtifacts";
-
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-      headers?: AxiosRequestConfig["headers"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params, headers }) => {
-    try {
-      const result = await apiClient({ url, method, data, params, headers });
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        message?: string;
-        errors?: Record<string, string[]>;
-      }>;
-      return {
-        error: {
-          status: err.response?.status || 500,
-          data: err.response?.data || {
-            message: err.message || "Request failed",
-          },
-        },
-      };
-    }
-  };
 
 // Filter types for AI Model Artifacts
 export interface AiModelArtifactFilters {
@@ -163,10 +130,11 @@ export const aiModelArtifactsApi = createApi({
             toast.success(result.data.message || "Artifact created successfully");
           }
         } catch (error: any) {
-          if (!error?.error?.data?.errors) {
-            toast.error(
-              error?.error?.data?.message || "Failed to create artifact"
-            );
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
+            const errorMessage =
+              mutationError?.error?.data?.message || "Failed to create artifact";
+            toast.error(errorMessage);
           }
         }
       },
@@ -189,10 +157,11 @@ export const aiModelArtifactsApi = createApi({
           await queryFulfilled;
           toast.success("Artifact deleted successfully");
         } catch (error: any) {
-          if (!error?.error?.data?.errors) {
-            toast.error(
-              error?.error?.data?.message || "Failed to delete artifact"
-            );
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
+            const errorMessage =
+              mutationError?.error?.data?.message || "Failed to delete artifact";
+            toast.error(errorMessage);
           }
         }
       },

@@ -1,7 +1,6 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { apiClient } from "@/lib/api";
-import { AxiosRequestConfig, AxiosError } from "axios";
+import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface CreateDatasetElementMapData {
   dataset_id: number;
@@ -24,44 +23,6 @@ export interface CreateDatasetElementMapData {
   lineage_source_column?: string | null;
   deprecated?: "Yes" | "No";
   // organization_id is validated on backend; usually derived from auth
-}
-
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params }) => {
-    try {
-      const result = await apiClient({ url, method, data, params });
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        data?: unknown;
-        message?: string;
-        error?: boolean;
-        errors?: Record<string, string[]>;
-      }>;
-      return {
-        error: {
-          status: err.response?.status || 500,
-          data: err.response?.data || { message: err.message || "An error occurred", error: true },
-        },
-      };
-    }
-  };
-
-interface MutationError {
-  error?: {
-    status: number;
-    data?: { message?: string; errors?: Record<string, string[]> };
-  };
 }
 
 export const datasetElementMapApi = createApi({

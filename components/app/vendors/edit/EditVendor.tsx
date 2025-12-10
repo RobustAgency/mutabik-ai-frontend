@@ -11,6 +11,12 @@ import {
   useUpdateVendorMutation,
   CreateVendorData,
 } from "@/app/lib/features/vendorsApi";
+import {
+  validateTextField,
+  validateEmail,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 import VendorForm from "../create/VendorForm";
 
 interface EditVendorProps {
@@ -54,54 +60,57 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
     }
   }, [vendor]);
 
-  // Form validation
+  // Form validation using shared utilities
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      vendor_name: validateTextField(formData.vendor_name, {
+        required: true,
+        messages: { required: "Vendor name is required" },
+      }),
+      legal_name: validateTextField(formData.legal_name, {
+        required: true,
+        messages: { required: "Legal name is required" },
+      }),
+      hq_country: validateTextField(formData.hq_country, {
+        required: true,
+        messages: { required: "HQ country is required" },
+      }),
+      risk_tier: validateTextField(formData.risk_tier, {
+        required: true,
+        messages: { required: "Risk tier is required" },
+      }),
+      status: validateTextField(formData.status, {
+        required: true,
+        messages: { required: "Status is required" },
+      }),
+      primary_contacts: validateArrayField(formData.primary_contacts, {
+        required: false,
+      }),
+    };
 
-    // Required fields
-    if (!formData.vendor_name?.trim()) {
-      errors.vendor_name = ["Vendor name is required"];
-    }
-
-    if (!formData.legal_name?.trim()) {
-      errors.legal_name = ["Legal name is required"];
-    }
-
-    if (!formData.hq_country?.trim()) {
-      errors.hq_country = ["HQ country is required"];
-    }
-
-    if (!formData.risk_tier) {
-      errors.risk_tier = ["Risk tier is required"];
-    }
-
-    if (!formData.status) {
-      errors.status = ["Status is required"];
-    }
-
-    // Validate primary contacts if any
-    if (formData.primary_contacts.length > 0) {
-      formData.primary_contacts.forEach((contact, index) => {
-        if (!contact.name?.trim()) {
-          errors[`primary_contacts.${index}.name`] = [
-            "Contact name is required",
-          ];
-        }
-        if (!contact.email?.trim()) {
-          errors[`primary_contacts.${index}.email`] = [
-            "Contact email is required",
-          ];
-        }
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (contact.email && !emailRegex.test(contact.email)) {
-          errors[`primary_contacts.${index}.email`] = [
-            "Please enter a valid email address",
-          ];
-        }
+    const contactErrors: Record<string, string[]> = {};
+    formData.primary_contacts.forEach((contact, index) => {
+      const nameErrors = validateTextField(contact.name, {
+        required: true,
+        messages: { required: "Contact name is required" },
       });
-    }
+      if (nameErrors.length) {
+        contactErrors[`primary_contacts.${index}.name`] = nameErrors;
+      }
 
+      const emailErrors = [
+        ...validateTextField(contact.email, {
+          required: true,
+          messages: { required: "Contact email is required" },
+        }),
+        ...validateEmail(contact.email, "Please enter a valid email address"),
+      ];
+      if (emailErrors.length) {
+        contactErrors[`primary_contacts.${index}.email`] = emailErrors;
+      }
+    });
+
+    const errors = createValidationErrors({ ...fieldErrors, ...contactErrors });
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

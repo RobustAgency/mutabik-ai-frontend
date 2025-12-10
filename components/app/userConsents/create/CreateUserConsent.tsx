@@ -8,6 +8,11 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateUserConsentMutation, CreateUserConsentData } from "@/app/lib/features/userConsentsApi";
 import UserConsentForm from "./UserConsentForm";
+import {
+  validateTextField,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateUserConsent: React.FC = () => {
   const router = useRouter();
@@ -29,18 +34,46 @@ const CreateUserConsent: React.FC = () => {
   const [createConsent, { isLoading }] = useCreateUserConsentMutation();
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      subject_key: validateTextField(formData.subject_key, {
+        required: true,
+        messages: { required: "Subject key is required" },
+      }),
+      subject_realm: validateTextField(formData.subject_realm, {
+        required: true,
+        messages: { required: "Subject realm is required" },
+      }),
+      jurisdiction: validateTextField(formData.jurisdiction, {
+        required: true,
+        messages: { required: "Jurisdiction is required" },
+      }),
+      consent_purpose: validateArrayField(formData.consent_purpose, {
+        required: true,
+        messages: { required: "At least one consent purpose is required" },
+      }),
+      consent_status: validateTextField(formData.consent_status, {
+        required: true,
+        messages: { required: "Consent status is required" },
+      }),
+      legal_basis: validateTextField(formData.legal_basis, {
+        required: true,
+        messages: { required: "Legal basis is required" },
+      }),
+      source_system: validateTextField(formData.source_system, {
+        required: true,
+        messages: { required: "Source system is required" },
+      }),
+      evidence_ref: validateTextField(formData.evidence_ref, {
+        required: true,
+        messages: { required: "Evidence reference is required" },
+      }),
+      effective_from: validateTextField(formData.effective_from, {
+        required: true,
+        messages: { required: "Effective from date is required" },
+      }),
+    };
 
-    if (!formData.subject_key?.trim()) errors.subject_key = ["Subject key is required"];
-    if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
-    if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
-    if (!formData.consent_purpose || formData.consent_purpose.length === 0) errors.consent_purpose = ["At least one consent purpose is required"];
-    if (!formData.consent_status?.trim()) errors.consent_status = ["Consent status is required"];
-    if (!formData.legal_basis?.trim()) errors.legal_basis = ["Legal basis is required"];
-    if (!formData.source_system?.trim()) errors.source_system = ["Source system is required"];
-    if (!formData.evidence_ref?.trim()) errors.evidence_ref = ["Evidence reference is required"];
-    if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];
-
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

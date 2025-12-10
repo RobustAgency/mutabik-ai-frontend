@@ -60,7 +60,6 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
     });
 
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-    const [isCalculatingChecksum, setIsCalculatingChecksum] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
 
     // Field change handler
@@ -356,13 +355,8 @@ export default function ArtifactForm({ onSubmit, loading }: ArtifactFormProps) {
                                 checksum_algorithm: formData.checksum_algorithm,
                                 // checksum_value: formData.checksum_value, // Backend calculates this automatically
                             }}
-                            errors={errors}
-                            uploadedFile={uploadedFile}
-                            isCalculatingChecksum={isCalculatingChecksum}
                             checksumAlgorithmOptions={checksumAlgorithmOptions}
                             onChecksumAlgorithmChange={handleChecksumAlgorithmChange}
-                            onFieldChange={handleFieldChange}
-                            onErrorClear={handleErrorClear}
                         />
 
                         {/* Metadata */}

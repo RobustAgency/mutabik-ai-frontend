@@ -10,6 +10,10 @@ import {
   useUpdateIncidentNotificationMutation,
   CreateIncidentNotificationData,
 } from "@/app/lib/features/incidentNotificationsApi";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 import IncidentNotificationForm from "@/components/app/incidents/notifications/create/IncidentNotificationForm";
 
 interface EditIncidentNotificationProps {
@@ -42,18 +46,35 @@ const EditIncidentNotification: React.FC<EditIncidentNotificationProps> = ({ not
 
   const validateForm = (): boolean => {
     if (!formData) return false;
-    const validationErrors: Record<string, string[]> = {};
-    const isExternalAudience = ["customers", "regulator", "vendor", "media"].includes(formData.audience_type);
+    const fieldErrors: Record<string, string[]> = {
+      ai_incident_id: validateTextField(formData.ai_incident_id ? String(formData.ai_incident_id) : "", {
+        required: true,
+        messages: { required: "Incident is required" },
+      }),
+      audience_type: validateTextField(formData.audience_type, {
+        required: true,
+        messages: { required: "Audience type is required" },
+      }),
+      channel: validateTextField(formData.channel, {
+        required: true,
+        messages: { required: "Channel is required" },
+      }),
+      notice_summary: validateTextField(formData.notice_summary, {
+        required: true,
+        messages: { required: "Notice summary is required" },
+      }),
+      notified_at: validateTextField(formData.notified_at, {
+        required: true,
+        messages: { required: "Notified at is required" },
+      }),
+    };
 
-    if (!formData.ai_incident_id) validationErrors.ai_incident_id = ["Incident is required"];
-    if (!formData.audience_type?.trim()) validationErrors.audience_type = ["Audience type is required"];
-    if (!formData.channel?.trim()) validationErrors.channel = ["Channel is required"];
-    if (!formData.notice_summary?.trim()) validationErrors.notice_summary = ["Notice summary is required"];
-    if (!formData.notified_at?.trim()) validationErrors.notified_at = ["Notified at is required"];
+    const isExternalAudience = ["customers", "regulator", "vendor", "media"].includes(formData.audience_type);
     if (isExternalAudience && !formData.approved_by?.trim()) {
-      validationErrors.approved_by = ["Approved by is required for external communications"];
+      fieldErrors.approved_by = ["Approved by is required for external communications"];
     }
 
+    const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
