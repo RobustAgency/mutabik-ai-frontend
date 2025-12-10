@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import AiRiskRegisterModalForm from "@/components/app/aiRiskRegister/create/AiRiskRegisterModalForm";
 import { FormState } from "../types";
 import { Directionality, KriStatus } from "@/interfaces/KriIndicator";
 import { formatCategory } from "@/lib/helpers/ui";
@@ -25,10 +26,6 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   aiRiskRegisters,
   isAiRiskRegistersLoading,
 }) => {
-  // SelectWithInlineCreate requires a modalForm; we disable creation and pass a no-op component.
-  const NoopModal: React.FC<{ onSuccess: (item: any) => void; onCancel: () => void }> =
-    () => null;
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -59,8 +56,8 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             isLoading={isAiRiskRegistersLoading}
             isEmpty={!isAiRiskRegistersLoading && aiRiskRegisters.length === 0}
             entityName="AI Risk Register"
-            modalForm={NoopModal}
-            canCreate={false}
+            modalForm={AiRiskRegisterModalForm}
+            canCreate
             placeholder={
               isAiRiskRegistersLoading ? "Loading..." : "Select AI Risk Register"
             }
