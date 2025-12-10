@@ -17,8 +17,13 @@ import {
   AiRiskTreatmentFilters,
 } from "@/interfaces/AiRiskTreatment";
 
-interface AiRiskTreatmentResponse {
-  data: AiRiskTreatment[];
+interface AiRiskTreatmentListResponse {
+  data: {
+    data: AiRiskTreatment[];
+    current_page: number;
+    per_page: number;
+    total: number;
+  };
   message: string;
   error: boolean;
 }
@@ -47,11 +52,12 @@ export const aiRiskTreatmentApi = createApi({
           method: "GET",
         };
       },
-      transformResponse: (response: AiRiskTreatmentResponse) => {
-        return response.data || [];
+      transformResponse: (response: AiRiskTreatmentListResponse) => {
+        const list = response?.data?.data;
+        return Array.isArray(list) ? list : [];
       },
       providesTags: (result) =>
-        result
+        result && Array.isArray(result)
           ? [
               ...result.map(({ id }) => ({ type: "AiRiskTreatment" as const, id })),
               { type: "AiRiskTreatment", id: "LIST" },

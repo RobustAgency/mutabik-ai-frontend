@@ -7,14 +7,27 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/custom/DataTable";
-import { useGetAiRiskTreatmentsQuery } from "@/app/lib/features/aiRiskTreatmentApi";
+import {
+  useGetAiRiskTreatmentsQuery,
+  useDeleteAiRiskTreatmentMutation,
+} from "@/app/lib/features/aiRiskTreatmentApi";
 import { AiRiskTreatment, TreatmentStatus, ResultVerification } from "@/interfaces/AiRiskTreatment";
 import { formatDate } from "@/utils/formatDate";
 import { formatCategory } from "@/lib/helpers/ui";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function AiRiskTreatmentsList() {
   const router = useRouter();
   const { data: treatments = [], isLoading } = useGetAiRiskTreatmentsQuery();
+  const [deleteTreatment, { isLoading: isDeleting }] = useDeleteAiRiskTreatmentMutation();
+
+  const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
+    deleteMutation: async (id: string) => {
+      await deleteTreatment(Number(id)).unwrap();
+    },
+    isDeleting,
+    entityTypeName: "AI Risk Treatment",
+  });
 
   const getStatusBadge = (status: TreatmentStatus) => {
     const config: Record<TreatmentStatus, { color: string; label: string }> = {
@@ -121,6 +134,39 @@ export default function AiRiskTreatmentsList() {
         </div>
       ),
     },
+    {
+      id: "actions",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Actions
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/risk-compliance/ai-risk-management/treatment/${row.original.id}/edit`);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            className="text-[#667085]"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDeleteDialog(String(row.original.id), row.original.plan_summary);
+            }}
+            disabled={isDeleting}
+          >
+            Remove
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const handleRowClick = (treatment: AiRiskTreatment) => {
@@ -160,6 +206,7 @@ export default function AiRiskTreatmentsList() {
           }}
         />
       </Card>
+      <DeleteConfirmationDialog />
     </Card>
   );
 }

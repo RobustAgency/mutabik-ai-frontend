@@ -2,55 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { MultiStepWizard } from "@/components/app/useCases/create/MultiStepWizard";
 import {
   AiRiskTreatment,
   CreateAiRiskTreatmentData,
-  ResultVerification,
-  TreatmentStatus,
-  TreatmentType,
   UpdateAiRiskTreatmentData,
 } from "@/interfaces/AiRiskTreatment";
-import {
-  validateTextField,
-  validateNumericField,
-  createValidationErrors,
-} from "@/lib/utils/validation";
-
-type FormState = {
-  ai_risk_register_id: string;
-  treatment_type: TreatmentType;
-  plan_summary: string;
-  owner_stakeholder_id: string;
-  assignee: string;
-  due_date: string;
-  status: TreatmentStatus;
-  expected_residual_level: string;
-  result_verification: ResultVerification | "";
-  evidence_link: string;
-  linked_capa_id: string;
-  closed_at: string;
-};
-
-const getInitialState = (initial?: AiRiskTreatment): FormState => ({
-  ai_risk_register_id: initial?.ai_risk_register_id?.toString() ?? "",
-  treatment_type: initial?.treatment_type ?? TreatmentType.CORRECTIVE,
-  plan_summary: initial?.plan_summary ?? "",
-  owner_stakeholder_id: initial?.owner_stakeholder_id?.toString() ?? "",
-  assignee: initial?.assignee?.join(", ") ?? "",
-  due_date: initial?.due_date ?? "",
-  status: initial?.status ?? TreatmentStatus.NEW,
-  expected_residual_level: initial?.expected_residual_level ?? "",
-  result_verification: initial?.result_verification ?? "",
-  evidence_link: initial?.evidence_link ?? "",
-  linked_capa_id: initial?.linked_capa_id ?? "",
-  closed_at: initial?.closed_at ?? "",
-});
+import { validateStep } from "./validation";
+import { FormState, getInitialState } from "./types";
+import { useGetAiRiskRegistersQuery } from "@/app/lib/features/aiRiskRegisterApi";
+import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
+import { useGetCorrectivePreventiveActionsQuery } from "@/app/lib/features/correctivePreventiveActionsApi";
+import { PlanStep } from "./steps/PlanStep";
+import { ExecutionStep } from "./steps/ExecutionStep";
 
 interface AiRiskTreatmentFormProps {
   initialData?: AiRiskTreatment;
@@ -73,6 +39,18 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
     {}
   );
 
+  // Fetch dropdown data
+  const { data: aiRiskRegistersData, isLoading: isAiRiskRegistersLoading } =
+    useGetAiRiskRegistersQuery({ per_page: 100 });
+  const aiRiskRegisters = aiRiskRegistersData?.data ?? [];
+
+  const { data: stakeholders = [], isLoading: isStakeholdersLoading } =
+    useGetStakeholdersQuery({ per_page: 100 });
+
+  const { data: capasData, isLoading: isCapasLoading } =
+    useGetCorrectivePreventiveActionsQuery();
+  const capas = capasData?.data ?? [];
+
   useEffect(() => {
     if (initialData) setFormState(getInitialState(initialData));
   }, [initialData]);
@@ -82,39 +60,14 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
     { id: 2, title: "Execution", description: "Assignments & verification" },
   ];
 
-  const validateStep = (step: number): boolean => {
-    const fieldErrors: Record<string, string[]> = {};
-
-    if (step === 1) {
-      fieldErrors.ai_risk_register_id = validateNumericField(
-        Number(formState.ai_risk_register_id),
-        { required: true, integer: true, messages: { required: "Risk register ID is required" } }
-      );
-      fieldErrors.plan_summary = validateTextField(formState.plan_summary, {
-        required: true,
-        messages: { required: "Plan summary is required" },
-      });
-      fieldErrors.owner_stakeholder_id = validateNumericField(
-        Number(formState.owner_stakeholder_id),
-        { required: true, integer: true, messages: { required: "Owner stakeholder is required" } }
-      );
-      fieldErrors.due_date = validateTextField(formState.due_date, {
-        required: true,
-        messages: { required: "Due date is required" },
-      });
-    }
-
-    if (step === 2) {
-      fieldErrors.status = validateTextField(formState.status, { required: true });
-    }
-
-    const errors = createValidationErrors(fieldErrors);
+  const handleValidateStep = (step: number): boolean => {
+    const { isValid, errors } = validateStep(step, formState);
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return isValid;
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
+    if (handleValidateStep(currentStep)) {
       setValidationErrors({});
       setCurrentStep((prev) => Math.min(prev + 1, steps.length));
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -131,7 +84,16 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
 
   const handleSubmit = async () => {
     setValidationErrors({});
-    if (!validateStep(currentStep)) {
+    // Validate entire form
+    let isValid = true;
+    for (let step = 1; step <= steps.length; step++) {
+      if (!handleValidateStep(step)) {
+        isValid = false;
+        setCurrentStep(step);
+        break;
+      }
+    }
+    if (!isValid) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -166,216 +128,26 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="ai_risk_register_id">AI Risk Register ID *</Label>
-                <Input
-                  id="ai_risk_register_id"
-                  type="number"
-                  value={formState.ai_risk_register_id}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      ai_risk_register_id: e.target.value,
-                    }))
-                  }
-                  placeholder="1"
-                />
-                {validationErrors.ai_risk_register_id && (
-                  <p className="text-sm text-red-500">
-                    {validationErrors.ai_risk_register_id[0]}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="treatment_type">Treatment Type *</Label>
-                <select
-                  id="treatment_type"
-                  className="w-full border rounded-md h-10 px-3"
-                  value={formState.treatment_type}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      treatment_type: e.target.value as TreatmentType,
-                    }))
-                  }
-                >
-                  {Object.values(TreatmentType).map((item) => (
-                    <option key={item} value={item}>
-                      {item.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="plan_summary">Plan Summary *</Label>
-              <Textarea
-                id="plan_summary"
-                value={formState.plan_summary}
-                onChange={(e) =>
-                  setFormState((prev) => ({ ...prev, plan_summary: e.target.value }))
-                }
-                rows={3}
-                placeholder="Implement fairness checks in model training"
-              />
-              {validationErrors.plan_summary && (
-                <p className="text-sm text-red-500">{validationErrors.plan_summary[0]}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="owner_stakeholder_id">Owner Stakeholder ID *</Label>
-                <Input
-                  id="owner_stakeholder_id"
-                  type="number"
-                  value={formState.owner_stakeholder_id}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      owner_stakeholder_id: e.target.value,
-                    }))
-                  }
-                  placeholder="2"
-                />
-                {validationErrors.owner_stakeholder_id && (
-                  <p className="text-sm text-red-500">
-                    {validationErrors.owner_stakeholder_id[0]}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="due_date">Due Date *</Label>
-                <Input
-                  id="due_date"
-                  type="date"
-                  value={formState.due_date}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, due_date: e.target.value }))
-                  }
-                />
-                {validationErrors.due_date && (
-                  <p className="text-sm text-red-500">{validationErrors.due_date[0]}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status *</Label>
-                <select
-                  id="status"
-                  className="w-full border rounded-md h-10 px-3"
-                  value={formState.status}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      status: e.target.value as TreatmentStatus,
-                    }))
-                  }
-                >
-                  {Object.values(TreatmentStatus).map((item) => (
-                    <option key={item} value={item}>
-                      {item.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
+          <PlanStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+            aiRiskRegisters={aiRiskRegisters}
+            isAiRiskRegistersLoading={isAiRiskRegistersLoading}
+            stakeholders={stakeholders}
+            isStakeholdersLoading={isStakeholdersLoading}
+          />
         );
 
       case 2:
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="assignee">Assignee (emails, comma separated)</Label>
-                <Input
-                  id="assignee"
-                  value={formState.assignee}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, assignee: e.target.value }))
-                  }
-                  placeholder="john@example.com, jane@example.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="expected_residual_level">Expected Residual Level</Label>
-                <Input
-                  id="expected_residual_level"
-                  value={formState.expected_residual_level}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      expected_residual_level: e.target.value,
-                    }))
-                  }
-                  placeholder="medium"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="result_verification">Result Verification</Label>
-                <select
-                  id="result_verification"
-                  className="w-full border rounded-md h-10 px-3"
-                  value={formState.result_verification}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      result_verification: e.target.value as ResultVerification | "",
-                    }))
-                  }
-                >
-                  <option value="">Select</option>
-                  {Object.values(ResultVerification).map((item) => (
-                    <option key={item} value={item}>
-                      {item.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="evidence_link">Evidence Link</Label>
-                <Input
-                  id="evidence_link"
-                  value={formState.evidence_link}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, evidence_link: e.target.value }))
-                  }
-                  placeholder="https://example.com/evidence"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="linked_capa_id">Linked CAPA ID</Label>
-                <Input
-                  id="linked_capa_id"
-                  value={formState.linked_capa_id}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, linked_capa_id: e.target.value }))
-                  }
-                  placeholder="CAPA-001"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="closed_at">Closed At</Label>
-                <Input
-                  id="closed_at"
-                  type="date"
-                  value={formState.closed_at}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, closed_at: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-          </div>
+          <ExecutionStep
+            formState={formState}
+            setFormState={setFormState}
+            validationErrors={validationErrors}
+            capas={capas}
+            isCapasLoading={isCapasLoading}
+          />
         );
       default:
         return null;
