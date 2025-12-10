@@ -6,6 +6,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useCreateVendorMutation, CreateVendorData, Vendor } from "@/app/lib/features/vendorsApi";
 import VendorForm from "./VendorForm";
+import {
+    validateTextField,
+    validateEmail,
+    validateArrayField,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 
 const initialFormData: CreateVendorData = {
     vendor_name: "",
@@ -32,31 +38,57 @@ const VendorModalForm: React.FC<VendorModalFormProps> = ({
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
     const [createVendor, { isLoading }] = useCreateVendorMutation();
 
-    // Form validation
+    // Form validation using shared utilities
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            vendor_name: validateTextField(formData.vendor_name, {
+                required: true,
+                messages: { required: "Vendor name is required" },
+            }),
+            legal_name: validateTextField(formData.legal_name, {
+                required: true,
+                messages: { required: "Legal name is required" },
+            }),
+            hq_country: validateTextField(formData.hq_country, {
+                required: true,
+                messages: { required: "Headquarters country is required" },
+            }),
+            risk_tier: validateTextField(formData.risk_tier, {
+                required: true,
+                messages: { required: "Risk tier is required" },
+            }),
+            status: validateTextField(formData.status, {
+                required: true,
+                messages: { required: "Status is required" },
+            }),
+            primary_contacts: validateArrayField(formData.primary_contacts, {
+                required: false,
+            }),
+        };
 
-        // Required fields
-        if (!formData.vendor_name?.trim()) {
-            errors.vendor_name = ["Vendor name is required"];
-        }
+        const contactErrors: Record<string, string[]> = {};
+        formData.primary_contacts.forEach((contact, index) => {
+            const nameErrors = validateTextField(contact.name, {
+                required: true,
+                messages: { required: "Contact name is required" },
+            });
+            if (nameErrors.length) {
+                contactErrors[`primary_contacts.${index}.name`] = nameErrors;
+            }
 
-        if (!formData.legal_name?.trim()) {
-            errors.legal_name = ["Legal name is required"];
-        }
+            const emailErrors = [
+                ...validateTextField(contact.email, {
+                    required: true,
+                    messages: { required: "Contact email is required" },
+                }),
+                ...validateEmail(contact.email, "Please enter a valid email address"),
+            ];
+            if (emailErrors.length) {
+                contactErrors[`primary_contacts.${index}.email`] = emailErrors;
+            }
+        });
 
-        if (!formData.hq_country?.trim()) {
-            errors.hq_country = ["Headquarters country is required"];
-        }
-
-        if (!formData.risk_tier) {
-            errors.risk_tier = ["Risk tier is required"];
-        }
-
-        if (!formData.status) {
-            errors.status = ["Status is required"];
-        }
-
+        const errors = createValidationErrors({ ...fieldErrors, ...contactErrors });
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };

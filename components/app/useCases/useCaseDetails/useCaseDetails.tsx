@@ -9,10 +9,7 @@ import {
     TrendingUp,
     DollarSign,
     Clock,
-    Shield,
     AlertTriangle,
-    CheckCircle2,
-    XCircle,
     Mail,
     FileText
 } from "lucide-react";

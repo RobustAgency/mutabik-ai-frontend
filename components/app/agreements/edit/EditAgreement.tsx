@@ -16,6 +16,12 @@ import { AlertCircle } from "lucide-react";
 import { useGetAgreementQuery, useUpdateAgreementMutation } from "@/app/lib/features/agreementsApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
 import { cn } from "@/lib/utils";
+import {
+  validateTextField,
+  validateUrl,
+  validateNumericField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
 
@@ -82,49 +88,62 @@ const EditAgreement: React.FC = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Form validation
+  // Form validation using shared utilities
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
-
-    // Required fields
-    if (!form.vendor_id?.trim()) {
-      errors.vendor_id = ["Vendor is required"];
-    }
-
-    if (!form.agreement_type) {
-      errors.agreement_type = ["Agreement type is required"];
-    }
-
-    if (!form.status) {
-      errors.status = ["Status is required"];
-    }
+    const fieldErrors: Record<string, string[]> = {
+      vendor_id: validateTextField(form.vendor_id, {
+        required: true,
+        messages: { required: "Vendor is required" },
+      }),
+      agreement_type: validateTextField(form.agreement_type, {
+        required: true,
+        messages: { required: "Agreement type is required" },
+      }),
+      status: validateTextField(form.status, {
+        required: true,
+        messages: { required: "Status is required" },
+      }),
+      doc_ref: [
+        ...validateTextField(form.doc_ref, {
+          required: true,
+          messages: { required: "Document URL is required" },
+        }),
+        ...validateUrl(form.doc_ref, "Please enter a valid URL"),
+      ],
+    };
 
     if (!effectiveFrom) {
-      errors.effective_from = ["Effective from date is required"];
+      fieldErrors.effective_from = ["Effective from date is required"];
     }
-
     if (!effectiveTo) {
-      errors.effective_to = ["Effective to date is required"];
+      fieldErrors.effective_to = ["Effective to date is required"];
+    }
+    if (effectiveFrom && effectiveTo && effectiveFrom >= effectiveTo) {
+      fieldErrors.effective_to = [
+        ...(fieldErrors.effective_to ?? []),
+        "Effective to date must be after effective from date",
+      ];
     }
 
-    if (!form.doc_ref?.trim()) {
-      errors.doc_ref = ["Document URL is required"];
-    } else {
-      // Basic URL validation
-      try {
-        new URL(form.doc_ref);
-      } catch {
-        errors.doc_ref = ["Please enter a valid URL"];
+    // SLA numeric validations when applicable
+    const slaNumericFields: Array<[keyof typeof form, string, number | undefined]> = [
+      ["availability_target_pct", "Availability target must be between 0 and 100", form.availability_target_pct ? Number(form.availability_target_pct) : undefined],
+      ["latency_p95_ms", "Latency p95 must be >= 0", form.latency_p95_ms ? Number(form.latency_p95_ms) : undefined],
+    ];
+    slaNumericFields.forEach(([fieldKey, message, value]) => {
+      if (value !== undefined && !Number.isNaN(value)) {
+        const numericErrors = validateNumericField(value, {
+          min: fieldKey === "latency_p95_ms" ? 0 : 0,
+          max: fieldKey === "availability_target_pct" ? 100 : undefined,
+          messages: { min: message, max: message },
+        });
+        if (numericErrors.length) {
+          fieldErrors[fieldKey] = numericErrors;
+        }
       }
-    }
+    });
 
-    // Validate dates
-    if (effectiveFrom && effectiveTo) {
-      if (effectiveFrom >= effectiveTo) {
-        errors.effective_to = ["Effective to date must be after effective from date"];
-      }
-    }
-
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

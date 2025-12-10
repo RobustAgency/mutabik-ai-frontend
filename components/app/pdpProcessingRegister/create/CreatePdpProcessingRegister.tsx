@@ -8,6 +8,11 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreatePdpProcessingRegisterMutation, CreatePdpProcessingRegisterData } from "@/app/lib/features/pdpProcessingRegisterApi";
 import PdpProcessingRegisterForm from "./PdpProcessingRegisterForm";
+import {
+  validateTextField,
+  validateArrayField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreatePdpProcessingRegister: React.FC = () => {
   const router = useRouter();
@@ -33,17 +38,42 @@ const CreatePdpProcessingRegister: React.FC = () => {
   const [createRegister, { isLoading }] = useCreatePdpProcessingRegisterMutation();
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      purpose: validateTextField(formData.purpose, {
+        required: true,
+        messages: { required: "Purpose is required" },
+      }),
+      controller_role: validateTextField(formData.controller_role, {
+        required: true,
+        messages: { required: "Controller role is required" },
+      }),
+      data_subject_categories: validateArrayField(formData.data_subject_categories, {
+        required: true,
+        messages: { required: "At least one data subject category is required" },
+      }),
+      personal_data_categories: validateArrayField(formData.personal_data_categories, {
+        required: true,
+        messages: { required: "At least one personal data category is required" },
+      }),
+      lawful_basis: validateTextField(formData.lawful_basis, {
+        required: true,
+        messages: { required: "Lawful basis is required" },
+      }),
+      owner_team: validateTextField(formData.owner_team, {
+        required: true,
+        messages: { required: "Owner team is required" },
+      }),
+      effective_from: validateTextField(formData.effective_from, {
+        required: true,
+        messages: { required: "Effective from date is required" },
+      }),
+      status: validateTextField(formData.status, {
+        required: true,
+        messages: { required: "Status is required" },
+      }),
+    };
 
-    if (!formData.purpose?.trim()) errors.purpose = ["Purpose is required"];
-    if (!formData.controller_role?.trim()) errors.controller_role = ["Controller role is required"];
-    if (!formData.data_subject_categories || formData.data_subject_categories.length === 0) errors.data_subject_categories = ["At least one data subject category is required"];
-    if (!formData.personal_data_categories || formData.personal_data_categories.length === 0) errors.personal_data_categories = ["At least one personal data category is required"];
-    if (!formData.lawful_basis?.trim()) errors.lawful_basis = ["Lawful basis is required"];
-    if (!formData.owner_team?.trim()) errors.owner_team = ["Owner team is required"];
-    if (!formData.effective_from?.trim()) errors.effective_from = ["Effective from date is required"];
-    if (!formData.status?.trim()) errors.status = ["Status is required"];
-
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

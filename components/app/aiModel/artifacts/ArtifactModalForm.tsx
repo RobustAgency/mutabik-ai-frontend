@@ -21,6 +21,12 @@ import { useAiModelVersions } from "@/hooks/app/useAiModelVersions";
 import AiModelVersionModalForm from "../versions/AiModelVersionModalForm";
 import { artifactTypeOptions as artifactTypeOptionsList } from "./constants/artifactConstants";
 import { checksumAlgorithmOptions } from "./constants/artifactConstants";
+import {
+    validateTextField,
+    validateNumericField,
+    validateUrl,
+    createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface ArtifactModalFormProps {
     onSuccess?: (artifact: any) => void;
@@ -57,54 +63,65 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
     const validateForm = (): boolean => {
-        const errors: Record<string, string[]> = {};
+        const fieldErrors: Record<string, string[]> = {
+            ai_model_version_id: validateTextField(formData.ai_model_version_id, {
+                required: true,
+                messages: { required: "Version is required" },
+            }),
+            name: validateTextField(formData.name, {
+                required: true,
+                maxLength: 255,
+                messages: {
+                    required: "Name is required",
+                    maxLength: "Name must be 255 characters or less",
+                },
+            }),
+            uri: [
+                ...validateTextField(formData.uri, {
+                    required: true,
+                    maxLength: 2048,
+                    messages: {
+                        required: "URI is required",
+                        maxLength: "URI must be 2048 characters or less",
+                    },
+                }),
+                ...validateUrl(formData.uri, "Please enter a valid URL/URI"),
+            ],
+            artifact_type: validateTextField(formData.artifact_type, {
+                required: true,
+                messages: { required: "Artifact type is required" },
+            }),
+            notes: validateTextField(formData.notes, {
+                maxLength: 1000,
+                messages: { maxLength: "Notes must be 1000 characters or less" },
+            }),
+        };
 
-        if (!formData.ai_model_version_id) {
-            errors.ai_model_version_id = ["Version is required"];
-        }
-
-        if (!formData.name) {
-            errors.name = ["Name is required"];
-        } else if (formData.name.length > 255) {
-            errors.name = ["Name must be 255 characters or less"];
-        }
-
-        // URI is required for modal form (doesn't support file upload)
-        if (!formData.uri) {
-            errors.uri = ["URI is required"];
-        } else {
-            try {
-                new URL(formData.uri);
-            } catch {
-                errors.uri = ["Please enter a valid URL/URI"];
+        if (formData.artifact_type === "other") {
+            const customErrors = validateTextField(formData.custom_artifact_type, {
+                required: true,
+                maxLength: 255,
+                messages: {
+                    required: "Custom artifact type is required",
+                    maxLength: "Custom artifact type must be 255 characters or less",
+                },
+            });
+            if (customErrors.length) {
+                fieldErrors.custom_artifact_type = customErrors;
             }
-            if (formData.uri.length > 2048) {
-                errors.uri = ["URI must be 2048 characters or less"];
-            }
         }
 
-        // Size bytes validation (nullable, but if provided must be >= 1)
         if (formData.size_bytes) {
-            const size = parseInt(formData.size_bytes, 10);
-            if (isNaN(size) || size < 1) {
-                errors.size_bytes = ["Size must be an integer greater than or equal to 1"];
+            const numericErrors = validateNumericField(Number(formData.size_bytes), {
+                min: 1,
+                messages: { min: "Size must be an integer greater than or equal to 1" },
+            });
+            if (numericErrors.length) {
+                fieldErrors.size_bytes = numericErrors;
             }
         }
 
-        if (!formData.artifact_type) {
-            errors.artifact_type = ["Artifact type is required"];
-        } else if (formData.artifact_type === "other") {
-            if (!formData.custom_artifact_type) {
-                errors.custom_artifact_type = ["Custom artifact type is required"];
-            } else if (formData.custom_artifact_type.length > 255) {
-                errors.custom_artifact_type = ["Custom artifact type must be 255 characters or less"];
-            }
-        }
-
-        if (formData.notes && formData.notes.length > 1000) {
-            errors.notes = ["Notes must be 1000 characters or less"];
-        }
-
+        const errors = createValidationErrors(fieldErrors);
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -433,4 +450,5 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
 };
 
 export default ArtifactModalForm;
+
 

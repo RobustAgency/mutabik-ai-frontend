@@ -1,8 +1,7 @@
-import { createApi, BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
-import { apiClient } from "@/lib/api";
-import { AxiosRequestConfig, AxiosError } from "axios";
+import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 
 // Filter types for Use Cases
 export interface UseCaseFilters {
@@ -17,50 +16,6 @@ export interface UseCaseFilters {
   status?: string; // enum: UseCase\Status
   per_page?: number; // min:1, max:100
 }
-
-// Custom base query using existing Axios client
-const axiosBaseQuery =
-  (): BaseQueryFn<
-    {
-      url: string;
-      method?: AxiosRequestConfig["method"];
-      data?: AxiosRequestConfig["data"];
-      params?: AxiosRequestConfig["params"];
-    },
-    unknown,
-    unknown
-  > =>
-  async ({ url, method = "GET", data, params }) => {
-    try {
-      const result = await apiClient({
-        url,
-        method,
-        data,
-        params,
-      });
-
-      return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError as AxiosError<{
-        data?: unknown;
-        message?: string;
-        error?: boolean;
-        errors?: Record<string, string[]>;
-      }>;
-
-      const error = {
-        status: err.response?.status || 500,
-        data: err.response?.data || {
-          message: err.message || "An error occurred",
-          error: true,
-        },
-      };
-
-      return {
-        error,
-      };
-    }
-  };
 
 export const useCasesApi = createApi({
   reducerPath: "useCasesApi",
@@ -142,9 +97,10 @@ export const useCasesApi = createApi({
         } catch (error: any) {
           // Don't show toast here - let component handle validation errors
           // Only show toast for unexpected errors
-          if (!error?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
-              error?.error?.data?.message || "Failed to create use case";
+              mutationError?.error?.data?.message || "Failed to create use case";
             toast.error(errorMessage);
           }
         }
@@ -169,9 +125,10 @@ export const useCasesApi = createApi({
           await queryFulfilled;
           toast.success("Use case updated successfully");
         } catch (error: any) {
-          if (!error?.error?.data?.errors) {
+          if (!hasValidationErrors(error)) {
+            const mutationError = error as MutationError;
             const errorMessage =
-              error?.error?.data?.message || "Failed to update use case";
+              mutationError?.error?.data?.message || "Failed to update use case";
             toast.error(errorMessage);
           }
         }
@@ -192,8 +149,9 @@ export const useCasesApi = createApi({
           await queryFulfilled;
           toast.success("Use case deleted successfully");
         } catch (error: any) {
+          const mutationError = error as MutationError;
           const errorMessage =
-            error?.error?.data?.message || "Failed to delete use case";
+            mutationError?.error?.data?.message || "Failed to delete use case";
           toast.error(errorMessage);
         }
       },

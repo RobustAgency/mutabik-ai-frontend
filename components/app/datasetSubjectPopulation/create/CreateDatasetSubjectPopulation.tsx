@@ -8,6 +8,11 @@ import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCreateDatasetSubjectPopulationMutation, CreateDatasetSubjectPopulationData } from "@/app/lib/features/datasetSubjectPopulationApi";
 import DatasetSubjectPopulationForm from "./DatasetSubjectPopulationForm";
+import {
+  validateTextField,
+  validateNumericField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 const CreateDatasetSubjectPopulation = () => {
   const router = useRouter();
@@ -26,14 +31,34 @@ const CreateDatasetSubjectPopulation = () => {
   const [formData, setFormData] = useState<CreateDatasetSubjectPopulationData>(initialFormData);
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      dataset_id: validateTextField(formData.dataset_id, {
+        required: true,
+        messages: { required: "Dataset is required" },
+      }),
+      subject_realm: validateTextField(formData.subject_realm, {
+        required: true,
+        messages: { required: "Subject realm is required" },
+      }),
+      jurisdiction: validateTextField(formData.jurisdiction, {
+        required: true,
+        messages: { required: "Jurisdiction is required" },
+      }),
+      as_of: validateTextField(formData.as_of, {
+        required: true,
+        messages: { required: "As of date is required" },
+      }),
+    };
 
-    if (!formData.dataset_id?.trim()) errors.dataset_id = ["Dataset is required"];
-    if (!formData.subject_realm?.trim()) errors.subject_realm = ["Subject realm is required"];
-    if (!formData.jurisdiction?.trim()) errors.jurisdiction = ["Jurisdiction is required"];
-    if (formData.subjects_total < 0) errors.subjects_total = ["Total subjects must be non-negative"];
-    if (!formData.as_of?.trim()) errors.as_of = ["As of date is required"];
+    const subjectsTotalErrors = validateNumericField(formData.subjects_total, {
+      min: 0,
+      messages: { min: "Total subjects must be non-negative" },
+    });
+    if (subjectsTotalErrors.length) {
+      fieldErrors.subjects_total = subjectsTotalErrors;
+    }
 
+    const errors = createValidationErrors(fieldErrors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };

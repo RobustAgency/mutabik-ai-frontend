@@ -12,6 +12,10 @@ import {
   useGetCorrectivePreventiveActionQuery,
   useUpdateCorrectivePreventiveActionMutation,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
+import {
+  validateTextField,
+  createValidationErrors,
+} from "@/lib/utils/validation";
 
 interface EditCAPAProps {
   capaId: string;
@@ -63,18 +67,19 @@ const EditCAPA: React.FC<EditCAPAProps> = ({ capaId }) => {
   }, [capa]);
 
   const validateForm = (): boolean => {
-    const validationErrors: Record<string, string[]> = {};
+    const fieldErrors: Record<string, string[]> = {
+      source_type: validateTextField(formData.source_type, { required: true, messages: { required: "Source type is required" } }),
+      source_id: validateTextField(formData.source_id, { required: true, messages: { required: "Source ID is required" } }),
+      title: validateTextField(formData.title, { required: true, messages: { required: "Title is required" } }),
+      capa_type: validateTextField(formData.capa_type, { required: true, messages: { required: "CAPA type is required" } }),
+      priority: validateTextField(formData.priority, { required: true, messages: { required: "Priority is required" } }),
+      owner_team: validateTextField(formData.owner_team, { required: true, messages: { required: "Owner team is required" } }),
+      due_date: validateTextField(formData.due_date, { required: true, messages: { required: "Due date is required" } }),
+      status: validateTextField(formData.status, { required: true, messages: { required: "Status is required" } }),
+      verification_result: validateTextField(formData.verification_result, { required: true, messages: { required: "Verification result is required" } }),
+    };
 
-    if (!formData.source_type?.trim()) validationErrors.source_type = ["Source type is required"];
-    if (!formData.source_id?.trim()) validationErrors.source_id = ["Source ID is required"];
-    if (!formData.title?.trim()) validationErrors.title = ["Title is required"];
-    if (!formData.capa_type?.trim()) validationErrors.capa_type = ["CAPA type is required"];
-    if (!formData.priority?.trim()) validationErrors.priority = ["Priority is required"];
-    if (!formData.owner_team?.trim()) validationErrors.owner_team = ["Owner team is required"];
-    if (!formData.due_date?.trim()) validationErrors.due_date = ["Due date is required"];
-    if (!formData.status?.trim()) validationErrors.status = ["Status is required"];
-    if (!formData.verification_result?.trim()) validationErrors.verification_result = ["Verification result is required"];
-
+    const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };

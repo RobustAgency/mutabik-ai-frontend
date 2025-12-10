@@ -183,54 +183,59 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/risk",
+    href: "/risk-compliance/ai-risk-management",
     label: "Risk & Compliance",
     icon: ShieldCheck,
     children: [
       {
-        href: "/risk/ai-risk-management",
+        href: "/risk-compliance/ai-risk-management/register",
         label: "AI Risk Management",
         icon: ClipboardList,
         children: [
           {
-            href: "/risk/ai-risk-management/register",
+            href: "/risk-compliance/ai-risk-management/register",
             label: "Risk Register",
             icon: FileSearch,
           },
           {
-            href: "/risk/ai-risk-management/treatment",
+            href: "/risk-compliance/ai-risk-management/methodologies",
+            label: "Risk Methodologies",
+            icon: BookOpen,
+          },
+          {
+            href: "/risk-compliance/ai-risk-management/treatment",
             label: "Risk Treatment Plans",
             icon: CheckCircle2,
           },
           {
-            href: "/risk/ai-risk-management/kri",
+            href: "/risk-compliance/ai-risk-management/kri",
             label: "KRI Indicators",
             icon: LineChart,
           },
         ],
       },
       {
-        href: "/risk/compliance",
+        href: "/risk-compliance/compliance",
         label: "Compliance Management",
         icon: Landmark,
         children: [
           {
-            href: "/risk/compliance/frameworks",
+            href: "/risk-compliance/compliance/frameworks",
             label: "Frameworks & Requirements",
             icon: FileCheck2,
           },
           {
-            href: "/risk/compliance/control-catalog",
+            href: "/risk-compliance/compliance/control-catalog",
             label: "Control Catalog",
             icon: FileBox,
           },
           {
-            href: "/risk/compliance/mapping",
+            href: "/risk-compliance/compliance/mapping",
             label: "Requirement–Control Mapping",
             icon: Network,
           },
           {
-            href: "/risk/compliance/evidence",
+            href: "/risk-compliance/compliance/evidence",
             label: "Compliance Evidence",
             icon: FileKey2,
           },
