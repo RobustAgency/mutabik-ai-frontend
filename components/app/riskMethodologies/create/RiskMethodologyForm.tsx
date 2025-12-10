@@ -33,21 +33,32 @@ type FormState = {
   source_created_at: string;
 };
 
-const getInitialState = (initial?: RiskMethodology): FormState => ({
-  name: initial?.name ?? "",
-  likelihood_scale: initial ? Object.values(initial.likelihood_scale)[0] ?? "" : "",
-  impact_scale: initial ? Object.values(initial.impact_scale)[0] ?? "" : "",
-  matrix_rule: initial
-    ? JSON.stringify(initial.matrix_rule, null, 2)
-    : "{\n  \"L_L\": \"Low\",\n  \"M_M\": \"Medium\",\n  \"H_H\": \"High\"\n}",
-  acceptance_thresholds: initial?.acceptance_thresholds ?? "",
-  aggregation_logic: initial?.aggregation_logic ?? "",
-  review_policy: initial?.review_policy ?? "",
-  effective_from: initial?.effective_from ?? "",
-  effective_to: initial?.effective_to ?? "",
-  owner_team: initial?.owner_team ?? "",
-  source_created_at: initial?.source_created_at ?? "",
-});
+const formatDateForInput = (value?: string | null) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+};
+
+const getInitialState = (initial?: RiskMethodology): FormState => {
+  return (
+    {
+    name: initial?.name ?? "",
+    likelihood_scale: typeof initial?.likelihood_scale === "string" ? initial?.likelihood_scale : Object.values(initial?.likelihood_scale ?? {})[0] ?? "",
+    impact_scale: typeof initial?.impact_scale === "string" ? initial?.impact_scale : Object.values(initial?.impact_scale ?? {})[0] ?? "",
+    matrix_rule: initial
+      ? JSON.stringify(initial.matrix_rule, null, 2)
+      : "{\n  \"L_L\": \"Low\",\n  \"M_M\": \"Medium\",\n  \"H_H\": \"High\"\n}",
+    acceptance_thresholds: initial?.acceptance_thresholds ?? "",
+    aggregation_logic: initial?.aggregation_logic ?? "",
+    review_policy: initial?.review_policy ?? "",
+    effective_from: formatDateForInput(initial?.effective_from),
+    effective_to: formatDateForInput(initial?.effective_to),
+    owner_team: initial?.owner_team ?? "",
+    source_created_at: formatDateForInput(initial?.source_created_at),
+  }
+  );
+};
 
 interface RiskMethodologyFormProps {
   initialData?: RiskMethodology;
@@ -77,6 +88,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
   }, [initialData]);
 
   const SCALE_OPTIONS = ["rare", "unlikely", "possible", "likely", "almost_certain"];
+  const IMPACT_SCALE_OPTIONS = ["insignificant", "minor", "moderate", "major", "severe"];
 
   const steps = [
     {
@@ -95,6 +107,9 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
     const fieldErrors: Record<string, string[]> = {};
 
     if (step === 1) {
+      const effectiveFromDate = formState.effective_from ? new Date(formState.effective_from) : null;
+      const effectiveToDate = formState.effective_to ? new Date(formState.effective_to) : null;
+
       fieldErrors.name = validateTextField(formState.name, {
         required: true,
         maxLength: 255,
@@ -116,6 +131,11 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
         required: true,
         messages: { required: "Source created date is required" },
       });
+
+      // Cross-field validation: effective_to must be >= effective_from when both are provided
+      if (effectiveFromDate && effectiveToDate && effectiveToDate < effectiveFromDate) {
+        fieldErrors.effective_to = ["Effective to must be on or after effective from"];
+      }
     }
 
     if (step === 2) {
@@ -412,7 +432,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   <SelectValue placeholder="Select impact (e.g., high)" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SCALE_OPTIONS.map((item) => (
+                  {IMPACT_SCALE_OPTIONS.map((item) => (
                     <SelectItem key={item} value={item}>
                       {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                     </SelectItem>

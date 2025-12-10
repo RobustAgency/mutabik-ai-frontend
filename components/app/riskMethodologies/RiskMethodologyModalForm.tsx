@@ -21,6 +21,7 @@ interface RiskMethodologyModalFormProps {
 }
 
 const SCALE_OPTIONS = ["rare", "unlikely", "possible", "likely", "almost_certain"];
+const IMPACT_SCALE_OPTIONS = ["insignificant", "minor", "moderate", "major", "severe"];
 
 const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
   onSuccess,
@@ -32,7 +33,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
   const [formData, setFormData] = useState({
     name: "",
     likelihood_scale: "likely",
-    impact_scale: "high",
+    impact_scale: "major",
     matrix_rule: "{\n  \"L_L\": \"Low\",\n  \"M_M\": \"Medium\",\n  \"H_H\": \"High\"\n}",
     acceptance_thresholds: "",
     aggregation_logic: "",
@@ -52,6 +53,9 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
   };
 
   const validateForm = (): boolean => {
+    const effectiveFromDate = formData.effective_from ? new Date(formData.effective_from) : null;
+    const effectiveToDate = formData.effective_to ? new Date(formData.effective_to) : null;
+
     const fieldErrors: Record<string, string[]> = {
       name: validateTextField(formData.name, {
         required: true,
@@ -77,6 +81,10 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
         ? []
         : ["Matrix rule must be valid JSON"],
     };
+
+    if (effectiveFromDate && effectiveToDate && effectiveToDate < effectiveFromDate) {
+      fieldErrors.effective_to = ["Effective to must be on or after effective from"];
+    }
 
     const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
@@ -176,7 +184,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
               <SelectValue placeholder="Select impact scale" />
             </SelectTrigger>
             <SelectContent>
-              {SCALE_OPTIONS.map((item) => (
+              {IMPACT_SCALE_OPTIONS.map((item) => (
                 <SelectItem key={item} value={item}>
                   {item.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </SelectItem>
