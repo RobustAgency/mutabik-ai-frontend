@@ -1,3 +1,4 @@
+
 // lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import projectsReducer from "./features/projectsSlice";
@@ -38,6 +39,7 @@ import { requirementsApi } from "./features/requirementsApi";
 import { controlsApi } from "./features/controlsApi";
 import { requirementControlsApi } from "./features/requirementControlsApi";
 import { usersApi } from "./features/usersApi";
+import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -83,6 +85,7 @@ export const makeStore = () => {
       [controlsApi.reducerPath]: controlsApi.reducer,
       [requirementControlsApi.reducerPath]: requirementControlsApi.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
+      [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -123,7 +126,8 @@ export const makeStore = () => {
         requirementsApi.middleware,
         controlsApi.middleware,
         requirementControlsApi.middleware,
-        usersApi.middleware
+        usersApi.middleware,
+        complianceEvidenceApi.middleware
       ),
   });
 };
