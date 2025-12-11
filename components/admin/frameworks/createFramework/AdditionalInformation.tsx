@@ -208,7 +208,8 @@ export default function AdditionalInformation({
                         <Label className="text-[#171717] text-sm font-medium" htmlFor="binding_level">
                             Binding Level
                         </Label>
-                        <Select
+                        <Select 
+                            key={`binding-level-${bindingLevel || "none"}`}
                             value={bindingLevel || ""}
                             onValueChange={(value) => handleBindingLevelChange(value as BindingLevel)}
                         >
@@ -235,6 +236,7 @@ export default function AdditionalInformation({
                             Sector Applicability
                         </Label>
                         <CustomMultiSelect
+                            key={`sector-applicability-${sectorApplicability.join(",")}`}
                             options={sectorApplicabilityOptions}
                             value={sectorApplicability}
                             onChange={handleSectorApplicabilityChange}
@@ -247,6 +249,7 @@ export default function AdditionalInformation({
                             Risk Class Coverage
                         </Label>
                         <CustomMultiSelect
+                            key={`risk-class-coverage-${riskClassCoverage.join(",")}`}
                             options={riskClassCoverageOptions}
                             value={riskClassCoverage}
                             onChange={handleRiskClassCoverageChange}
@@ -263,6 +266,7 @@ export default function AdditionalInformation({
                             Certification / Attestation
                         </Label>
                         <CustomMultiSelect
+                            key={`certification-attestation-${certificationAttestation.join(",")}`}
                             options={certificationAttestationOptions}
                             value={certificationAttestation}
                             onChange={handleCertificationAttestationChange}
@@ -275,6 +279,7 @@ export default function AdditionalInformation({
                             Assessment Mode
                         </Label>
                         <CustomMultiSelect
+                            key={`assessment-mode-${assessmentMode.join(",")}`}
                             options={assessmentModeOptions}
                             value={assessmentMode}
                             onChange={handleAssessmentModeChange}

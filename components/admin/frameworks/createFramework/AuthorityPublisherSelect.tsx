@@ -104,6 +104,7 @@ export default function AuthorityPublisherSelect({
 }: AuthorityPublisherSelectProps) {
     return (
         <Select
+            key={`authority-publisher-select-${value || "none"}`}
             value={value || ""}
             onValueChange={(selectedValue) => onValueChange(selectedValue as AuthorityPublisher)}
         >
@@ -125,7 +126,7 @@ export default function AuthorityPublisherSelect({
                         {/* Group Options */}
                         {group.options.map((option) => (
                             <SelectItem 
-                                key={option.value} 
+                                key={`authority-publisher-option-${option.value}`} 
                                 value={option.value}
                                 className="pl-6" // Indent to show hierarchy
                             >

@@ -228,6 +228,7 @@ const ControlForm = ({ controlId, mode = "create" }: ControlFormProps) => {
               Testing Method <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`testing-method-${formData.testing_method || "none"}`}
               value={formData.testing_method}
               onValueChange={(value) => handleInputChange("testing_method", value as ControlTestingMethodEnum)}
               disabled={isLoading}
@@ -252,6 +253,7 @@ const ControlForm = ({ controlId, mode = "create" }: ControlFormProps) => {
               Testing Frequency <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`testing-frequency-${formData.testing_frequency || "none"}`}
               value={formData.testing_frequency}
               onValueChange={(value) =>
                 handleInputChange("testing_frequency", value as ControlTestingFrequencyEnum)
@@ -304,6 +306,7 @@ const ControlForm = ({ controlId, mode = "create" }: ControlFormProps) => {
               Status <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`status-${formData.status || "none"}`}
               value={formData.status}
               onValueChange={(value) => handleInputChange("status", value as ControlStatusEnum)}
               disabled={isLoading}

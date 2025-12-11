@@ -35,6 +35,7 @@ export default function SupersedesFields({
           Supersedes Requirement
         </Label>
         <Select
+          key={`supersedes-${formData.supersedes_req_id || "none"}`}
           value={formData.supersedes_req_id ? String(formData.supersedes_req_id) : ""}
           onValueChange={(value) =>
             onInputChange("supersedes_req_id", value ? Number(value) : undefined)
@@ -69,6 +70,7 @@ export default function SupersedesFields({
           Superseded By Requirement
         </Label>
         <Select
+          key={`supersededby-${formData.superseded_by_req_id || "none"}`}
           value={
             formData.superseded_by_req_id
               ? String(formData.superseded_by_req_id)

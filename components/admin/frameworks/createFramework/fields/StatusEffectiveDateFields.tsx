@@ -32,7 +32,7 @@ export default function StatusEffectiveDateFields({
           Status <span className="text-red-500">*</span>
         </Label>
         <Select
-          key={`status-${formData.status}`}
+          key={`status-${formData.status || "none"}`}
           value={formData.status}
           onValueChange={(value) =>
             onInputChange("status", value as CreateFrameworkRequest["status"])

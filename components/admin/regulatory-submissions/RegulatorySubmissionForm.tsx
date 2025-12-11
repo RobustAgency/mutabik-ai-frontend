@@ -152,12 +152,22 @@ export default function RegulatorySubmissionForm({
       })) || [];
 
     const submitted = regulatorySubmission?.submitted_by_user || regulatorySubmission?.submittedBy;
+    const submittedId = regulatorySubmission?.submitted_by;
     if (submitted) {
       const exists = base.some((opt) => opt.value === submitted.id.toString());
       if (!exists) {
         base.unshift({
           value: submitted.id.toString(),
           label: `${submitted.name} (${submitted.email})`,
+        });
+      }
+    } else if (submittedId) {
+      const idStr = submittedId.toString();
+      const exists = base.some((opt) => opt.value === idStr);
+      if (!exists) {
+        base.unshift({
+          value: idStr,
+          label: `User #${idStr}`,
         });
       }
     }
@@ -354,13 +364,6 @@ export default function RegulatorySubmissionForm({
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs
-        items={[
-          { label: "Compliance Library", href: "/admin/compliance-library/frameworks" },
-          { label: "Regulatory Submissions", href: "/admin/compliance-library/regulatory-submissions" },
-          { label: mode === "create" ? "Create" : "Edit" },
-        ]}
-      />
       <div className="mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">
           {mode === "create" ? "Create Regulatory Submission" : "Edit Regulatory Submission"}
@@ -610,6 +613,7 @@ export default function RegulatorySubmissionForm({
                 Submitted By <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`submitted-by-${formData.submitted_by || "none"}-${userOptions.length}`}
                 value={formData.submitted_by ? String(formData.submitted_by) : ""}
                 onValueChange={(value) => handleInputChange("submitted_by", Number(value))}
                 disabled={isLoading || isLoadingUsers}

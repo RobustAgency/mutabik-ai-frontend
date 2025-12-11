@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { useRegulatorySubmissions, useRegulatorySubmissionMutations } from "@/hooks/admin/useRegulatorySubmissions";
 import { RegulatorySubmission, RegulatorySubmissionFilters, RegulatorySubmissionStatusEnum, RegulatorySubmissionTypeEnum } from "@/interfaces/RegulatorySubmission";
 import { ColumnDef } from "@tanstack/react-table";
@@ -167,7 +166,6 @@ export default function RegulatorySubmissionsList() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-        <Breadcrumbs items={breadcrumbItems} />
         <Alert variant="destructive" className="mt-6">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -179,7 +177,6 @@ export default function RegulatorySubmissionsList() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-center justify-between mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">Regulatory Submissions</h1>
         <Link href="/admin/compliance-library/regulatory-submissions/create">

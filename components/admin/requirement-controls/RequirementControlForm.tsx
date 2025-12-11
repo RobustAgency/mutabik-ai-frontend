@@ -22,7 +22,6 @@ import { createValidationErrors, validateTextField } from "@/lib/utils/validatio
 import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import Spinner from "@/components/ui/spinner";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { formatDateForInput } from "@/lib/helpers/date";
 
 interface RequirementControlFormProps {
@@ -83,6 +82,8 @@ export default function RequirementControlForm({
       })) || [];
 
     const rcRequirement = requirementControl?.requirement;
+    // Fallback: if the requirement object isn't embedded, still show the current selection
+    const rcRequirementId = requirementControl?.requirement_id;
     if (rcRequirement) {
       const exists = base.some((opt) => opt.value === rcRequirement.id.toString());
       if (!exists) {
@@ -91,6 +92,14 @@ export default function RequirementControlForm({
           label: `${rcRequirement.reference}${
             rcRequirement.requirement_text ? ` - ${rcRequirement.requirement_text.substring(0, 50)}` : ""
           }`,
+        });
+      }
+    } else if (rcRequirementId) {
+      const exists = base.some((opt) => opt.value === rcRequirementId.toString());
+      if (!exists) {
+        base.unshift({
+          value: rcRequirementId.toString(),
+          label: `Requirement #${rcRequirementId}`,
         });
       }
     }
@@ -106,12 +115,21 @@ export default function RequirementControlForm({
       })) || [];
 
     const rcControl = requirementControl?.control;
+    const rcControlId = requirementControl?.control_id;
     if (rcControl) {
       const exists = base.some((opt) => opt.value === rcControl.id.toString());
       if (!exists) {
         base.unshift({
           value: rcControl.id.toString(),
           label: `${rcControl.reference} - ${rcControl.name}`,
+        });
+      }
+    } else if (rcControlId) {
+      const exists = base.some((opt) => opt.value === rcControlId.toString());
+      if (!exists) {
+        base.unshift({
+          value: rcControlId.toString(),
+          label: `Control #${rcControlId}`,
         });
       }
     }
@@ -127,12 +145,22 @@ export default function RequirementControlForm({
       })) || [];
 
     const rcUser = requirementControl?.user;
+    const rcUserId = requirementControl?.reviewed_by;
     if (rcUser) {
       const exists = base.some((opt) => opt.value === rcUser.id.toString());
       if (!exists) {
         base.unshift({
           value: rcUser.id.toString(),
           label: `${rcUser.name} (${rcUser.email})`,
+        });
+      }
+    } else if (rcUserId) {
+      const idStr = rcUserId.toString();
+      const exists = base.some((opt) => opt.value === idStr);
+      if (!exists) {
+        base.unshift({
+          value: idStr,
+          label: `User #${idStr}`,
         });
       }
     }
@@ -267,12 +295,6 @@ export default function RequirementControlForm({
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs
-        items={[
-          { label: "Requirement Controls", href: "/admin/compliance-library/requirement-controls" },
-          { label: mode === "create" ? "Create" : "Edit" },
-        ]}
-      />
       <div className="mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">
           {mode === "create" ? "Create Requirement Control" : "Edit Requirement Control"}
@@ -289,6 +311,7 @@ export default function RequirementControlForm({
                 Requirement <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`requirement-${formData.requirement_id || "none"}`}
                 value={formData.requirement_id ? String(formData.requirement_id) : ""}
                 onValueChange={(value) => handleInputChange("requirement_id", Number(value))}
                 disabled={isLoading}
@@ -320,6 +343,7 @@ export default function RequirementControlForm({
                 Control <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`control-${formData.control_id || "none"}`}
                 value={formData.control_id ? String(formData.control_id) : ""}
                 onValueChange={(value) => handleInputChange("control_id", Number(value))}
                 disabled={isLoading}
@@ -472,6 +496,7 @@ export default function RequirementControlForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Reviewed By</Label>
               <Select
+                key={`reviewed-by-${formData.reviewed_by || "none"}-${userOptions.length}`}
                 value={formData.reviewed_by ? String(formData.reviewed_by) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("reviewed_by", value === "null" ? null : Number(value))
