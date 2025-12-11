@@ -1,114 +1,211 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
-import Description from "@/components/custom/Description";
-import { CustomMultiSelect } from "@/components/custom/CustomMultiSelect";
-import { useRequirement, useRequirementMutations } from "@/hooks/admin/useRequirements";
+import { useRequirement, useRequirementMutations, useRequirements } from "@/hooks/admin/useRequirements";
 import { useFrameworks } from "@/hooks/admin/useFrameworks";
-import { Framework } from "@/interfaces/Framework";
+import {
+    CreateRequirementRequest,
+    Requirement,
+    RequirementCategory,
+    RequirementPriority,
+} from "@/interfaces/Requirement";
 import { toast } from "react-toastify";
+import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
+import FormActions from "@/components/admin/shared/FormActions";
+import ReferenceFrameworkFields from "./fields/ReferenceFrameworkFields";
+import CategoryPriorityFields from "./fields/CategoryPriorityFields";
+import ApplicabilityField from "./fields/ApplicabilityField";
+import EffectiveDatesFields from "./fields/EffectiveDatesFields";
+import SupersedesFields from "./fields/SupersedesFields";
+import TagsField from "./fields/TagsField";
+import RequirementTextField from "./fields/RequirementTextField";
 
 interface RequirementFormProps {
     requirementId?: string;
     mode: "create" | "edit";
+    serverErrors?: Record<string, string[]>;
+    onSubmit?: (payload: CreateRequirementRequest) => Promise<void>;
 }
 
-export default function RequirementForm({ requirementId, mode }: RequirementFormProps) {
+const CATEGORY_OPTIONS: { value: RequirementCategory; label: string }[] = [
+    { value: "safety", label: "Safety" },
+    { value: "transparency", label: "Transparency" },
+    { value: "data_oversight", label: "Data Oversight" },
+    { value: "security", label: "Security" },
+    { value: "governance", label: "Governance" },
+    { value: "risk", label: "Risk" },
+    { value: "testing", label: "Testing" },
+    { value: "documentation", label: "Documentation" },
+    { value: "privacy", label: "Privacy" },
+    { value: "human_rights", label: "Human Rights" },
+    { value: "other", label: "Other" },
+];
+
+const PRIORITY_OPTIONS: { value: RequirementPriority; label: string }[] = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+];
+
+export default function RequirementForm({ requirementId, mode, serverErrors, onSubmit }: RequirementFormProps) {
     const router = useRouter();
-    const { createRequirement, updateRequirement } = useRequirementMutations();
-    const { requirement, loading: loadingRequirement } = useRequirement(requirementId || '');
+    const { requirement, loading: loadingRequirement } = useRequirement(requirementId || "");
     const { frameworks } = useFrameworks({ page: 1, per_page: 100 });
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        name: "",
-        code: "",
-        description: "",
-        frameworks: [] as string[],
+    const { requirements: requirementList } = useRequirements({ per_page: 100 });
+    const { createRequirement, updateRequirement, creating, updating } = useRequirementMutations();
+
+    const [formData, setFormData] = useState<CreateRequirementRequest>({
+        reference: "",
+        requirement_text: "",
+        category: "safety",
+        applicability: "",
+        effective_from: "",
+        effective_to: "",
+        supersedes_req_id: undefined,
+        superseded_by_req_id: undefined,
+        priority: "medium",
+        tags: [],
+        framework_id: 0,
     });
+    const [tagsInput, setTagsInput] = useState<string>("");
+    const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
-    const breadcrumbItems = [
-        { label: 'Requirements', href: '/admin/compliance-library/requirements' },
-        { label: mode === 'create' ? 'Create Requirement' : 'Edit Requirement' },
-    ];
+    const frameworkOptions = useMemo(
+        () =>
+            frameworks?.map((fw) => ({
+                value: fw.id.toString(),
+                label: fw.name || fw.id.toString(),
+            })) || [],
+        [frameworks]
+    );
 
-    // Framework options for MultiSelect - showing code instead of name
-    const frameworkOptions = frameworks?.map((framework: Framework) => ({
-        value: framework.id.toString(),
-        label: framework.code,
-    })) || [];
+    const requirementOptions = useMemo(
+        () =>
+            (requirementList || [])
+                .filter((req: Requirement) => !requirementId || String(req.id) !== String(requirementId))
+                .map((req: Requirement) => ({
+                    value: req.id.toString(),
+                    label: req.reference || `Requirement #${req.id}`,
+                })),
+        [requirementList, requirementId]
+    );
 
-    // Load requirement data in edit mode
     useEffect(() => {
         if (mode === "edit" && requirement) {
             setFormData({
-                name: requirement.name || "",
-                code: requirement.code || "",
-                description: requirement.description || "",
-                frameworks: requirement.frameworks?.map((f: Framework) => f.id.toString()) || [],
+                reference: requirement.reference || "",
+                requirement_text: requirement.requirement_text || "",
+                category: requirement.category,
+                applicability: requirement.applicability || "",
+                effective_from: requirement.effective_from || "",
+                effective_to: requirement.effective_to || "",
+                supersedes_req_id: requirement.supersedes_req_id ?? undefined,
+                superseded_by_req_id: requirement.superseded_by_req_id ?? undefined,
+                priority: requirement.priority,
+                tags: requirement.tags || [],
+                framework_id: requirement.framework_id,
             });
+            setTagsInput((requirement.tags || []).join(", "));
         }
     }, [mode, requirement]);
 
-    const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value,
-        }));
+    const handleInputChange = useCallback(<K extends keyof CreateRequirementRequest>(
+        field: K,
+        value: CreateRequirementRequest[K]
+    ) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+    }, []);
+
+    const validateForm = (): boolean => {
+        const errors: Record<string, string[]> = {};
+
+        if (!formData.reference?.trim()) {
+            errors.reference = ["Reference is required"];
+        } else if (formData.reference.length > 255) {
+            errors.reference = ["Reference must be at most 255 characters"];
+        }
+
+        if (!formData.category) {
+            errors.category = ["Category is required"];
+        }
+
+        if (!formData.applicability?.trim()) {
+            errors.applicability = ["Applicability is required"];
+        } else if (formData.applicability.length > 255) {
+            errors.applicability = ["Applicability must be at most 255 characters"];
+        }
+
+        if (!formData.priority) {
+            errors.priority = ["Priority is required"];
+        }
+
+        if (!formData.framework_id || Number(formData.framework_id) === 0) {
+            errors.framework_id = ["Framework is required"];
+        }
+
+        if (formData.effective_from && isNaN(Date.parse(formData.effective_from))) {
+            errors.effective_from = ["Effective from must be a valid date"];
+        }
+        if (formData.effective_to && isNaN(Date.parse(formData.effective_to))) {
+            errors.effective_to = ["Effective to must be a valid date"];
+        }
+
+        if (tagsInput.trim()) {
+            const tagsArray = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+            const invalidTag = tagsArray.find((t) => t.length > 50);
+            if (invalidTag) {
+                errors.tags = ["Each tag must be at most 50 characters"];
+            }
+        }
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
-    const handleDescriptionChange = (content: string) => {
-        setFormData(prev => ({
-            ...prev,
-            description: content,
-        }));
-    };
-
-    const handleFrameworksChange = (selectedFrameworks: string[]) => {
-        setFormData(prev => ({
-            ...prev,
-            frameworks: selectedFrameworks,
-        }));
-    };
+    const combinedErrors = { ...validationErrors, ...(serverErrors || {}) };
+    const isLoading = creating || updating;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setValidationErrors({});
 
-        // Validation
-        if (!formData.name.trim()) {
-            toast.error("Requirement name is required");
+        if (!validateForm()) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
-        if (!formData.code.trim()) {
-            toast.error("Requirement code is required");
-            return;
-        }
+        const tags = tagsInput
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
 
-        setLoading(true);
+        const payload: CreateRequirementRequest = {
+            ...formData,
+            tags,
+            framework_id: Number(formData.framework_id),
+            supersedes_req_id: formData.supersedes_req_id ? Number(formData.supersedes_req_id) : undefined,
+            superseded_by_req_id: formData.superseded_by_req_id ? Number(formData.superseded_by_req_id) : undefined,
+        };
+
         try {
-            const submitData = {
-                name: formData.name.trim(),
-                code: formData.code.trim(),
-                description: formData.description,
-                framework_ids: formData.frameworks.map(id => parseInt(id)),
-            };
-
-            if (mode === "create") {
-                await createRequirement(submitData);
+            if (onSubmit) {
+                await onSubmit(payload);
+            } else if (mode === "create") {
+                await createRequirement(payload);
             } else if (requirementId) {
-                await updateRequirement(requirementId, submitData);
+                await updateRequirement(requirementId, payload);
             }
-        } catch (error) {
-            console.error("Error saving requirement:", error);
-            // Error handling is done in the hooks
-        } finally {
-            setLoading(false);
+        } catch (err: any) {
+            if (err?.data?.errors) {
+                setValidationErrors(err.data.errors);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+            const message = err?.data?.message || "Failed to save requirement";
+            toast.error(message);
         }
     };
 
@@ -126,107 +223,85 @@ export default function RequirementForm({ requirementId, mode }: RequirementForm
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-            {/* Breadcrumb */}
-            <Breadcrumbs items={breadcrumbItems} />
+            <Breadcrumbs items={[
+                { label: 'Requirements', href: '/admin/compliance-library/requirements' },
+                { label: mode === 'create' ? 'Create Requirement' : 'Edit Requirement' },
+            ]} />
 
-            {/* Header */}
             <div className="mt-6 mb-8">
                 <h1 className="text-3xl text-[#171717] font-bold">
                     {mode === "create" ? "Create Requirement" : "Edit Requirement"}
                 </h1>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="">
                 <div className="lg:col-span-2">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <Card className="bg-white shadow-none p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                                <div className="space-y-2 md:col-span-4">
-                                    <Label htmlFor="name" className="text-sm font-medium text-gray-900">
-                                        Title
-                                    </Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => handleInputChange("name", e.target.value)}
-                                        placeholder="Enter requirement title"
-                                        className="w-full h-12 rounded-lg border border-gray-300 px-4"
-                                        disabled={loading}
-                                    />
-                                </div>
+                        <FormErrorAlert errors={combinedErrors} />
 
-                                <div className="space-y-2 md:col-span-1">
-                                    <Label htmlFor="code" className="text-sm font-medium text-gray-900">
-                                        Code
-                                    </Label>
-                                    <Input
-                                        id="code"
-                                        type="text"
-                                        value={formData.code}
-                                        onChange={(e) => handleInputChange("code", e.target.value)}
-                                        placeholder="MRF-191"
-                                        className="w-full h-12 rounded-lg border border-gray-300 px-4"
-                                        disabled={loading}
-                                    />
-                                </div>
-                            </div>
-                            <Description
-                                value={formData.description}
-                                onChange={handleDescriptionChange}
+                        <Card className="bg-white shadow-none p-6 space-y-6">
+                            <ReferenceFrameworkFields
+                                formData={formData}
+                                errors={combinedErrors}
+                                frameworkOptions={frameworkOptions}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
+                            />
+
+                            <CategoryPriorityFields
+                                formData={formData}
+                                errors={combinedErrors}
+                                categoryOptions={CATEGORY_OPTIONS}
+                                priorityOptions={PRIORITY_OPTIONS}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
+                            />
+
+                            <ApplicabilityField
+                                formData={formData}
+                                errors={combinedErrors}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
+                            />
+
+                            <EffectiveDatesFields
+                                formData={formData}
+                                errors={combinedErrors}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
+                            />
+
+                            <SupersedesFields
+                                formData={formData}
+                                errors={combinedErrors}
+                                requirementOptions={requirementOptions}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
+                            />
+
+                            <TagsField
+                                tagsInput={tagsInput}
+                                errors={combinedErrors}
+                                isLoading={isLoading}
+                                onTagsInputChange={setTagsInput}
+                            />
+
+                            <RequirementTextField
+                                formData={formData}
+                                isLoading={isLoading}
+                                onInputChange={handleInputChange}
                             />
                         </Card>
 
-
-                        <div className="flex items-center gap-3 pt-6">
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="bg-primary text-white px-6 h-10 rounded-lg font-medium"
-                            >
-                                {loading ? (
-                                    <>
-                                        <span className="ml-2">
-                                            {mode === "create" ? "Creating..." : "Updating..."}
-                                        </span>
-                                    </>
-                                ) : (
-                                    mode === "create" ? "Create" : "Update"
-                                )}
-                            </Button>
-
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={handleCancel}
-                                disabled={loading}
-                                className="px-6 h-10 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
+                        <FormActions
+                            isLoading={isLoading}
+                            isEditing={mode === "edit"}
+                            onCancel={handleCancel}
+                            submitLabel={isLoading ? (mode === "create" ? "Creating..." : "Updating...") : (mode === "create" ? "Create" : "Update")}
+                            submitClassName="bg-primary text-white px-6 h-10 rounded-lg font-medium"
+                            cancelClassName="px-6 h-10 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        />
                     </form>
-                </div>
-
-                {/* Right Column - Associations */}
-                <div className="space-y-6">
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Associations</h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <Label className="text-sm font-medium text-gray-900 mb-2 block">
-                                    Linked Frameworks <span className="text-red-500">*</span>
-                                </Label>
-                                <CustomMultiSelect
-                                    options={frameworkOptions}
-                                    value={formData.frameworks}
-                                    onChange={handleFrameworksChange}
-                                    placeholder="Select option"
-                                />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

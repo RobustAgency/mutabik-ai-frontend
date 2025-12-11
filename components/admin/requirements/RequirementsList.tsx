@@ -9,83 +9,97 @@ import { useRequirements } from "@/hooks/admin/useRequirements";
 import { Requirement, RequirementFilters } from "@/interfaces/Requirement";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function RequirementsList() {
+    const router = useRouter();                                             
     const [filters, setFilters] = useState<RequirementFilters>({
         page: 1,
         per_page: 10,
     });
 
-    const { requirements, loading } = useRequirements(filters);
-
+    const { requirements, loading, pagination, handlePageChange, handleSearch } = useRequirements(filters);
     const breadcrumbItems = [
         { label: 'Requirements', href: '/admin/compliance-library/requirements' },
         { label: 'List' },
     ];
 
-    const handleSearch = (searchTerm: string) => {
+    const handleSearchTerm = (searchTerm: string) => {
         setFilters(prev => ({
             ...prev,
-            name: searchTerm || undefined,
+            search: searchTerm || undefined,
             page: 1,
         }));
+        handleSearch(searchTerm || "");
     };
 
-    const handlePageChange = (page: number) => {
+    const handlePage = (page: number) => {
         setFilters(prev => ({ ...prev, page }));
+        handlePageChange(page);
     };
 
     const columns: ColumnDef<Requirement>[] = useMemo(() => [
         {
-            accessorKey: "code",
-            header: "Req Code",
+            accessorKey: "reference",
+            header: "Reference",
             cell: ({ row }) => (
                 <span className="pl-4 font-medium text-gray-900">
-                    {row.getValue("code")}
+                    {row.getValue("reference")}
                 </span>
             ),
         },
         {
-            accessorKey: "name",
-            header: "Title",
+            accessorKey: "applicability",
+            header: "Applicability",
             cell: ({ row }) => (
-                <div className="max-w-[300px]">
-                    <span className="text-gray-900 line-clamp-2">
-                        {row.getValue("name")}
-                    </span>
-                </div>
-            ),
-        },
-        {
-            accessorKey: "frameworks_count",
-            header: "Frameworks",
-            cell: ({ row }) => (
-                <span className="font-medium text-gray-900">
-                    {row.getValue("frameworks_count")}
+                <span className="text-gray-900 line-clamp-2">
+                    {row.getValue("applicability")}
                 </span>
             ),
         },
         {
-            accessorKey: "controls_count",
-            header: "Controls",
-            cell: ({ row }) => (
-                <span className="font-medium text-gray-900">
-                    {row.getValue("controls_count")}
-                </span>
-            ),
+            accessorKey: "category",
+            header: "Category",
+            cell: ({ row }) => <span className="text-gray-900">{row.getValue("category")}</span>,
         },
         {
-            accessorKey: "updated_at",
-            header: "Last Updated",
+            accessorKey: "priority",
+            header: "Priority",
+            cell: ({ row }) => <span className="text-gray-900 capitalize">{row.getValue("priority")}</span>,
+        },
+        {
+            accessorKey: "framework_id",
+            header: "Framework",
+            cell: ({ row }) => <span className="text-gray-900">{row.getValue("framework_id")}</span>,
+        },
+        {
+            accessorKey: "effective_from",
+            header: "Effective From",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updated_at"));
+                const date = row.getValue("effective_from") as string;
                 return (
                     <span className="text-gray-700">
-                        {date.toLocaleDateString('en-US', {
+                        {date ? new Date(date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: '2-digit',
                             day: '2-digit'
-                        })}
+                        }) : '-'}
+                    </span>
+                );
+            },
+        },
+        {
+            accessorKey: "effective_to",
+            header: "Effective To",
+            cell: ({ row }) => {
+                const date = row.getValue("effective_to") as string;
+                return (
+                    <span className="text-gray-700">
+                        {date ? new Date(date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        }) : '-'}
                     </span>
                 );
             },
@@ -126,19 +140,17 @@ export default function RequirementsList() {
             <Card className="bg-white w-full rounded-xl">
                 <DataTable
                     columns={columns}
-                    data={requirements?.data || []}
-                    searchKey="name"
+                    data={requirements || []}
+                    searchKey="reference"
                     searchPlaceholder="Search requirements..."
-                    onSearch={handleSearch}
+                    onSearch={handleSearchTerm}
                     loading={loading}
                     serverSide={true}
-                    pagination={{
-                        page: requirements?.current_page || 1,
-                        limit: requirements?.per_page || 10,
-                        totalPages: requirements?.last_page || 1,
-                        total: requirements?.total || 0,
+                    pagination={pagination}
+                    onPageChange={handlePage}
+                    onRowClick={(row) => {
+                        router.push(`/admin/compliance-library/requirements/${row.id}`);
                     }}
-                    onPageChange={handlePageChange}
                 />
             </Card>
         </div>

@@ -1,3 +1,4 @@
+
 // lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import projectsReducer from "./features/projectsSlice";
@@ -33,6 +34,13 @@ import { riskMethodologyApi } from "./features/riskMethodologyApi";
 import { aiRiskRegisterApi } from "./features/aiRiskRegisterApi";
 import { aiRiskTreatmentApi } from "./features/aiRiskTreatmentApi";
 import { kriIndicatorApi } from "./features/kriIndicatorApi";
+import { frameworksApi } from "./features/frameworksApi";
+import { requirementsApi } from "./features/requirementsApi";
+import { controlsApi } from "./features/controlsApi";
+import { requirementControlsApi } from "./features/requirementControlsApi";
+import { usersApi } from "./features/usersApi";
+import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
+import { regulatorySubmissionsApi } from "./features/regulatorySubmissionsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -73,6 +81,13 @@ export const makeStore = () => {
       [aiRiskRegisterApi.reducerPath]: aiRiskRegisterApi.reducer,
       [aiRiskTreatmentApi.reducerPath]: aiRiskTreatmentApi.reducer,
       [kriIndicatorApi.reducerPath]: kriIndicatorApi.reducer,
+      [frameworksApi.reducerPath]: frameworksApi.reducer,
+      [requirementsApi.reducerPath]: requirementsApi.reducer,
+      [controlsApi.reducerPath]: controlsApi.reducer,
+      [requirementControlsApi.reducerPath]: requirementControlsApi.reducer,
+      [usersApi.reducerPath]: usersApi.reducer,
+      [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
+      [regulatorySubmissionsApi.reducerPath]: regulatorySubmissionsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -108,7 +123,14 @@ export const makeStore = () => {
         riskMethodologyApi.middleware,
         aiRiskRegisterApi.middleware,
         aiRiskTreatmentApi.middleware,
-        kriIndicatorApi.middleware
+        kriIndicatorApi.middleware,
+        frameworksApi.middleware,
+        requirementsApi.middleware,
+        controlsApi.middleware,
+        requirementControlsApi.middleware,
+        usersApi.middleware,
+        complianceEvidenceApi.middleware,
+        regulatorySubmissionsApi.middleware
       ),
   });
 };

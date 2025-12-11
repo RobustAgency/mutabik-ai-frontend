@@ -1,24 +1,41 @@
 "use client";
 
-
-
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import FrameworkForm from "@/components/admin/frameworks/createFramework/FrameworkForm";
 import { useFramework } from "@/hooks/admin/useFrameworks";
+import { useUpdateFrameworkMutation } from "@/app/lib/features/frameworksApi";
 import Spinner from "@/components/ui/spinner";
 
 export default function FrameworkPage() {
-    const params = useParams();
+    const params = useParams<{ id: string }>();
     const router = useRouter();
-    const isCreateMode = params.id === 'create';
+    const frameworkId = params?.id;
+    const isCreateMode = frameworkId === 'create';
 
     const { framework, loading, error } = useFramework(
-        !isCreateMode ? params.id as string : undefined
+        !isCreateMode && frameworkId ? frameworkId : undefined
     );
+    const [updateFramework] = useUpdateFrameworkMutation();
+    const [serverErrors, setServerErrors] = React.useState<Record<string, string[]> | undefined>(undefined);
 
     const handleCancel = () => {
         router.push('/admin/compliance-library/frameworks');
+    };
+
+    const handleSubmit = async (payload: any) => {
+        if (!frameworkId) return;
+        setServerErrors(undefined);
+        try {
+            await updateFramework({ id: frameworkId, data: payload }).unwrap();
+            router.push('/admin/compliance-library/frameworks');
+        } catch (err: any) {
+            const errors = err?.data?.errors;
+            if (errors) {
+                setServerErrors(errors);
+            }
+            throw err;
+        }
     };
 
     // Show loading state for edit mode
@@ -72,6 +89,8 @@ export default function FrameworkPage() {
             framework={framework}
             isEditing={!isCreateMode}
             onCancel={handleCancel}
+            serverErrors={serverErrors}
+            onSubmit={handleSubmit}
         />
     );
 }

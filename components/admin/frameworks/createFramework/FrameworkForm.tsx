@@ -1,79 +1,50 @@
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import Description from "@/components/custom/Description";
-import FrameworkStatus from "./FrameworkStatus";
-import AdditionalInformation from "./AdditionalInformation";
 import { useFrameworkMutations } from "@/hooks/admin/useFrameworks";
-import { convertFrameworkArraysToStrings, convertFrameworkStringsToArrays } from "@/utils/frameworkUtils";
 import {
     validateTextField,
     createValidationErrors,
 } from "@/lib/utils/validation";
 import {
     Framework,
-    FrameworkCategory,
-    FrameworkType,
-    AuthorityPublisher,
-    BindingLevel,
-    SectorApplicability,
-    RiskClassCoverage,
-    CertificationAttestation,
-    AssessmentMode,
     CreateFrameworkRequest,
     UpdateFrameworkRequest
 } from "@/interfaces/Framework";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
+import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
+import FormActions from "@/components/admin/shared/FormActions";
+import NameVersionFields from "./fields/NameVersionFields";
+import JurisdictionsScopeFields from "./fields/JurisdictionsScopeFields";
+import StatusEffectiveDateFields from "./fields/StatusEffectiveDateFields";
+import SourceUrlField from "./fields/SourceUrlField";
 
 interface FrameworkFormProps {
     framework?: Framework | null;
     isEditing?: boolean;
     onCancel?: () => void;
+    serverErrors?: Record<string, string[]>;
+    onSubmit?: (payload: CreateFrameworkRequest | UpdateFrameworkRequest) => Promise<void>;
 }
 
-export default function FrameworkForm({ framework, isEditing = false, onCancel }: FrameworkFormProps) {
+export default function FrameworkForm({ framework, isEditing = false, onCancel, serverErrors, onSubmit }: FrameworkFormProps) {
     const breadcrumbItems = [
         { label: 'Frameworks', href: '/admin/compliance-library/frameworks' },
         { label: isEditing ? 'Edit' : 'Create' },
     ];
 
-    // Basic form state - store enum values (strings) to match Select component expectations
-    const [formData, setFormData] = useState({
+    // Basic form state aligned with backend validation contract
+    const [formData, setFormData] = useState<CreateFrameworkRequest>({
         name: "",
-        code: "",
-        type: FrameworkType.LAW_ACT,
-        geography: "",
-        category: FrameworkCategory.Mandatory,
         version: "",
+        jurisdictions: [],
+        scope: "",
+        status: "draft",
+        effective_date: new Date().toISOString().split('T')[0],
+        source_url: "",
     });
 
-    // Additional information state - will be managed by AdditionalInformation component
-    const [additionalInfo, setAdditionalInfo] = useState({
-        authority_publisher: undefined as AuthorityPublisher | undefined,
-        binding_level: undefined as BindingLevel | undefined,
-        sector_applicability: [] as SectorApplicability[],
-        risk_class_coverage: [] as RiskClassCoverage[],
-        certification_attestation: [] as CertificationAttestation[],
-        assessment_mode: [] as AssessmentMode[],
-    });
-
-    // Complex state fields
-    const [description, setDescription] = useState<string>("");
-    const [status, setStatus] = useState<{ releaseDate: string; published: boolean }>({
-        releaseDate: new Date().toISOString().split('T')[0],
-        published: false,
-    });
-
-    // File upload state
-    const [preview, setPreview] = useState<string | null>(null);
-    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [jurisdictionInput, setJurisdictionInput] = useState<string>("");
 
     // Validation errors state
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -81,123 +52,99 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
     const { creating, updating, createFramework, updateFramework } = useFrameworkMutations();
 
     // Memoized callback functions
-    const handleInputChange = useCallback((field: keyof typeof formData, value: string) => {
+    const handleInputChange = useCallback(<K extends keyof CreateFrameworkRequest>(
+        field: K,
+        value: CreateFrameworkRequest[K]
+    ) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-    }, []);
-
-    const handleReleaseDateChange = useCallback((date: string) => {
-        setStatus(prev => ({ ...prev, releaseDate: date }));
-    }, []);
-
-    const handlePublishedChange = useCallback((published: boolean) => {
-        setStatus(prev => ({ ...prev, published }));
-    }, []);
-
-    // Callback to receive data from AdditionalInformation component
-    const handleAdditionalInfoChange = useCallback((data: {
-        authority_publisher?: AuthorityPublisher;
-        binding_level?: BindingLevel;
-        sector_applicability: SectorApplicability[];
-        risk_class_coverage: RiskClassCoverage[];
-        certification_attestation: CertificationAttestation[];
-        assessment_mode: AssessmentMode[];
-    }) => {
-        setAdditionalInfo({
-            authority_publisher: data.authority_publisher,
-            binding_level: data.binding_level,
-            sector_applicability: data.sector_applicability,
-            risk_class_coverage: data.risk_class_coverage,
-            certification_attestation: data.certification_attestation,
-            assessment_mode: data.assessment_mode,
-        });
     }, []);
 
     // Initialize form with existing framework data
     useEffect(() => {
         if (framework && isEditing && framework.id) {
-            console.log('Framework data received:', {
-                framework,
-                type: framework.type,
-                category: framework.category,
-                frameworkId: framework.id
-            });
-
-            const newFormData = {
+            setFormData({
                 name: framework.name || "",
-                code: framework.code || "",
-                type: framework.type || FrameworkType.LAW_ACT,
-                geography: framework.geography || "",
-                category: framework.category || FrameworkCategory.Mandatory,
                 version: framework.version || "",
-            };
-
-            console.log('Setting form data to:', newFormData);
-            setFormData(newFormData);
-
-            setDescription(framework.description || "");
-            setStatus({
-                releaseDate: framework.release_date ? framework.release_date.split('T')[0] : new Date().toISOString().split('T')[0],
-                published: framework.is_published ?? false,
+                jurisdictions: Array.isArray((framework as any).jurisdictions)
+                    ? (framework as any).jurisdictions
+                    : typeof (framework as any).jurisdictions === 'string'
+                        ? (framework as any).jurisdictions.split(',').map((j: string) => j.trim()).filter(Boolean)
+                        : [],
+                scope: (framework as any).scope || "",
+                status: ((framework as any).status as CreateFrameworkRequest['status']) || "draft",
+                effective_date: (framework as any).effective_date
+                    ? String((framework as any).effective_date).split('T')[0]
+                    : new Date().toISOString().split('T')[0],
+                source_url: (framework as any).source_url || "",
             });
 
-            // Set additional info - will be passed to AdditionalInformation component
-            // Convert comma-separated strings from backend to arrays for frontend
-            const convertedArrays = convertFrameworkStringsToArrays({
-                sector_applicability: framework.sector_applicability,
-                risk_class_coverage: framework.risk_class_coverage,
-                certification_attestation: framework.certification_attestation,
-                assessment_mode: framework.assessment_mode,
-            });
-
-            const newAdditionalInfo = {
-                authority_publisher: framework.authority_publisher as AuthorityPublisher | undefined,
-                binding_level: framework.binding_level as BindingLevel | undefined,
-                sector_applicability: convertedArrays.sector_applicability,
-                risk_class_coverage: convertedArrays.risk_class_coverage,
-                certification_attestation: convertedArrays.certification_attestation,
-                assessment_mode: convertedArrays.assessment_mode,
-            };
-
-            setAdditionalInfo(newAdditionalInfo);
-
-            // Set logo preview if exists
-            if (framework.framework_logo_url) {
-                setPreview(framework.framework_logo_url);
-            }
+            setJurisdictionInput(
+                Array.isArray((framework as any).jurisdictions)
+                    ? (framework as any).jurisdictions.join(', ')
+                    : typeof (framework as any).jurisdictions === 'string'
+                        ? (framework as any).jurisdictions
+                        : ""
+            );
         }
     }, [framework, framework?.id, isEditing]); // Only re-run when framework ID changes or editing mode changes
 
-    // File Upload Handler
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.currentTarget.files?.[0];
-        if (file) {
-            setLogoFile(file);
-            setPreview(URL.createObjectURL(file));
+    const isValidUrl = (value: string) => {
+        try {
+            const url = new URL(value);
+            return !!url.protocol && !!url.host;
+        } catch {
+            return false;
         }
     };
 
-    // Form validation using shared utilities
+    // Form validation using shared utilities + API contract
     const validateForm = (): boolean => {
         const fieldErrors: Record<string, string[]> = {
             name: validateTextField(formData.name, {
                 required: true,
-                messages: { required: "Title is required" },
+                minLength: 2,
+                maxLength: 255,
+                messages: {
+                    required: "Name is required",
+                    minLength: "Name must be at least 2 characters",
+                    maxLength: "Name must be at most 255 characters",
+                },
             }),
-            code: validateTextField(formData.code, {
+            version: validateTextField(formData.version, {
                 required: true,
-                messages: { required: "Code is required" },
+                maxLength: 50,
+                messages: {
+                    required: "Version is required",
+                    maxLength: "Version must be at most 50 characters",
+                },
             }),
-            type: validateTextField(formData.type, {
+            scope: validateTextField(formData.scope, {
                 required: true,
-                messages: { required: "Type is required" },
+                messages: { required: "Scope is required" },
             }),
-            category: validateTextField(formData.category, {
+            source_url: validateTextField(formData.source_url, {
                 required: true,
-                messages: { required: "Category is required" },
+                maxLength: 255,
+                messages: {
+                    required: "Source URL is required",
+                    maxLength: "Source URL must be at most 255 characters",
+                },
             }),
         };
 
         const errors = createValidationErrors(fieldErrors);
+        if (jurisdictionInput.trim().length === 0) {
+            errors.jurisdictions = ["At least one jurisdiction is required"];
+        }
+        if (formData.source_url && !isValidUrl(formData.source_url)) {
+            errors.source_url = ["Enter a valid URL (e.g., https://example.com)"];
+        }
+        if (!formData.effective_date) {
+            errors.effective_date = ["Effective date is required"];
+        }
+        if (!formData.status) {
+            errors.status = ["Status is required"];
+        }
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -213,47 +160,24 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
             return;
         }
 
-        // Convert arrays to comma-separated strings for the backend
-        const convertedAdditionalInfo = convertFrameworkArraysToStrings({
-            sector_applicability: additionalInfo.sector_applicability,
-            risk_class_coverage: additionalInfo.risk_class_coverage,
-            certification_attestation: additionalInfo.certification_attestation,
-            assessment_mode: additionalInfo.assessment_mode,
-        });
+        const cleanedJurisdictions = jurisdictionInput
+            .split(',')
+            .map((j) => j.trim())
+            .filter(Boolean);
 
-        const requestData = {
+        const finalRequestData: CreateFrameworkRequest = {
             ...formData,
-            // Convert string values back to enum types for the API
-            type: formData.type as FrameworkType,
-            category: formData.category as FrameworkCategory,
-            authority_publisher: additionalInfo.authority_publisher,
-            binding_level: additionalInfo.binding_level,
-            description,
-            release_date: status.releaseDate,
-            is_published: status.published ? 1 : 0,
+            jurisdictions: cleanedJurisdictions,
         };
 
-        // Add the converted comma-separated strings to the request data
-        // These will be sent as strings to the backend
-        const finalRequestData = {
-            ...requestData,
-            sector_applicability: convertedAdditionalInfo.sector_applicability,
-            risk_class_coverage: convertedAdditionalInfo.risk_class_coverage,
-            certification_attestation: convertedAdditionalInfo.certification_attestation,
-            assessment_mode: convertedAdditionalInfo.assessment_mode,
-        } as unknown;
-
-        if (logoFile) {
-            (finalRequestData as Record<string, unknown>).framework_logo = logoFile;
-        }
-
         try {
-            if (isEditing && framework) {
+            if (onSubmit) {
+                await onSubmit(finalRequestData);
+            } else if (isEditing && framework) {
                 await updateFramework(framework.id, finalRequestData as UpdateFrameworkRequest);
             } else {
                 await createFramework(finalRequestData as CreateFrameworkRequest);
             }
-            // Form will be redirected by the hook on success
         } catch (err: any) {
             // Handle backend validation errors
             if (err?.data?.errors) {
@@ -263,20 +187,8 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
         }
     };
 
-    // Memoized conversion of array data for AdditionalInformation component
-    const memoizedArrayProps = useMemo(() => ({
-        initialSectorApplicability: additionalInfo.sector_applicability,
-        initialRiskClassCoverage: additionalInfo.risk_class_coverage,
-        initialCertificationAttestation: additionalInfo.certification_attestation,
-        initialAssessmentMode: additionalInfo.assessment_mode,
-    }), [
-        additionalInfo.assessment_mode,
-        additionalInfo.certification_attestation,
-        additionalInfo.risk_class_coverage,
-        additionalInfo.sector_applicability
-    ]);
-
     const isLoading = creating || updating;
+    const combinedErrors = { ...validationErrors, ...(serverErrors || {}) };
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] px-2 flex flex-col items-start">
@@ -292,234 +204,47 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel }
                 {/* Main Form Card */}
                 <Card className="flex-1 border-0 rounded-xl py-0 bg-transparent!">
                     <form className="space-y-6 w-full" onSubmit={handleSubmit}>
-                        {/* Show validation errors */}
-                        {Object.keys(validationErrors).length > 0 && (
-                            <Alert variant="destructive">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertDescription>
-                                    <p className="font-semibold mb-2">Please fix the following errors:</p>
-                                    <ul className="list-disc list-inside space-y-1">
-                                        {Object.entries(validationErrors).map(([field, errors]) => (
-                                            <li key={field}>
-                                                <span className="font-medium capitalize">
-                                                    {field.replace(/_/g, " ")}:
-                                                </span>{" "}
-                                                {errors[0]}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </AlertDescription>
-                            </Alert>
-                        )}
+                        <FormErrorAlert errors={combinedErrors} />
 
-                        {/* Basic Information */}
                         <Card className="bg-white p-6">
                             <div className="space-y-6">
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-semibold text-[#171717]">Logo</h3>
-                                    <div className="relative">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                            id="logo-upload"
-                                        />
-                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-                                            {preview ? (
-                                                <div className="flex flex-col items-center gap-4">
-                                                    <Image
-                                                        src={preview}
-                                                        alt="Framework logo preview"
-                                                        width={64}
-                                                        height={64}
-                                                        className="object-cover rounded-lg"
-                                                    />
-                                                    <div className="text-sm text-gray-600">
-                                                        Drag & Drop your file or <span className="text-green-500 font-medium">Browse</span>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-sm text-gray-600">
-                                                    Drag & Drop your file or <span className="text-green-500 font-medium cursor-pointer">Browse</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* Name & Code */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="name">
-                                            Title
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            placeholder="Enter framework name"
-                                            value={formData.name}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
-                                            className={`mt-1 ${validationErrors.name ? "border-red-500" : ""}`}
-                                            required
-                                        />
-                                        {validationErrors.name && (
-                                            <p className="text-sm text-red-500 mt-1">{validationErrors.name[0]}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="code">
-                                            Code
-                                        </Label>
-                                        <Input
-                                            id="code"
-                                            type="text"
-                                            placeholder="e.g., EU-AI-ACT"
-                                            value={formData.code}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('code', e.target.value)}
-                                            className={`mt-1 ${validationErrors.code ? "border-red-500" : ""}`}
-                                            required
-                                        />
-                                        {validationErrors.code && (
-                                            <p className="text-sm text-red-500 mt-1">{validationErrors.code[0]}</p>
-                                        )}
-                                    </div>
-                                </div>
+                                <NameVersionFields
+                                    formData={formData}
+                                    errors={combinedErrors}
+                                    onInputChange={handleInputChange}
+                                />
 
-                                {/* Geography & Version */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="geography">
-                                            Geography
-                                        </Label>
-                                        <Input
-                                            id="geography"
-                                            type="text"
-                                            placeholder="e.g., European Union"
-                                            value={formData.geography}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('geography', e.target.value)}
-                                            className="mt-1"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="version">
-                                            Version
-                                        </Label>
-                                        <Input
-                                            id="version"
-                                            type="text"
-                                            placeholder="e.g., 1.0"
-                                            value={formData.version}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('version', e.target.value)}
-                                            className="mt-1"
-                                        />
-                                    </div>
-                                </div>
+                                <JurisdictionsScopeFields
+                                    formData={formData}
+                                    jurisdictionInput={jurisdictionInput}
+                                    errors={combinedErrors}
+                                    onInputChange={handleInputChange}
+                                    onJurisdictionInputChange={setJurisdictionInput}
+                                />
 
-                                {/* Type & Category */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="type">
-                                            Type
-                                        </Label>
-                                        <Select
-                                            key={`type-${formData.type}`}
-                                            value={formData.type}
-                                            onValueChange={(value) => handleInputChange('type', value)}
-                                        >
-                                            <SelectTrigger className={`mt-1 w-full ${validationErrors.type ? "border-red-500" : ""}`}>
-                                                <SelectValue placeholder="Select type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value={FrameworkType.LAW_ACT}>{FrameworkType.LAW_ACT}</SelectItem>
-                                                <SelectItem value={FrameworkType.REGULATION}>{FrameworkType.REGULATION}</SelectItem>
-                                                <SelectItem value={FrameworkType.STANDARD}>{FrameworkType.STANDARD}</SelectItem>
-                                                <SelectItem value={FrameworkType.FRAMEWORK}>{FrameworkType.FRAMEWORK}</SelectItem>
-                                                <SelectItem value={FrameworkType.GUIDELINE}>{FrameworkType.GUIDELINE}</SelectItem>
-                                                <SelectItem value={FrameworkType.POLICY_INTERNAL}>{FrameworkType.POLICY_INTERNAL}</SelectItem>
-                                                <SelectItem value={FrameworkType.SUPERVISORY_NOTICE}>{FrameworkType.SUPERVISORY_NOTICE}</SelectItem>
-                                                <SelectItem value={FrameworkType.INDUSTRY_CODE}>{FrameworkType.INDUSTRY_CODE}</SelectItem>
-                                                <SelectItem value={FrameworkType.CERT_SCHEME}>{FrameworkType.CERT_SCHEME}</SelectItem>
-                                                <SelectItem value={FrameworkType.CONTRACTUAL}>{FrameworkType.CONTRACTUAL}</SelectItem>
-                                                <SelectItem value={FrameworkType.OTHER}>{FrameworkType.OTHER}</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        {validationErrors.type && (
-                                            <p className="text-sm text-red-500 mt-1">{validationErrors.type[0]}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <Label className="text-[#171717] text-sm font-medium" htmlFor="category">
-                                            Category
-                                        </Label>
-                                        <Select
-                                            key={`category-${formData.category}`}
-                                            value={formData.category}
-                                            onValueChange={(value) => handleInputChange('category', value)}
-                                        >
-                                            <SelectTrigger className={`mt-1 w-full ${validationErrors.category ? "border-red-500" : ""}`}>
-                                                <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value={FrameworkCategory.Mandatory}>{FrameworkCategory.Mandatory}</SelectItem>
-                                                <SelectItem value={FrameworkCategory.Voluntary}>{FrameworkCategory.Voluntary}</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        {validationErrors.category && (
-                                            <p className="text-sm text-red-500 mt-1">{validationErrors.category[0]}</p>
-                                        )}
-                                    </div>
-                                </div>
+                                <StatusEffectiveDateFields
+                                    formData={formData}
+                                    errors={combinedErrors}
+                                    onInputChange={handleInputChange}
+                                />
 
-                                {/* Description */}
-                                <Description value={description} onChange={(html: string) => setDescription(html)} />
+                                <SourceUrlField
+                                    formData={formData}
+                                    errors={combinedErrors}
+                                    onInputChange={handleInputChange}
+                                />
                             </div>
                         </Card>
 
-                        {/* Additional Information */}
-                        <AdditionalInformation
-                            initialAuthorityPublisher={additionalInfo.authority_publisher}
-                            initialBindingLevel={additionalInfo.binding_level}
-                            initialSectorApplicability={memoizedArrayProps.initialSectorApplicability}
-                            initialRiskClassCoverage={memoizedArrayProps.initialRiskClassCoverage}
-                            initialCertificationAttestation={memoizedArrayProps.initialCertificationAttestation}
-                            initialAssessmentMode={memoizedArrayProps.initialAssessmentMode}
-                            onChange={handleAdditionalInfoChange}
+                        <FormActions
+                            isLoading={isLoading}
+                            isEditing={isEditing}
+                            onCancel={onCancel}
                         />
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-4">
-                            <Button
-                                type="submit"
-                                disabled={isLoading}
-                                className="bg-[#4FD58F] hover:bg-[#3BAD6B] text-white px-6 py-2 rounded-lg"
-                            >
-                                {isLoading ? 'Saving...' : (isEditing ? 'Update' : 'Create')}
-                            </Button>
-                            {onCancel && (
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={onCancel}
-                                    className="px-6 py-2 rounded-lg"
-                                >
-                                    Cancel
-                                </Button>
-                            )}
-                        </div>
                     </form>
                 </Card>
-
-                {/* Sidebar */}
-                <div className="w-full md:w-[400px] flex flex-col gap-6">
-                    {/* Status Card */}
-                    <FrameworkStatus
-                        releaseDate={status.releaseDate}
-                        published={status.published}
-                        onReleaseDateChange={handleReleaseDateChange}
-                        onPublishedChange={handlePublishedChange}
-                    />
-                </div>
             </div>
         </div>
     );
 }
+

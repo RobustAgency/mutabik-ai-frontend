@@ -6,19 +6,19 @@ import TableCard from "../../custom/TableCard";
 import { ColumnDef } from "@tanstack/react-table";
 import { SquarePen } from "lucide-react";
 import { useControls } from "@/hooks/admin/useControls";
-import { Control } from "@/interfaces/Control";
+import { Control, ControlStatusEnum, ControlTestingMethodEnum, ControlTestingFrequencyEnum } from "@/interfaces/Control";
 import { Button } from "@/components/ui/button";
 
 // Columns styled as per image
 const columns: ColumnDef<Control>[] = [
   {
-    accessorKey: "code",
-    header: "Control Code",
+    accessorKey: "reference",
+    header: "Reference",
     cell: ({ row }) => {
       const control = row.original;
       return (
         <Link href={`/admin/compliance-library/controls/details/${control.id}`} className="pl-4 hover:underline">
-          {row.getValue("code")}
+          {row.getValue("reference")}
         </Link>
       );
     },
@@ -33,25 +33,27 @@ const columns: ColumnDef<Control>[] = [
     ),
   },
   {
-    accessorKey: "requirements_count",
-    header: "Requirements",
+    accessorKey: "testing_method",
+    header: "Testing Method",
     cell: ({ row }) => {
-      return (
-        <span className="">
-          {row.getValue("requirements_count")}
-        </span>
-      );
+      const value = row.getValue("testing_method") as ControlTestingMethodEnum;
+      return <span className="capitalize">{String(value).replace(/_/g, " ")}</span>;
     },
   },
   {
-    accessorKey: "frameworks_count",
-    header: "Frameworks",
+    accessorKey: "testing_frequency",
+    header: "Testing Frequency",
     cell: ({ row }) => {
-      return (
-        <span className="">
-          {row.getValue("frameworks_count")}
-        </span>
-      );
+      const value = row.getValue("testing_frequency") as ControlTestingFrequencyEnum;
+      return <span className="capitalize">{String(value).replace(/_/g, " ")}</span>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as ControlStatusEnum;
+      return <span className="capitalize">{status.replace(/_/g, " ")}</span>;
     },
   },
   {

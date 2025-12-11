@@ -148,24 +148,30 @@ export enum AssessmentMode {
 export interface Framework {
   id: number;
   name: string;
-  code: string;
-  type: FrameworkType;
-  geography: string;
-  category: FrameworkCategory;
+  code?: string;
+  type?: FrameworkType;
+  geography?: string;
+  category?: FrameworkCategory;
   version: string;
-  release_date: string;
-  is_published: boolean; // Backend returns as boolean, we convert to 0|1 when sending
+  release_date?: string;
+  is_published?: boolean;
   description?: string;
   authority_publisher?: AuthorityPublisher;
   binding_level?: BindingLevel;
-  sector_applicability?: string; // Backend returns as comma-separated string
-  risk_class_coverage?: string; // Backend returns as comma-separated string
-  certification_attestation?: string; // Backend returns as comma-separated string
-  assessment_mode?: string; // Backend returns as comma-separated string
+  sector_applicability?: string;
+  risk_class_coverage?: string;
+  certification_attestation?: string;
+  assessment_mode?: string;
+  jurisdictions?: string[];
+  scope?: string;
+  status?: 'draft' | 'active' | 'retired';
+  effective_date?: string;
+  source_url?: string;
   user_id: number;
   created_at: string;
   updated_at: string;
   framework_logo_url?: string;
+  controls_count?: number;
   media?: Array<{
     id: number;
     model_type: string;
@@ -202,26 +208,15 @@ export interface FrameworkFilters extends Record<string, unknown> {
 
 export interface CreateFrameworkRequest {
   name: string;
-  code: string;
-  type: FrameworkType;
-  geography: string;
-  category: FrameworkCategory;
   version: string;
-  release_date: string;
-  is_published: 0 | 1;
-  description?: string;
-  authority_publisher?: AuthorityPublisher;
-  binding_level?: BindingLevel;
-  sector_applicability?: SectorApplicability[];
-  risk_class_coverage?: RiskClassCoverage[];
-  certification_attestation?: CertificationAttestation[];
-  assessment_mode?: AssessmentMode[];
-  framework_logo?: File;
+  jurisdictions: string[];
+  scope: string;
+  status: 'draft' | 'active' | 'retired';
+  effective_date: string;
+  source_url: string;
 }
 
-export interface UpdateFrameworkRequest extends Partial<CreateFrameworkRequest> {
-  framework_logo?: File;
-}
+export interface UpdateFrameworkRequest extends Partial<CreateFrameworkRequest> {}
 
 export interface FrameworksApiResponse {
   data: PaginatedResponse<Framework>;
