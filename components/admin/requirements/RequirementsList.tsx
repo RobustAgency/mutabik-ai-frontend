@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { useRequirements } from "@/hooks/admin/useRequirements";
 import { Requirement, RequirementFilters } from "@/interfaces/Requirement";
 import { ColumnDef } from "@tanstack/react-table";
@@ -19,10 +18,6 @@ export default function RequirementsList() {
     });
 
     const { requirements, loading, pagination, handlePageChange, handleSearch } = useRequirements(filters);
-    const breadcrumbItems = [
-        { label: 'Requirements', href: '/admin/compliance-library/requirements' },
-        { label: 'List' },
-    ];
 
     const handleSearchTerm = (searchTerm: string) => {
         setFilters(prev => ({
@@ -128,7 +123,6 @@ export default function RequirementsList() {
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] px-2 flex flex-col items-start">
-            <Breadcrumbs items={breadcrumbItems} />
             <div className="flex items-center justify-between w-full mt-4 mb-6">
                 <h1 className="text-3xl text-[#171717] font-bold">Requirements</h1>
                 <Link href="/admin/compliance-library/requirements/create">

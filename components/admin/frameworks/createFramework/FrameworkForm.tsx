@@ -11,7 +11,6 @@ import {
     CreateFrameworkRequest,
     UpdateFrameworkRequest
 } from "@/interfaces/Framework";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import NameVersionFields from "./fields/NameVersionFields";
@@ -28,11 +27,6 @@ interface FrameworkFormProps {
 }
 
 export default function FrameworkForm({ framework, isEditing = false, onCancel, serverErrors, onSubmit }: FrameworkFormProps) {
-    const breadcrumbItems = [
-        { label: 'Frameworks', href: '/admin/compliance-library/frameworks' },
-        { label: isEditing ? 'Edit' : 'Create' },
-    ];
-
     // Basic form state aligned with backend validation contract
     const [formData, setFormData] = useState<CreateFrameworkRequest>({
         name: "",
@@ -192,9 +186,6 @@ export default function FrameworkForm({ framework, isEditing = false, onCancel, 
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] px-2 flex flex-col items-start">
-            {/* Breadcrumb */}
-            <Breadcrumbs items={breadcrumbItems} />
-
             {/* Heading */}
             <h1 className="text-3xl text-[#171717] font-bold mt-4 mb-6">
                 {isEditing ? 'Edit Framework' : 'Create Framework'}

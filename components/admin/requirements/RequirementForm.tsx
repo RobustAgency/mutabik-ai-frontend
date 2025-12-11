@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { useRequirement, useRequirementMutations, useRequirements } from "@/hooks/admin/useRequirements";
 import { useFrameworks } from "@/hooks/admin/useFrameworks";
 import {
@@ -74,25 +73,65 @@ export default function RequirementForm({ requirementId, mode, serverErrors, onS
     const [tagsInput, setTagsInput] = useState<string>("");
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
-    const frameworkOptions = useMemo(
-        () =>
+    const frameworkOptions = useMemo(() => {
+        const base =
             frameworks?.map((fw) => ({
                 value: fw.id.toString(),
                 label: fw.name || fw.id.toString(),
-            })) || [],
-        [frameworks]
-    );
+            })) || [];
 
-    const requirementOptions = useMemo(
-        () =>
+        // Include current framework when not present in fetched list
+        const currentId =
+            formData.framework_id ||
+            requirement?.framework_id ||
+            undefined;
+        const currentObj = requirement?.framework;
+
+        if (currentObj) {
+            const exists = base.some((opt) => opt.value === currentObj.id.toString());
+            if (!exists) {
+                base.unshift({
+                    value: currentObj.id.toString(),
+                    label: currentObj.name || `Framework #${currentObj.id}`,
+                });
+            }
+        } else if (currentId) {
+            const idStr = currentId.toString();
+            const exists = base.some((opt) => opt.value === idStr);
+            if (!exists) {
+                base.unshift({
+                    value: idStr,
+                    label: `Framework #${idStr}`,
+                });
+            }
+        }
+
+        return base;
+    }, [frameworks, formData.framework_id, requirement]);
+
+    const requirementOptions = useMemo(() => {
+        const base =
             (requirementList || [])
                 .filter((req: Requirement) => !requirementId || String(req.id) !== String(requirementId))
                 .map((req: Requirement) => ({
                     value: req.id.toString(),
                     label: req.reference || `Requirement #${req.id}`,
-                })),
-        [requirementList, requirementId]
-    );
+                })) || [];
+
+        const selectedIds = [
+            formData.supersedes_req_id ? String(formData.supersedes_req_id) : null,
+            formData.superseded_by_req_id ? String(formData.superseded_by_req_id) : null,
+        ].filter(Boolean) as string[];
+
+        selectedIds.forEach((id) => {
+            const exists = base.some((opt) => opt.value === id);
+            if (!exists) {
+                base.unshift({ value: id, label: `Requirement #${id}` });
+            }
+        });
+
+        return base;
+    }, [requirementList, requirementId, formData.supersedes_req_id, formData.superseded_by_req_id]);
 
     useEffect(() => {
         if (mode === "edit" && requirement) {
@@ -223,10 +262,6 @@ export default function RequirementForm({ requirementId, mode, serverErrors, onS
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-            <Breadcrumbs items={[
-                { label: 'Requirements', href: '/admin/compliance-library/requirements' },
-                { label: mode === 'create' ? 'Create Requirement' : 'Edit Requirement' },
-            ]} />
 
             <div className="mt-6 mb-8">
                 <h1 className="text-3xl text-[#171717] font-bold">

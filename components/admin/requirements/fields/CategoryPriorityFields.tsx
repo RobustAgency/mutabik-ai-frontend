@@ -41,6 +41,7 @@ export default function CategoryPriorityFields({
           Category <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`category-${formData.category || "none"}`}
           value={formData.category}
           onValueChange={(value) =>
             onInputChange("category", value as RequirementCategory)
@@ -70,6 +71,7 @@ export default function CategoryPriorityFields({
           Priority <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`priority-${formData.priority || "none"}`}
           value={formData.priority}
           onValueChange={(value) =>
             onInputChange("priority", value as RequirementPriority)

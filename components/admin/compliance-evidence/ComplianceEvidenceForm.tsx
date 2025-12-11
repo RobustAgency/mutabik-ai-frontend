@@ -99,8 +99,9 @@ export default function ComplianceEvidenceForm({
         label: `${req.reference}${req.requirement_text ? ` - ${req.requirement_text.substring(0, 50)}` : ""}`,
       })) || [];
 
-    if (complianceEvidence?.requirement) {
-      const rcRequirement = complianceEvidence.requirement;
+    const rcRequirement = complianceEvidence?.requirement;
+    const rcRequirementId = complianceEvidence?.requirement_id;
+    if (rcRequirement) {
       const exists = base.some((opt) => opt.value === rcRequirement.id.toString());
       if (!exists) {
         base.unshift({
@@ -110,6 +111,14 @@ export default function ComplianceEvidenceForm({
               ? ` - ${rcRequirement.requirement_text.substring(0, 50)}`
               : ""
           }`,
+        });
+      }
+    } else if (rcRequirementId) {
+      const exists = base.some((opt) => opt.value === rcRequirementId.toString());
+      if (!exists) {
+        base.unshift({
+          value: rcRequirementId.toString(),
+          label: `Requirement #${rcRequirementId}`,
         });
       }
     }
@@ -124,13 +133,22 @@ export default function ComplianceEvidenceForm({
         label: `${ctrl.reference} - ${ctrl.name}`,
       })) || [];
 
-    if (complianceEvidence?.control) {
-      const rcControl = complianceEvidence.control;
+    const rcControl = complianceEvidence?.control;
+    const rcControlId = complianceEvidence?.control_id;
+    if (rcControl) {
       const exists = base.some((opt) => opt.value === rcControl.id.toString());
       if (!exists) {
         base.unshift({
           value: rcControl.id.toString(),
           label: `${rcControl.reference} - ${rcControl.name}`,
+        });
+      }
+    } else if (rcControlId) {
+      const exists = base.some((opt) => opt.value === rcControlId.toString());
+      if (!exists) {
+        base.unshift({
+          value: rcControlId.toString(),
+          label: `Control #${rcControlId}`,
         });
       }
     }
@@ -351,13 +369,6 @@ export default function ComplianceEvidenceForm({
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs
-        items={[
-          { label: "Compliance Library", href: "/admin/compliance-library/frameworks" },
-          { label: "Compliance Evidence", href: "/admin/compliance-library/compliance-evidences" },
-          { label: mode === "create" ? "Create" : "Edit" },
-        ]}
-      />
       <div className="mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">
           {mode === "create" ? "Create Compliance Evidence" : "Edit Compliance Evidence"}
@@ -374,6 +385,7 @@ export default function ComplianceEvidenceForm({
                 Control <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`control-${formData.control_id || "none"}`}
                 value={formData.control_id ? String(formData.control_id) : ""}
                 onValueChange={(value) => handleInputChange("control_id", Number(value))}
                 disabled={isLoading}
@@ -403,6 +415,7 @@ export default function ComplianceEvidenceForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Requirement</Label>
               <Select
+                key={`requirement-${formData.requirement_id || "none"}`}
                 value={formData.requirement_id ? String(formData.requirement_id) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("requirement_id", value === "null" ? null : Number(value))
@@ -434,6 +447,7 @@ export default function ComplianceEvidenceForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">AI Model</Label>
               <Select
+                key={`ai-model-${formData.ai_model_id || "none"}`}
                 value={formData.ai_model_id ? String(formData.ai_model_id) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("ai_model_id", value === "null" ? null : Number(value))
@@ -465,6 +479,7 @@ export default function ComplianceEvidenceForm({
                 Artifact Type <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`artifact-type-${formData.artifact_type || "none"}`}
                 value={formData.artifact_type}
                 onValueChange={(value) =>
                   handleInputChange("artifact_type", value as ComplianceEvidenceArtifactTypeEnum)
@@ -571,6 +586,7 @@ export default function ComplianceEvidenceForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Collected By</Label>
               <Select
+                key={`collected-by-${formData.collected_by || "none"}`}
                 value={formData.collected_by ? String(formData.collected_by) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("collected_by", value === "null" ? null : Number(value))
@@ -600,6 +616,7 @@ export default function ComplianceEvidenceForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Review Outcome</Label>
               <Select
+                key={`review-outcome-${formData.review_outcome || "none"}`}
                 value={formData.review_outcome || "null"}
                 onValueChange={(value) =>
                   handleInputChange(
@@ -628,6 +645,7 @@ export default function ComplianceEvidenceForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Reviewed By</Label>
               <Select
+                key={`reviewed-by-${formData.reviewed_by || "none"}`}
                 value={formData.reviewed_by ? String(formData.reviewed_by) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("reviewed_by", value === "null" ? null : Number(value))

@@ -12,7 +12,6 @@ const breadcrumbItems = [
 const CreateControlPage = () => {
     return (
         <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-start">
-            <Breadcrumbs items={breadcrumbItems} />
             <h1 className="text-3xl text-[#171717] font-bold mt-3 mb-6">Create Control</h1>
             <ControlForm />
         </div>
