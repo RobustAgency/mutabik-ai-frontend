@@ -18,6 +18,7 @@ import {
   validateTextField,
   createValidationErrors,
 } from "@/lib/utils/validation";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 type FormState = {
   name: string;
@@ -31,13 +32,6 @@ type FormState = {
   effective_to: string;
   owner_team: string;
   source_created_at: string;
-};
-
-const formatDateForInput = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 10);
 };
 
 const getInitialState = (initial?: RiskMethodology): FormState => {

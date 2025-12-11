@@ -29,6 +29,7 @@ import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 interface ComplianceEvidenceFormProps {
   complianceEvidenceId?: string;
@@ -53,17 +54,6 @@ const REVIEW_OUTCOME_OPTIONS: { value: ComplianceEvidenceReviewOutcomeEnum; labe
   { value: ComplianceEvidenceReviewOutcomeEnum.FAIL, label: "Fail" },
   { value: ComplianceEvidenceReviewOutcomeEnum.NEEDS_FIX, label: "Needs Fix" },
 ];
-
-const parseDateOnly = (dateStr: string | null | undefined): string | null => {
-  if (!dateStr) return null;
-  if (dateStr.includes("T")) {
-    return dateStr.split("T")[0];
-  }
-  if (dateStr.includes(" ")) {
-    return dateStr.split(" ")[0];
-  }
-  return dateStr;
-};
 
 export default function ComplianceEvidenceForm({
   complianceEvidenceId,
@@ -215,12 +205,12 @@ export default function ComplianceEvidenceForm({
         artifact_uri: complianceEvidence.artifact_uri || "",
         sample_ids: sampleIds,
         sampling_method: complianceEvidence.sampling_method || "",
-        collection_period_start: parseDateOnly(complianceEvidence.collection_period_start),
-        collection_period_end: parseDateOnly(complianceEvidence.collection_period_end),
+        collection_period_start: formatDateForInput(complianceEvidence.collection_period_start),
+        collection_period_end: formatDateForInput(complianceEvidence.collection_period_end),
         collected_by: complianceEvidence.collected_by ?? null,
         review_outcome: complianceEvidence.review_outcome ?? null,
         reviewed_by: complianceEvidence.reviewed_by ?? null,
-        reviewed_at: parseDateOnly(complianceEvidence.reviewed_at),
+        reviewed_at: formatDateForInput(complianceEvidence.reviewed_at),
         hash_checksum: complianceEvidence.hash_checksum || "",
       });
       setSampleIdsText(sampleIds.join(", "));

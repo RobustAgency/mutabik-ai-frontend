@@ -6,6 +6,7 @@ import {
   TreatmentStatus,
   TreatmentType,
 } from "@/interfaces/AiRiskTreatment";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 export type FormState = {
   ai_risk_register_id: string;
@@ -28,13 +29,13 @@ export const getInitialState = (initial?: AiRiskTreatment): FormState => ({
   plan_summary: initial?.plan_summary ?? "",
   owner_stakeholder_id: initial?.owner_stakeholder_id?.toString() ?? "",
   assignee: initial?.assignee?.join(", ") ?? "",
-  due_date: initial?.due_date ?? "",
+  due_date: formatDateForInput(initial?.due_date),
   status: initial?.status ?? TreatmentStatus.NEW,
   expected_residual_level: initial?.expected_residual_level ?? "",
   result_verification: initial?.result_verification ?? "",
   evidence_link: initial?.evidence_link ?? "",
   linked_capa_id: initial?.linked_capa_id?.toString() ?? "",
-  closed_at: initial?.closed_at ?? "",
+  closed_at: formatDateForInput(initial?.closed_at),
 });
 
 

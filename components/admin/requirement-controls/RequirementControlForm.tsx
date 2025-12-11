@@ -23,6 +23,7 @@ import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 interface RequirementControlFormProps {
   requirementControlId?: string;
@@ -160,12 +161,6 @@ export default function RequirementControlForm({
     return base;
   }, [aiModels, requirementControl]);
 
-  const parseDateOnly = (value?: string | null) => {
-    if (!value) return null;
-    const parts = value.split(/[T ]/);
-    return parts[0] || null;
-  };
-
   useEffect(() => {
     if (mode === "edit" && requirementControl) {
       setFormData({
@@ -177,7 +172,7 @@ export default function RequirementControlForm({
         residual_gaps: requirementControl.residual_gaps || "",
         review_status: requirementControl.review_status ?? null,
         reviewed_by: requirementControl.reviewed_by ?? null,
-        reviewed_at: parseDateOnly(requirementControl.reviewed_at),
+        reviewed_at: formatDateForInput(requirementControl.reviewed_at) || null,
       });
     }
   }, [mode, requirementControl]);
