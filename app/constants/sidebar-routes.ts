@@ -26,7 +26,6 @@ import {
   LineChart,
   GlobeLock,
   Trash2,
-  FileKey2,
   Files,
   FileArchive,
   Layers3,
@@ -60,9 +59,12 @@ export const adminRoutes: RouteItem[] = [
         label: "Frameworks",
         icon: House,
       },
-      { href: "/admin/compliance-library/requirements", label: "Requirements" },
-      { href: "/admin/compliance-library/tags", label: "Tags" },
-      { href: "/admin/compliance-library/controls", label: "Controls" },
+      { href: "/admin/compliance-library/requirements", label: "Requirements", icon: FileBox },
+      // { href: "/admin/compliance-library/tags", label: "Tags" },
+      { href: "/admin/compliance-library/controls", label: "Controls", icon: FileBox },
+      { href: "/admin/compliance-library/requirement-controls", label: "Requirement Controls", icon: Link2 },
+      { href: "/admin/compliance-library/compliance-evidences", label: "Compliance Evidence", icon: FileCheck2 },
+      { href: "/admin/compliance-library/regulatory-submissions", label: "Regulatory Submissions", icon: ScrollText },
     ],
   },
   {
@@ -184,7 +186,7 @@ export const userRoutes: RouteItem[] = [
 
   {
     href: "/risk-compliance/ai-risk-management",
-    label: "Risk & Compliance",
+    label: "Risk Management",
     icon: ShieldCheck,
     children: [
       {
@@ -214,38 +216,38 @@ export const userRoutes: RouteItem[] = [
           },
         ],
       },
-      {
-        href: "/risk-compliance/compliance",
-        label: "Compliance Management",
-        icon: Landmark,
-        children: [
-          {
-            href: "/risk-compliance/compliance/frameworks",
-            label: "Frameworks & Requirements",
-            icon: FileCheck2,
-          },
-          {
-            href: "/risk-compliance/compliance/control-catalog",
-            label: "Control Catalog",
-            icon: FileBox,
-          },
-          {
-            href: "/risk-compliance/compliance/mapping",
-            label: "Requirement–Control Mapping",
-            icon: Network,
-          },
-          {
-            href: "/risk-compliance/compliance/evidence",
-            label: "Compliance Evidence",
-            icon: FileKey2,
-          },
-          {
-            href: "/projects",
-            label: "Regulatory Submissions / Projects",
-            icon: ScrollText,
-          },
-        ],
-      },
+      // {
+      //   href: "/risk-compliance/compliance",
+      //   label: "Compliance Management",
+      //   icon: Landmark,
+      //   children: [
+      //     {
+      //       href: "/risk-compliance/compliance/frameworks",
+      //       label: "Frameworks & Requirements",
+      //       icon: FileCheck2,
+      //     },
+      //     {
+      //       href: "/risk-compliance/compliance/control-catalog",
+      //       label: "Control Catalog",
+      //       icon: FileBox,
+      //     },
+      //     {
+      //       href: "/risk-compliance/compliance/mapping",
+      //       label: "Requirement–Control Mapping",
+      //       icon: Network,
+      //     },
+      //     {
+      //       href: "/risk-compliance/compliance/evidence",
+      //       label: "Compliance Evidence",
+      //       icon: FileKey2,
+      //     },
+      //     {
+      //       href: "/projects",
+      //       label: "Regulatory Submissions / Projects",
+      //       icon: ScrollText,
+      //     },
+      //   ],
+      // },
     ],
   },
 

@@ -14,10 +14,10 @@ const LinkedRequirements = ({ value, onChange }: LinkedRequirementsProps) => {
     const [requirementOptions, setRequirementOptions] = useState<{ value: string; label: string }[]>([])
 
     useEffect(() => {
-        if (requirements?.data && requirements.data.length > 0) {
-            const options = requirements.data.map(requirement => ({
+        if (requirements && requirements.length > 0) {
+            const options = requirements.map(requirement => ({
                 value: requirement.id.toString(),
-                label: `${requirement.code} - ${requirement.name}`
+                label: `${requirement.reference}${requirement.requirement_text ? ` - ${requirement.requirement_text.substring(0, 50)}` : ''}`
             }))
             setRequirementOptions(options)
         }
