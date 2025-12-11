@@ -40,6 +40,7 @@ import { controlsApi } from "./features/controlsApi";
 import { requirementControlsApi } from "./features/requirementControlsApi";
 import { usersApi } from "./features/usersApi";
 import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
+import { regulatorySubmissionsApi } from "./features/regulatorySubmissionsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -86,6 +87,7 @@ export const makeStore = () => {
       [requirementControlsApi.reducerPath]: requirementControlsApi.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
       [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
+      [regulatorySubmissionsApi.reducerPath]: regulatorySubmissionsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -127,7 +129,8 @@ export const makeStore = () => {
         controlsApi.middleware,
         requirementControlsApi.middleware,
         usersApi.middleware,
-        complianceEvidenceApi.middleware
+        complianceEvidenceApi.middleware,
+        regulatorySubmissionsApi.middleware
       ),
   });
 };
