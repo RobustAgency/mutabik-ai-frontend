@@ -15,8 +15,10 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function AiRiskRegisterList() {
   const router = useRouter();
-  const { data, isLoading } = useGetAiRiskRegistersQuery();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const { data, isLoading } = useGetAiRiskRegistersQuery({ page: currentPage, per_page: 15 });
   const registers = data?.data || [];
+  const pagination = data?.meta;
   const [deleteRisk, { isLoading: isDeleting }] = useDeleteAiRiskRegisterMutation();
 
   const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
@@ -190,6 +192,18 @@ export default function AiRiskRegisterList() {
           data={registers}
           loading={isLoading}
           onRowClick={handleRowClick}
+          serverSide={true}
+          pagination={
+            pagination
+              ? {
+                  page: pagination.current_page,
+                  limit: pagination.per_page,
+                  total: pagination.total,
+                  totalPages: pagination.last_page,
+                }
+              : undefined
+          }
+          onPageChange={setCurrentPage}
           emptyState={{
             title: "No AI Risks found",
             description: "Get started by registering your first AI risk",

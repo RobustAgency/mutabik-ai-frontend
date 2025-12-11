@@ -56,7 +56,8 @@ export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
   const capas = capasData?.data ?? [];
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery();
   const incidents = incidentsData?.data ?? [];
-  const { data: riskMethodologies = [], isLoading: isRiskMethodologiesLoading } = useGetRiskMethodologiesQuery();
+  const { data: riskMethodologiesData, isLoading: isRiskMethodologiesLoading } = useGetRiskMethodologiesQuery();
+  const riskMethodologies = riskMethodologiesData?.data ?? [];
 
   // Filter model versions based on selected model
   const filteredVersions = useMemo(() => {

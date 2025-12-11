@@ -23,7 +23,12 @@ interface AiRiskRegisterListResponse {
   message: string;
   data: {
     data: AiRiskRegister[];
-    meta: PaginationMeta;
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
   };
 }
 
@@ -44,6 +49,7 @@ export const aiRiskRegisterApi = createApi({
     >({
       query: (filters) => {
         const params = new URLSearchParams();
+        if (filters?.page) params.append("page", filters.page.toString());
         if (filters?.per_page) params.append("per_page", filters.per_page.toString());
 
         const queryString = params.toString();
@@ -53,7 +59,30 @@ export const aiRiskRegisterApi = createApi({
         };
       },
       transformResponse: (response: AiRiskRegisterListResponse) => {
-        return response.data || { data: [], meta: { current_page: 1, per_page: 15, total: 0 } };
+        if (response.data) {
+          return {
+            data: response.data.data || [],
+            meta: {
+              current_page: response.data.current_page,
+              per_page: response.data.per_page,
+              total: response.data.total,
+              last_page: response.data.last_page,
+              from: response.data.from ?? 0,
+              to: response.data.to ?? 0,
+            },
+          };
+        }
+        return {
+          data: [],
+          meta: {
+            current_page: 1,
+            per_page: 15,
+            total: 0,
+            last_page: 1,
+            from: 0,
+            to: 0,
+          },
+        };
       },
       providesTags: (result) =>
         result?.data
