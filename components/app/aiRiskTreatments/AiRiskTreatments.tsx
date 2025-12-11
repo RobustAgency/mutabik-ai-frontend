@@ -18,7 +18,10 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function AiRiskTreatmentsList() {
   const router = useRouter();
-  const { data: treatments = [], isLoading } = useGetAiRiskTreatmentsQuery();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const { data, isLoading } = useGetAiRiskTreatmentsQuery({ page: currentPage, per_page: 15 });
+  const treatments = data?.data ?? [];
+  const pagination = data?.pagination;
   const [deleteTreatment, { isLoading: isDeleting }] = useDeleteAiRiskTreatmentMutation();
 
   const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
@@ -192,6 +195,18 @@ export default function AiRiskTreatmentsList() {
           data={treatments}
           loading={isLoading}
           onRowClick={handleRowClick}
+          serverSide={true}
+          pagination={
+            pagination
+              ? {
+                  page: pagination.current_page,
+                  limit: pagination.per_page,
+                  total: pagination.total,
+                  totalPages: pagination.last_page,
+                }
+              : undefined
+          }
+          onPageChange={setCurrentPage}
           emptyState={{
             title: "No AI Risk Treatments found",
             description: "Get started by creating your first treatment plan",

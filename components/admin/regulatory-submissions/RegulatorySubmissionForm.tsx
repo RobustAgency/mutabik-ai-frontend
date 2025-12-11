@@ -22,6 +22,7 @@ import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 interface RegulatorySubmissionFormProps {
   regulatorySubmissionId?: string;
@@ -48,13 +49,6 @@ const STATUS_OPTIONS: { value: RegulatorySubmissionStatusEnum; label: string }[]
   { value: RegulatorySubmissionStatusEnum.REJECTED, label: "Rejected" },
   { value: RegulatorySubmissionStatusEnum.CLOSED, label: "Closed" },
 ];
-
-const parseDateOnly = (dateStr: string | null | undefined): string | null => {
-  if (!dateStr) return null;
-  if (dateStr.includes("T")) return dateStr.split("T")[0];
-  if (dateStr.includes(" ")) return dateStr.split(" ")[0];
-  return dateStr;
-};
 
 export default function RegulatorySubmissionForm({
   regulatorySubmissionId,
@@ -186,13 +180,9 @@ export default function RegulatorySubmissionForm({
         tracking_id: regulatorySubmission.tracking_id || "",
         commitments: commits,
         status: (regulatorySubmission.status as RegulatorySubmissionStatusEnum) || RegulatorySubmissionStatusEnum.DRAFT,
-        renewal_due_at: regulatorySubmission.renewal_due_at
-          ? parseDateOnly(regulatorySubmission.renewal_due_at) || ""
-          : "",
+        renewal_due_at: formatDateForInput(regulatorySubmission.renewal_due_at),
         evidence_bundle_ids: evidenceIds,
-        submitted_at: regulatorySubmission.submitted_at
-          ? parseDateOnly(regulatorySubmission.submitted_at) || ""
-          : "",
+        submitted_at: formatDateForInput(regulatorySubmission.submitted_at),
         submitted_by: regulatorySubmission.submitted_by || 0,
         documents_uri: regulatorySubmission.documents_uri || "",
       });

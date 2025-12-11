@@ -65,4 +65,4 @@ export const formatCategory = (value?: string | null): string => {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 };
 
-export { formatDate, formatDateShort, formatDateISO, formatDateLong, formatDateLongTime, formatDateWithTime24h } from "@/lib/helpers/date";
+export { formatDate, formatDateShort, formatDateISO, formatDateLong, formatDateLongTime, formatDateWithTime24h, formatDateForInput } from "@/lib/helpers/date";

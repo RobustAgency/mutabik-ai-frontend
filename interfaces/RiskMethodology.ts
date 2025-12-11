@@ -53,6 +53,7 @@ export interface RiskMethodologyFilters {
   name?: string;
   effective_from?: string;
   effective_to?: string;
+  page?: number;
   per_page?: number;
 }
 

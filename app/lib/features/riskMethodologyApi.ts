@@ -9,6 +9,7 @@ import {
   axiosBaseQuery,
   MutationError,
   hasValidationErrors,
+  PaginationMeta,
 } from "@/lib/api/rtkQueryBase";
 import {
   RiskMethodology,
@@ -46,12 +47,16 @@ export const riskMethodologyApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["RiskMethodology"],
   endpoints: (builder) => ({
-    getRiskMethodologies: builder.query<RiskMethodology[], RiskMethodologyFilters | void>({
+    getRiskMethodologies: builder.query<
+      { data: RiskMethodology[]; pagination: PaginationMeta },
+      RiskMethodologyFilters | void
+    >({
       query: (filters) => {
         const params = new URLSearchParams();
         if (filters?.name) params.append("name", filters.name);
         if (filters?.effective_from) params.append("effective_from", filters.effective_from);
         if (filters?.effective_to) params.append("effective_to", filters.effective_to);
+        if (filters?.page) params.append("page", filters.page.toString());
         if (filters?.per_page) params.append("per_page", filters.per_page.toString());
 
         const queryString = params.toString();
@@ -63,20 +68,63 @@ export const riskMethodologyApi = createApi({
       transformResponse: (response: RiskMethodologyResponse) => {
         // Handle both flat array and paginated { data: { data: [...] } } shapes
         if (Array.isArray((response as any)?.data)) {
-          return (response as { data: RiskMethodology[] }).data;
+          // Non-paginated response
+          return {
+            data: (response as { data: RiskMethodology[] }).data,
+            pagination: {
+              current_page: 1,
+              per_page: (response as { data: RiskMethodology[] }).data.length,
+              total: (response as { data: RiskMethodology[] }).data.length,
+              last_page: 1,
+              from: 1,
+              to: (response as { data: RiskMethodology[] }).data.length,
+            },
+          };
         }
         if (
           (response as any)?.data?.data &&
           Array.isArray((response as any).data.data)
         ) {
-          return (response as { data: { data: RiskMethodology[] } }).data.data;
+          const paginatedResponse = response as {
+            data: {
+              data: RiskMethodology[];
+              current_page?: number;
+              last_page?: number;
+              per_page?: number;
+              total?: number;
+            };
+          };
+          return {
+            data: paginatedResponse.data.data,
+            pagination: {
+              current_page: paginatedResponse.data.current_page ?? 1,
+              per_page: paginatedResponse.data.per_page ?? 15,
+              total: paginatedResponse.data.total ?? 0,
+              last_page: paginatedResponse.data.last_page ?? 1,
+              from: ((paginatedResponse.data.current_page ?? 1) - 1) * (paginatedResponse.data.per_page ?? 15) + 1,
+              to: Math.min(
+                (paginatedResponse.data.current_page ?? 1) * (paginatedResponse.data.per_page ?? 15),
+                paginatedResponse.data.total ?? 0
+              ),
+            },
+          };
         }
-        return [];
+        return {
+          data: [],
+          pagination: {
+            current_page: 1,
+            per_page: 15,
+            total: 0,
+            last_page: 1,
+            from: 0,
+            to: 0,
+          },
+        };
       },
       providesTags: (result) =>
-        result
+        result?.data
           ? [
-              ...result.map(({ id }) => ({ type: "RiskMethodology" as const, id })),
+              ...result.data.map(({ id }) => ({ type: "RiskMethodology" as const, id })),
               { type: "RiskMethodology", id: "LIST" },
             ]
           : [{ type: "RiskMethodology", id: "LIST" }],

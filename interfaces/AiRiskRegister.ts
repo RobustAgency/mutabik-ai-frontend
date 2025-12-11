@@ -143,6 +143,7 @@ export interface UpdateAiRiskRegisterData {
 }
 
 export interface AiRiskRegisterFilters {
+  page?: number;
   per_page?: number;
 }
 
