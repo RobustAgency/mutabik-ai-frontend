@@ -20,12 +20,31 @@ const EditAiAsset: React.FC<EditAiAssetProps> = ({ aiAssetId }) => {
   const [formData, setFormData] = React.useState<CreateAiAssetData | null>(null);
   const [errors, setErrors] = React.useState<Record<string, string[]>>({});
 
+  // Helper function to convert ISO date string to datetime-local format
+  const convertToDateTimeLocal = (isoString: string | null | undefined): string | null => {
+    if (!isoString) return null;
+    try {
+      const date = new Date(isoString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) return null;
+      // Format as YYYY-MM-DDTHH:mm (datetime-local format)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch {
+      return null;
+    }
+  };
+
   React.useEffect(() => {
     if (data) {
       setFormData({
         vendor_id: data.vendor_id ?? null,
-        vendor_effective_from: data.vendor_effective_from ?? null,
-        vendor_effective_to: data.vendor_effective_to ?? null,
+        vendor_effective_from: convertToDateTimeLocal(data.vendor_effective_from),
+        vendor_effective_to: convertToDateTimeLocal(data.vendor_effective_to),
         vendor_agreement_id: data.vendor_agreement_id ?? null,
         vendor_assessment_id: data.vendor_assessment_id ?? null,
       });
