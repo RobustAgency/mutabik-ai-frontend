@@ -1,14 +1,19 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import { controlsService } from '@/service/admin/controls';
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import {
+  useGetControlsQuery,
+  useGetControlQuery,
+  useCreateControlMutation,
+  useUpdateControlMutation,
+} from "@/app/lib/features/controlsApi";
 import {
   Control,
   ControlFilters,
   CreateControlRequest,
-  UpdateControlRequest
-} from '@/interfaces/Control';
+  UpdateControlRequest,
+} from "@/interfaces/Control";
 
 export interface UseControlsResult {
   controls: Control[];
@@ -20,201 +25,74 @@ export interface UseControlsResult {
     total: number;
     totalPages: number;
   };
-  refresh: () => Promise<void>;
-  loadControls: (filters?: ControlFilters) => Promise<void>;
+  refresh: () => Promise<any>;
   handlePageChange: (page: number) => void;
   handleSearch: (search: string) => void;
 }
 
 export function useControls(initialFilters?: ControlFilters): UseControlsResult {
-  const [controls, setControls] = useState<Control[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0
+  const [filters, setFilters] = useState<ControlFilters>(initialFilters || { page: 1, per_page: 10 });
+  const { data, isLoading, error, refetch } = useGetControlsQuery(filters);
+
+  return {
+    controls: data?.data || [],
+    loading: isLoading,
+    error: error ? (error as any)?.data?.message || "Failed to fetch controls" : null,
+    pagination: {
+      page: data?.meta?.current_page ?? 1,
+      limit: data?.meta?.per_page ?? filters?.per_page ?? 10,
+      total: data?.meta?.total ?? 0,
+      totalPages: data?.meta?.last_page ?? data?.meta?.current_page ?? 1,
+    },
+    refresh: async () => refetch(),
+    handlePageChange: (page: number) => setFilters((prev) => ({ ...(prev || {}), page })),
+    handleSearch: (search: string) => setFilters((prev) => ({ ...(prev || {}), search, page: 1 })),
+  };
+}
+
+export const useControl = (id?: string | number) => {
+  const { data, isLoading, error, refetch } = useGetControlQuery(id as string, {
+    skip: !id,
   });
 
-  const currentParamsRef = useRef<ControlFilters>(initialFilters || {});
-  const loadingRef = useRef(false);
-
-  const loadControls = useCallback(async (fetchParams?: ControlFilters) => {
-    if (loadingRef.current) return;
-
-    setLoading(true);
-    loadingRef.current = true;
-    try {
-      const params = fetchParams || currentParamsRef.current;
-      const response = await controlsService.getControls({
-        page: params.page || 1,
-        per_page: params.per_page || 10,
-        name: params.search,
-        framework_ids: params.framework_ids,
-        requirement_ids: params.requirement_ids,
-        tag_ids: params.tag_ids
-      });
-
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
-      setControls(response.data.data);
-      setPagination({
-        page: response.data.current_page,
-        limit: response.data.per_page,
-        total: response.data.total,
-        totalPages: response.data.last_page
-      });
-
-      currentParamsRef.current = params;
-      setError(null);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load controls';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-      loadingRef.current = false;
-    }
-  }, []);
-
-  const handlePageChange = (page: number) => {
-    const newParams = { ...currentParamsRef.current, page };
-    loadControls(newParams);
-  };
-
-  const handleSearch = (search: string) => {
-    const newParams = { ...currentParamsRef.current, search, page: 1 };
-    loadControls(newParams);
-  };
-
-  const refresh = () => loadControls(currentParamsRef.current);
-
-  useEffect(() => {
-    loadControls();
-  }, [loadControls]);
-
   return {
-    controls,
-    loading,
-    error,
-    pagination,
-    refresh,
-    loadControls,
-    handlePageChange,
-    handleSearch,
+    control: data ?? null,
+    loading: isLoading,
+    error: error ? (error as any)?.data?.message || "Failed to fetch control" : null,
+    refetch,
   };
-}
+};
 
-export interface UseControlResult {
-  control: Control | null;
-  loading: boolean;
-  error: string | null;
-  loadControl: (id: string | number) => Promise<void>;
-}
-
-export function useControl(id?: string | number): UseControlResult {
-  const [control, setControl] = useState<Control | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadControl = async (controlId: string | number) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await controlsService.getControl(controlId);
-
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
-      setControl(response.data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load control';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (id) {
-      loadControl(id);
-    }
-  }, [id]);
-
-  return {
-    control,
-    loading,
-    error,
-    loadControl,
-  };
-}
-
-export interface UseControlMutationsResult {
-  creating: boolean;
-  updating: boolean;
-  createControl: (data: CreateControlRequest) => Promise<boolean>;
-  updateControl: (id: string | number, data: UpdateControlRequest) => Promise<boolean>;
-}
-
-export function useControlMutations(): UseControlMutationsResult {
-  const [creating, setCreating] = useState(false);
-  const [updating, setUpdating] = useState(false);
+export const useControlMutations = () => {
   const router = useRouter();
+  const [createControlMutation, { isLoading: creating }] = useCreateControlMutation();
+  const [updateControlMutation, { isLoading: updating }] = useUpdateControlMutation();
 
   const createControl = async (data: CreateControlRequest): Promise<boolean> => {
     try {
-      setCreating(true);
-
-      const response = await controlsService.createControl(data);
-
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
-      toast.success('Control created successfully');
-      router.push('/admin/compliance-library/controls');
+      await createControlMutation(data).unwrap();
+      toast.success("Control created successfully");
+      router.push("/admin/compliance-library/controls");
       return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create control';
-      toast.error(errorMessage);
-      return false;
-    } finally {
-      setCreating(false);
+    } catch (err: any) {
+      const msg = err?.data?.message || "Failed to create control";
+      toast.error(msg);
+      throw err;
     }
   };
 
   const updateControl = async (id: string | number, data: UpdateControlRequest): Promise<boolean> => {
     try {
-      setUpdating(true);
-
-      const response = await controlsService.updateControl(id, data);
-
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
-      toast.success('Control updated successfully');
-      router.push('/admin/compliance-library/controls');
+      await updateControlMutation({ id, data }).unwrap();
+      toast.success("Control updated successfully");
+      router.push("/admin/compliance-library/controls");
       return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update control';
-      toast.error(errorMessage);
-      return false;
-    } finally {
-      setUpdating(false);
+    } catch (err: any) {
+      const msg = err?.data?.message || "Failed to update control";
+      toast.error(msg);
+      throw err;
     }
   };
 
-  return {
-    creating,
-    updating,
-    createControl,
-    updateControl,
-  };
-}
+  return { creating, updating, createControl, updateControl };
+};

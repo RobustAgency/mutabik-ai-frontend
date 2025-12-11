@@ -330,6 +330,60 @@ export const validateDate = (
 };
 
 /**
+ * Validate date range (checks if end date is after or equal to start date)
+ * @param startDate - Start date string
+ * @param endDate - End date string
+ * @param rules - Optional validation rules
+ * @returns Array of error messages (empty if valid)
+ */
+export const validateDateRange = (
+  startDate: string | null | undefined,
+  endDate: string | null | undefined,
+  rules?: {
+    messages?: {
+      invalidRange?: string;
+      invalidStart?: string;
+      invalidEnd?: string;
+    };
+  }
+): string[] => {
+  const errors: string[] = [];
+  
+  // If both dates are empty, it's valid (optional fields)
+  if (!startDate && !endDate) {
+    return errors;
+  }
+  
+  // Validate start date if provided
+  if (startDate) {
+    const startDateObj = new Date(startDate);
+    if (isNaN(startDateObj.getTime())) {
+      errors.push(rules?.messages?.invalidStart || "Invalid start date");
+      return errors;
+    }
+  }
+  
+  // Validate end date if provided
+  if (endDate) {
+    const endDateObj = new Date(endDate);
+    if (isNaN(endDateObj.getTime())) {
+      errors.push(rules?.messages?.invalidEnd || "Invalid end date");
+      return errors;
+    }
+    
+    // If both dates are provided, check range
+    if (startDate) {
+      const startDateObj = new Date(startDate);
+      if (endDateObj < startDateObj) {
+        errors.push(rules?.messages?.invalidRange || "End date must be after or equal to start date");
+      }
+    }
+  }
+  
+  return errors;
+};
+
+/**
  * Combine multiple validation results
  * @param validations - Array of validation results
  * @returns Combined array of error messages

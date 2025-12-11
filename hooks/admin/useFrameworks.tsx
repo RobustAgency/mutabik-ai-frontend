@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { frameworkService } from '@/service/admin/frameworks';
-import { 
-  Framework, 
-  FrameworkFilters, 
-  CreateFrameworkRequest, 
-  UpdateFrameworkRequest 
+import {
+  useCreateFrameworkMutation,
+  useGetFrameworkQuery,
+  useGetFrameworksQuery,
+  useUpdateFrameworkMutation,
+} from '@/app/lib/features/frameworksApi';
+import {
+  Framework,
+  FrameworkFilters,
+  CreateFrameworkRequest,
+  UpdateFrameworkRequest,
 } from '@/interfaces/Framework';
 
 export interface UseFrameworksResult {
@@ -16,57 +21,71 @@ export interface UseFrameworksResult {
   totalPages: number;
   currentPage: number;
   total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
   refresh: () => Promise<void>;
   loadFrameworks: (filters?: FrameworkFilters) => Promise<void>;
+  handlePageChange: (page: number) => void;
+  handleSearch: (search: string) => void;
 }
 
 export function useFrameworks(initialFilters?: FrameworkFilters): UseFrameworksResult {
-  const [frameworks, setFrameworks] = useState<Framework[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [filters, setFilters] = useState<FrameworkFilters>(initialFilters || {});
 
-  const loadFrameworks = async (filters: FrameworkFilters = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await frameworkService.getFrameworks(filters);
-      
-      if (response.error) {
-        throw new Error(response.message);
-      }
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetFrameworksQuery(filters);
 
-      setFrameworks(response.data.data);
-      setTotalPages(response.data.last_page);
-      setCurrentPage(response.data.current_page);
-      setTotal(response.data.total);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load frameworks';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+  const loadFrameworks = async (nextFilters: FrameworkFilters = {}) => {
+    setFilters(nextFilters);
   };
 
-  const refresh = () => loadFrameworks(initialFilters);
+  const refresh = async () => {
+    await refetch();
+  };
 
-  useEffect(() => {
-    loadFrameworks(initialFilters);
-  }, []);
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...(prev || {}), page }));
+  };
+
+  const handleSearch = (search: string) => {
+    setFilters((prev) => ({ ...(prev || {}), search, page: 1 }));
+  };
+
+  const errorMessage = useMemo(() => {
+    if (!isError) return null;
+    if (error && typeof error === 'object' && 'data' in error) {
+      const maybeMessage = (error as any)?.data?.message;
+      if (maybeMessage) return String(maybeMessage);
+    }
+    return 'Failed to load frameworks';
+  }, [error, isError]);
 
   return {
-    frameworks,
-    loading,
-    error,
-    totalPages,
-    currentPage,
-    total,
+    frameworks: data?.data || [],
+    loading: isLoading,
+    error: errorMessage,
+    totalPages: data?.meta?.last_page ?? 0,
+    currentPage: data?.meta?.current_page ?? 1,
+    total: data?.meta?.total ?? 0,
+    pagination: {
+      page: data?.meta?.current_page ?? 1,
+      limit: data?.meta?.per_page ?? filters?.per_page ?? 10,
+      total: data?.meta?.total ?? 0,
+      totalPages: data?.meta?.last_page ?? 0,
+    },
     refresh,
     loadFrameworks,
+    handlePageChange,
+    handleSearch,
   };
 }
 
@@ -78,41 +97,42 @@ export interface UseFrameworkResult {
 }
 
 export function useFramework(id?: string | number): UseFrameworkResult {
-  const [framework, setFramework] = useState<Framework | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [frameworkId, setFrameworkId] = useState<string | number | undefined>(id);
 
-  const loadFramework = async (frameworkId: string | number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await frameworkService.getFramework(frameworkId);
-      
-      if (response.error) {
-        throw new Error(response.message);
-      }
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetFrameworkQuery(frameworkId as string | number, {
+    skip: !frameworkId,
+  });
 
-      setFramework(response.data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load framework';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+  const loadFramework = async (frameworkIdValue: string | number) => {
+    setFrameworkId(frameworkIdValue);
+    await refetch();
   };
 
   useEffect(() => {
     if (id) {
-      loadFramework(id);
+      setFrameworkId(id);
     }
   }, [id]);
 
+  const errorMessage = useMemo(() => {
+    if (!isError) return null;
+    if (error && typeof error === 'object' && 'data' in error) {
+      const maybeMessage = (error as any)?.data?.message;
+      if (maybeMessage) return String(maybeMessage);
+    }
+    return 'Failed to load framework';
+  }, [error, isError]);
+
   return {
-    framework,
-    loading,
-    error,
+    framework: data ?? null,
+    loading: isLoading,
+    error: errorMessage,
     loadFramework,
   };
 }
@@ -125,20 +145,13 @@ export interface UseFrameworkMutationsResult {
 }
 
 export function useFrameworkMutations(): UseFrameworkMutationsResult {
-  const [creating, setCreating] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [createFrameworkMutation, { isLoading: creating }] = useCreateFrameworkMutation();
+  const [updateFrameworkMutation, { isLoading: updating }] = useUpdateFrameworkMutation();
   const router = useRouter();
 
   const createFramework = async (data: CreateFrameworkRequest): Promise<boolean> => {
     try {
-      setCreating(true);
-      
-      const response = await frameworkService.createFramework(data);
-      
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
+      await createFrameworkMutation(data).unwrap();
       toast.success('Framework created successfully');
       router.push('/admin/compliance-library/frameworks');
       return true;
@@ -146,21 +159,12 @@ export function useFrameworkMutations(): UseFrameworkMutationsResult {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create framework';
       toast.error(errorMessage);
       return false;
-    } finally {
-      setCreating(false);
     }
   };
 
   const updateFramework = async (id: string | number, data: UpdateFrameworkRequest): Promise<boolean> => {
     try {
-      setUpdating(true);
-      
-      const response = await frameworkService.updateFramework(id, data);
-      
-      if (response.error) {
-        throw new Error(response.message);
-      }
-
+      await updateFrameworkMutation({ id, data }).unwrap();
       toast.success('Framework updated successfully');
       router.push('/admin/compliance-library/frameworks');
       return true;
@@ -168,8 +172,6 @@ export function useFrameworkMutations(): UseFrameworkMutationsResult {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update framework';
       toast.error(errorMessage);
       return false;
-    } finally {
-      setUpdating(false);
     }
   };
 
