@@ -161,6 +161,7 @@ export default function ComplianceEvidenceList() {
                   variant="ghost"
                   size="sm"
                   className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                   onClick={(e) => e.stopPropagation()} 
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
@@ -170,7 +171,10 @@ export default function ComplianceEvidenceList() {
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => handleDelete(ce)}
+                 onClick={(e) => {
+    e.stopPropagation();
+    handleDelete(ce);
+  }}
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4 mr-1" />

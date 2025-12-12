@@ -377,6 +377,7 @@ export default function RequirementControlForm({
                 Coverage <span className="text-red-500">*</span>
               </Label>
               <Select
+              key={`coverage-${formData.coverage || "none"}`}
                 value={formData.coverage}
                 onValueChange={(value) =>
                   handleInputChange("coverage", value as RequirementControlCoverageEnum)
@@ -470,6 +471,7 @@ export default function RequirementControlForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">Review Status</Label>
               <Select
+              key={`review-status-${formData.review_status || "none"}`}
                 value={formData.review_status || "null"}
                 onValueChange={(value) =>
                   handleInputChange(
