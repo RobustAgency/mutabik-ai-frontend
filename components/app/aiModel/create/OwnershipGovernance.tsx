@@ -60,6 +60,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Ownership Category <span className="text-red-500">*</span>
                     </Label>
                     <Select
+                        key={`ownership-category-${formData.ownership_category || "none"}`}
                         value={formData.ownership_category}
                         onValueChange={(value) =>
                             setFormData((prev) => ({
@@ -102,6 +103,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         </TooltipProvider>
                     </div>
                     <Select
+                        key={`responsible-org-role-${formData.responsible_org_role || "none"}`}
                         value={formData.responsible_org_role}
                         onValueChange={(value) =>
                             setFormData((prev) => ({

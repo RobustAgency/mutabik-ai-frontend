@@ -148,7 +148,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
           value={formData.name}
           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           placeholder="ISO 31010 Risk Matrix"
-          className={`h-[44px] w-full px-4 rounded-lg border ${
+          className={`h-11 w-full px-4 rounded-lg border ${
             errors.name ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />
@@ -159,10 +159,11 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
         <div className="space-y-2">
           <Label htmlFor="rm-likelihood-scale">Likelihood Scale</Label>
           <Select
+            key={`likelihood_scale-${formData.likelihood_scale || "none"}`}
             value={formData.likelihood_scale}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, likelihood_scale: value }))}
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD]">
               <SelectValue placeholder="Select likelihood scale" />
             </SelectTrigger>
             <SelectContent>
@@ -177,10 +178,11 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
         <div className="space-y-2">
           <Label htmlFor="rm-impact-scale">Impact Scale</Label>
           <Select
+            key={`impact_scale-${formData.impact_scale || "none"}`}
             value={formData.impact_scale}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, impact_scale: value }))}
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD]">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD]">
               <SelectValue placeholder="Select impact scale" />
             </SelectTrigger>
             <SelectContent>
@@ -218,7 +220,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
             setFormData((prev) => ({ ...prev, acceptance_thresholds: e.target.value }))
           }
           placeholder="Medium"
-          className={`h-[44px] w-full px-4 rounded-lg border ${
+          className={`h-11 w-full px-4 rounded-lg border ${
             errors.acceptance_thresholds ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />
@@ -236,7 +238,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
             setFormData((prev) => ({ ...prev, aggregation_logic: e.target.value }))
           }
           placeholder="Maximum inherent risk across all identified risks"
-          className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+          className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
         />
       </div>
 
@@ -269,7 +271,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, effective_from: e.target.value }))
             }
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -281,7 +283,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, effective_to: e.target.value }))
             }
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -293,7 +295,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
               setFormData((prev) => ({ ...prev, owner_team: e.target.value }))
             }
             placeholder="Risk Management"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               errors.owner_team ? "border-red-500" : "border-[#D0D5DD]"
             } focus:border-[#D0D5DD] focus:-ring-0`}
           />
@@ -312,7 +314,7 @@ const RiskMethodologyModalForm: React.FC<RiskMethodologyModalFormProps> = ({
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, source_created_at: e.target.value }))
           }
-          className={`h-[44px] w-full px-4 rounded-lg border ${
+          className={`h-11 w-full px-4 rounded-lg border ${
             errors.source_created_at ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />

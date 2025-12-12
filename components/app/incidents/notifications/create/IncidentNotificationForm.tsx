@@ -55,7 +55,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
 
       <div className="space-y-2">
         <Label>Audience Type <span className="text-red-500">*</span></Label>
-        <Select value={formData.audience_type} onValueChange={(value) => handleInputChange("audience_type", value)}>
+        <Select key={`audience_type-${formData.audience_type || "none"}`} value={formData.audience_type} onValueChange={(value) => handleInputChange("audience_type", value)}>
           <SelectTrigger className={`w-full ${errors.audience_type ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
@@ -73,7 +73,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
 
       <div className="space-y-2">
         <Label>Channel <span className="text-red-500">*</span></Label>
-        <Select value={formData.channel} onValueChange={(value) => handleInputChange("channel", value)}>
+        <Select key={`channel-${formData.channel || "none"}`} value={formData.channel} onValueChange={(value) => handleInputChange("channel", value)}>
           <SelectTrigger className={`w-full ${errors.channel ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
@@ -118,7 +118,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
 
       <div className="space-y-2">
         <Label>Follow-up Required <span className="text-red-500">*</span></Label>
-        <Select value={formData.follow_up_required ? "true" : "false"} onValueChange={(value) => handleInputChange("follow_up_required", value === "true")}>
+        <Select key={`follow_up_required-${formData.follow_up_required ? "true" : "false"}`} value={formData.follow_up_required ? "true" : "false"} onValueChange={(value) => handleInputChange("follow_up_required", value === "true")}>
           <SelectTrigger className={`w-full ${errors.follow_up_required ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>

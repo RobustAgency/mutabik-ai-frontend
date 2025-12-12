@@ -135,7 +135,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
         </div>
         <div className="space-y-2">
           <Label>Nullable <span className="text-red-500">*</span></Label>
-          <Select value={form.nullable} onValueChange={(v) => setForm((p) => ({ ...p, nullable: v }))}>
+          <Select  key={`nullable-${form.nullable || "none"}`} value={form.nullable} onValueChange={(v) => setForm((p) => ({ ...p, nullable: v }))}>
             <SelectTrigger className={`w-full ${errors.nullable ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -153,7 +153,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Sensitivity Override</Label>
-          <Select value={form.sensitivity_override} onValueChange={(v) => setForm((p) => ({ ...p, sensitivity_override: v }))}>
+          <Select  key={`sensitivity_override-${form.sensitivity_override || "none"}`} value={form.sensitivity_override} onValueChange={(v) => setForm((p) => ({ ...p, sensitivity_override: v }))}>
             <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Public">Public</SelectItem>
@@ -165,7 +165,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
         </div>
         <div className="space-y-2">
           <Label>PII Override</Label>
-          <Select value={form.pii_override} onValueChange={(v) => setForm((p) => ({ ...p, pii_override: v }))}>
+          <Select  key={`pii_override-${form.pii_override || "none"}`} value={form.pii_override} onValueChange={(v) => setForm((p) => ({ ...p, pii_override: v }))}>
             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Inherit">Inherit</SelectItem>
@@ -189,7 +189,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>CDE in Dataset <span className="text-red-500">*</span></Label>
-          <Select value={form.cde_in_dataset} onValueChange={(v) => setForm((p) => ({ ...p, cde_in_dataset: v }))}>
+          <Select  key={`cde_in_dataset-${form.cde_in_dataset || "none"}`} value={form.cde_in_dataset} onValueChange={(v) => setForm((p) => ({ ...p, cde_in_dataset: v }))}>
             <SelectTrigger className={`w-full ${errors.cde_in_dataset ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -208,6 +208,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
             {form.cde_in_dataset === "Yes" && <span className="text-red-500">*</span>}
           </Label>
           <Select
+            key={`cde_category_in_dataset-${form.cde_category_in_dataset || "none"}`}
             value={form.cde_category_in_dataset}
             onValueChange={(v) => setForm((p) => ({ ...p, cde_category_in_dataset: v }))}
           >
@@ -237,7 +238,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
         </div>
         <div className="space-y-2">
           <Label>Deprecated</Label>
-          <Select value={form.deprecated} onValueChange={(v) => setForm((p) => ({ ...p, deprecated: v }))}>
+          <Select  key={`deprecated-${form.deprecated || "none"}`} value={form.deprecated} onValueChange={(v) => setForm((p) => ({ ...p, deprecated: v }))}>
             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="No">No</SelectItem>

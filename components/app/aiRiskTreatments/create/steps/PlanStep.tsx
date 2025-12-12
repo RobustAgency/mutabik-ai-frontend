@@ -69,7 +69,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
             modalForm={AiRiskRegisterModalForm}
             canCreate
             placeholder={isAiRiskRegistersLoading ? "Loading..." : "Select AI Risk Register"}
-            triggerClassName="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            triggerClassName="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             error={!!validationErrors.ai_risk_register_id}
           />
           {validationErrors.ai_risk_register_id && (
@@ -83,6 +83,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
             Treatment Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`treatment_type-${formState.treatment_type || "none"}`} 
             value={formState.treatment_type}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -91,7 +92,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select treatment type" />
             </SelectTrigger>
             <SelectContent>
@@ -151,7 +152,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
             modalForm={StakeholderModalForm as any}
             canCreate
             placeholder={isStakeholdersLoading ? "Loading..." : "Select stakeholder"}
-            triggerClassName="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            triggerClassName="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             error={!!validationErrors.owner_stakeholder_id}
           />
           {validationErrors.owner_stakeholder_id && (
@@ -171,7 +172,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
             onChange={(e) =>
               setFormState((prev) => ({ ...prev, due_date: e.target.value }))
             }
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.due_date ? "border-red-500" : "border-[#D0D5DD]"
             } focus:border-[#D0D5DD] focus:-ring-0`}
           />
@@ -184,6 +185,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${formState.status || "none"}`}
             value={formState.status}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -192,7 +194,7 @@ export const PlanStep: React.FC<PlanStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>

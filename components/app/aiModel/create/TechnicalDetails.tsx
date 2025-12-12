@@ -44,6 +44,7 @@ const TechnicalDetails: React.FC<TechnicalDetailsProps> = ({
                         Business Adoption Status
                     </Label>
                     <Select
+                       key={`business-adoption-status-${formData.business_adoption_status || "none"}`}
                         value={formData.business_adoption_status || ""}
                         onValueChange={(value) =>
                             setFormData((prev) => ({

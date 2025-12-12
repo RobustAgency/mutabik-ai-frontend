@@ -106,6 +106,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
             <Select
+              key={`category-${formData.category || "none"}`}
               value={formData.category}
               onValueChange={(value) => handleInputChange("category", value as CreateAiIncidentData["category"])}
             >
@@ -132,6 +133,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="severity">Severity <span className="text-red-500">*</span></Label>
             <Select
+              key={`severity-${formData.severity || "none"}`}
               value={formData.severity}
               onValueChange={(value) => handleInputChange("severity", value as CreateAiIncidentData["severity"])}
             >
@@ -154,6 +156,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
             <Select
+              key={`status-${formData.status || "none"}`}
               value={formData.status}
               onValueChange={(value) => handleInputChange("status", value as CreateAiIncidentData["status"])}
             >
@@ -176,6 +179,7 @@ const AiIncidentForm: React.FC<AiIncidentFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="stage">Stage <span className="text-red-500">*</span></Label>
             <Select
+              key={`stage-${formData.stage || "none"}`}
               value={formData.stage}
               onValueChange={(value) => handleInputChange("stage", value as CreateAiIncidentData["stage"])}
             >

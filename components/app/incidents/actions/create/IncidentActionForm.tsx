@@ -47,7 +47,7 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
 
       <div className="space-y-2">
         <Label>Action Type <span className="text-red-500">*</span></Label>
-        <Select value={formData.action_type} onValueChange={(value) => handleInputChange("action_type", value)}>
+        <Select  key={`action_type-${formData.action_type || "none"}`} value={formData.action_type} onValueChange={(value) => handleInputChange("action_type", value)}>
           <SelectTrigger className={`w-full ${errors.action_type ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
@@ -89,7 +89,7 @@ const IncidentActionForm: React.FC<IncidentActionFormProps> = ({ formData, setFo
 
       <div className="space-y-2">
         <Label>Validation Result <span className="text-red-500">*</span></Label>
-        <Select value={formData.validation_result} onValueChange={(value) => handleInputChange("validation_result", value)}>
+        <Select  key={`validation_result-${formData.validation_result || "none"}`} value={formData.validation_result} onValueChange={(value) => handleInputChange("validation_result", value)}>
           <SelectTrigger className={`w-full ${errors.validation_result ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>

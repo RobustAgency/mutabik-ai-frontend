@@ -403,6 +403,7 @@ export default function RequirementControlForm({
             <div>
               <Label className="text-sm font-medium text-gray-900">AI Model</Label>
               <Select
+                key={`ai-model-${formData.ai_model_id || "none"}-${aiModelOptions.length}`}
                 value={formData.ai_model_id ? String(formData.ai_model_id) : "null"}
                 onValueChange={(value) =>
                   handleInputChange("ai_model_id", value === "null" ? null : Number(value))

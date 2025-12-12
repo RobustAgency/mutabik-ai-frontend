@@ -245,6 +245,7 @@ export default function ArtifactAccessLogForm({
                                     Action <span className="text-red-500">*</span>
                                 </Label>
                                 <Select
+                                    key={`action-${formData.action || "none"}`}
                                     value={formData.action}
                                     onValueChange={(value) => {
                                         setFormData((prev) => ({ ...prev, action: value }));
@@ -279,6 +280,7 @@ export default function ArtifactAccessLogForm({
                                     Context <span className="text-red-500">*</span>
                                 </Label>
                                 <Select
+                                    key={`context-${formData.context || "none"}`}
                                     value={formData.context}
                                     onValueChange={(value) => {
                                         setFormData((prev) => ({ ...prev, context: value }));

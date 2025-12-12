@@ -262,6 +262,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             Artifact Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
+                            key={`artifact-type-${formData.artifact_type || "none"}`}
                             value={formData.artifact_type}
                             onValueChange={(value) => {
                                 setFormData((prev) => ({
@@ -351,6 +352,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             Checksum Algorithm
                         </Label>
                         <Select
+                            key={`checksum-algorithm-${formData.checksum_algorithm || "none"}`}
                             value={formData.checksum_algorithm || undefined}
                             onValueChange={(value) => {
                                 setFormData((prev) => ({ ...prev, checksum_algorithm: value }));

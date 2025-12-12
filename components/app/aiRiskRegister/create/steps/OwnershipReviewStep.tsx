@@ -58,7 +58,9 @@ export const OwnershipReviewStep: React.FC = () => {
             name="review_cadence"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select 
+              key={`review-cadence-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={`w-full ${
                     errors.review_cadence ? "border-red-500" : ""
@@ -90,7 +92,7 @@ export const OwnershipReviewStep: React.FC = () => {
             id="next_review_due"
             type="date"
             {...register("next_review_due")}
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               errors.next_review_due
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -112,7 +114,7 @@ export const OwnershipReviewStep: React.FC = () => {
           id="created_by"
           {...register("created_by")}
           placeholder="user@example.com"
-          className={`h-[44px] w-full px-4 rounded-lg border ${
+          className={`h-11 w-full px-4 rounded-lg border ${
             errors.created_by ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />

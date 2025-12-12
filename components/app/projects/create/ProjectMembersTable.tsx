@@ -170,7 +170,7 @@ const MembersAdd = () => {
           </CardTitle>
           <Button
             onClick={() => setOpen(true)}
-            className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"
+            className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white"
           >
             <UserPlus /> Add Member
           </Button>
@@ -203,7 +203,7 @@ const MembersAdd = () => {
               `/projects/create/frameworks?step=${3}&project_id=${projectId}`
             );
           }}
-          className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white"
+          className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white"
         >
           Continue
         </Button>

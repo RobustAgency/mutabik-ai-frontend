@@ -49,7 +49,7 @@ const AddProjectMember = ({ members, projectMembers, onAddMember, onClose, loadi
         <Label className="font-sans font-medium text-sm leading-5 tracking-normal text-[#344054] mb-2">
           Member
         </Label>
-        <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
+        <Select key={`selectedMemberId-${selectedMemberId || "none"}`} value={selectedMemberId} onValueChange={setSelectedMemberId}>
           <SelectTrigger className="w-full gap-2 px-4 py-2.5 rounded-md border border-[#D0D5DD] shadow-[0_1px_2px_0_#1018280D] opacity-100 cursor-pointer">
             <SelectValue
               className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]"
@@ -145,14 +145,14 @@ const AddProjectMember = ({ members, projectMembers, onAddMember, onClose, loadi
             type="button"
             onClick={onClose}
             variant="outline"
-            className="h-[44px] border border-[#D0D5DD] bg-white text-[#344054] mt-6"
+            className="h-11 border border-[#D0D5DD] bg-white text-[#344054] mt-6"
           >
             Cancel
           </Button>
           <Button
             onClick={handleAddMember}
             disabled={loading || !selectedMemberId || filteredMembers.length === 0}
-            className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white mt-6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white mt-6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Adding...' : filteredMembers.length === 0 ? 'No Members Available' : 'Add New Member'}
           </Button>

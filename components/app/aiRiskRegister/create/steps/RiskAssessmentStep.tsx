@@ -78,9 +78,11 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             name="likelihood_code"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select 
+              key={`likelihood_code-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     errors.likelihood_code
                       ? "border-red-500"
                       : "border-[#D0D5DD]"
@@ -116,9 +118,11 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             name="impact_code"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select 
+              key={`impact_code-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     errors.impact_code
                       ? "border-red-500"
                       : "border-[#D0D5DD]"
@@ -153,7 +157,7 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             id="inherent_score"
             {...register("inherent_score")}
             placeholder="7"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -162,7 +166,7 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             id="residual_score"
             {...register("residual_score")}
             placeholder="3"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
       </div>
@@ -176,7 +180,9 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             name="risk_level"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select 
+              key={`risk_level-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={`w-full ${
                     errors.risk_level ? "border-red-500" : ""
@@ -206,7 +212,9 @@ export const RiskAssessmentStep: React.FC<RiskAssessmentStepProps> = ({
             name="decision"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select  
+              key={`decision-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={`w-full ${
                     errors.decision ? "border-red-500" : ""

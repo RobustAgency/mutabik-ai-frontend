@@ -80,6 +80,7 @@ export default function StorageLocationSection({
                             Environment
                         </Label>
                         <Select
+                            key={`environment-${formData.environment || "none"}`}
                             value={formData.environment}
                             onValueChange={(value) => {
                                 onFieldChange("environment", value);
@@ -104,6 +105,7 @@ export default function StorageLocationSection({
                             File Format
                         </Label>
                         <Select
+                            key={`file-format-${formData.file_format || "none"}`}
                             value={formData.file_format}
                             onValueChange={(value) => {
                                 onFieldChange("file_format", value);

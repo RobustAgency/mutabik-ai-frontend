@@ -240,6 +240,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
                     Relationship Type <span className="text-red-500">*</span>
                 </Label>
                 <Select
+                    key={`relationship-type-${formData.relationship_type || "none"}`}
                     value={formData.relationship_type}
                     onValueChange={(value) => handleChange('relationship_type', value)}
                 >

@@ -47,7 +47,7 @@ const IncidentRCAForm: React.FC<IncidentRCAFormProps> = ({ formData, setFormData
 
       <div className="space-y-2">
         <Label>RCA Method <span className="text-red-500">*</span></Label>
-        <Select value={formData.rca_method} onValueChange={(value) => handleInputChange("rca_method", value)}>
+        <Select key={`rca_method-${formData.rca_method || "none"}`} value={formData.rca_method} onValueChange={(value) => handleInputChange("rca_method", value)}>
           <SelectTrigger className={`w-full ${errors.rca_method ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>

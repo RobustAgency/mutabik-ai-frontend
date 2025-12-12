@@ -151,7 +151,7 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="data_domains_picker">Select data domain <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(value) => handleDataDomainAdd(value)}>
+            <Select  key={`data_domains_picker-${formData.data_domains.join(",") || "none"}`} onValueChange={(value) => handleDataDomainAdd(value)}>
               <SelectTrigger
                 id="data_domains_picker"
                 className={`w-full ${errors.data_domains ? "border-destructive" : ""}`}

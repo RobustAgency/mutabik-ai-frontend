@@ -197,14 +197,14 @@ const ProjectsTable: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
             <Button
               variant="outline"
-              className="flex items-center gap-2 h-[44px] border border-[#D0D5DD] bg-[#F9FAFB] text-sm"
+              className="flex items-center gap-2 h-11 border border-[#D0D5DD] bg-[#F9FAFB] text-sm"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filter
             </Button>
             <Button
               onClick={() => router.push(`/projects/create?step=${1}`)}
-              className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer"
+              className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer"
             >
               Create Project
             </Button>

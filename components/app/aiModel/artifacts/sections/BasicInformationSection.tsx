@@ -105,6 +105,7 @@ export default function BasicInformationSection({
                             Artifact Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
+                            key={`artifact-type-${formData.artifact_type || "none"}`}
                             value={formData.artifact_type}
                             onValueChange={(value) => {
                                 onFieldChange("artifact_type", value);
