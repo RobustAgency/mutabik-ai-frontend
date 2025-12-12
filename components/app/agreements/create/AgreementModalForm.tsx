@@ -103,7 +103,7 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Agreement Type <span className="text-red-500">*</span></Label>
-          <Select value={String(form.agreement_type)} onValueChange={(v) => setForm((p) => ({ ...p, agreement_type: v as any }))}>
+          <Select key={`agreement-type-${form.agreement_type || "none"}`} value={String(form.agreement_type)} onValueChange={(v) => setForm((p) => ({ ...p, agreement_type: v as any }))}>
             <SelectTrigger className="w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="msa">MSA</SelectItem>
@@ -117,7 +117,7 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
         </div>
         <div className="space-y-2">
           <Label>Status <span className="text-red-500">*</span></Label>
-          <Select value={String(form.status)} onValueChange={(v) => setForm((p) => ({ ...p, status: v as any }))}>
+          <Select key={`status-${form.status || "none"}`} value={String(form.status)} onValueChange={(v) => setForm((p) => ({ ...p, status: v as any }))}>
             <SelectTrigger className="w-full"><SelectValue placeholder="Select status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="draft">Draft</SelectItem>

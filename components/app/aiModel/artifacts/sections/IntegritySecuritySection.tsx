@@ -41,6 +41,7 @@ export default function IntegritySecuritySection({
                         Checksum Algorithm
                     </Label>
                     <Select
+                        key={`checksum-algorithm-${formData.checksum_algorithm || "none"}`}
                         value={formData.checksum_algorithm || undefined}
                         onValueChange={onChecksumAlgorithmChange}
                     >

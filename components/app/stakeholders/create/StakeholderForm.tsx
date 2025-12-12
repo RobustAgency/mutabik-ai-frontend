@@ -277,7 +277,7 @@ const StakeholderForm: React.FC<StakeholderFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="role_tags_picker">Select role tag <span className="text-red-500">*</span></Label>
-            <Select onValueChange={(value) => handleRoleTagAdd(value)}>
+            <Select key={`role_tags_picker-${formData.role_tags.join(",") || "none"}`} onValueChange={(value) => handleRoleTagAdd(value)}>
               <SelectTrigger
                 id="role_tags_picker"
                 className={`w-full ${errors.role_tags ? "border-destructive" : ""}`}

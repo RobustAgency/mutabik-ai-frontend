@@ -84,6 +84,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
             Version Type <span className="text-red-500 ml-0.5">*</span>
           </Label>
           <Select
+            key={`version-type-${formData.version_type || "none"}`}
             value={formData.version_type}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_type: value as any }))}
           >

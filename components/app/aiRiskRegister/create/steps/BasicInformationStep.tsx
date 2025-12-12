@@ -57,7 +57,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
           id="title"
           {...register("title")}
           placeholder="Model Bias Risk"
-          className={`h-[44px] w-full px-4 rounded-lg border ${
+          className={`h-11 w-full px-4 rounded-lg border ${
             errors.title ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />
@@ -103,7 +103,9 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             name="risk_category"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+              key={`risk-category-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={`w-full ${
                     errors.risk_category ? "border-red-500" : ""
@@ -131,7 +133,9 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             name="status"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select 
+              key={`status-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={`w-full ${
                     errors.status ? "border-red-500" : ""

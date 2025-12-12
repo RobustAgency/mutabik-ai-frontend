@@ -83,7 +83,7 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
                         role="combobox"
                         aria-expanded={open}
                         className={cn(
-                            "h-[44px] w-full justify-between px-4 rounded-lg border focus:border-[#D0D5DD] focus:-ring-0",
+                            "h-11 w-full justify-between px-4 rounded-lg border focus:border-[#D0D5DD] focus:-ring-0",
                             error ? "border-red-500" : "border-[#D0D5DD]",
                             !value && "text-muted-foreground"
                         )}

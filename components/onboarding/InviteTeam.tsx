@@ -108,9 +108,10 @@ const InviteTeam = () => {
                   className="w-full text-sm placeholder:text-[#98A2B3] h-12"
                 />
               </div>
-              <div className="col-span-1 min-h-[44px]">
+              <div className="col-span-1 min-h-11">
                 <label className="block text-sm font-medium text-[#344054] mb-1">Role</label>
                 <Select
+                  key={`member-role-${idx}-${member.role || "none"}`}
                   value={member.role}
                   onValueChange={val => handleMemberChange(idx, "role", val)}
                 >
@@ -133,7 +134,7 @@ const InviteTeam = () => {
           <Button
             type="button"
             variant="outline"
-            className="gap-2 px-4 py-2 h-[44px] w-full md:w-[171px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] text-gray-700 hover:bg-gray-100"
+            className="gap-2 px-4 py-2 h-11 w-full md:w-[171px] rounded-lg border border-[#D0D5DD] bg-[#FFFFFF] text-gray-700 hover:bg-gray-100"
             onClick={addMember}
           >
             <span className="text-sm font-medium border-2 pb-1 border-[#344054] flex justify-center items-center rounded-full w-[15px] h-[15px] text-[#344054]">+</span> Add new member
@@ -141,14 +142,14 @@ const InviteTeam = () => {
         </div>
         <Button
           type="submit"
-          className="w-full h-[44px] mt-8"
+          className="w-full h-11 mt-8"
           disabled={submitting}
         >
           {submitting ? 'Sending Invitations...' : 'Invite team members'}
         </Button>
         <Button
           type="button"
-          className="w-full h-[44px] mt-4"
+          className="w-full h-11 mt-4"
           disabled={submitting}
           variant={"outline"}
           onClick={handleSkipAndContinue}

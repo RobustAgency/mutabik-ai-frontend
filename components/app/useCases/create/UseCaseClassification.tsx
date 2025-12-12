@@ -51,6 +51,7 @@ const UseCaseClassification: React.FC<UseCaseClassificationProps> = ({
             <InfoTooltip content={TOOLTIP_DEFINITIONS.ROI_CLASSIFICATION} />
           </Label>
           <Select
+            key={`roi_classification-${formData.roi_classification || "none"}`}
             value={formData.roi_classification}
             onValueChange={(value) => handleChange("roi_classification", value)}
           >
@@ -78,6 +79,7 @@ const UseCaseClassification: React.FC<UseCaseClassificationProps> = ({
             Priority
           </Label>
           <Select
+            key={`priority-${formData.priority || "none"}`}
             value={formData.priority}
             onValueChange={(value) => handleChange("priority", value)}
           >

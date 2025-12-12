@@ -53,6 +53,7 @@ const DataAssesment: React.FC<DataAssesmentProps> = ({ formData, setFormData, er
               <InfoTooltip content={TOOLTIP_DEFINITIONS.DATA_SENSITIVITY} />
             </Label>
             <Select
+              key={`data_sensitivity-${formData.data_sensitivity || "none"}`}
               value={formData.data_sensitivity}
               onValueChange={(value) => handleChange("data_sensitivity", value)}
             >
@@ -83,6 +84,7 @@ const DataAssesment: React.FC<DataAssesmentProps> = ({ formData, setFormData, er
               Data Availability <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`data_availability_status-${formData.data_availability_status || "none"}`}
               value={formData.data_availability_status}
               onValueChange={(value) => handleChange("data_availability_status", value)}
             >
@@ -113,6 +115,7 @@ const DataAssesment: React.FC<DataAssesmentProps> = ({ formData, setFormData, er
             <InfoTooltip content={TOOLTIP_DEFINITIONS.DATA_READINESS} />
           </Label>
           <Select
+            key={`data_readiness-${formData.data_readiness || "none"}`}
             value={formData.data_readiness}
             onValueChange={(value) => handleChange("data_readiness", value)}
           >

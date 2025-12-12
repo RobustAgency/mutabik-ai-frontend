@@ -57,7 +57,7 @@ const ChooseFrameworks = () => {
         <CardHeader className="flex justify-end border-b border-[#E4E7EC] px-4">
           <Button
             variant="outline"
-            className="flex items-center gap-2 h-[44px] border border-[#D0D5DD] bg-[#F9FAFB] text-sm"
+            className="flex items-center gap-2 h-11 border border-[#D0D5DD] bg-[#F9FAFB] text-sm"
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filter
@@ -200,7 +200,7 @@ const ChooseFrameworks = () => {
         <Button
           onClick={handleCreateProject}
           disabled={projectLoading || !selectedFramework}
-          className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {projectLoading ? 'Adding Frameworks...' : 'Create Project'}
         </Button>

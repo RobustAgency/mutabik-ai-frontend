@@ -74,6 +74,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             <InfoTooltip content="Current deployment state: Not Deployed, Testing, Staging, Production, or Retired." />
           </Label>
           <Select
+            key={`deployment-status-${formData.deployment_status || "none"}`}
             value={formData.deployment_status}
             onValueChange={(value) => setFormData(prev => ({ ...prev, deployment_status: value as any }))}
           >
@@ -96,6 +97,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
             Lifecycle Stage <span className="text-red-500 ml-0.5">*</span>
           </Label>
           <Select
+            key={`lifecycle-stage-${formData.lifecycle_stage || "none"}`}
             value={formData.lifecycle_stage}
             onValueChange={(value) => setFormData(prev => ({ ...prev, lifecycle_stage: value as any }))}
           >
@@ -173,6 +175,7 @@ const VersionDeployment: React.FC<Props> = ({ formData, setFormData, errors }) =
               <InfoTooltip content="Final governance decision for this version." />
             </Label>
             <Select
+key={`approval-status-${formData.approval_status || "none"}`}
               value={formData.approval_status || ""}
               onValueChange={(value) =>
                 setFormData((prev) => ({

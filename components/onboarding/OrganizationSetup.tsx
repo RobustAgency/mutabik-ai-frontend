@@ -82,7 +82,7 @@ const OrganizationSetup: React.FC = () => {
               placeholder="Acme Inc."
               value={form.organizationName || ""}
               onChange={handleChange}
-              className="mt-1 h-[44px] text-lg bg-white border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A2B3]"
+              className="mt-1 h-11 text-lg bg-white border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A2B3]"
               autoComplete="organization"
               required
             />
@@ -97,7 +97,7 @@ const OrganizationSetup: React.FC = () => {
               placeholder="www.acme.com"
               value={form.website || ""}
               onChange={handleChange}
-              className="mt-1 h-[44px] text-lg bg-white border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A2B3]"
+              className="mt-1 h-11 text-lg bg-white border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A2B3]"
               autoComplete="url"
               required
             />
@@ -112,7 +112,7 @@ const OrganizationSetup: React.FC = () => {
               placeholder="+01 234 557 690"
               value={form.phone || ""}
               onChange={handleChange}
-              className="mt-1 h-[44px] text-lg bg-white border-[#D1D5DB] placeholder:text-[#98A2B3]"
+              className="mt-1 h-11 text-lg bg-white border-[#D1D5DB] placeholder:text-[#98A2B3]"
               autoComplete="tel"
               type="tel"
               required
@@ -128,7 +128,7 @@ const OrganizationSetup: React.FC = () => {
               placeholder="Enter your country"
               value={form.country || ""}
               onChange={handleChange}
-              className="mt-1 h-[44px] text-lg bg-white border-[#D1D5DB] placeholder:text-[#98A2B3]"
+              className="mt-1 h-11 text-lg bg-white border-[#D1D5DB] placeholder:text-[#98A2B3]"
               autoComplete="country"
               required
             />
@@ -141,7 +141,7 @@ const OrganizationSetup: React.FC = () => {
 
         <Button
           type="submit"
-          className="mt-2 h-[44px] rounded-lg bg-primary hover:bg-[#32c986] text-white text-sm font-medium w-full"
+          className="mt-2 h-11 rounded-lg bg-primary hover:bg-[#32c986] text-white text-sm font-medium w-full"
           disabled={submitting}
         >
           {submitting ? "Submitting..." : "Continue"}

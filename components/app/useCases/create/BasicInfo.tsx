@@ -92,7 +92,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
             onChange={(e) => setNameInput(e.target.value)}
             onBlur={() => setFormData((prev) => ({ ...prev, name: nameInput }))}
             placeholder="e.g., Retail Credit Risk Scoring"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
             } focus:border-[#D0D5DD] focus:-ring-0`}
           />
@@ -176,6 +176,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
         <div className="flex flex-col gap-2 w-full">
           <Label>Business Function / Domain</Label>
           <Select
+            key={`business_domain-${formData.business_domain || "none"}`}
             value={formData.business_domain}
             onValueChange={(value) =>
               setFormData((prev) => ({
@@ -256,6 +257,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
           <div className="flex flex-col gap-2 w-full">
             <Label>Use Case Status</Label>
             <Select
+              key={`status-${formData.status || "none"}`}
               value={formData.status}
               onValueChange={(val) =>
                 setFormData((prev) => ({ ...prev, status: val as FormDataType["status"] }))
@@ -282,7 +284,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, target_deployment_date: e.target.value }))
               }
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
         </div>

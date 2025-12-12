@@ -69,7 +69,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 setFormData((prev) => ({ ...prev, expected_roi: Number(expectedRoiInput) }))
               }
               placeholder="25.50 (0.00-999.99)"
-              className={`h-[44px] w-full px-4 rounded-lg border ${
+              className={`h-11 w-full px-4 rounded-lg border ${
                 hasError("expected_roi") ? "border-red-500" : "border-[#D0D5DD]"
               } focus:border-[#D0D5DD] focus:-ring-0`}
             />
@@ -90,7 +90,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 setFormData((prev) => ({ ...prev, budget_allocated: Number(budgetAllocatedInput) }))
               }
               placeholder="100,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
 
@@ -109,7 +109,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 }))
               }
               placeholder="75,000"
-              className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+              className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 }))
               }
               placeholder="30"
-              className={`h-[44px] w-full px-4 rounded-lg border ${
+              className={`h-11 w-full px-4 rounded-lg border ${
                 hasError("estimated_time_savings") ? "border-red-500" : "border-[#D0D5DD]"
               } focus:border-[#D0D5DD] focus:-ring-0`}
             />
@@ -161,7 +161,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 }))
               }
               placeholder="50,000"
-              className={`h-[44px] w-full px-4 rounded-lg border ${
+              className={`h-11 w-full px-4 rounded-lg border ${
                 hasError("estimated_cost_savings") ? "border-red-500" : "border-[#D0D5DD]"
               } focus:border-[#D0D5DD] focus:-ring-0`}
             />
@@ -188,7 +188,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 }))
               }
               placeholder="200,000"
-              className={`h-[44px] w-full px-4 rounded-lg border ${
+              className={`h-11 w-full px-4 rounded-lg border ${
                 hasError("estimated_revenue_impact") ? "border-red-500" : "border-[#D0D5DD]"
               } focus:border-[#D0D5DD] focus:-ring-0`}
             />
@@ -216,7 +216,7 @@ const Roi: React.FC<RoiProps> = ({ formData, setFormData, errors = {} }) => {
                 }))
               }
               placeholder="5"
-              className={`h-[44px] w-full px-4 rounded-lg border ${
+              className={`h-11 w-full px-4 rounded-lg border ${
                 hasError("estimated_fte_saving") ? "border-red-500" : "border-[#D0D5DD]"
               } focus:border-[#D0D5DD] focus:-ring-0`}
             />

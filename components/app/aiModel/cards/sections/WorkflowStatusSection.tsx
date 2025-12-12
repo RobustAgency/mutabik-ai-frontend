@@ -30,7 +30,9 @@ export default function WorkflowStatusSection({ formData, setFormData, errors = 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label>Status <span className="text-red-500">*</span></Label>
-                    <Select value={formData.status || ""} onValueChange={(v) => setFormData({ status: v })}>
+                    <Select 
+                    key={`status-${formData.status || "none"}`}
+                    value={formData.status || ""} onValueChange={(v) => setFormData({ status: v })}>
                         <SelectTrigger className={hasError("status") ? "w-full border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select status" />
                         </SelectTrigger>
@@ -47,7 +49,9 @@ export default function WorkflowStatusSection({ formData, setFormData, errors = 
 
                 <div className="space-y-2">
                     <Label>Publication Status <span className="text-red-500">*</span></Label>
-                    <Select value={formData.publication_status || ""} onValueChange={(v) => setFormData({ publication_status: v })}>
+                    <Select
+                    key={`publication-status-${formData.publication_status || "none"}`}
+                    value={formData.publication_status || ""} onValueChange={(v) => setFormData({ publication_status: v })}>
                         <SelectTrigger className={hasError("publication_status") ? "w-full border-red-500" : "w-full"}>
                             <SelectValue placeholder="Select publication" />
                         </SelectTrigger>

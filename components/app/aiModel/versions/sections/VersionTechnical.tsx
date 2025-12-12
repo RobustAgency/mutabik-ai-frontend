@@ -46,6 +46,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             <InfoTooltip content="Defines whether this is an original release, patch, hotfix, or experimental version." />
           </Label>
           <Select
+            key={`version-type-${formData.version_type || "none"}`}
             value={formData.version_role}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_role: value as any }))}
           >
@@ -68,6 +69,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             <InfoTooltip content="Whether the model comes from internal development, a vendor, open source, or a foundation model." />
           </Label>
           <Select
+            key={`source-type-${formData.version_source || "none"}`}
             value={formData.version_source}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_source: value as any }))}
           >
@@ -89,6 +91,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             Organization&apos;s Involvement <span className="text-red-500 ml-0.5">*</span>
           </Label>
           <Select
+            key={`our-involvement-${formData.our_involvement || "none"}`}
             value={formData.our_involvement}
             onValueChange={(value) => setFormData(prev => ({ ...prev, our_involvement: value as any }))}
           >
@@ -114,6 +117,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             <InfoTooltip content="Underlying structure of the model, such as Transformer, CNN, or Gradient Boosting." />
           </Label>
           <Select
+            key={`architecture-type-${formData.architecture_type || "none"}`}
             value={formData.architecture_type}
             onValueChange={(value) => setFormData(prev => ({ ...prev, architecture_type: value as any }))}
           >
@@ -141,6 +145,7 @@ const VersionTechnical: React.FC<Props> = ({ formData, setFormData, errors }) =>
             <InfoTooltip content="Reflects architecture depth, parameter count, and compute needs." />
           </Label>
           <Select
+            key={`complexity-level-${formData.complexity_level || "none"}`}
             value={formData.complexity_level}
             onValueChange={(value) => setFormData(prev => ({ ...prev, complexity_level: value as any }))}
           >

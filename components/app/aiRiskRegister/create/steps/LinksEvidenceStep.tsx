@@ -44,7 +44,7 @@ export const LinksEvidenceStep: React.FC<LinksEvidenceStepProps> = ({
             type="number"
             {...register("linked_assessment_id")}
             placeholder="Assessment ID"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -115,7 +115,7 @@ export const LinksEvidenceStep: React.FC<LinksEvidenceStepProps> = ({
           id="evidence_link"
           {...register("evidence_link")}
           placeholder="https://example.com/evidence"
-          className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+          className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
         />
       </div>
 
@@ -128,7 +128,7 @@ export const LinksEvidenceStep: React.FC<LinksEvidenceStepProps> = ({
             id="likelihood_label_snapshot"
             {...register("likelihood_label_snapshot")}
             placeholder="Medium"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -137,7 +137,7 @@ export const LinksEvidenceStep: React.FC<LinksEvidenceStepProps> = ({
             id="impact_label_snapshot"
             {...register("impact_label_snapshot")}
             placeholder="High"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -146,7 +146,7 @@ export const LinksEvidenceStep: React.FC<LinksEvidenceStepProps> = ({
             id="method_name_snapshot"
             {...register("method_name_snapshot")}
             placeholder="Risk Matrix v1"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
       </div>

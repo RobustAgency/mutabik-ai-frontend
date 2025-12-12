@@ -28,7 +28,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Source Type <span className="text-red-500">*</span></Label>
-          <Select value={formData.source_type} onValueChange={(value) => handleInputChange("source_type", value)}>
+          <Select  key={`source_type-${formData.source_type || "none"}`} value={formData.source_type} onValueChange={(value) => handleInputChange("source_type", value)}>
             <SelectTrigger className={`w-full ${errors.source_type ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -88,7 +88,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>CAPA Type <span className="text-red-500">*</span></Label>
-          <Select value={formData.capa_type} onValueChange={(value) => handleInputChange("capa_type", value)}>
+          <Select key={`capa_type-${formData.capa_type || "none"}`} value={formData.capa_type} onValueChange={(value) => handleInputChange("capa_type", value)}>
             <SelectTrigger className={`w-full ${errors.capa_type ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -101,7 +101,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         </div>
         <div className="space-y-2">
           <Label>Priority <span className="text-red-500">*</span></Label>
-          <Select value={formData.priority} onValueChange={(value) => handleInputChange("priority", value)}>
+          <Select key={`priority-${formData.priority || "none"}`} value={formData.priority} onValueChange={(value) => handleInputChange("priority", value)}>
             <SelectTrigger className={`w-full ${errors.priority ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -118,7 +118,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Owner Team <span className="text-red-500">*</span></Label>
-          <Select value={formData.owner_team} onValueChange={(value) => handleInputChange("owner_team", value)}>
+          <Select key={`owner_team-${formData.owner_team || "none"}`} value={formData.owner_team} onValueChange={(value) => handleInputChange("owner_team", value)}>
             <SelectTrigger className={`w-full ${errors.owner_team ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -157,7 +157,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
         </div>
         <div className="space-y-2">
           <Label>Status <span className="text-red-500">*</span></Label>
-          <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
+          <Select key={`status-${formData.status || "none"}`} value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
             <SelectTrigger className={`w-full ${errors.status ? "border-destructive" : ""}`}>
               <SelectValue />
             </SelectTrigger>
@@ -174,7 +174,7 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
 
       <div className="space-y-2">
         <Label>Verification Result <span className="text-red-500">*</span></Label>
-        <Select value={formData.verification_result} onValueChange={(value) => handleInputChange("verification_result", value)}>
+        <Select key={`verification_result-${formData.verification_result || "none"}`} value={formData.verification_result} onValueChange={(value) => handleInputChange("verification_result", value)}>
           <SelectTrigger className={`w-full ${errors.verification_result ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
