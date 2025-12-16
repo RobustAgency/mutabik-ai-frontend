@@ -1,25 +1,22 @@
 "use client";
 
 import React from "react";
+import { useFormContext, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StakeholderSelectorWithInline from "@/components/app/useCases/create/StakeholderSelectorWithInline";
-import { FormState } from "../types";
+import type { AiRiskRegisterFormData } from "@/lib/schemas/aiRiskRegister.schema";
 import { ReviewCadence } from "@/interfaces/AiRiskRegister";
 import { formatReviewCadence } from "@/utils/riskUtils";
 
-interface OwnershipReviewStepProps {
-  formState: FormState;
-  setFormState: React.Dispatch<React.SetStateAction<FormState>>;
-  validationErrors: Record<string, string[]>;
-}
-
-export const OwnershipReviewStep: React.FC<OwnershipReviewStepProps> = ({
-  formState,
-  setFormState,
-  validationErrors,
-}) => {
+export const OwnershipReviewStep: React.FC = () => {
+  const {
+    register,
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<AiRiskRegisterFormData>();
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -30,22 +27,25 @@ export const OwnershipReviewStep: React.FC<OwnershipReviewStepProps> = ({
       </div>
 
       <div className="space-y-2">
-        <StakeholderSelectorWithInline
-          label="Risk Owner"
-          required
-          value={formState.risk_owner ? Number(formState.risk_owner) : null}
-          onValueChange={(value) =>
-            setFormState((prev) => ({
-              ...prev,
-              risk_owner: value ? String(value) : "",
-            }))
-          }
-          placeholder="Select risk owner"
-          filterType="all"
-          error={validationErrors.risk_owner?.[0]}
+        <Controller
+          name="risk_owner"
+          control={control}
+          render={({ field }) => (
+            <StakeholderSelectorWithInline
+              label="Risk Owner"
+              required
+              value={field.value ? Number(field.value) : null}
+              onValueChange={(value) => {
+                field.onChange(value ? String(value) : "");
+              }}
+              placeholder="Select risk owner"
+              filterType="all"
+              error={errors.risk_owner?.message}
+            />
+          )}
         />
-        {validationErrors.risk_owner && (
-          <p className="text-sm text-red-500">{validationErrors.risk_owner[0]}</p>
+        {errors.risk_owner && (
+          <p className="text-sm text-red-500">{errors.risk_owner.message}</p>
         )}
       </div>
 
@@ -54,33 +54,33 @@ export const OwnershipReviewStep: React.FC<OwnershipReviewStepProps> = ({
           <Label htmlFor="review_cadence">
             Review Cadence <span className="text-red-500">*</span>
           </Label>
-          <Select
-            value={formState.review_cadence}
-            onValueChange={(value) =>
-              setFormState((prev) => ({
-                ...prev,
-                review_cadence: value as ReviewCadence,
-              }))
-            }
-          >
-            <SelectTrigger
-              className={`w-full ${
-                validationErrors.review_cadence ? "border-red-500" : ""
-              }`}
-            >
-              <SelectValue placeholder="Select review cadence" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(ReviewCadence).map((item) => (
-                <SelectItem key={item} value={item}>
-                  {formatReviewCadence(item)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {validationErrors.review_cadence && (
+          <Controller
+            name="review_cadence"
+            control={control}
+            render={({ field }) => (
+              <Select 
+              key={`review-cadence-${field.value || "none"}`}
+              value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger
+                  className={`w-full ${
+                    errors.review_cadence ? "border-red-500" : ""
+                  }`}
+                >
+                  <SelectValue placeholder="Select review cadence" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(ReviewCadence).map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {formatReviewCadence(item)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.review_cadence && (
             <p className="text-sm text-red-500">
-              {validationErrors.review_cadence[0]}
+              {errors.review_cadence.message}
             </p>
           )}
         </div>
@@ -91,22 +91,16 @@ export const OwnershipReviewStep: React.FC<OwnershipReviewStepProps> = ({
           <Input
             id="next_review_due"
             type="date"
-            value={formState.next_review_due}
-            onChange={(e) =>
-              setFormState((prev) => ({
-                ...prev,
-                next_review_due: e.target.value,
-              }))
-            }
-            className={`h-[44px] w-full px-4 rounded-lg border ${
-              validationErrors.next_review_due
+            {...register("next_review_due")}
+            className={`h-11 w-full px-4 rounded-lg border ${
+              errors.next_review_due
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
             } focus:border-[#D0D5DD] focus:-ring-0`}
           />
-          {validationErrors.next_review_due && (
+          {errors.next_review_due && (
             <p className="text-sm text-red-500">
-              {validationErrors.next_review_due[0]}
+              {errors.next_review_due.message}
             </p>
           )}
         </div>
@@ -118,17 +112,14 @@ export const OwnershipReviewStep: React.FC<OwnershipReviewStepProps> = ({
         </Label>
         <Input
           id="created_by"
-          value={formState.created_by}
-          onChange={(e) =>
-            setFormState((prev) => ({ ...prev, created_by: e.target.value }))
-          }
+          {...register("created_by")}
           placeholder="user@example.com"
-          className={`h-[44px] w-full px-4 rounded-lg border ${
-            validationErrors.created_by ? "border-red-500" : "border-[#D0D5DD]"
+          className={`h-11 w-full px-4 rounded-lg border ${
+            errors.created_by ? "border-red-500" : "border-[#D0D5DD]"
           } focus:border-[#D0D5DD] focus:-ring-0`}
         />
-        {validationErrors.created_by && (
-          <p className="text-sm text-red-500">{validationErrors.created_by[0]}</p>
+        {errors.created_by && (
+          <p className="text-sm text-red-500">{errors.created_by.message}</p>
         )}
       </div>
     </div>

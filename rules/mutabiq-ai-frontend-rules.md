@@ -436,7 +436,7 @@ export const entityApi = createApi({
     \*/
     const BUTTON_STANDARDS = {
     primary: 'h-10 bg-[#4FD58F] text-white text-sm font-medium px-4',
-    outline: 'h-[44px] border border-[#D0D5DD] bg-[#F9FAFB] text-sm',
+    outline: 'h-11 border border-[#D0D5DD] bg-[#F9FAFB] text-sm',
     height: '40px (action buttons), 44px (filter buttons)'
     };
 

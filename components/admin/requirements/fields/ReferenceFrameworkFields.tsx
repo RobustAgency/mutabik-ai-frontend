@@ -59,6 +59,7 @@ export default function ReferenceFrameworkFields({
           Framework <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`framework-${formData.framework_id || "none"}-${frameworkOptions.length}`}
           value={formData.framework_id ? String(formData.framework_id) : ""}
           onValueChange={(value) => onInputChange("framework_id", Number(value))}
           disabled={isLoading}

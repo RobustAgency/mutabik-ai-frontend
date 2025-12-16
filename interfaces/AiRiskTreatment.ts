@@ -82,6 +82,7 @@ export interface UpdateAiRiskTreatmentData {
 export interface AiRiskTreatmentFilters {
   treatment_type?: TreatmentType;
   status?: TreatmentStatus;
+  page?: number;
   per_page?: number;
 }
 

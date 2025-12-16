@@ -131,6 +131,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <Select
+              key={`dataset_id-${formData.dataset_id ?? 'none'}`}
               value={formData.dataset_id || undefined}
               onValueChange={(value) => {
                 // Reset snapshot if it doesn't belong to newly selected dataset
@@ -174,7 +175,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
-            <Select value={formData.role} onValueChange={(value) => handleChange("role", value)}>
+            <Select key={`role-${formData.role || "none"}`} value={formData.role} onValueChange={(value) => handleChange("role", value)}>
               <SelectTrigger className={`w-full ${errors.role ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -226,7 +227,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="eligibility_status">Eligibility Status</Label>
-            <Select value={formData.eligibility_status || ""} onValueChange={(value) => handleChange("eligibility_status", value)}>
+            <Select key={`eligibility_status-${formData.eligibility_status || "none"}`} value={formData.eligibility_status || ""} onValueChange={(value) => handleChange("eligibility_status", value)}>
               <SelectTrigger className={`w-full ${errors.eligibility_status ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select eligibility" />
               </SelectTrigger>

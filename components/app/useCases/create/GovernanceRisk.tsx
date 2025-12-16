@@ -55,6 +55,7 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
               <InfoTooltip content={TOOLTIP_DEFINITIONS.PRELIMINARY_RISK_LEVEL} />
             </Label>
             <Select
+              key={`preliminary_risk_level-${formData.preliminary_risk_level || "none"}`}
               value={formData.preliminary_risk_level}
               onValueChange={(value) =>
                 setFormData((prev) => ({
@@ -87,7 +88,7 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
               Regulatory Impact (Yes/No) <span className="text-red-500">*</span>
               <InfoTooltip content={TOOLTIP_DEFINITIONS.REGULATORY_IMPACT} />
             </Label>
-            <div className="flex items-center gap-4 h-[44px] px-4 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF]">
+            <div className="flex items-center gap-4 h-11 px-4 rounded-lg border border-[#D0D5DD] bg-[#FFFFFF]">
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={formData.regulatory_impact}
@@ -142,6 +143,7 @@ const GovernanceRisk: React.FC<GovernanceRiskProps> = ({
             <InfoTooltip content={TOOLTIP_DEFINITIONS.HUMAN_OVERSIGHT_MODE} />
           </Label>
           <Select
+            key={`human_oversight_mode-${formData.human_oversight_mode || "none"}`}
             value={formData.human_oversight_mode}
             onValueChange={(value) =>
               setFormData((prev) => ({

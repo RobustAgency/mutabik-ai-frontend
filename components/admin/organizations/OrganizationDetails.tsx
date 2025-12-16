@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Breadcrumbs from '@/components/custom/Breadcrumbs';
 import ConfirmationDialog from '@/components/custom/ConfirmationDialog';
 import MembersTable from './MembersTable';
 
@@ -104,12 +103,6 @@ const OrganizationDetails: React.FC = () => {
         setRefreshingMembers(false);
     };
 
-    const breadcrumbItems = [
-        { label: 'Customers', href: '/admin/users-administration/customers' },
-        { label: organization?.name || 'Loading...', href: '#' },
-        { label: 'Edit', href: '#' }
-    ];
-
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -130,7 +123,6 @@ const OrganizationDetails: React.FC = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className='w-full'>
-                <Breadcrumbs items={breadcrumbItems} />
                 <div className='w-full flex justify-between items-center flex-wrap'>
                     <h1 className="text-2xl font-bold text-gray-900 mt-2">{organization.name}</h1>
                     <Button

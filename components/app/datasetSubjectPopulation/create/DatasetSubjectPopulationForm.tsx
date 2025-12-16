@@ -99,7 +99,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
             <Label htmlFor="subject_realm">
               Subject Realm <span className="text-red-500">*</span>
             </Label>
-            <Select value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
+            <Select  key={`subject_realm-${formData.subject_realm || "none"}`} value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
               <SelectTrigger id="subject_realm" className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select subject realm" />
               </SelectTrigger>
@@ -118,7 +118,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
             <Label htmlFor="jurisdiction">
               Jurisdiction <span className="text-red-500">*</span>
             </Label>
-            <Select value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
+            <Select  key={`jurisdiction-${formData.jurisdiction || "none"}`} value={formData.jurisdiction} onValueChange={(value) => handleChange("jurisdiction", value)}>
               <SelectTrigger id="jurisdiction" className={`w-full ${errors.jurisdiction ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select jurisdiction" />
               </SelectTrigger>

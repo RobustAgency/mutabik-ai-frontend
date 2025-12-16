@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { useRegulatorySubmissions, useRegulatorySubmissionMutations } from "@/hooks/admin/useRegulatorySubmissions";
 import { RegulatorySubmission, RegulatorySubmissionFilters, RegulatorySubmissionStatusEnum, RegulatorySubmissionTypeEnum } from "@/interfaces/RegulatorySubmission";
 import { ColumnDef } from "@tanstack/react-table";
@@ -141,6 +140,7 @@ export default function RegulatorySubmissionsList() {
                   variant="ghost"
                   size="sm"
                   className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                   onClick={(e) => e.stopPropagation()} 
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
@@ -150,7 +150,10 @@ export default function RegulatorySubmissionsList() {
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => handleDelete(submission)}
+                onClick={(e) =>{ 
+                  e.stopPropagation();
+                  handleDelete(submission)
+                }}
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
@@ -167,7 +170,6 @@ export default function RegulatorySubmissionsList() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-        <Breadcrumbs items={breadcrumbItems} />
         <Alert variant="destructive" className="mt-6">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -179,7 +181,6 @@ export default function RegulatorySubmissionsList() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-center justify-between mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">Regulatory Submissions</h1>
         <Link href="/admin/compliance-library/regulatory-submissions/create">

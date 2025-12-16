@@ -9,6 +9,7 @@ import {
   axiosBaseQuery,
   MutationError,
   hasValidationErrors,
+  PaginationMeta,
 } from "@/lib/api/rtkQueryBase";
 import {
   AiRiskTreatment,
@@ -23,6 +24,9 @@ interface AiRiskTreatmentListResponse {
     current_page: number;
     per_page: number;
     total: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
   };
   message: string;
   error: boolean;
@@ -39,11 +43,15 @@ export const aiRiskTreatmentApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["AiRiskTreatment"],
   endpoints: (builder) => ({
-    getAiRiskTreatments: builder.query<AiRiskTreatment[], AiRiskTreatmentFilters | void>({
+    getAiRiskTreatments: builder.query<
+      { data: AiRiskTreatment[]; pagination: PaginationMeta },
+      AiRiskTreatmentFilters | void
+    >({
       query: (filters) => {
         const params = new URLSearchParams();
         if (filters?.treatment_type) params.append("treatment_type", filters.treatment_type);
         if (filters?.status) params.append("status", filters.status);
+        if (filters?.page) params.append("page", filters.page.toString());
         if (filters?.per_page) params.append("per_page", filters.per_page.toString());
 
         const queryString = params.toString();
@@ -53,13 +61,35 @@ export const aiRiskTreatmentApi = createApi({
         };
       },
       transformResponse: (response: AiRiskTreatmentListResponse) => {
-        const list = response?.data?.data;
-        return Array.isArray(list) ? list : [];
+        if (response?.data?.data && Array.isArray(response.data.data)) {
+          return {
+            data: response.data.data,
+            pagination: {
+              current_page: response.data.current_page,
+              per_page: response.data.per_page,
+              total: response.data.total,
+              last_page: response.data.last_page,
+              from: response.data.from ?? 0,
+              to: response.data.to ?? 0,
+            },
+          };
+        }
+        return {
+          data: [],
+          pagination: {
+            current_page: 1,
+            per_page: 15,
+            total: 0,
+            last_page: 1,
+            from: 0,
+            to: 0,
+          },
+        };
       },
       providesTags: (result) =>
-        result && Array.isArray(result)
+        result?.data && Array.isArray(result.data)
           ? [
-              ...result.map(({ id }) => ({ type: "AiRiskTreatment" as const, id })),
+              ...result.data.map(({ id }) => ({ type: "AiRiskTreatment" as const, id })),
               { type: "AiRiskTreatment", id: "LIST" },
             ]
           : [{ type: "AiRiskTreatment", id: "LIST" }],

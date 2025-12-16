@@ -128,6 +128,7 @@ export interface KriIndicatorFilters {
   directionality?: Directionality;
   collection_method?: CollectionMethod;
   action_on_breach?: ActionOnBreach;
+  page?: number;
   per_page?: number;
 }
 

@@ -72,7 +72,7 @@ const ProjectSetting = () => {
 
             {/* Button */}
             <Button
-              className="w-full md:w-[113px] h-[44px] gap-2 opacity-100 
+              className="w-full md:w-[113px] h-11 gap-2 opacity-100 
               pt-3 pr-4 pb-3 pl-4 rounded-lg border border-[#4FD58F] 
               bg-[#4FD58F] cursor-pointer"
             >

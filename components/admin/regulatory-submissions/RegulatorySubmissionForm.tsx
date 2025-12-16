@@ -22,6 +22,7 @@ import FormErrorAlert from "@/components/admin/shared/FormErrorAlert";
 import FormActions from "@/components/admin/shared/FormActions";
 import Spinner from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/custom/Breadcrumbs";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 interface RegulatorySubmissionFormProps {
   regulatorySubmissionId?: string;
@@ -48,13 +49,6 @@ const STATUS_OPTIONS: { value: RegulatorySubmissionStatusEnum; label: string }[]
   { value: RegulatorySubmissionStatusEnum.REJECTED, label: "Rejected" },
   { value: RegulatorySubmissionStatusEnum.CLOSED, label: "Closed" },
 ];
-
-const parseDateOnly = (dateStr: string | null | undefined): string | null => {
-  if (!dateStr) return null;
-  if (dateStr.includes("T")) return dateStr.split("T")[0];
-  if (dateStr.includes(" ")) return dateStr.split(" ")[0];
-  return dateStr;
-};
 
 export default function RegulatorySubmissionForm({
   regulatorySubmissionId,
@@ -158,12 +152,22 @@ export default function RegulatorySubmissionForm({
       })) || [];
 
     const submitted = regulatorySubmission?.submitted_by_user || regulatorySubmission?.submittedBy;
+    const submittedId = regulatorySubmission?.submitted_by;
     if (submitted) {
       const exists = base.some((opt) => opt.value === submitted.id.toString());
       if (!exists) {
         base.unshift({
           value: submitted.id.toString(),
           label: `${submitted.name} (${submitted.email})`,
+        });
+      }
+    } else if (submittedId) {
+      const idStr = submittedId.toString();
+      const exists = base.some((opt) => opt.value === idStr);
+      if (!exists) {
+        base.unshift({
+          value: idStr,
+          label: `User #${idStr}`,
         });
       }
     }
@@ -186,13 +190,9 @@ export default function RegulatorySubmissionForm({
         tracking_id: regulatorySubmission.tracking_id || "",
         commitments: commits,
         status: (regulatorySubmission.status as RegulatorySubmissionStatusEnum) || RegulatorySubmissionStatusEnum.DRAFT,
-        renewal_due_at: regulatorySubmission.renewal_due_at
-          ? parseDateOnly(regulatorySubmission.renewal_due_at) || ""
-          : "",
+        renewal_due_at: formatDateForInput(regulatorySubmission.renewal_due_at),
         evidence_bundle_ids: evidenceIds,
-        submitted_at: regulatorySubmission.submitted_at
-          ? parseDateOnly(regulatorySubmission.submitted_at) || ""
-          : "",
+        submitted_at: formatDateForInput(regulatorySubmission.submitted_at),
         submitted_by: regulatorySubmission.submitted_by || 0,
         documents_uri: regulatorySubmission.documents_uri || "",
       });
@@ -364,13 +364,6 @@ export default function RegulatorySubmissionForm({
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs
-        items={[
-          { label: "Compliance Library", href: "/admin/compliance-library/frameworks" },
-          { label: "Regulatory Submissions", href: "/admin/compliance-library/regulatory-submissions" },
-          { label: mode === "create" ? "Create" : "Edit" },
-        ]}
-      />
       <div className="mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">
           {mode === "create" ? "Create Regulatory Submission" : "Edit Regulatory Submission"}
@@ -620,6 +613,7 @@ export default function RegulatorySubmissionForm({
                 Submitted By <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`submitted-by-${formData.submitted_by || "none"}-${userOptions.length}`}
                 value={formData.submitted_by ? String(formData.submitted_by) : ""}
                 onValueChange={(value) => handleInputChange("submitted_by", Number(value))}
                 disabled={isLoading || isLoadingUsers}

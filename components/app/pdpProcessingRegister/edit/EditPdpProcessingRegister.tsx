@@ -13,6 +13,7 @@ import {
     validateArrayField,
     createValidationErrors,
 } from "@/lib/utils/validation";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 interface EditPdpProcessingRegisterProps {
     registerId: string;
@@ -57,8 +58,8 @@ const EditPdpProcessingRegister: React.FC<EditPdpProcessingRegisterProps> = ({ r
                 dpia_required_flag: register.dpia_required_flag || "",
                 security_measures_ref: register.security_measures_ref || "",
                 owner_team: register.owner_team,
-                effective_from: register.effective_from,
-                effective_to: register.effective_to || "",
+                effective_from: formatDateForInput(register.effective_from),
+                effective_to: formatDateForInput(register.effective_to),
                 status: register.status,
             });
         }

@@ -40,7 +40,7 @@ export interface AgreementVendorSummary {
 export interface Agreement {
   id: number;
   organization_id: number;
-  vendor_id: number;
+  vendor_id?: number; // Optional because backend may not always return it
   agreement_type: AgreementType;
   status: AgreementStatus;
   effective_from: string; // ISO8601

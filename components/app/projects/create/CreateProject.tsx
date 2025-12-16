@@ -72,7 +72,7 @@ const CreateProject = () => {
               id="projectName"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className="h-[44px] rounded-lg border border-[#D0D5DD] bg-white shadow-sm px-4 py-2.5"
+              className="h-11 rounded-lg border border-[#D0D5DD] bg-white shadow-sm px-4 py-2.5"
               placeholder="AI Credit Risk Scoring"
             />
           </div>
@@ -110,8 +110,8 @@ const CreateProject = () => {
             >
               Choose governance pillar
             </Label>
-            <Select value={formData.governance_pillar} onValueChange={(value) => handleInputChange('governance_pillar', value)}>
-              <SelectTrigger className="w-full cursor-pointer min-h-[44px] h-[44px] rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
+            <Select key={`governance_pillar-${formData.governance_pillar || "none"}`} value={formData.governance_pillar} onValueChange={(value) => handleInputChange('governance_pillar', value)}>
+              <SelectTrigger className="w-full cursor-pointer min-h-11 h-11 rounded-lg border border-[#D0D5DD] px-4 py-2.5 bg-white shadow-sm">
                 <SelectValue
                   placeholder="Select governance pillar"
                   className="font-normal text-sm text-[#1D2939]"
@@ -132,7 +132,7 @@ const CreateProject = () => {
           <Button
             onClick={handleCreateProject}
             disabled={loading || !formData.name || !formData.description || !formData.governance_pillar}
-            className="h-[44px] border border-[#4FD58F] bg-[#4FD58F] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Continue'}
           </Button>

@@ -43,7 +43,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
               setFormState((prev) => ({ ...prev, assignee: e.target.value }))
             }
             placeholder="john@example.com, jane@example.com"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
         <div className="space-y-2">
@@ -58,7 +58,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
               }))
             }
             placeholder="medium"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
       </div>
@@ -67,6 +67,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
         <div className="space-y-2">
           <Label htmlFor="result_verification">Result Verification</Label>
           <Select
+            key={`result_verification-${formState.result_verification || "none"}`}
             value={formState.result_verification || "none"}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -76,7 +77,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
@@ -98,7 +99,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
               setFormState((prev) => ({ ...prev, evidence_link: e.target.value }))
             }
             placeholder="https://example.com/evidence"
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
       </div>
@@ -126,7 +127,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
             modalForm={CAPAModalFormAdapter}
             canCreate
             placeholder={isCapasLoading ? "Loading..." : "Select CAPA"}
-            triggerClassName="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            triggerClassName="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
             error={!!validationErrors.linked_capa_id}
           />
         </div>
@@ -139,7 +140,7 @@ export const ExecutionStep: React.FC<ExecutionStepProps> = ({
             onChange={(e) =>
               setFormState((prev) => ({ ...prev, closed_at: e.target.value }))
             }
-            className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+            className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
           />
         </div>
       </div>

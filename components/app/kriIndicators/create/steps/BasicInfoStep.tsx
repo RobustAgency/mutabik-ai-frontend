@@ -61,7 +61,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             placeholder={
               isAiRiskRegistersLoading ? "Loading..." : "Select AI Risk Register"
             }
-            triggerClassName={`h-[44px] w-full px-4 rounded-lg border ${
+            triggerClassName={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.ai_risk_register_id
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -85,7 +85,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               setFormState((prev) => ({ ...prev, name: e.target.value }))
             }
             placeholder="Model Accuracy Degradation"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.name ? "border-red-500" : "border-[#D0D5DD]"
             } focus:border-[#D0D5DD] focus:-ring-0`}
           />
@@ -122,6 +122,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             Directionality <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`directionality-${formState.directionality || "none"}`}
             value={formState.directionality}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -130,7 +131,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select directionality" />
             </SelectTrigger>
             <SelectContent>
@@ -145,12 +146,13 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         <div className="space-y-2">
           <Label htmlFor="unit">Unit</Label>
           <Select
+            key={`unit-${formState.unit || "none"}`}
             value={formState.unit || undefined}
             onValueChange={(value) =>
               setFormState((prev) => ({ ...prev, unit: value || "" }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select unit" />
             </SelectTrigger>
             <SelectContent>
@@ -175,7 +177,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               }))
             }
             placeholder="Monthly"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.sample_window
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -201,7 +203,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               setFormState((prev) => ({ ...prev, owner_team: e.target.value }))
             }
             placeholder="Data Science"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.owner_team
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -218,6 +220,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${formState.status || "none"}`}
             value={formState.status}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -226,7 +229,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>

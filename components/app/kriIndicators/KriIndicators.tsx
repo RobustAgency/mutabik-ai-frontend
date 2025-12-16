@@ -17,7 +17,10 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function KriIndicatorsList() {
   const router = useRouter();
-  const { data: indicators = [], isLoading } = useGetKriIndicatorsQuery();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const { data, isLoading } = useGetKriIndicatorsQuery({ page: currentPage, per_page: 15 });
+  const indicators = data?.data ?? [];
+  const pagination = data?.pagination;
   const [deleteKriIndicator, { isLoading: isDeleting }] = useDeleteKriIndicatorMutation();
 
   const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
@@ -193,6 +196,18 @@ export default function KriIndicatorsList() {
           data={indicators}
           loading={isLoading}
           onRowClick={handleRowClick}
+          serverSide={true}
+          pagination={
+            pagination
+              ? {
+                  page: pagination.current_page,
+                  limit: pagination.per_page,
+                  total: pagination.total,
+                  totalPages: pagination.last_page,
+                }
+              : undefined
+          }
+          onPageChange={setCurrentPage}
           emptyState={{
             title: "No KRI Indicators found",
             description: "Get started by creating your first KRI indicator",

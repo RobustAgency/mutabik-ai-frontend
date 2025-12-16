@@ -18,6 +18,7 @@ import {
   validateTextField,
   createValidationErrors,
 } from "@/lib/utils/validation";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 type FormState = {
   name: string;
@@ -31,13 +32,6 @@ type FormState = {
   effective_to: string;
   owner_team: string;
   source_created_at: string;
-};
-
-const formatDateForInput = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 10);
 };
 
 const getInitialState = (initial?: RiskMethodology): FormState => {
@@ -244,7 +238,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     setFormState((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="ISO 31010 Risk Matrix"
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     validationErrors.name ? "border-red-500" : "border-[#D0D5DD]"
                   } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
@@ -261,7 +255,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     setFormState((prev) => ({ ...prev, owner_team: e.target.value }))
                   }
                   placeholder="Risk Management"
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     validationErrors.owner_team ? "border-red-500" : "border-[#D0D5DD]"
                   } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
@@ -284,7 +278,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     }))
                   }
                   placeholder="Medium"
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     validationErrors.acceptance_thresholds ? "border-red-500" : "border-[#D0D5DD]"
                   } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
@@ -306,7 +300,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                     }))
                   }
                   placeholder="Maximum inherent risk across all identified risks"
-                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+                  className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
             </div>
@@ -343,7 +337,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   onChange={(e) =>
                     setFormState((prev) => ({ ...prev, effective_from: e.target.value }))
                   }
-                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+                  className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
               <div className="space-y-2">
@@ -355,7 +349,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                   onChange={(e) =>
                     setFormState((prev) => ({ ...prev, effective_to: e.target.value }))
                   }
-                  className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
+                  className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0"
                 />
               </div>
               <div className="space-y-2">
@@ -370,7 +364,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
                       source_created_at: e.target.value,
                     }))
                   }
-                  className={`h-[44px] w-full px-4 rounded-lg border ${
+                  className={`h-11 w-full px-4 rounded-lg border ${
                     validationErrors.source_created_at ? "border-red-500" : "border-[#D0D5DD]"
                   } focus:border-[#D0D5DD] focus:-ring-0`}
                 />
@@ -397,12 +391,13 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
             <div className="space-y-2">
               <Label htmlFor="likelihood_scale">Likelihood Scale</Label>
               <Select
+                key={`likelihood_scale-${formState.likelihood_scale || "none"}`}
                 value={formState.likelihood_scale || undefined}
                 onValueChange={(value) =>
                   setFormState((prev) => ({ ...prev, likelihood_scale: value }))
                 }
               >
-                <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+                <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
                   <SelectValue placeholder="Select likelihood (e.g., likely)" />
                 </SelectTrigger>
                 <SelectContent>
@@ -423,12 +418,13 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
             <div className="space-y-2">
               <Label htmlFor="impact_scale">Impact Scale</Label>
               <Select
+                key={`impact_scale-${formState.impact_scale || "none"}`}
                 value={formState.impact_scale || undefined}
                 onValueChange={(value) =>
                   setFormState((prev) => ({ ...prev, impact_scale: value }))
                 }
               >
-                <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+                <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
                   <SelectValue placeholder="Select impact (e.g., high)" />
                 </SelectTrigger>
                 <SelectContent>

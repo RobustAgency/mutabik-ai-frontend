@@ -16,7 +16,10 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 
 export default function RiskMethodologies() {
   const router = useRouter();
-  const { data: methodologies = [], isLoading } = useGetRiskMethodologiesQuery();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const { data, isLoading } = useGetRiskMethodologiesQuery({ page: currentPage, per_page: 15 });
+  const methodologies = data?.data ?? [];
+  const pagination = data?.pagination;
   const [deleteMethodology, { isLoading: isDeleting }] =
     useDeleteRiskMethodologyMutation();
 
@@ -160,6 +163,18 @@ export default function RiskMethodologies() {
             data={methodologies}
             loading={isLoading}
             onRowClick={handleRowClick}
+            serverSide={true}
+            pagination={
+              pagination
+                ? {
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
+                : undefined
+            }
+            onPageChange={setCurrentPage}
             emptyState={{
               title: "No Risk Methodologies found",
               description: "Get started by creating your first risk methodology",

@@ -6,6 +6,7 @@ import {
   RiskStatus,
   ReviewCadence,
 } from "@/interfaces/AiRiskRegister";
+import { formatDateForInput } from "@/lib/helpers/date";
 
 export type FormState = {
   title: string;
@@ -55,7 +56,7 @@ export const getInitialState = (initial?: AiRiskRegister): FormState => ({
   decision: initial?.decision ?? RiskDecision.TREAT,
   risk_owner: initial?.risk_owner?.toString() ?? "",
   review_cadence: initial?.review_cadence ?? ReviewCadence.QUARTERLY,
-  next_review_due: initial?.next_review_due ?? "",
+  next_review_due: formatDateForInput(initial?.next_review_due),
   status: initial?.status ?? RiskStatus.IDENTIFIED,
   linked_assessment_id: initial?.linked_assessment_id?.toString() ?? "",
   linked_incident_id: initial?.linked_incident_id?.toString() ?? "",

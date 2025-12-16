@@ -63,6 +63,7 @@ const GovernanceRegulatorySection: React.FC<GovernanceRegulatorySectionProps> = 
                         </TooltipProvider>
                     </div>
                     <Select
+                        key={`criticality-level-${formData.criticality_level || "none"}`}
                         value={formData.criticality_level || ""}
                         onValueChange={(value) =>
                             setFormData((prev) => ({
@@ -105,6 +106,7 @@ const GovernanceRegulatorySection: React.FC<GovernanceRegulatorySectionProps> = 
                         </TooltipProvider>
                     </div>
                     <Select
+                            key={`regulatory-risk-tier-${formData.regulatory_risk_tier || "none"}`}
                         value={formData.regulatory_risk_tier || ""}
                         onValueChange={(value) =>
                             setFormData((prev) => ({
@@ -146,6 +148,7 @@ const GovernanceRegulatorySection: React.FC<GovernanceRegulatorySectionProps> = 
                         </TooltipProvider>
                     </div>
                     <Select
+                        key={`eu-ai-category-${formData.eu_ai_category || "none"}`}
                         value={formData.eu_ai_category || ""}
                         onValueChange={(value) =>
                             setFormData((prev) => ({

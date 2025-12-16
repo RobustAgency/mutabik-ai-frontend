@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import { useComplianceEvidences, useComplianceEvidenceMutations } from "@/hooks/admin/useComplianceEvidence";
 import { ComplianceEvidence, ComplianceEvidenceFilters } from "@/interfaces/ComplianceEvidence";
 import { ColumnDef } from "@tanstack/react-table";
@@ -39,12 +38,6 @@ export default function ComplianceEvidenceList() {
     entityTypeName: "Compliance Evidence",
     onSuccess: () => refresh(),
   });
-
-  const breadcrumbItems = [
-    { label: "Compliance Library", href: "/admin/compliance-library/frameworks" },
-    { label: "Compliance Evidence", href: "/admin/compliance-library/compliance-evidences" },
-    { label: "List" },
-  ];
 
   const handleSearchTerm = (searchTerm: string) => {
     setFilters((prev) => ({
@@ -168,6 +161,7 @@ export default function ComplianceEvidenceList() {
                   variant="ghost"
                   size="sm"
                   className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                   onClick={(e) => e.stopPropagation()} 
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
@@ -177,7 +171,10 @@ export default function ComplianceEvidenceList() {
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => handleDelete(ce)}
+                 onClick={(e) => {
+    e.stopPropagation();
+    handleDelete(ce);
+  }}
                 disabled={deleting}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
@@ -194,7 +191,6 @@ export default function ComplianceEvidenceList() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-        <Breadcrumbs items={breadcrumbItems} />
         <Alert variant="destructive" className="mt-6">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -206,7 +202,6 @@ export default function ComplianceEvidenceList() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-6 py-6">
-      <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-center justify-between mt-6 mb-8">
         <h1 className="text-3xl text-[#171717] font-bold">Compliance Evidence</h1>
         <Link href="/admin/compliance-library/compliance-evidences/create">

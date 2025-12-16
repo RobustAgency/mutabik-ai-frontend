@@ -70,7 +70,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
             placeholder="5"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.threshold_warning
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -97,7 +97,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
             placeholder="10"
-            className={`h-[44px] w-full px-4 rounded-lg border ${
+            className={`h-11 w-full px-4 rounded-lg border ${
               validationErrors.threshold_critical
                 ? "border-red-500"
                 : "border-[#D0D5DD]"
@@ -152,6 +152,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
             Collection Method <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`collection_method-${formState.collection_method || "none"}`}
             value={formState.collection_method}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -160,7 +161,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select collection method" />
             </SelectTrigger>
             <SelectContent>
@@ -180,6 +181,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
             Frequency <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`frequency-${formState.frequency || "none"}`}
             value={formState.frequency}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -188,7 +190,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select frequency" />
             </SelectTrigger>
             <SelectContent>
@@ -205,6 +207,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
             Alert Routing <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`alert_routing-${formState.alert_routing || "none"}`}
             value={formState.alert_routing}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -213,7 +216,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select alert routing" />
             </SelectTrigger>
             <SelectContent>
@@ -233,6 +236,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
             Action on Breach <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`action_on_breach-${formState.action_on_breach || "none"}`}
             value={formState.action_on_breach}
             onValueChange={(value) =>
               setFormState((prev) => ({
@@ -241,7 +245,7 @@ export const ThresholdsAlertsStep: React.FC<ThresholdsAlertsStepProps> = ({
               }))
             }
           >
-            <SelectTrigger className="h-[44px] w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
+            <SelectTrigger className="h-11 w-full px-4 rounded-lg border border-[#D0D5DD] focus:border-[#D0D5DD] focus:-ring-0">
               <SelectValue placeholder="Select action on breach" />
             </SelectTrigger>
             <SelectContent>

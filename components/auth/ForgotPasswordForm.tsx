@@ -88,7 +88,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                         )}
                         <Button
                             onClick={handleResendEmail}
-                            className="min-h-[44px] w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-lg transition-colors"
+                            className="min-h-11 w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-lg transition-colors"
                             disabled={!canResend}
                         >
                             Resend Verification Email

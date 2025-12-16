@@ -54,6 +54,7 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
       <div className="space-y-2">
         <Label htmlFor="source_type">Source Type <span className="text-red-500">*</span></Label>
         <Select
+          key={`source_type-${formData.source_type || "none"}`}
           value={formData.source_type}
           onValueChange={(value) => handleInputChange("source_type", value)}
         >

@@ -62,7 +62,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             onChange={(e) => setNameInput(e.target.value)}
                             onBlur={() => setFormData((prev) => ({ ...prev, name: nameInput }))}
                             placeholder="CustomerServiceNLP"
-                            className={`h-[44px] w-full px-4 rounded-lg border ${hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
+                            className={`h-11 w-full px-4 rounded-lg border ${hasError("name") ? "border-red-500" : "border-[#D0D5DD]"
                                 } focus:border-[#D0D5DD] focus:-ring-0`}
                         />
                         {hasError("name") && (
@@ -87,6 +87,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             </TooltipProvider>
                         </div>
                         <Select
+                            key={`model-category-${formData.model_category || "none"}`}
                             value={formData.model_category}
                             onValueChange={(value) =>
                                 setFormData((prev) => ({ ...prev, model_category: value as FormDataType["model_category"] }))
@@ -122,6 +123,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             Model Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
+                            key={`model-type-${formData.type || "none"}`}
                             value={formData.type}
                             onValueChange={(value) =>
                                 setFormData((prev) => ({ ...prev, type: value as FormDataType["type"] }))
@@ -165,6 +167,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData, errors = {
                             </TooltipProvider>
                         </div>
                         <Select
+                            key={`technical-domain-${formData.technical_domain || "none"}`}
                             value={formData.technical_domain}
                             onValueChange={(value) =>
                                 setFormData((prev) => ({ ...prev, technical_domain: value as FormDataType["technical_domain"] }))

@@ -46,6 +46,25 @@ export const formatDateWithTime24h = (value: DateInput): string => {
   );
 };
 
+/**
+ * Converts ISO datetime string or any date string to YYYY-MM-DD format for HTML date inputs.
+ * Handles various input formats:
+ * - ISO datetime strings (e.g., "2025-12-11T00:00:00.000000Z")
+ * - Space-separated datetime strings
+ * - Already formatted YYYY-MM-DD strings
+ * - Null/undefined values
+ */
+export const formatDateForInput = (dateStr: string | null | undefined): string => {
+  if (!dateStr) return "";
+  // If already in YYYY-MM-DD format, return as is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // Extract date part from ISO string (YYYY-MM-DDTHH:mm:ss...)
+  if (dateStr.includes("T")) return dateStr.split("T")[0];
+  // Extract date part from space-separated format
+  if (dateStr.includes(" ")) return dateStr.split(" ")[0];
+  return dateStr;
+};
+
 // Backward-compatible default common formatter
 export const formatDate = formatDateShort;
 
@@ -56,6 +75,7 @@ const dateHelpers = {
   formatDateLong,
   formatDateLongTime,
   formatDateWithTime24h,
+  formatDateForInput,
 };
 
 export default dateHelpers;

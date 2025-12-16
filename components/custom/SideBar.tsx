@@ -78,7 +78,7 @@ export function Sidebar({
         aria-details="logo"
         className="flex items-center justify-between mb-9!"
       >
-        <Link href="/">
+        <Link href="/dashboard">
           <Image
             src="/auth/dashboard-logo.svg"
             alt="logo"
