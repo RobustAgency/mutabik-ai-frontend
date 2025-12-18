@@ -37,7 +37,7 @@ export const RequestDetailsStep: React.FC = () => {
   const requestDetails = watch("request_details");
   const processingActivityIds = watch("processing_activity_ids") || [];
   const { fields, append, remove } = useFieldArray({
-    control,
+    control: control as any,
     name: "requested_data_categories",
   });
   const {
@@ -45,7 +45,7 @@ export const RequestDetailsStep: React.FC = () => {
     append: appendSystem,
     remove: removeSystem,
   } = useFieldArray({
-    control,
+    control: control as any,
     name: "systems_checked",
   });
 

@@ -43,7 +43,7 @@ export const RelatedInformationStep: React.FC = () => {
     append: appendSystem,
     remove: removeSystem,
   } = useFieldArray({
-    control,
+    control: control as any,
     name: "affected_systems",
   });
 
@@ -52,7 +52,7 @@ export const RelatedInformationStep: React.FC = () => {
     append: appendEvidence,
     remove: removeEvidence,
   } = useFieldArray({
-    control,
+    control: control as any,
     name: "evidence_uris",
   });
 

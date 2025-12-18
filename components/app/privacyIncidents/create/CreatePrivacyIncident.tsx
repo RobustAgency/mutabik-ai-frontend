@@ -10,8 +10,8 @@ const CreatePrivacyIncident: React.FC = () => {
   const router = useRouter();
   const [createIncident, { isLoading }] = useCreatePrivacyIncidentMutation();
 
-  const handleSubmit = async (data: CreatePrivacyIncidentData) => {
-    await createIncident(data).unwrap();
+  const handleSubmit = async (data: CreatePrivacyIncidentData | Partial<CreatePrivacyIncidentData>) => {
+    await createIncident(data as CreatePrivacyIncidentData).unwrap();
   };
 
   const handleSuccess = () => {

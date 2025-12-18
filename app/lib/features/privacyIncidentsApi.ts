@@ -56,6 +56,9 @@ export const privacyIncidentsApi = createApi({
           : [{ type: "PrivacyIncident", id: "LIST" }],
       transformResponse: (response: PrivacyIncidentListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
+          const { current_page, per_page, total } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
           return {
             data: response.data.data,
             pagination: {
@@ -63,6 +66,8 @@ export const privacyIncidentsApi = createApi({
               per_page: response.data.per_page,
               total: response.data.total,
               last_page: response.data.last_page,
+              from,
+              to,
             },
           };
         }
@@ -107,7 +112,7 @@ export const privacyIncidentsApi = createApi({
             return;
           }
           const message =
-            mutationError?.data?.message ||
+            mutationError?.error?.data?.message ||
             "Failed to create privacy incident";
           toast.error(message);
         }
@@ -141,7 +146,7 @@ export const privacyIncidentsApi = createApi({
             return;
           }
           const message =
-            mutationError?.data?.message ||
+            mutationError?.error?.data?.message ||
             "Failed to update privacy incident";
           toast.error(message);
         }
@@ -164,7 +169,7 @@ export const privacyIncidentsApi = createApi({
         } catch (error) {
           const mutationError = error as MutationError;
           const message =
-            mutationError?.data?.message ||
+            mutationError?.error?.data?.message ||
             "Failed to delete privacy incident";
           toast.error(message);
         }

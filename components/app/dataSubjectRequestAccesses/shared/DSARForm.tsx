@@ -218,10 +218,6 @@ export const DSARForm: React.FC<DSARFormProps> = ({
             completed_date: data.completed_date || null,
           }
         : {}),
-      priority: data.priority,
-      is_overdue: data.is_overdue,
-      assigned_to: Number(data.assigned_to),
-      assigned_date: data.assigned_date,
       // Only include response fields if status is ready_for_response
       ...(isReadyForResponse
         ? {

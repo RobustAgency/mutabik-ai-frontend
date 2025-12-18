@@ -119,9 +119,7 @@ export const DPOConsultationStep: React.FC = () => {
                 value={dpoUserId ? dpoUserId.toString() : ""}
                 onValueChange={(value) => {
                   setValue("dpo_user_id", Number(value) as any);
-                  // Only validate on blur or when field loses focus
                 }}
-                onBlur={() => trigger("dpo_user_id")}
                 disabled={isLoadingUsers}
               >
                 <SelectTrigger

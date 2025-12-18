@@ -202,11 +202,14 @@ const DataSubjectRequestAccesses: React.FC = () => {
           Remaining Days
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() ?? "N/A"}
-        </div>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue() as number | null | undefined;
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {value != null ? String(value) : "N/A"}
+          </div>
+        );
+      },
     },
     {
       id: "actions",

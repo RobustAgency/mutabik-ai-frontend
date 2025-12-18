@@ -46,6 +46,7 @@ export const DPIAReviewStep: React.FC = () => {
   const dpiaOptions = useMemo(() => {
     const base =
       dpias.map((dpia: any) => ({
+        id: dpia.id,
         value: dpia.id.toString(),
         label: `${dpia.dpia_code} - ${dpia.dpia_name}`,
       })) || [];
@@ -55,6 +56,7 @@ export const DPIAReviewStep: React.FC = () => {
       const exists = base.some((opt) => opt.value === dpiaId.toString());
       if (!exists) {
         base.unshift({
+          id: dpiaId,
           value: dpiaId.toString(),
           label: `DPIA #${dpiaId}`,
         });

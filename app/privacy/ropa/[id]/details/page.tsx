@@ -2,14 +2,15 @@ import ROPADetails from '@/components/app/recordOfProcessingActivities/details/R
 import React from 'react'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-const page = ({ params }: PageProps) => {
+const page = async ({ params }: PageProps) => {
+  const { id } = await params
   return (
-    <ROPADetails activityId={params.id} />
+    <ROPADetails activityId={id} />
   )
 }
 

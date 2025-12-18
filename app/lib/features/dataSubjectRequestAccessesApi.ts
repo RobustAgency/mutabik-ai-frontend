@@ -56,6 +56,9 @@ export const dataSubjectRequestAccessesApi = createApi({
           : [{ type: "DataSubjectRequestAccess", id: "LIST" }],
       transformResponse: (response: DSARListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
+          const { current_page, per_page, total } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
           return {
             data: response.data.data,
             pagination: {
@@ -63,6 +66,8 @@ export const dataSubjectRequestAccessesApi = createApi({
               per_page: response.data.per_page,
               total: response.data.total,
               last_page: response.data.last_page,
+              from,
+              to,
             },
           };
         }

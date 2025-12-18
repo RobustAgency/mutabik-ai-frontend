@@ -43,7 +43,7 @@ export const IncidentDetailsStep: React.FC = () => {
     append: appendSubjectKey,
     remove: removeSubjectKey,
   } = useFieldArray({
-    control,
+    control: control as any,
     name: "affected_subject_keys",
   });
 
