@@ -7,31 +7,29 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import {
-  useGetDataSubjectRequestAccessesQuery,
-  useDeleteDataSubjectRequestAccessMutation,
-} from "@/app/lib/features/dataSubjectRequestAccessesApi";
+  useGetDataProtectionImpactAssessmentsQuery,
+  useDeleteDataProtectionImpactAssessmentMutation,
+} from "@/app/lib/features/dataProtectionImpactAssessmentsApi";
 import type {
-  DataSubjectRequestAccess,
-  DSARFilters,
-} from "@/interfaces/DataSubjectRequestAccess";
+  DataProtectionImpactAssessment,
+  DPIAFilters,
+} from "@/interfaces/DataProtectionImpactAssessment";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
 
-const formatDate = (dateString: string | null | undefined): string =>
-  formatDateShort(dateString);
-
 const formatFieldValue = (value: string | null | undefined): string => {
   if (!value) return "N/A";
+  if (value === "us_ca") return "US/CA";
   return value
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
 
-const DataSubjectRequestAccesses: React.FC = () => {
+const DPIAList: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [filters, setFilters] = React.useState<DSARFilters>({});
+  const [filters, setFilters] = React.useState<DPIAFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
     id: number | null;
@@ -52,44 +50,44 @@ const DataSubjectRequestAccesses: React.FC = () => {
   );
 
   const { data, isLoading } =
-    useGetDataSubjectRequestAccessesQuery(queryParams);
-  const [deleteRequest, { isLoading: isDeleting }] =
-    useDeleteDataSubjectRequestAccessMutation();
+    useGetDataProtectionImpactAssessmentsQuery(queryParams);
+  const [deleteDPIA, { isLoading: isDeleting }] =
+    useDeleteDataProtectionImpactAssessmentMutation();
 
-  const requests = data?.data ?? [];
+  const records = data?.data ?? [];
   const pagination = data?.pagination;
 
   const handleEditClick = (
     e: React.MouseEvent,
-    item: DataSubjectRequestAccess
+    dpia: DataProtectionImpactAssessment
   ) => {
     e.stopPropagation();
-    router.push(`/privacy/dsar/${item.id}/edit`);
+    router.push(`/privacy/dpia/${dpia.id}/edit`);
   };
 
   const handleDeleteClick = (
     e: React.MouseEvent,
-    item: DataSubjectRequestAccess
+    dpia: DataProtectionImpactAssessment
   ) => {
     e.stopPropagation();
     setDeleteDialogState({
       isOpen: true,
-      id: item.id,
-      code: item.request_code,
+      id: dpia.id,
+      code: dpia.dpia_code,
     });
   };
 
   const handleConfirmDelete = async () => {
     if (deleteDialogState.id) {
       try {
-        await deleteRequest(deleteDialogState.id).unwrap();
+        await deleteDPIA(deleteDialogState.id).unwrap();
         setDeleteDialogState({
           isOpen: false,
           id: null,
           code: "",
         });
       } catch (error) {
-        console.error("Failed to delete DSAR:", error);
+        console.error("Failed to delete DPIA:", error);
       }
     }
   };
@@ -108,12 +106,12 @@ const DataSubjectRequestAccesses: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const columns: ColumnDef<DataSubjectRequestAccess>[] = [
+  const columns: ColumnDef<DataProtectionImpactAssessment>[] = [
     {
-      accessorKey: "request_code",
+      accessorKey: "dpia_code",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Request Code
+          DPIA Code
         </div>
       ),
       cell: ({ getValue }) => (
@@ -123,10 +121,10 @@ const DataSubjectRequestAccesses: React.FC = () => {
       ),
     },
     {
-      accessorKey: "subject_identifier",
+      accessorKey: "dpia_name",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Subject Identifier
+          Name
         </div>
       ),
       cell: ({ getValue }) => (
@@ -136,10 +134,23 @@ const DataSubjectRequestAccesses: React.FC = () => {
       ),
     },
     {
-      accessorKey: "request_type",
+      accessorKey: "risk_level",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Request Type
+          Risk Level
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+          {formatFieldValue(getValue() as string)}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "stage",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Stage
         </div>
       ),
       cell: ({ getValue }) => (
@@ -166,47 +177,21 @@ const DataSubjectRequestAccesses: React.FC = () => {
       },
     },
     {
-      accessorKey: "priority",
+      accessorKey: "next_review_date",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Priority
-        </div>
-      ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {formatFieldValue(getValue() as string)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "due_date",
-      header: () => (
-        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Due Date
+          Next Review
         </div>
       ),
       cell: ({ getValue }) => {
         const rawDate = getValue() as string | null;
-        const formatted = formatDate(rawDate);
+        const formatted = formatDateShort(rawDate);
         return (
           <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-            {formatted}
+            {formatted || "N/A"}
           </div>
         );
       },
-    },
-    {
-      accessorKey: "remaining_days",
-      header: () => (
-        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Remaining Days
-        </div>
-      ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() ?? "N/A"}
-        </div>
-      ),
     },
     {
       id: "actions",
@@ -245,29 +230,28 @@ const DataSubjectRequestAccesses: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
-                Data Subject Request Accesses
+                Data Protection Impact Assessments
               </h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-                Manage DSAR requests lifecycle
+                Manage DPIAs lifecycle and risk assessments
               </p>
             </div>
             <div className="flex items-center gap-3">
-              {/* Filters can be wired later, keeping space for DynamicFilter */}
               <Button
-                onClick={() => router.push("/privacy/dsar/create")}
+                onClick={() => router.push("/privacy/dpia/create")}
                 className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
               >
-                New DSAR
+                New DPIA
               </Button>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable
               columns={columns}
-              data={requests}
+              data={records}
               variant="projects"
               loading={isLoading}
-              onRowClick={(row) => router.push(`/privacy/dsar/${row.id}/details`)}
+              onRowClick={(row) => router.push(`/privacy/dpia/${row.id}/details`)}
               pagination={
                 pagination
                   ? {
@@ -280,11 +264,12 @@ const DataSubjectRequestAccesses: React.FC = () => {
               }
               onPageChange={handlePageChange}
               emptyState={{
-                title: "No DSAR requests found",
-                description: "Get started by creating your first DSAR request",
+                title: "No DPIAs found",
+                description:
+                  "Get started by creating your first Data Protection Impact Assessment",
                 action: (
-                  <Button onClick={() => router.push("/privacy/dsar/create")}>
-                    Create DSAR
+                  <Button onClick={() => router.push("/privacy/dpia/create")}>
+                    Create DPIA
                   </Button>
                 ),
               }}
@@ -297,8 +282,8 @@ const DataSubjectRequestAccesses: React.FC = () => {
         isOpen={deleteDialogState.isOpen}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete DSAR Request"
-        description={`Are you sure you want to delete "${deleteDialogState.code}"? This action cannot be undone and will remove the request from the system permanently.`}
+        title="Delete DPIA"
+        description={`Are you sure you want to delete "${deleteDialogState.code}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"
@@ -309,6 +294,6 @@ const DataSubjectRequestAccesses: React.FC = () => {
   );
 };
 
-export default DataSubjectRequestAccesses;
+export default DPIAList;
 
 

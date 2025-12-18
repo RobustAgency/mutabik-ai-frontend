@@ -31,7 +31,6 @@ const WIZARD_STEPS = [
 ];
 
 const initialFormData: RecordOfProcessingActivityFormData = {
-  activity_code: "",
   activity_name: "",
   purpose: "",
   detailed_purpose: null,
@@ -63,7 +62,7 @@ const initialFormData: RecordOfProcessingActivityFormData = {
 
 // Field names for each step validation
 const stepFields: Record<number, (keyof RecordOfProcessingActivityFormData)[]> = {
-  1: ["activity_code", "activity_name", "purpose", "owner_team", "controller_role", "status"],
+  1: ["activity_name", "purpose", "owner_team", "controller_role", "status"],
   2: ["data_subject_categories", "data_categories"],
   3: ["lawful_basis"],
   4: ["retention_period", "retention_justification", "security_measures"],
@@ -107,7 +106,6 @@ export const ROPAForm: React.FC<ROPAFormProps> = ({
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
-        activity_code: initialData.activity_code,
         activity_name: initialData.activity_name,
         purpose: initialData.purpose,
         detailed_purpose: initialData.detailed_purpose,
@@ -169,7 +167,6 @@ export const ROPAForm: React.FC<ROPAFormProps> = ({
   const handleFormSubmit = handleSubmit(async (data) => {
     // Transform form data to API format
     const payload: CreateROPAData | Partial<CreateROPAData> = {
-      activity_code: data.activity_code.trim(),
       activity_name: data.activity_name.trim(),
       purpose: data.purpose.trim(),
       detailed_purpose: data.detailed_purpose?.trim() || null,

@@ -52,36 +52,19 @@ export const BasicInformationStep: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="activity_code">
-            Activity Code <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="activity_code"
-            {...register("activity_code")}
-            className={`w-full ${errors.activity_code ? "border-red-500" : ""}`}
-            placeholder="e.g., ROPA-2024-001"
-          />
-          {errors.activity_code && (
-            <p className="text-sm text-red-500">{errors.activity_code.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="activity_name">
-            Activity Name <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="activity_name"
-            {...register("activity_name")}
-            className={`w-full ${errors.activity_name ? "border-red-500" : ""}`}
-            placeholder="Enter activity name"
-          />
-          {errors.activity_name && (
-            <p className="text-sm text-red-500">{errors.activity_name.message}</p>
-          )}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="activity_name">
+          Activity Name <span className="text-red-500">*</span>
+        </Label>
+        <Input
+          id="activity_name"
+          {...register("activity_name")}
+          className={`w-full ${errors.activity_name ? "border-red-500" : ""}`}
+          placeholder="Enter activity name"
+        />
+        {errors.activity_name && (
+          <p className="text-sm text-red-500">{errors.activity_name.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">

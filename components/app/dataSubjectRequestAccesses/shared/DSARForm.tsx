@@ -54,9 +54,9 @@ const initialFormData: DataSubjectRequestAccessFormData = {
   response_uri: null,
   response_notes: null,
   rejection_reason: null,
-  jurisdiction: null,
+  jurisdiction: "",
   processing_activity_ids: [],
-  systems_checked: "",
+  systems_checked: [],
   records_found: null,
 };
 
@@ -65,7 +65,7 @@ const stepFields: Record<number, (keyof DataSubjectRequestAccessFormData)[]> = {
   1: ["request_type", "subject_identifier", "subject_realm"],
   2: ["verification_status"],
   3: ["request_details", "request_source", "submitted_date", "due_date", "systems_checked"],
-  4: ["status", "priority", "is_overdue", "assigned_to", "assigned_date"],
+  4: ["status", "priority", "is_overdue", "assigned_to", "assigned_date", "jurisdiction"],
 };
 
 interface DSARFormProps {
@@ -141,9 +141,13 @@ export const DSARForm: React.FC<DSARFormProps> = ({
         response_uri: initialData.response_uri,
         response_notes: initialData.response_notes,
         rejection_reason: initialData.rejection_reason,
-        jurisdiction: initialData.jurisdiction,
+        jurisdiction: initialData.jurisdiction || "",
         processing_activity_ids: initialData.processing_activity_ids || [],
-        systems_checked: initialData.systems_checked,
+        systems_checked: Array.isArray(initialData.systems_checked)
+          ? initialData.systems_checked
+          : initialData.systems_checked
+          ? [initialData.systems_checked]
+          : [],
         records_found: initialData.records_found,
       });
     }
@@ -173,6 +177,11 @@ export const DSARForm: React.FC<DSARFormProps> = ({
   };
 
   const handleFormSubmit = handleSubmit(async (data) => {
+    const isCompleted = data.status === "completed";
+    const isReadyForResponse = data.status === "ready_for_response";
+    const isRejected = data.status === "rejected";
+    const isVerified = data.verification_status === "verified";
+
     // Transform form data to API format
     const payload: CreateDSARData | Partial<CreateDSARData> = {
       request_type: data.request_type,
@@ -180,33 +189,61 @@ export const DSARForm: React.FC<DSARFormProps> = ({
       subject_name: data.subject_name?.trim() || null,
       subject_realm: data.subject_realm,
       verification_status: data.verification_status,
-      subject_key: data.subject_key?.trim() || null,
-      verification_method: data.verification_method || null,
-      verified_by: data.verified_by ? Number(data.verified_by) : null,
+      // Only include verification fields if verified
+      ...(isVerified
+        ? {
+            subject_key: data.subject_key?.trim() || null,
+            verification_method: data.verification_method || null,
+            verified_by: data.verified_by ? Number(data.verified_by) : null,
+          }
+        : {}),
       request_details: data.request_details.trim(),
       requested_data_categories: data.requested_data_categories || [],
       request_source: data.request_source,
       submitted_date: data.submitted_date,
       due_date: data.due_date,
-      extended_due_date: data.extended_due_date || null,
+      // Only include extended_due_date if it's provided and valid
+      ...(data.extended_due_date && data.extended_due_date.trim()
+        ? { extended_due_date: data.extended_due_date }
+        : {}),
       status: data.status,
-      response_date: data.response_date || null,
-      completed_date: data.completed_date || null,
       priority: data.priority,
       is_overdue: data.is_overdue,
       assigned_to: Number(data.assigned_to),
       assigned_date: data.assigned_date,
-      response_method: data.response_method || null,
-      response_format: data.response_format || null,
-      response_uri: data.response_uri?.trim() || null,
+      // Only include response/completion fields if status is completed
+      ...(isCompleted
+        ? {
+            response_date: data.response_date || null,
+            completed_date: data.completed_date || null,
+          }
+        : {}),
+      priority: data.priority,
+      is_overdue: data.is_overdue,
+      assigned_to: Number(data.assigned_to),
+      assigned_date: data.assigned_date,
+      // Only include response fields if status is ready_for_response
+      ...(isReadyForResponse
+        ? {
+            response_method: data.response_method || null,
+            response_format: data.response_format || null,
+            response_uri: data.response_uri?.trim() || null,
+          }
+        : {}),
       response_notes: data.response_notes?.trim() || null,
-      rejection_reason: data.rejection_reason?.trim() || null,
-      jurisdiction: data.jurisdiction?.trim() || null,
+      // Jurisdiction is always required
+      jurisdiction: data.jurisdiction?.trim() || "",
+      // Only include rejection_reason if status is rejected
+      ...(isRejected
+        ? {
+            rejection_reason: data.rejection_reason?.trim() || null,
+          }
+        : {}),
       // Only send valid numeric processing activity IDs
       processing_activity_ids: (data.processing_activity_ids || [])
         .filter((id) => id != null && !isNaN(Number(id)) && Number(id) > 0)
         .map((id) => Number(id)),
-      systems_checked: data.systems_checked.trim(),
+      systems_checked: data.systems_checked.filter((s) => s.trim().length > 0),
       records_found: data.records_found ?? null,
     };
 

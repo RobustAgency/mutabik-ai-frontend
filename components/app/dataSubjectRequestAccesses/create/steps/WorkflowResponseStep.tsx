@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { DataSubjectRequestAccessFormData } from "@/lib/schemas/dataSubjectRequestAccess.schema";
-import { useGetUsersQuery } from "@/app/lib/features/usersApi";
+import { useGetOrganizationUsersQuery } from "@/app/lib/features/usersApi";
 
 const statusOptions = [
   { value: "new", label: "New" },
@@ -58,9 +58,10 @@ export const WorkflowResponseStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DataSubjectRequestAccessFormData>();
 
-  const { data: users = [], isLoading: isLoadingUsers } = useGetUsersQuery({
-    per_page: 100,
-  });
+  const { data: users = [], isLoading: isLoadingUsers } =
+    useGetOrganizationUsersQuery({
+      per_page: 100,
+    });
 
   const status = watch("status");
   const isOverdue = watch("is_overdue");
@@ -332,39 +333,48 @@ export const WorkflowResponseStep: React.FC = () => {
         />
       </div>
 
-      {showRejectionFields && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="jurisdiction">
+            Jurisdiction <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="jurisdiction"
+            {...register("jurisdiction")}
+            className={`w-full ${
+              errors.jurisdiction ? "border-red-500" : ""
+            }`}
+            placeholder="e.g., EU, UK"
+          />
+          {errors.jurisdiction && (
+            <p className="text-sm text-red-500">
+              {errors.jurisdiction.message}
+            </p>
+          )}
+        </div>
+
+        {showRejectionFields && (
           <div className="space-y-2">
-            <Label htmlFor="rejection_reason">Rejection Reason</Label>
+            <Label htmlFor="rejection_reason">
+              Rejection Reason <span className="text-red-500">*</span>
+            </Label>
             <Textarea
               id="rejection_reason"
               {...register("rejection_reason")}
-              className="w-full min-h-[100px] resize-none"
+              className={`w-full min-h-[100px] resize-none ${
+                errors.rejection_reason ? "border-red-500" : ""
+              }`}
               placeholder="Reason for rejection"
               rows={4}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="jurisdiction">
-              Jurisdiction <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="jurisdiction"
-              {...register("jurisdiction")}
-              className={`w-full ${
-                errors.jurisdiction ? "border-red-500" : ""
-              }`}
-              placeholder="e.g., EU, UK"
-            />
-            {errors.jurisdiction && (
+            {errors.rejection_reason && (
               <p className="text-sm text-red-500">
-                {errors.jurisdiction.message}
+                {errors.rejection_reason.message}
               </p>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

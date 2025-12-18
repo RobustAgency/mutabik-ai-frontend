@@ -62,10 +62,6 @@ const ApplicableJurisdiction = z.enum([
 
 // Step 1: Basic Information
 export const basicInformationSchema = z.object({
-  activity_code: z
-    .string()
-    .min(1, "Activity code is required")
-    .max(255, "Activity code must not exceed 255 characters"),
   activity_name: z
     .string()
     .min(1, "Activity name is required")

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { DataSubjectRequestAccessFormData } from "@/lib/schemas/dataSubjectRequestAccess.schema";
+import { useGetOrganizationUsersQuery } from "@/app/lib/features/usersApi";
 
 const verificationStatusOptions = [
   { value: "pending", label: "Pending" },
@@ -37,9 +38,37 @@ export const VerificationStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DataSubjectRequestAccessFormData>();
 
+  const { data: users = [], isLoading: isLoadingUsers } =
+    useGetOrganizationUsersQuery({
+      per_page: 100,
+    });
+
   const verificationStatus = watch("verification_status");
+  const verifiedBy = watch("verified_by");
 
   const showVerifiedFields = verificationStatus === "verified";
+
+  const userOptions = useMemo(() => {
+    const base =
+      users?.map((user: any) => ({
+        value: user.id.toString(),
+        label: `${user.name} (${user.email})`,
+      })) || [];
+
+    // Ensure currently selected user is present in options
+    if (verifiedBy) {
+      const verifiedByStr = String(verifiedBy);
+      const exists = base.some((opt) => opt.value === verifiedByStr);
+      if (!exists) {
+        base.unshift({
+          value: verifiedByStr,
+          label: `User #${verifiedBy}`,
+        });
+      }
+    }
+
+    return base;
+  }, [users, verifiedBy]);
 
   return (
     <div className="space-y-6">
@@ -118,16 +147,35 @@ export const VerificationStep: React.FC = () => {
 
             <div className="space-y-2">
               <Label htmlFor="verified_by">
-                Verified By (User ID) <span className="text-red-500">*</span>
+                Verified By <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="verified_by"
-                {...register("verified_by")}
-                className={`w-full ${
-                  errors.verified_by ? "border-red-500" : ""
-                }`}
-                placeholder="User ID"
-              />
+              <Select
+                key={`verified-by-${verifiedBy || "none"}-${userOptions.length}`}
+                value={verifiedBy || ""}
+                onValueChange={(value) => setValue("verified_by", value)}
+                disabled={isLoadingUsers}
+              >
+                <SelectTrigger
+                  className={`w-full ${
+                    errors.verified_by ? "border-red-500" : ""
+                  }`}
+                >
+                  <SelectValue placeholder="Select user" />
+                </SelectTrigger>
+                <SelectContent>
+                  {userOptions.length > 0 ? (
+                    userOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-users" disabled>
+                      {isLoadingUsers ? "Loading users..." : "No users found"}
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
               {errors.verified_by && (
                 <p className="text-sm text-red-500">
                   {errors.verified_by.message}

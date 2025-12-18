@@ -40,6 +40,14 @@ export const RequestDetailsStep: React.FC = () => {
     control,
     name: "requested_data_categories",
   });
+  const {
+    fields: systemsFields,
+    append: appendSystem,
+    remove: removeSystem,
+  } = useFieldArray({
+    control,
+    name: "systems_checked",
+  });
 
   return (
     <div className="space-y-6">
@@ -162,17 +170,39 @@ export const RequestDetailsStep: React.FC = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="systems_checked">
+        <Label>
           Systems Checked <span className="text-red-500">*</span>
         </Label>
-        <Input
-          id="systems_checked"
-          {...register("systems_checked")}
-          className={`w-full ${
-            errors.systems_checked ? "border-red-500" : ""
-          }`}
-          placeholder="e.g., CRM, Billing, Support"
-        />
+        <div className="space-y-2">
+          {systemsFields.map((field, index) => (
+            <div key={field.id} className="flex gap-2">
+              <Input
+                {...register(`systems_checked.${index}` as const)}
+                className={`flex-1 ${
+                  errors.systems_checked?.[index] ? "border-red-500" : ""
+                }`}
+                placeholder="e.g., CRM, Billing, Support"
+                maxLength={255}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => removeSystem(index)}
+                className="text-red-600 hover:text-red-700"
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => appendSystem("")}
+            className="w-full"
+          >
+            Add System
+          </Button>
+        </div>
         {errors.systems_checked && (
           <p className="text-sm text-red-500">
             {errors.systems_checked.message}

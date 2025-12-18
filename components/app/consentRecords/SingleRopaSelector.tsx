@@ -28,7 +28,7 @@ const SingleRopaSelector: React.FC<SingleRopaSelectorProps> = ({
       activities.map((activity: any) => ({
         id: activity.id,
         value: String(activity.id),
-        label: `${activity.activity_code} - ${activity.activity_name}`,
+        label: activity.activity_name,
       })),
     [activities]
   );

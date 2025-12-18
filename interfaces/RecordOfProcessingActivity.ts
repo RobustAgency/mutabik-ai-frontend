@@ -2,7 +2,6 @@ export type ROPAStatus = "draft" | "active" | "under_review" | "archived";
 
 export interface RecordOfProcessingActivity {
   id: number;
-  activity_code: string;
   activity_name: string;
   purpose: string;
   detailed_purpose: string | null;
@@ -47,7 +46,6 @@ export interface ROPAFilters {
 }
 
 export interface CreateROPAData {
-  activity_code: string;
   activity_name: string;
   purpose: string;
   detailed_purpose?: string | null;

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { RecordOfProcessingActivityFormData } from "@/lib/schemas/recordOfProcessingActivity.schema";
+import { useGetDataProtectionImpactAssessmentsQuery } from "@/app/lib/features/dataProtectionImpactAssessmentsApi";
+import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
+import DpiaModalForm from "@/components/app/dpia/create/DpiaModalForm";
 
 const dpiaStatusOptions = [
   { value: "required", label: "Required" },
@@ -30,8 +33,36 @@ export const DPIAReviewStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<RecordOfProcessingActivityFormData>();
 
+  const { data: dpiaData, isLoading: isLoadingDPIAs } =
+    useGetDataProtectionImpactAssessmentsQuery({
+      per_page: 100,
+    });
+
   const dpiaRequired = watch("dpia_required");
   const dpiaId = watch("dpia_id");
+
+  const dpias = dpiaData?.data ?? [];
+
+  const dpiaOptions = useMemo(() => {
+    const base =
+      dpias.map((dpia: any) => ({
+        value: dpia.id.toString(),
+        label: `${dpia.dpia_code} - ${dpia.dpia_name}`,
+      })) || [];
+
+    // Ensure currently selected DPIA is present in options
+    if (dpiaId) {
+      const exists = base.some((opt) => opt.value === dpiaId.toString());
+      if (!exists) {
+        base.unshift({
+          value: dpiaId.toString(),
+          label: `DPIA #${dpiaId}`,
+        });
+      }
+    }
+
+    return base;
+  }, [dpias, dpiaId]);
 
   const handleDpiaRequiredChange = (checked: boolean) => {
     setValue("dpia_required", checked);
@@ -39,20 +70,6 @@ export const DPIAReviewStep: React.FC = () => {
       // Clear DPIA fields when unchecked
       setValue("dpia_status", null);
       setValue("dpia_id", null);
-    }
-  };
-
-  const handleDpiaIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "" || value === null || value === undefined) {
-      setValue("dpia_id", null);
-    } else {
-      const numValue = Number(value);
-      if (!isNaN(numValue) && numValue > 0) {
-        setValue("dpia_id", numValue);
-      } else {
-        setValue("dpia_id", null);
-      }
     }
   };
 
@@ -96,13 +113,24 @@ export const DPIAReviewStep: React.FC = () => {
 
           <div className="space-y-2">
             <Label htmlFor="dpia_id">DPIA ID</Label>
-            <Input
-              id="dpia_id"
-              type="number"
-              value={dpiaId || ""}
-              onChange={handleDpiaIdChange}
-              className="w-full"
-              placeholder="Enter DPIA ID"
+            <SelectWithInlineCreate
+              value={dpiaId ? dpiaId.toString() : ""}
+              onValueChange={(value) => {
+                setValue("dpia_id", value ? (Number(value) as any) : (null as any));
+              }}
+              placeholder="Select DPIA"
+              disabled={isLoadingDPIAs}
+              options={dpiaOptions}
+              isLoading={isLoadingDPIAs}
+              isEmpty={dpiaOptions.length === 0}
+              entityName="DPIA"
+              modalForm={DpiaModalForm}
+              canCreate={true}
+              modalTitle="Create New DPIA"
+              modalDescription="Create a new Data Protection Impact Assessment and link it to this ROPA."
+              triggerClassName={`w-full ${
+                errors.dpia_id ? "border-red-500" : ""
+              }`}
             />
             {errors.dpia_id && (
               <p className="text-sm text-red-500">{errors.dpia_id.message}</p>

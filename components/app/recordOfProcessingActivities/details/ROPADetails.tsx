@@ -112,9 +112,6 @@ const ROPADetails: React.FC<ROPADetailsProps> = ({ activityId }) => {
                 <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
                   {activity.activity_name}
                 </h1>
-                <p className="font-sans text-sm text-[#667085]">
-                  {activity.activity_code}
-                </p>
               </div>
               <div className="flex gap-2">
                 <Button

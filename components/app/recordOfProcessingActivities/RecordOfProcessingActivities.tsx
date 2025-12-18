@@ -114,19 +114,6 @@ const RecordOfProcessingActivities: React.FC = () => {
 
   const columns: ColumnDef<RecordOfProcessingActivity>[] = [
     {
-      accessorKey: "activity_code",
-      header: () => (
-        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Activity Code
-        </div>
-      ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
-    },
-    {
       accessorKey: "activity_name",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">

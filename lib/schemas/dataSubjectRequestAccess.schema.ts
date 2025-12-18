@@ -123,12 +123,11 @@ export const dataSubjectRequestAccessSchema = z
     response_uri: z.string().url("Must be a valid URL").optional().nullable(),
     response_notes: z.string().optional().nullable(),
     rejection_reason: z.string().optional().nullable(),
-    jurisdiction: z.string().max(255).optional().nullable(),
+    jurisdiction: z.string().min(1, "Jurisdiction is required").max(255),
     processing_activity_ids: z.array(z.number().int().positive()).optional().nullable(),
     systems_checked: z
-      .string()
-      .min(1, "Systems checked is required")
-      .max(255, "Systems checked must not exceed 255 characters"),
+      .array(z.string().max(255, "Each system must not exceed 255 characters"))
+      .min(1, "At least one system must be checked"),
     records_found: z.number().int().optional().nullable(),
   })
   .superRefine((data, ctx) => {
@@ -207,11 +206,37 @@ export const dataSubjectRequestAccessSchema = z
 
     // Conditional: rejected
     if (isRejected) {
-      if (!data.jurisdiction) {
+      if (!data.rejection_reason) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["jurisdiction"],
-          message: "Jurisdiction is required when status is rejected",
+          path: ["rejection_reason"],
+          message: "Rejection reason is required when status is rejected",
+        });
+      }
+    }
+
+    // Validate extended_due_date is after due_date
+    if (data.extended_due_date && data.due_date) {
+      const dueDate = new Date(data.due_date);
+      const extendedDate = new Date(data.extended_due_date);
+      if (extendedDate <= dueDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["extended_due_date"],
+          message: "Extended due date must be after due date",
+        });
+      }
+    }
+
+    // Validate completed_date is after or equal to response_date
+    if (data.completed_date && data.response_date) {
+      const responseDate = new Date(data.response_date);
+      const completedDate = new Date(data.completed_date);
+      if (completedDate < responseDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["completed_date"],
+          message: "Completed date must be after or equal to response date",
         });
       }
     }

@@ -96,7 +96,7 @@ export interface DataSubjectRequestAccess {
   rejection_reason: string | null;
   jurisdiction: string | null;
   processing_activity_ids: number[] | null;
-  systems_checked: string;
+  systems_checked: string[];
   records_found: number | null;
   remaining_days?: number | null;
   created_at: string;
@@ -143,7 +143,7 @@ export interface CreateDSARData {
   rejection_reason?: string | null;
   jurisdiction?: string | null;
   processing_activity_ids?: number[] | null;
-  systems_checked: string;
+  systems_checked: string[];
   records_found?: number | null;
 }
 

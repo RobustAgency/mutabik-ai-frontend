@@ -54,7 +54,6 @@ const MultiRopaSelector: React.FC<MultiRopaSelectorProps> = ({
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (activity: any) =>
-          activity.activity_code.toLowerCase().includes(search) ||
           activity.activity_name.toLowerCase().includes(search)
       );
     }
@@ -115,7 +114,7 @@ const MultiRopaSelector: React.FC<MultiRopaSelectorProps> = ({
                 className="flex items-center gap-1 px-2 py-1"
               >
                 <span className="text-xs">
-                  {activity.activity_code} - {activity.activity_name}
+                  {activity.activity_name}
                 </span>
                 <button
                   type="button"
@@ -218,9 +217,6 @@ const MultiRopaSelector: React.FC<MultiRopaSelectorProps> = ({
                         />
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {activity.activity_code}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
                             {activity.activity_name}
                           </span>
                         </div>

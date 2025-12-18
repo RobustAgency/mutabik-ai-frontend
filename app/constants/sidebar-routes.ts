@@ -252,7 +252,7 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/privacy",
+    href: "/privacy/ropa",
     label: "Privacy & Data Protection",
     icon: Lock,
     children: [
@@ -291,7 +291,7 @@ export const userRoutes: RouteItem[] = [
       { href: "/privacy/dsar", label: "DSAR Log", icon: FileBarChart },
       {
         href: "/privacy/dpia",
-        label: "Data Protection Impact Assessments",
+        label: "DPIA",
         icon: ShieldCheck,
       },
       {

@@ -48,8 +48,29 @@ export const usersApi = createApi({
             ]
           : [{ type: "User" as const, id: "LIST" }],
     }),
+    getOrganizationUsers: builder.query<User[], UserFilters | void>({
+      query: (filters) => ({
+        url: "/organization-users",
+        method: "GET",
+        params: filters ?? undefined,
+      }),
+      transformResponse: (response: UsersListResponse | { data: User[] }) => {
+        // Handle both response formats
+        if (Array.isArray(response?.data)) {
+          return response.data;
+        }
+        return response?.data?.data ?? [];
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "User" as const, id })),
+              { type: "User" as const, id: "ORG_LIST" },
+            ]
+          : [{ type: "User" as const, id: "ORG_LIST" }],
+    }),
   }),
 });
 
-export const { useGetUsersQuery } = usersApi;
+export const { useGetUsersQuery, useGetOrganizationUsersQuery } = usersApi;
 
