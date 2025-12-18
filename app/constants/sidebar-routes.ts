@@ -281,6 +281,11 @@ export const userRoutes: RouteItem[] = [
             label: "Consent Coverage",
             icon: BarChart3,
           },
+          {
+            href: "/privacy/consent/records",
+            label: "Consent Records",
+            icon: FileSearch,
+          },
         ],
       },
       { href: "/privacy/dsar", label: "DSAR Log", icon: FileBarChart },
