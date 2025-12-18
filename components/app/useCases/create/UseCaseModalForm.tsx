@@ -315,6 +315,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
         onSubmit={handleSubmit}
         isLoading={isLoading}
         canProceed={true}
+        submitLabel="Create Use Case"
       >
         {renderStepContent()}
       </MultiStepWizard>

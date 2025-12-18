@@ -252,7 +252,7 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/privacy",
+    href: "/privacy/ropa",
     label: "Privacy & Data Protection",
     icon: Lock,
     children: [
@@ -260,11 +260,6 @@ export const userRoutes: RouteItem[] = [
         href: "/privacy/ropa",
         label: "ROPA (Processing Activities)",
         icon: FileSearch,
-      },
-      {
-        href: "/privacy/pdp-register",
-        label: "PDP Processing Register",
-        icon: FileCheck2,
       },
       {
         href: "/privacy/consent",
@@ -286,16 +281,24 @@ export const userRoutes: RouteItem[] = [
             label: "Consent Coverage",
             icon: BarChart3,
           },
+          {
+            href: "/privacy/consent/records",
+            label: "Consent Records",
+            icon: FileSearch,
+          },
         ],
       },
       { href: "/privacy/dsar", label: "DSAR Log", icon: FileBarChart },
-      { href: "/privacy/tia", label: "Cross-Border TIA", icon: GlobeLock },
       {
-        href: "/privacy/retention",
-        label: "Retention Policy & Deletion Proof",
-        icon: Trash2,
+        href: "/privacy/dpia",
+        label: "DPIA",
+        icon: ShieldCheck,
       },
-      { href: "/privacy/notices", label: "Privacy Notices", icon: ScrollText },
+      {
+        href: "/privacy/privacy-incidents",
+        label: "Privacy Incidents",
+        icon: Activity,
+      },
     ],
   },
 

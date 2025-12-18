@@ -18,6 +18,7 @@ interface MultiStepWizardProps {
   onSubmit: () => void;
   isLoading?: boolean;
   canProceed?: boolean;
+  submitLabel?: string;
   children: React.ReactNode;
 }
 
@@ -29,6 +30,7 @@ export const MultiStepWizard: React.FC<MultiStepWizardProps> = ({
   onSubmit,
   isLoading = false,
   canProceed = true,
+  submitLabel = "Submit",
   children,
 }) => {
   const isFirstStep = currentStep === 1;
@@ -167,7 +169,7 @@ export const MultiStepWizard: React.FC<MultiStepWizardProps> = ({
               disabled={isLoading}
               className="flex items-center gap-2 px-6 py-2 rounded-lg bg-[#4FD58F] hover:bg-[#3BC577] text-white"
             >
-              {isLoading ? "Submitting..." : "Submit Use Case"}
+              {isLoading ? "Submitting..." : submitLabel}
             </Button>
           )}
         </div>
