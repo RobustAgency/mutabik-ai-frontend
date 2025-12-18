@@ -19,6 +19,7 @@ const ChooseFrameworks = () => {
   const [openCardId, setOpenCardId] = useState<number | null>(null);
 
   const { frameworks, loading: frameworksLoading, fetchFrameworks } = useFrameworks();
+  console.log("🚀 ~ ChooseFrameworks ~ frameworks:", frameworks)
   const { addFrameworks, loading: projectLoading } = useProjects();
 
   useEffect(() => {

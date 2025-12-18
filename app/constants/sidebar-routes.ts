@@ -262,11 +262,6 @@ export const userRoutes: RouteItem[] = [
         icon: FileSearch,
       },
       {
-        href: "/privacy/pdp-register",
-        label: "PDP Processing Register",
-        icon: FileCheck2,
-      },
-      {
         href: "/privacy/consent",
         label: "Consent Management",
         icon: CheckCircle2,
@@ -289,13 +284,16 @@ export const userRoutes: RouteItem[] = [
         ],
       },
       { href: "/privacy/dsar", label: "DSAR Log", icon: FileBarChart },
-      { href: "/privacy/tia", label: "Cross-Border TIA", icon: GlobeLock },
       {
-        href: "/privacy/retention",
-        label: "Retention Policy & Deletion Proof",
-        icon: Trash2,
+        href: "/privacy/dpia",
+        label: "Data Protection Impact Assessments",
+        icon: ShieldCheck,
       },
-      { href: "/privacy/notices", label: "Privacy Notices", icon: ScrollText },
+      {
+        href: "/privacy/privacy-incidents",
+        label: "Privacy Incidents",
+        icon: Activity,
+      },
     ],
   },
 
