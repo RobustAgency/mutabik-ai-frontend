@@ -181,6 +181,7 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
           canProceed
+          submitLabel={initialData ? "Update Treatment" : "Create Treatment"}
         >
           {renderStepContent()}
         </MultiStepWizard>
