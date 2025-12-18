@@ -41,6 +41,11 @@ import { requirementControlsApi } from "./features/requirementControlsApi";
 import { usersApi } from "./features/usersApi";
 import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
 import { regulatorySubmissionsApi } from "./features/regulatorySubmissionsApi";
+import { recordOfProcessingActivitiesApi } from "./features/recordOfProcessingActivitiesApi";
+import { dataSubjectRequestAccessesApi } from "./features/dataSubjectRequestAccessesApi";
+import { consentRecordsApi } from "./features/consentRecordsApi";
+import { dataProtectionImpactAssessmentsApi } from "./features/dataProtectionImpactAssessmentsApi";
+import { privacyIncidentsApi } from "./features/privacyIncidentsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -88,6 +93,14 @@ export const makeStore = () => {
       [usersApi.reducerPath]: usersApi.reducer,
       [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
       [regulatorySubmissionsApi.reducerPath]: regulatorySubmissionsApi.reducer,
+      [consentRecordsApi.reducerPath]: consentRecordsApi.reducer,
+      [dataSubjectRequestAccessesApi.reducerPath]:
+        dataSubjectRequestAccessesApi.reducer,
+      [recordOfProcessingActivitiesApi.reducerPath]:
+        recordOfProcessingActivitiesApi.reducer,
+      [dataProtectionImpactAssessmentsApi.reducerPath]:
+        dataProtectionImpactAssessmentsApi.reducer,
+      [privacyIncidentsApi.reducerPath]: privacyIncidentsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -130,7 +143,12 @@ export const makeStore = () => {
         requirementControlsApi.middleware,
         usersApi.middleware,
         complianceEvidenceApi.middleware,
-        regulatorySubmissionsApi.middleware
+        regulatorySubmissionsApi.middleware,
+        consentRecordsApi.middleware,
+        dataSubjectRequestAccessesApi.middleware,
+        recordOfProcessingActivitiesApi.middleware,
+        dataProtectionImpactAssessmentsApi.middleware,
+        privacyIncidentsApi.middleware
       ),
   });
 };
