@@ -42,6 +42,7 @@ import { usersApi } from "./features/usersApi";
 import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
 import { regulatorySubmissionsApi } from "./features/regulatorySubmissionsApi";
 import { recordOfProcessingActivitiesApi } from "./features/recordOfProcessingActivitiesApi";
+import { dataSubjectRequestAccessesApi } from "./features/dataSubjectRequestAccessesApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -89,6 +90,8 @@ export const makeStore = () => {
       [usersApi.reducerPath]: usersApi.reducer,
       [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
       [regulatorySubmissionsApi.reducerPath]: regulatorySubmissionsApi.reducer,
+      [dataSubjectRequestAccessesApi.reducerPath]:
+        dataSubjectRequestAccessesApi.reducer,
       [recordOfProcessingActivitiesApi.reducerPath]:
         recordOfProcessingActivitiesApi.reducer,
       // ... other reducers
@@ -134,6 +137,7 @@ export const makeStore = () => {
         usersApi.middleware,
         complianceEvidenceApi.middleware,
         regulatorySubmissionsApi.middleware,
+        dataSubjectRequestAccessesApi.middleware,
         recordOfProcessingActivitiesApi.middleware
       ),
   });

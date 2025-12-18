@@ -79,6 +79,7 @@ interface ROPAFormProps {
   onSuccess?: () => void;
   title: string;
   description: string;
+  hideHeader?: boolean;
 }
 
 export const ROPAForm: React.FC<ROPAFormProps> = ({
@@ -89,6 +90,7 @@ export const ROPAForm: React.FC<ROPAFormProps> = ({
   onSuccess,
   title,
   description,
+  hideHeader = false,
 }) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -275,18 +277,32 @@ export const ROPAForm: React.FC<ROPAFormProps> = ({
     }
   };
 
+  const containerClass = hideHeader
+    ? "w-full"
+    : "max-w-7xl mx-auto px-4 py-6";
+
+  const cardClass = hideHeader
+    ? "border-0 shadow-none p-0"
+    : "p-6 border-[#E4E7EC] shadow-none";
+
+  const contentClass = hideHeader
+    ? "space-y-4 w-full p-0"
+    : "space-y-8 w-full p-0";
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className={containerClass}>
       <FormProvider {...methods}>
-        <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <div className="mb-6">
-            <h1 className="font-sans font-semibold text-2xl tracking-normal text-[#1D2939]">
-              {title}
-            </h1>
-            <p className="font-sans font-normal text-sm tracking-normal text-[#667085] mt-1">
-              {description}
-            </p>
-          </div>
+        <Card className={cardClass}>
+          {!hideHeader && (
+            <div className="mb-6">
+              <h1 className="font-sans font-semibold text-2xl tracking-normal text-[#1D2939]">
+                {title}
+              </h1>
+              <p className="font-sans font-normal text-sm tracking-normal text-[#667085] mt-1">
+                {description}
+              </p>
+            </div>
+          )}
 
           <CardContent className="space-y-8 w-full p-0">
             {Object.keys(validationErrors).length > 0 && (
