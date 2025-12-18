@@ -45,6 +45,7 @@ import { recordOfProcessingActivitiesApi } from "./features/recordOfProcessingAc
 import { dataSubjectRequestAccessesApi } from "./features/dataSubjectRequestAccessesApi";
 import { consentRecordsApi } from "./features/consentRecordsApi";
 import { dataProtectionImpactAssessmentsApi } from "./features/dataProtectionImpactAssessmentsApi";
+import { privacyIncidentsApi } from "./features/privacyIncidentsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -99,6 +100,7 @@ export const makeStore = () => {
         recordOfProcessingActivitiesApi.reducer,
       [dataProtectionImpactAssessmentsApi.reducerPath]:
         dataProtectionImpactAssessmentsApi.reducer,
+      [privacyIncidentsApi.reducerPath]: privacyIncidentsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -145,7 +147,8 @@ export const makeStore = () => {
         consentRecordsApi.middleware,
         dataSubjectRequestAccessesApi.middleware,
         recordOfProcessingActivitiesApi.middleware,
-        dataProtectionImpactAssessmentsApi.middleware
+        dataProtectionImpactAssessmentsApi.middleware,
+        privacyIncidentsApi.middleware
       ),
   });
 };

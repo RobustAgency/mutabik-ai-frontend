@@ -273,6 +273,7 @@ export const AiRiskRegisterForm: React.FC<AiRiskRegisterFormProps> = ({
             onSubmit={handleSubmit}
             isLoading={isSubmitting}
             canProceed
+            submitLabel={initialData ? "Update Risk Register" : "Create Risk Register"}
           >
             {renderStepContent()}
           </MultiStepWizard>

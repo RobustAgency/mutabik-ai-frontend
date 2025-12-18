@@ -349,6 +349,7 @@ export const DPIAForm: React.FC<DPIAFormProps> = ({
               onSubmit={handleFormSubmit}
               isLoading={isLoading}
               canProceed={true}
+              submitLabel={mode === "create" ? "Create DPIA" : "Update DPIA"}
             >
               {renderStepContent()}
             </MultiStepWizard>

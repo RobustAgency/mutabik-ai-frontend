@@ -345,6 +345,7 @@ export const DSARForm: React.FC<DSARFormProps> = ({
               onSubmit={handleFormSubmit}
               isLoading={isLoading}
               canProceed={true}
+              submitLabel={mode === "create" ? "Create DSAR" : "Update DSAR"}
             >
               {renderStepContent()}
             </MultiStepWizard>

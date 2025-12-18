@@ -382,6 +382,7 @@ const CreateUseCases: React.FC = () => {
             onSubmit={handleSubmit}
             isLoading={isLoading}
             canProceed={true}
+            submitLabel="Submit Use Case"
           >
             {renderStepContent()}
           </MultiStepWizard>

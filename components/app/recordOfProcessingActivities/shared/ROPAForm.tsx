@@ -329,6 +329,7 @@ export const ROPAForm: React.FC<ROPAFormProps> = ({
               onSubmit={handleFormSubmit}
               isLoading={isLoading}
               canProceed={true}
+              submitLabel={mode === "create" ? "Create ROPA" : "Update ROPA"}
             >
               {renderStepContent()}
             </MultiStepWizard>

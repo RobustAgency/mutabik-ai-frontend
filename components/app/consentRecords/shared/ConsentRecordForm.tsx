@@ -282,6 +282,7 @@ export const ConsentRecordForm: React.FC<ConsentRecordFormProps> = ({
               onSubmit={handleFormSubmit}
               isLoading={isLoading}
               canProceed={true}
+              submitLabel={mode === "create" ? "Create Consent Record" : "Update Consent Record"}
             >
               {renderStepContent()}
             </MultiStepWizard>

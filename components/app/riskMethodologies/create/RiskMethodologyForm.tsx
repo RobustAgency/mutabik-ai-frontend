@@ -497,6 +497,7 @@ export const RiskMethodologyForm: React.FC<RiskMethodologyFormProps> = ({
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
           canProceed
+          submitLabel={initialData ? "Update Methodology" : "Create Methodology"}
         >
           {renderStepContent()}
         </MultiStepWizard>
