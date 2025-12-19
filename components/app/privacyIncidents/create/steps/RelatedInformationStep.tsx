@@ -69,8 +69,13 @@ export const RelatedInformationStep: React.FC = () => {
         <Label>Linked Processing Activities (ROPA)</Label>
         <MultiRopaSelector
           label=""
-          value={watch("processing_activity_ids") || []}
-          onValueChange={(ids) => setValue("processing_activity_ids", ids)}
+          value={(() => {
+            const value = watch("processing_activity_ids");
+            return Array.isArray(value) ? value : [];
+          })()}
+          onValueChange={(ids) => {
+            setValue("processing_activity_ids", ids.length > 0 ? ids : null, { shouldDirty: true });
+          }}
         />
       </div>
 
