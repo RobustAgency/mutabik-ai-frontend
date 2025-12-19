@@ -162,7 +162,9 @@ export const PrivacyIncidentForm: React.FC<PrivacyIncidentFormProps> = ({
         resolution_date: initialData.resolution_date
           ? initialData.resolution_date.split("T")[0]
           : null,
-        processing_activity_ids: initialData.processing_activity_ids || null,
+        processing_activity_ids: Array.isArray(initialData.processing_activity_ids) && initialData.processing_activity_ids.length > 0
+          ? (initialData.processing_activity_ids as number[]).slice()
+          : null,
         affected_systems: initialData.affected_systems || [],
         third_party_involved: initialData.third_party_involved,
         vendor_id: initialData.vendor_id || null,
