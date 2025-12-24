@@ -186,7 +186,7 @@ export const userRoutes: RouteItem[] = [
 
   {
     href: "/risk-compliance/ai-risk-management",
-    label: "Risk Management",
+    label: "Risk Management & Compliance",
     icon: ShieldCheck,
     children: [
       {
@@ -216,38 +216,28 @@ export const userRoutes: RouteItem[] = [
           },
         ],
       },
-      // {
-      //   href: "/risk-compliance/compliance",
-      //   label: "Compliance Management",
-      //   icon: Landmark,
-      //   children: [
-      //     {
-      //       href: "/risk-compliance/compliance/frameworks",
-      //       label: "Frameworks & Requirements",
-      //       icon: FileCheck2,
-      //     },
-      //     {
-      //       href: "/risk-compliance/compliance/control-catalog",
-      //       label: "Control Catalog",
-      //       icon: FileBox,
-      //     },
-      //     {
-      //       href: "/risk-compliance/compliance/mapping",
-      //       label: "Requirement–Control Mapping",
-      //       icon: Network,
-      //     },
-      //     {
-      //       href: "/risk-compliance/compliance/evidence",
-      //       label: "Compliance Evidence",
-      //       icon: FileKey2,
-      //     },
-      //     {
-      //       href: "/projects",
-      //       label: "Regulatory Submissions / Projects",
-      //       icon: ScrollText,
-      //     },
-      //   ],
-      // },
+      {
+        href: "/projects",
+        label: "Compliance Management",
+        icon: Landmark,
+        children: [
+          {
+            href: "/projects",
+            label: "Compliance Projects",
+            icon: FolderKanban,
+          },
+          {
+            href: "/compliance-evidences",
+            label: "Compliance Evidence",
+            icon: FileCheck2,
+          },
+          {
+            href: "/regulatory-submissions",
+            label: "Regulatory Submissions",
+            icon: ScrollText,
+          },
+        ],
+      },
     ],
   },
 

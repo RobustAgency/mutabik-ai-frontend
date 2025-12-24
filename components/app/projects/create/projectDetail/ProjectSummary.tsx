@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Project } from "@/service/app/projects";
+import { Project } from "@/app/lib/features/projectsApi";
 import { formatDate } from "@/utils/formatDate";
 
 // Type for project details

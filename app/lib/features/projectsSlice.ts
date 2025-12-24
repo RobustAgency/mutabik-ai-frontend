@@ -3,6 +3,7 @@ import {
   projectService,
   type Project,
   type CreateProjectData,
+  type UpdateProjectData,
   type AddMemberData,
   type AddFrameworksData,
   type ProjectFilters,
@@ -81,6 +82,28 @@ export const createProject = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create project";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const updateProject = createAsyncThunk(
+  "projects/updateProject",
+  async (
+    { id, data }: { id: number; data: UpdateProjectData },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await projectService.updateProject(id, data);
+      if (!response.error) {
+        toast.success("Project updated successfully");
+        return response.data;
+      } else {
+        return rejectWithValue(response.message || "Failed to update project");
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update project";
       return rejectWithValue(errorMessage);
     }
   }
@@ -218,6 +241,29 @@ const projectsSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
         toast.error((action.payload as string) || "Failed to create project");
+      });
+
+    // Update project
+    builder
+      .addCase(updateProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProject = action.payload;
+        const index = state.projects.findIndex(
+          (p) => p.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.projects[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(updateProject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        toast.error((action.payload as string) || "Failed to update project");
       });
 
     // Add member

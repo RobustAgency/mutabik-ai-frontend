@@ -3,15 +3,17 @@ import { GovernancePillar } from "@/utils/governancePillar";
 
 export interface Project {
   id: number;
+  ai_model_id?: number;
   name: string;
-  description: string;
-  governance_pillar: GovernancePillar;
+  description: string | null;
+  governance_pillar: GovernancePillar | string;
   progress: number;
-  total_requirements: number;
-  total_controls: number;
+  total_requirements?: number;
+  total_controls?: number;
   created_at: string;
   updated_at: string;
   frameworks?: Framework[];
+  framework?: any; // single framework with nested requirements/controls from backend
   users?: ProjectUser[];
 }
 
@@ -38,9 +40,17 @@ export interface ProjectUser {
 }
 
 export interface CreateProjectData {
+  ai_model_id: number;
   name: string;
-  description: string;
+  description: string | null;
   governance_pillar: GovernancePillar;
+}
+
+export interface UpdateProjectData {
+  ai_model_id?: number;
+  name?: string;
+  description?: string | null;
+  governance_pillar?: GovernancePillar;
 }
 
 export interface AddMemberData {
@@ -80,6 +90,13 @@ export class ProjectService {
 
   async createProject(data: CreateProjectData): Promise<ApiResponse<Project>> {
     return api.post("/projects", data);
+  }
+
+  async updateProject(
+    id: number,
+    data: UpdateProjectData
+  ): Promise<ApiResponse<Project>> {
+    return api.post(`/projects/${id}`, data);
   }
 
   async addMember(

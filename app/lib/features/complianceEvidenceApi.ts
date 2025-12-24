@@ -40,7 +40,7 @@ export const complianceEvidenceApi = createApi({
       ComplianceEvidenceFilters | void
     >({
       query: (filters) => ({
-        url: "/admin/compliance-evidences",
+        url: "/compliance-evidences",
         method: "GET",
         params: filters ?? undefined,
       }),
@@ -59,7 +59,7 @@ export const complianceEvidenceApi = createApi({
     }),
     getComplianceEvidence: builder.query<ComplianceEvidence, string | number>({
       query: (id) => ({
-        url: `/admin/compliance-evidences/${id}`,
+        url: `/compliance-evidences/${id}`,
         method: "GET",
       }),
       transformResponse: (response: ComplianceEvidenceSingleResponse) => {
@@ -69,7 +69,7 @@ export const complianceEvidenceApi = createApi({
     }),
     createComplianceEvidence: builder.mutation<unknown, CreateComplianceEvidenceRequest>({
       query: (data) => ({
-        url: "/admin/compliance-evidences",
+        url: "/compliance-evidences",
         method: "POST",
         data,
       }),
@@ -80,7 +80,7 @@ export const complianceEvidenceApi = createApi({
       { id: string | number; data: UpdateComplianceEvidenceRequest }
     >({
       query: ({ id, data }) => ({
-        url: `/admin/compliance-evidences/${id}`,
+        url: `/compliance-evidences/${id}`,
         method: "POST",
         data,
       }),
@@ -91,7 +91,7 @@ export const complianceEvidenceApi = createApi({
     }),
     deleteComplianceEvidence: builder.mutation<unknown, string | number>({
       query: (id) => ({
-        url: `/admin/compliance-evidences/${id}`,
+        url: `/compliance-evidences/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "ComplianceEvidence", id: "LIST" }],

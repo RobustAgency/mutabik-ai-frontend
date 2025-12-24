@@ -10,7 +10,7 @@ interface PageProps {
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
-  const step = params.step ? Number(params.step) : 2;
+  const step = params.step ? Number(params.step) : 3;
 
   return (
     <>
