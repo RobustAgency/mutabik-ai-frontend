@@ -109,6 +109,7 @@ export const BasicInfoStep: React.FC = () => {
         <div className="space-y-2">
           <Label htmlFor="linked_ai_model_id">Linked AI Model (optional)</Label>
           <SelectWithInlineCreate
+            key={`linked_ai_model_id-${linkedAiModelId || "none"}`}
             value={linkedAiModelId ? String(linkedAiModelId) : ""}
             onValueChange={(value) =>
               setValue(

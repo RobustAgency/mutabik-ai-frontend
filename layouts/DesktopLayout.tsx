@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/custom/SideBar"
 const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="hidden md:flex">
-            <aside className="fixed left-0 top-0 z-30 h-[calc(100vh-3.5rem)] w-80 bg-[#FAFAFA]">
+            <aside className="fixed left-0 top-0 z-30 h-[calc(100vh-3.5rem)] w-[340px] bg-[#FAFAFA]">
                 <div className="h-full overflow-y-auto">
                     <Sidebar collapsed={false} onNavigate={() => { }} />
                 </div>
