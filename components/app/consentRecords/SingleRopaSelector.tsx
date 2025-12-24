@@ -45,6 +45,7 @@ const SingleRopaSelector: React.FC<SingleRopaSelectorProps> = ({
   return (
     <div className="space-y-2">
       <SelectWithInlineCreate
+        key={`ropa-${value || "none"}`}
         value={value ? String(value) : ""}
         onValueChange={handleChange}
         placeholder={placeholder}

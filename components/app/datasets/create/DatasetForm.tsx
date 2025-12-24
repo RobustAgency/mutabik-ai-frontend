@@ -261,7 +261,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                 {/* Data Subject Categories (Optional) */}
                 <div className="space-y-2">
                     <Label htmlFor="data_subject_categories_picker">Data Subject Categories</Label>
-                    <Select onValueChange={(value) => handleArrayAdd("data_subject_categories", value)}>
+                    <Select key={`data_subject_categories-picker-${formData.data_subject_categories?.join(",") || 'empty'}`}     onValueChange={(value) => handleArrayAdd("data_subject_categories", value)}>
                         <SelectTrigger id="data_subject_categories_picker" className="w-full">
                             <SelectValue placeholder="Choose categories (optional)" />
                         </SelectTrigger>

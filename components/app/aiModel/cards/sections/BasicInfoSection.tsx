@@ -54,6 +54,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                 <div className="space-y-2">
                     <Label>Model Version <span className="text-red-500">*</span></Label>
                     <SelectWithInlineCreate
+                        key={`version_id-${formData.version_id || "none"}`}
                         value={String(formData.version_id ?? "")}
                         onValueChange={(v) => setFormData({ version_id: v })}
                         options={versionOptions.map((opt) => ({
@@ -127,6 +128,7 @@ export default function BasicInfoSection({ formData, setFormData, versionOptions
                 <div className="space-y-2">
                     <Label>Model Owner / Custodian <span className="text-red-500">*</span></Label>
                     <SelectWithInlineCreate
+                        key={`owner_stakeholder_id-${formData.owner_stakeholder_id || "none"}`}
                         value={String(formData.owner_stakeholder_id || "")}
                         onValueChange={(value) => {
                             setFormData({ owner_stakeholder_id: value });

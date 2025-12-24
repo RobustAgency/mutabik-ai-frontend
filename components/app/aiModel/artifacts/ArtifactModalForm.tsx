@@ -229,6 +229,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             Model Version <span className="text-red-500">*</span>
                         </Label>
                         <SelectWithInlineCreate
+                            key={`ai_model_version_id-${formData.ai_model_version_id || "none"}`}
                             value={formData.ai_model_version_id}
                             onValueChange={(value) => {
                                 setFormData((prev) => ({ ...prev, ai_model_version_id: value }));
@@ -262,7 +263,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             Artifact Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
-                            key={`artifact-type-${formData.artifact_type || "none"}`}
+                            key={`artifact_type-${formData.artifact_type || "none"}`}
                             value={formData.artifact_type}
                             onValueChange={(value) => {
                                 setFormData((prev) => ({
@@ -352,7 +353,7 @@ const ArtifactModalForm: React.FC<ArtifactModalFormProps> = ({
                             Checksum Algorithm
                         </Label>
                         <Select
-                            key={`checksum-algorithm-${formData.checksum_algorithm || "none"}`}
+                            key={`checksum_algorithm-${formData.checksum_algorithm || "none"}`}
                             value={formData.checksum_algorithm || undefined}
                             onValueChange={(value) => {
                                 setFormData((prev) => ({ ...prev, checksum_algorithm: value }));

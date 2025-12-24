@@ -22,7 +22,9 @@ export function Sidebar({
 
   // Helper to recursively render routes and children
   const renderRoute = (item: RouteItem, depth = 0) => {
-    const isActive = item.href && (pathname === item.href || pathname.startsWith(item.href + "/"));
+    // Check if href is valid (not empty string)
+    const hasValidHref = item.href && item.href.trim() !== "";
+    const isActive = hasValidHref && (pathname === item.href || pathname.startsWith(item.href + "/"));
     const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
     // If it has children (with or without href), render as Accordion
@@ -43,8 +45,11 @@ export function Sidebar({
       );
     }
 
-    // Regular link item (no children) - this should rarely happen now
-    // since most routes have children
+    // Regular link item (no children) - must have valid href
+    if (!hasValidHref) {
+      return null; // Don't render items without valid href and no children
+    }
+
     return (
       <div key={item.label + item.href} className={depth > 0 ? "ml-4" : ""}>
         <Link
@@ -76,7 +81,7 @@ export function Sidebar({
       {/* Logo */}
       <div
         aria-details="logo"
-        className="flex items-center justify-between mb-9!"
+        className="flex items-center justify-between mb-9"
       >
         <Link href="/dashboard">
           <Image
