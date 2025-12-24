@@ -36,6 +36,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
           Parent Model <span className="text-red-500 ml-0.5">*</span>
         </Label>
         <SelectWithInlineCreate
+          key={`ai_model_id-${formData.ai_model_id || "none"}`}
           value={formData.ai_model_id ? String(formData.ai_model_id) : "0"}
           onValueChange={(value) => setFormData(prev => ({ ...prev, ai_model_id: parseInt(value) }))}
           options={aiModels.map((model) => {
@@ -84,7 +85,7 @@ const VersionBasicInfo: React.FC<Props> = ({ formData, setFormData, errors }) =>
             Version Type <span className="text-red-500 ml-0.5">*</span>
           </Label>
           <Select
-            key={`version-type-${formData.version_type || "none"}`}
+            key={`version_type-${formData.version_type || "none"}`}
             value={formData.version_type}
             onValueChange={(value) => setFormData(prev => ({ ...prev, version_type: value as any }))}
           >

@@ -103,7 +103,7 @@ const Accordian = ({
   return (
     // <div className={depth > 0 ? "ml-2" : ""}>
     <div >
-      <div className={`flex items-center gap-1 rounded-lg transition-all duration-200 ${(isActive || isChildActive) ? "bg-primary/10" : ""
+      <div className={`flex items-center gap-1 rounded-lg transition-all duration-200 pr-2 ${(isActive || isChildActive) ? "bg-primary/10" : ""
         }`}>
         {/* Clickable parent link (if href exists) */}
         {href ? (
@@ -140,7 +140,7 @@ const Accordian = ({
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className="p-2 hover:bg-primary/5 rounded-lg transition-colors mr-2"
+          className="p-2 hover:bg-primary/5 rounded-lg transition-colors shrink-0"
           aria-label={isOpen ? "Collapse" : "Expand"}
         >
           <ChevronDown

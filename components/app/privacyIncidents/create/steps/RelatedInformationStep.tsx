@@ -148,6 +148,7 @@ export const RelatedInformationStep: React.FC = () => {
             Vendor <span className="text-red-500">*</span>
           </Label>
           <SelectWithInlineCreate
+            key={`vendor_id-${watch("vendor_id") || "none"}`}
             value={watch("vendor_id")?.toString() || ""}
             onValueChange={(value) =>
               setValue("vendor_id", value === "" ? null : Number(value))

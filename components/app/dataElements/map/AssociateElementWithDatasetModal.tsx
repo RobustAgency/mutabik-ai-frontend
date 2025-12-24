@@ -105,6 +105,7 @@ const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onCl
       <div className="space-y-2">
         <Label>Dataset <span className="text-red-500">*</span></Label>
         <SelectWithInlineCreate
+          key={`dataset_id-${form.dataset_id || "none"}`}
           value={form.dataset_id}
           onValueChange={(v) => setForm((p) => ({ ...p, dataset_id: v }))}
           placeholder={isLoadingDatasets ? "Loading datasets..." : "Select dataset"}

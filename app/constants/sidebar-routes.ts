@@ -298,9 +298,21 @@ export const userRoutes: RouteItem[] = [
     icon: ScrollText,
     children: [
       {
-        href: "/governance/committees",
+        href: "/governance/ai-committees",
         label: "Committees & Decisions",
         icon: Users2,
+        children: [
+          {
+            href: "/governance/ai-committees",
+            label: "AI Committees",
+            icon: Brain,
+          },
+          {
+            href: "/governance/committee-memberships",
+            label: "Committee Memberships",
+            icon: Users,
+          },
+        ],
       },
       {
         href: "/governance/oversight",

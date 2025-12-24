@@ -37,6 +37,7 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
       <div className="space-y-2">
         <Label>Incident <span className="text-red-500">*</span></Label>
         <SelectWithInlineCreate
+          key={`ai_incident_id-${formData.ai_incident_id || "none"}`}
           value={formData.ai_incident_id ? String(formData.ai_incident_id) : ""}
           onValueChange={(value) => handleInputChange("ai_incident_id", Number(value))}
           placeholder={isIncidentsLoading ? "Loading incidents..." : "Select incident"}

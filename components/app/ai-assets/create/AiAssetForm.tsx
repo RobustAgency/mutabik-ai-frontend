@@ -37,6 +37,7 @@ const AiAssetForm: React.FC<AiAssetFormProps> = ({ formData, setFormData, errors
       <div className="space-y-2">
         <Label>Vendor</Label>
         <SelectWithInlineCreate
+          key={`vendor_id-${formData.vendor_id || "none"}`}
           value={formData.vendor_id ? String(formData.vendor_id) : ""}
           onValueChange={(value) => handleChange("vendor_id", value ? Number(value) : null)}
           placeholder={isVendorsLoading ? "Loading vendors..." : "Select vendor"}
@@ -82,6 +83,7 @@ const AiAssetForm: React.FC<AiAssetFormProps> = ({ formData, setFormData, errors
         <div className="space-y-2">
           <Label>Vendor Agreement</Label>
           <SelectWithInlineCreate
+            key={`vendor_agreement_id-${formData.vendor_agreement_id || "none"}`}
             value={formData.vendor_agreement_id ? String(formData.vendor_agreement_id) : ""}
             onValueChange={(value) => handleChange("vendor_agreement_id", value ? Number(value) : null)}
             placeholder={isAgreementsLoading ? "Loading agreements..." : "Select agreement"}

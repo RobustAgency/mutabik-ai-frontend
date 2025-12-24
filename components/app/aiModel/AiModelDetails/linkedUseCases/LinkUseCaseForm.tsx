@@ -189,6 +189,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
                     Select AI Model <span className="text-red-500">*</span>
                 </Label>
                 <SelectWithInlineCreate
+                    key={`ai_model_id-${formData.ai_model_id || "none"}`}
                     value={String(formData.ai_model_id ?? "")}
                     onValueChange={(v) => handleChange('ai_model_id', v)}
                     options={aiModelOptions}
@@ -206,6 +207,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
                     Select Use Case <span className="text-red-500">*</span>
                 </Label>
                 <SelectWithInlineCreate
+                    key={`use_case_id-${formData.use_case_id || "none"}`}
                     value={String(formData.use_case_id ?? "")}
                     onValueChange={(v) => handleChange('use_case_id', v)}
                     options={useCaseOptions}
@@ -223,6 +225,7 @@ const LinkUseCaseForm: React.FC<LinkUseCaseFormProps> = ({ aiModelId, onSuccess,
                     Choose Model Version
                 </Label>
                 <SelectWithInlineCreate
+                    key={`ai_model_version_id-${formData.ai_model_version_id || "none"}`}
                     value={String(formData.ai_model_version_id ?? "")}
                     onValueChange={(v) => handleChange('ai_model_version_id', v || null)}
                     options={versionOptions}

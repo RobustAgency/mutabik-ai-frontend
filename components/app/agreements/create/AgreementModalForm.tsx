@@ -87,6 +87,7 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
       <div className="space-y-2">
         <Label>Vendor <span className="text-red-500">*</span></Label>
         <SelectWithInlineCreate
+          key={`vendor_id-${form.vendor_id || "none"}`}
           value={form.vendor_id ? String(form.vendor_id) : ""}
           onValueChange={(v) => setForm((p) => ({ ...p, vendor_id: Number(v) }))}
           options={vendorOptions}

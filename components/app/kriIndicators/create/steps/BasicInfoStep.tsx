@@ -41,6 +41,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             AI Risk Register <span className="text-red-500">*</span>
           </Label>
           <SelectWithInlineCreate
+            key={`ai_risk_register_id-${formState.ai_risk_register_id || "none"}`}
             value={formState.ai_risk_register_id || undefined}
             onValueChange={(value) =>
               setFormState((prev) => ({

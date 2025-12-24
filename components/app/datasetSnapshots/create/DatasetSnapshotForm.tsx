@@ -32,6 +32,7 @@ const DatasetSnapshotForm: React.FC<DatasetSnapshotFormProps> = ({ formData, set
           <div className="space-y-2">
             <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
+              key={`dataset_id-${formData.dataset_id || "none"}`}
               value={formData.dataset_id ? String(formData.dataset_id) : undefined}
               onValueChange={(value) => handleChange("dataset_id", value ? Number(value) : undefined)}
               options={datasets.map((ds) => ({

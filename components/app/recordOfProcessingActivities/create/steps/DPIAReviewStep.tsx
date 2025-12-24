@@ -116,6 +116,7 @@ export const DPIAReviewStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="dpia_id">DPIA ID</Label>
             <SelectWithInlineCreate
+              key={`dpia_id-${dpiaId || "none"}`}
               value={dpiaId ? dpiaId.toString() : ""}
               onValueChange={(value) => {
                 setValue("dpia_id", value ? (Number(value) as any) : (null as any));

@@ -167,7 +167,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             control={control}
             render={({ field }) => (
               <SelectWithInlineCreate
-                key={`ai_model_id-${field.value ?? "none"}`}
+                key={`ai_model_id-${field.value || "none"}`}
                 value={field.value || undefined}
                 onValueChange={(value) => {
                   const newValue = value || "";
@@ -202,7 +202,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             control={control}
             render={({ field }) => (
               <SelectWithInlineCreate
-                key={`ai_model_version_id-${field.value ?? "none"}`}
+                key={`ai_model_version_id-${field.value || "none"}`}
                 value={field.value || undefined}
                 onValueChange={(value) => field.onChange(value || "")}
                 options={filteredVersions.map((version: any) => ({
@@ -244,7 +244,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             control={control}
             render={({ field }) => (
               <SelectWithInlineCreate
-                key={`use_case_id-${field.value ?? "none"}`}
+                key={`use_case_id-${field.value || "none"}`}
                 value={field.value || undefined}
                 onValueChange={(value) => field.onChange(value || "")}
                 options={useCases.map((useCase: any) => ({

@@ -61,6 +61,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="ai_model_id">Model <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
+              key={`ai_model_id-${formData.ai_model_id || "none"}`}
               value={formData.ai_model_id || undefined}
               onValueChange={(value) => {
                 handleChange("ai_model_id", value);
@@ -87,7 +88,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="ai_model_version_id">Model Version <span className="text-red-500">*</span></Label>
             <SelectWithInlineCreate
-              key={`model_version_id-${formData.ai_model_version_id ?? 'none'}`}
+              key={`model_version_id-${formData.ai_model_version_id || "none"}`}
               value={formData.ai_model_version_id ? String(formData.ai_model_version_id) : undefined}
               onValueChange={(value) => handleChange("ai_model_version_id", value ? Number(value) : 1)}
               options={filteredVersions.map((version: any) => ({
@@ -111,6 +112,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
               Snapshot {isSnapshotRequired ? <span className="text-red-500">*</span> : <span className="text-gray-500"></span>}
             </Label>
             <SelectWithInlineCreate
+              key={`dataset_snapshot_id-${formData.dataset_snapshot_id || "none"}`}
               value={formData.dataset_snapshot_id || undefined}
               onValueChange={(value) => handleChange("dataset_snapshot_id", value)}
               options={filteredSnapshots.map((s: any) => ({
@@ -131,7 +133,7 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
           <div className="space-y-2">
             <Label htmlFor="dataset_id">Dataset <span className="text-red-500">*</span></Label>
             <Select
-              key={`dataset_id-${formData.dataset_id ?? 'none'}`}
+              key={`dataset_id-${formData.dataset_id || "none"}`}
               value={formData.dataset_id || undefined}
               onValueChange={(value) => {
                 // Reset snapshot if it doesn't belong to newly selected dataset
