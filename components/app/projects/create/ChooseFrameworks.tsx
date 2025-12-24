@@ -48,7 +48,7 @@ const ChooseFrameworks = () => {
     });
 
     if (success) {
-      router.push(`/projects/${projectId}/details`);
+      router.push(`/projects/create/members?step=3&project_id=${projectId}`);
     }
   };
 
@@ -203,7 +203,7 @@ const ChooseFrameworks = () => {
           disabled={projectLoading || !selectedFramework}
           className="h-11 border border-[#4FD58F] bg-[#4FD58F] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {projectLoading ? 'Adding Frameworks...' : 'Create Project'}
+          {projectLoading ? 'Adding Frameworks...' : 'Continue to members'}
         </Button>
       </div>
     </div>

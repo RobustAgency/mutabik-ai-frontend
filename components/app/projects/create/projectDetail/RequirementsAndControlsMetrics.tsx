@@ -1,7 +1,7 @@
 import React from 'react'
 import Metrics from './Metrics'
 import { SlidersHorizontal, SquareCheck } from 'lucide-react'
-import { Project } from '@/service/app/projects';
+import { Project } from '@/app/lib/features/projectsApi';
 
 interface RequirementsAndControlsMetrics {
     project: Project;
