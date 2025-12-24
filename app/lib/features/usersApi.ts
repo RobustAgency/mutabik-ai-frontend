@@ -50,7 +50,7 @@ export const usersApi = createApi({
     }),
     getOrganizationUsers: builder.query<User[], UserFilters | void>({
       query: (filters) => ({
-        url: "/organization-users",
+        url: "/members",
         method: "GET",
         params: filters ?? undefined,
       }),
