@@ -33,6 +33,12 @@ type FrameworkSingleResponse = {
   data?: Framework;
 };
 
+type UserFrameworkListResponse = {
+  error?: boolean;
+  message?: string;
+  data?: Framework[]; // User-side API returns data as direct array
+};
+
 const normaliseMeta = (payload?: FrameworkListResponse["data"]): FrameworkListMeta => {
   if (!payload) {
     return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
@@ -83,6 +89,37 @@ export const frameworksApi = createApi({
           : [{ type: "Framework" as const, id: "LIST" }],
     }),
 
+    getUserFrameworks: builder.query<
+      { data: Framework[]; meta: FrameworkListMeta },
+      FrameworkFilters | void
+    >({
+      query: (filters) => ({
+        url: "/frameworks",
+        method: "GET",
+        params: filters ?? undefined,
+      }),
+      transformResponse: (response: UserFrameworkListResponse) => {
+        // User-side API returns data as direct array, not paginated
+        const list = Array.isArray(response?.data) ? response.data : [];
+        const total = list.length;
+        const perPage = 100; // Default per_page from the request
+        const meta: FrameworkListMeta = {
+          current_page: 1,
+          per_page: perPage,
+          total: total,
+          last_page: 1,
+        };
+        return { data: list, meta };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Framework" as const, id })),
+              { type: "Framework" as const, id: "USER_LIST" },
+            ]
+          : [{ type: "Framework" as const, id: "USER_LIST" }],
+    }),
+
     getFramework: builder.query<Framework, string | number>({
       query: (id) => ({
         url: `/admin/frameworks/${id}`,
@@ -124,6 +161,7 @@ export const frameworksApi = createApi({
 
 export const {
   useGetFrameworksQuery,
+  useGetUserFrameworksQuery,
   useGetFrameworkQuery,
   useCreateFrameworkMutation,
   useUpdateFrameworkMutation,

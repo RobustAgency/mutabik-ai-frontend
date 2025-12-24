@@ -1,8 +1,9 @@
 
 // lib/store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import projectsReducer from "./features/projectsSlice";
 import { useCasesApi } from "./features/useCasesApi";
+import { projectsApi } from "./features/projectsApi";
+import projectsReducer from "./features/projectsSlice";
 import { aiModelsApi } from "./features/aiModelsApi";
 import { aiModelVersionsApi } from "./features/aiModelVersionsApi";
 import { aiModelUseCasesApi } from "./features/aiModelUseCasesApi";
@@ -50,8 +51,9 @@ import { privacyIncidentsApi } from "./features/privacyIncidentsApi";
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      projects: projectsReducer,
+      projects: projectsReducer, // Keep for backward compatibility with old useProjects hook
       [useCasesApi.reducerPath]: useCasesApi.reducer,
+      [projectsApi.reducerPath]: projectsApi.reducer,
       [aiModelsApi.reducerPath]: aiModelsApi.reducer,
       [aiModelVersionsApi.reducerPath]: aiModelVersionsApi.reducer,
       [aiModelUseCasesApi.reducerPath]: aiModelUseCasesApi.reducer,
@@ -106,6 +108,7 @@ export const makeStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
         useCasesApi.middleware,
+        projectsApi.middleware,
         aiModelsApi.middleware,
         aiModelVersionsApi.middleware,
         aiModelUseCasesApi.middleware,

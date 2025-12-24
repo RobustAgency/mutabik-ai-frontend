@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import {
   type Project,
   type CreateProjectData,
+  type UpdateProjectData,
   type AddMemberData,
   type AddFrameworksData,
   type ProjectFilters,
@@ -11,6 +12,7 @@ import {
   fetchProjects as fetchProjectsAction,
   fetchProject as fetchProjectAction,
   createProject as createProjectAction,
+  updateProject as updateProjectAction,
   addMember as addMemberAction,
   addFrameworks as addFrameworksAction,
 } from "@/app/lib/features/projectsSlice";
@@ -56,6 +58,17 @@ export const useProjects = () => {
     [dispatch]
   );
 
+  const updateProject = useCallback(
+    async (id: number, data: UpdateProjectData) => {
+      const result = await dispatch(updateProjectAction({ id, data }));
+      if (updateProjectAction.fulfilled.match(result)) {
+        return result.payload as Project;
+      }
+      return null;
+    },
+    [dispatch]
+  );
+
   const addMember = useCallback(
     async (projectId: number, data: AddMemberData) => {
       const result = await dispatch(addMemberAction({ projectId, data }));
@@ -80,6 +93,7 @@ export const useProjects = () => {
     fetchProjects,
     fetchProject,
     createProject,
+    updateProject,
     addMember,
     addFrameworks,
   };
