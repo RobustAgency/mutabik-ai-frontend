@@ -47,6 +47,8 @@ import { dataSubjectRequestAccessesApi } from "./features/dataSubjectRequestAcce
 import { consentRecordsApi } from "./features/consentRecordsApi";
 import { dataProtectionImpactAssessmentsApi } from "./features/dataProtectionImpactAssessmentsApi";
 import { privacyIncidentsApi } from "./features/privacyIncidentsApi";
+import { aiCommitteesApi } from "./features/aiCommitteesApi";
+import { committeeMembershipsApi } from "./features/committeeMembershipsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -103,6 +105,8 @@ export const makeStore = () => {
       [dataProtectionImpactAssessmentsApi.reducerPath]:
         dataProtectionImpactAssessmentsApi.reducer,
       [privacyIncidentsApi.reducerPath]: privacyIncidentsApi.reducer,
+      [aiCommitteesApi.reducerPath]: aiCommitteesApi.reducer,
+      [committeeMembershipsApi.reducerPath]: committeeMembershipsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -151,7 +155,9 @@ export const makeStore = () => {
         dataSubjectRequestAccessesApi.middleware,
         recordOfProcessingActivitiesApi.middleware,
         dataProtectionImpactAssessmentsApi.middleware,
-        privacyIncidentsApi.middleware
+        privacyIncidentsApi.middleware,
+        aiCommitteesApi.middleware,
+        committeeMembershipsApi.middleware
       ),
   });
 };
