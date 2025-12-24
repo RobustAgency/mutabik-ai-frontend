@@ -47,6 +47,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
               Dataset <span className="text-red-500">*</span>
             </Label>
             <SelectWithInlineCreate
+              key={`dataset_id-${formData.dataset_id || "none"}`}
               value={formData.dataset_id}
               onValueChange={(value) => {
                 handleChange("dataset_id", value);
@@ -71,6 +72,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
           <div className="space-y-2">
             <Label htmlFor="snapshot_id">Snapshot (Optional)</Label>
             <SelectWithInlineCreate
+              key={`snapshot_id-${formData.snapshot_id || "none"}`}
               value={formData.snapshot_id || undefined}
               onValueChange={(value) => handleChange("snapshot_id", value)}
               options={filteredSnapshots.map((snapshot) => ({
@@ -99,7 +101,7 @@ const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> 
             <Label htmlFor="subject_realm">
               Subject Realm <span className="text-red-500">*</span>
             </Label>
-            <Select  key={`subject_realm-${formData.subject_realm || "none"}`} value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
+              <Select  key={`subject_realm-${formData.subject_realm || "none"}`} value={formData.subject_realm} onValueChange={(value) => handleChange("subject_realm", value)}>
               <SelectTrigger id="subject_realm" className={`w-full ${errors.subject_realm ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select subject realm" />
               </SelectTrigger>

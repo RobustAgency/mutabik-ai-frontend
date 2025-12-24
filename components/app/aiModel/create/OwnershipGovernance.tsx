@@ -135,6 +135,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Business Owner
                     </Label>
                     <SelectWithInlineCreate
+                        key={`business_owner_id-${formData.business_owner_id || "none"}`}
                         value={formData.business_owner_id ? String(formData.business_owner_id) : ""}
                         onValueChange={(value) => {
                             setFormData((prev) => ({ ...prev, business_owner_id: value || null }));
@@ -167,6 +168,7 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
                         Model Steward / Custodian
                     </Label>
                     <SelectWithInlineCreate
+                        key={`steward_custodian_id-${formData.steward_custodian_id || "none"}`}
                         value={formData.steward_custodian_id ? String(formData.steward_custodian_id) : ""}
                         onValueChange={(value) => {
                             setFormData((prev) => ({ ...prev, steward_custodian_id: value || null }));

@@ -76,6 +76,7 @@ export default function BasicInformationSection({
                             Model Version <span className="text-red-500">*</span>
                         </Label>
                         <SelectWithInlineCreate
+                            key={`ai_model_version_id-${formData.ai_model_version_id || "none"}`}
                             value={formData.ai_model_version_id}
                             onValueChange={(value) => {
                                 onFieldChange("ai_model_version_id", value);
@@ -105,7 +106,7 @@ export default function BasicInformationSection({
                             Artifact Type <span className="text-red-500">*</span>
                         </Label>
                         <Select
-                            key={`artifact-type-${formData.artifact_type || "none"}`}
+                            key={`artifact_type-${formData.artifact_type || "none"}`}
                             value={formData.artifact_type}
                             onValueChange={(value) => {
                                 onFieldChange("artifact_type", value);

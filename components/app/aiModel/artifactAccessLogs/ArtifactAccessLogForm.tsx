@@ -179,6 +179,7 @@ export default function ArtifactAccessLogForm({
                                     Artifact <span className="text-red-500">*</span>
                                 </Label>
                                 <SelectWithInlineCreate
+                                    key={`artifact_id-${formData.artifact_id || "none"}`}
                                     value={formData.artifact_id}
                                     onValueChange={(value) => {
                                         setFormData((prev) => ({ ...prev, artifact_id: value }));
@@ -212,6 +213,7 @@ export default function ArtifactAccessLogForm({
                                     Accessor Stakeholder <span className="text-red-500">*</span>
                                 </Label>
                                 <SelectWithInlineCreate
+                                    key={`accessor_stakeholder_id-${formData.accessor_stakeholder_id || "none"}`}
                                     value={formData.accessor_stakeholder_id}
                                     onValueChange={(value) => {
                                         setFormData((prev) => ({ ...prev, accessor_stakeholder_id: value }));
