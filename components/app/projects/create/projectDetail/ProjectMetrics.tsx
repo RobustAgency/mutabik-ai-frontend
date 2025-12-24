@@ -1,7 +1,7 @@
 import React from "react";
 import Matrics from "./Metrics";
 import { Brain, Users, TriangleAlert, CircleCheckBig } from "lucide-react";
-import { Project } from "@/service/app/projects";
+import { Project } from "@/app/lib/features/projectsApi";
 
 interface ProjectMatricesProps {
   project: Project;

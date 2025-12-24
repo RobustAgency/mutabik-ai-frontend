@@ -990,4 +990,23 @@ export const FILTER_CONFIGS: Record<string, FilterConfig> = {
       options: ENUM_VALUES.artifactAccessContext,
     },
   },
+  projects: {
+    search: {
+      key: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Search by project name",
+      maxLength: 255,
+    },
+    governance_pillar: {
+      key: "governance_pillar",
+      label: "Governance Pillar",
+      type: "select",
+      options: [
+        { value: "ai_governance", label: "AI Governance" },
+        { value: "data_governance", label: "Data Governance" },
+        { value: "privacy_pdpl", label: "Privacy/PDPL" },
+      ],
+    },
+  },
 };

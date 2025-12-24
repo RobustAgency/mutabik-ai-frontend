@@ -61,6 +61,7 @@ export interface ComplianceEvidenceFilters extends Record<string, unknown> {
   control_id?: string | number;
   requirement_id?: string | number;
   ai_model_id?: string | number;
+  project_id?: string | number;
   artifact_type?: ComplianceEvidenceArtifactTypeEnum;
   review_outcome?: ComplianceEvidenceReviewOutcomeEnum;
   page?: number;
@@ -71,6 +72,7 @@ export interface CreateComplianceEvidenceRequest {
   control_id: number;
   requirement_id?: number | null;
   ai_model_id?: number | null;
+  project_id?: number | null;
   artifact_type: ComplianceEvidenceArtifactTypeEnum;
   artifact_uri: string;
   sample_ids: string[];

@@ -40,7 +40,7 @@ export const regulatorySubmissionsApi = createApi({
       RegulatorySubmissionFilters | void
     >({
       query: (filters) => ({
-        url: "/admin/regulatory-submissions",
+        url: "/regulatory-submissions",
         method: "GET",
         params: filters ?? undefined,
       }),
@@ -59,7 +59,7 @@ export const regulatorySubmissionsApi = createApi({
     }),
     getRegulatorySubmission: builder.query<RegulatorySubmission, string | number>({
       query: (id) => ({
-        url: `/admin/regulatory-submissions/${id}`,
+        url: `/regulatory-submissions/${id}`,
         method: "GET",
       }),
       transformResponse: (response: RegulatorySubmissionSingleResponse) => {
@@ -69,7 +69,7 @@ export const regulatorySubmissionsApi = createApi({
     }),
     createRegulatorySubmission: builder.mutation<unknown, CreateRegulatorySubmissionRequest>({
       query: (data) => ({
-        url: "/admin/regulatory-submissions",
+        url: "/regulatory-submissions",
         method: "POST",
         data,
       }),
@@ -80,7 +80,7 @@ export const regulatorySubmissionsApi = createApi({
       { id: string | number; data: UpdateRegulatorySubmissionRequest }
     >({
       query: ({ id, data }) => ({
-        url: `/admin/regulatory-submissions/${id}`,
+        url: `/regulatory-submissions/${id}`,
         method: "POST",
         data,
       }),
@@ -91,7 +91,7 @@ export const regulatorySubmissionsApi = createApi({
     }),
     deleteRegulatorySubmission: builder.mutation<unknown, string | number>({
       query: (id) => ({
-        url: `/admin/regulatory-submissions/${id}`,
+        url: `/regulatory-submissions/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "RegulatorySubmission", id: "LIST" }],
