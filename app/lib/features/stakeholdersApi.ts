@@ -232,7 +232,7 @@ export const stakeholdersApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/stakeholders/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
