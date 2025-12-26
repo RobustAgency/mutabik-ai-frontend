@@ -43,12 +43,13 @@ const CommitteeMembershipDetails: React.FC<CommitteeMembershipDetailsProps> = ({
   const router = useRouter();
   const { data: membership, isLoading } = useGetCommitteeMembershipQuery(membershipId);
   const { data: committeesData } = useGetAiCommitteesQuery({ per_page: 100 });
-  const { data: stakeholders = [] } = useGetStakeholdersQuery();
+  const { data: stakeholdersResponse } = useGetStakeholdersQuery({ per_page: 100 });
+  const stakeholders = stakeholdersResponse?.data || [];
 
   const committees = committeesData?.data ?? [];
   const committee = committees.find((c) => c.id === membership?.ai_committee_id);
   const stakeholder = stakeholders.find(
-    (s) => parseInt(s.id, 10) === membership?.stakeholder_id
+    (s) => s.id === membership?.stakeholder_id
   );
 
   if (isLoading) {

@@ -1,10 +1,10 @@
-import CreateVendor from '@/components/app/vendors/create/CreateVendor'
+import CreateVendorWizard from '@/components/app/vendors/create/CreateVendorWizard'
 import React from 'react'
 
 const page = () => {
     return (
         <div>
-            <CreateVendor />
+            <CreateVendorWizard />
         </div>
     )
 }

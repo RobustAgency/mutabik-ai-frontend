@@ -7,13 +7,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGetStakeholderQuery, useUpdateStakeholderMutation, CreateStakeholderData } from "@/app/lib/features/stakeholdersApi";
+import { stakeholderSchema, type StakeholderFormData } from "@/lib/schemas/stakeholder.schema";
 import StakeholderForm from "../create/StakeholderForm";
-import {
-    validateTextField,
-    validateEmail,
-    validateArrayField,
-    createValidationErrors,
-} from "@/lib/utils/validation";
 
 interface EditStakeholderProps {
     stakeholderId: string;
@@ -23,20 +18,29 @@ const EditStakeholder: React.FC<EditStakeholderProps> = ({
     stakeholderId,
 }) => {
     const router = useRouter();
-    const [formData, setFormData] = useState<CreateStakeholderData>({
+    const [formData, setFormData] = useState<StakeholderFormData>({
         type: "person",
         display_name: "",
-        legal_name: "",
+        first_name: "",
+        last_name: "",
         org_unit: "",
         email: "",
         phone: "",
-        vendor_id: "",
         role_tags: [],
         timezone: "",
         classification: "internal",
         country: "",
-        external_ref: "",
-        active: true,
+        status: "active",
+        secondary_email: null,
+        mobile: null,
+        external_ref: null,
+        employee_id: null,
+        cost_center: null,
+        manager: null,
+        delegate: null,
+        notes: null,
+        start_date: null,
+        end_date: null,
     });
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
@@ -47,90 +51,79 @@ const EditStakeholder: React.FC<EditStakeholderProps> = ({
     useEffect(() => {
         if (stakeholder) {
             setFormData({
-                type: stakeholder.type as CreateStakeholderData["type"],
+                type: stakeholder.type as StakeholderFormData["type"],
                 display_name: stakeholder.display_name,
-                legal_name: stakeholder.legal_name,
+                first_name: stakeholder.first_name || "",
+                last_name: stakeholder.last_name || "",
                 org_unit: stakeholder.org_unit,
                 email: stakeholder.email,
+                secondary_email: stakeholder.secondary_email || null,
                 phone: stakeholder.phone,
-                vendor_id: stakeholder.vendor_id || "",
+                mobile: stakeholder.mobile || null,
                 role_tags: stakeholder.role_tags || [],
                 timezone: stakeholder.timezone,
                 classification: stakeholder.classification as "internal" | "external",
                 country: stakeholder.country || "",
-                external_ref: stakeholder.external_ref || "",
-                active: stakeholder.active,
+                external_ref: stakeholder.external_ref || null,
+                employee_id: stakeholder.employee_id || null,
+                cost_center: stakeholder.cost_center || null,
+                manager: stakeholder.manager || null,
+                delegate: stakeholder.delegate || null,
+                status: stakeholder.status as StakeholderFormData["status"],
+                notes: stakeholder.notes || null,
+                start_date: stakeholder.start_date || null,
+                end_date: stakeholder.end_date || null,
             });
         }
     }, [stakeholder]);
-
-    // Form validation using shared utilities
-    const validateForm = (): boolean => {
-        const fieldErrors: Record<string, string[]> = {
-            type: validateTextField(formData.type, {
-                required: true,
-                messages: { required: "Type is required" },
-            }),
-            display_name: validateTextField(formData.display_name, {
-                required: true,
-                messages: { required: "Display name is required" },
-            }),
-            legal_name: validateTextField(formData.legal_name, {
-                required: true,
-                messages: { required: "Legal name is required" },
-            }),
-            org_unit: validateTextField(formData.org_unit, {
-                required: true,
-                messages: { required: "Organization unit is required" },
-            }),
-            email: [
-                ...validateTextField(formData.email, {
-                    required: true,
-                    messages: { required: "Email is required" },
-                }),
-                ...validateEmail(formData.email),
-            ],
-            phone: validateTextField(formData.phone, {
-                required: true,
-                messages: { required: "Phone is required" },
-            }),
-            timezone: validateTextField(formData.timezone, {
-                required: true,
-                messages: { required: "Timezone is required" },
-            }),
-            classification: validateTextField(formData.classification, {
-                required: true,
-                messages: { required: "Classification is required" },
-            }),
-            country: validateTextField(formData.country, {
-                required: true,
-                messages: { required: "Country is required" },
-            }),
-            role_tags: validateArrayField(formData.role_tags, {
-                required: true,
-                messages: { required: "At least one role tag is required" },
-            }),
-        };
-
-        const errors = createValidationErrors(fieldErrors);
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setValidationErrors({});
 
-        // Client-side validation
-        if (!validateForm()) {
+        // Validate using Zod schema
+        const result = stakeholderSchema.safeParse(formData);
+        if (!result.success) {
+            const errors: Record<string, string[]> = {};
+            result.error.issues.forEach((err) => {
+                const path = err.path.join(".");
+                errors[path] = [err.message];
+            });
+            setValidationErrors(errors);
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
+        // Convert StakeholderFormData to CreateStakeholderData
+        const updateData: CreateStakeholderData = {
+            type: result.data.type,
+            display_name: result.data.display_name,
+            first_name: result.data.first_name,
+            last_name: result.data.last_name,
+            org_unit: result.data.org_unit,
+            email: result.data.email,
+            secondary_email: result.data.secondary_email || null,
+            phone: result.data.phone,
+            mobile: result.data.mobile || null,
+            role_tags: result.data.role_tags,
+            timezone: result.data.timezone,
+            classification: result.data.classification,
+            country: result.data.country,
+            external_ref: result.data.external_ref || null,
+            employee_id: result.data.employee_id || null,
+            cost_center: result.data.cost_center || null,
+            manager: result.data.manager || null,
+            delegate: result.data.delegate || null,
+            status: result.data.status,
+            notes: result.data.notes || null,
+            start_date: result.data.start_date || null,
+            end_date: result.data.end_date || null,
+        };
+
         try {
             await updateStakeholder({
                 id: stakeholderId,
-                data: formData,
+                data: updateData,
             }).unwrap();
             router.push("/core-assets/stakeholders");
         } catch (err: any) {

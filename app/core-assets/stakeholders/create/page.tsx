@@ -1,12 +1,12 @@
 
 
-import CreateStakeholder from '@/components/app/stakeholders/create/CreateStakeholder'
+import { CreateStakeholderWizard } from '@/components/app/stakeholders/create/CreateStakeholderWizard'
 import React from 'react'
 
 const page = () => {
   return (
     <>
-      <CreateStakeholder />
+      <CreateStakeholderWizard />
     </>
   )
 }

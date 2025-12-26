@@ -9,7 +9,7 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import StakeholderFormReadOnly from "./StakeholderFormReadOnly";
 
 interface StakeholderDetailsProps {
-    stakeholderId: string;
+    stakeholderId: string | number;
 }
 
 const StakeholderDetails: React.FC<StakeholderDetailsProps> = ({

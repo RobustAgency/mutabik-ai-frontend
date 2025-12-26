@@ -43,10 +43,11 @@ const MultiStakeholderSelector: React.FC<MultiStakeholderSelectorProps> = ({
 
   // Fetch stakeholders
   const {
-    data: allStakeholders = [],
+    data: stakeholdersResponse,
     isLoading: stakeholdersLoading,
     error: stakeholdersError,
-  } = useGetStakeholdersQuery();
+  } = useGetStakeholdersQuery({ per_page: 100 });
+  const allStakeholders = stakeholdersResponse?.data || [];
 
   // Filter and search stakeholders
   const filteredStakeholders = useMemo(() => {
@@ -73,23 +74,21 @@ const MultiStakeholderSelector: React.FC<MultiStakeholderSelectorProps> = ({
 
   // Find selected stakeholders
   const selectedStakeholders = allStakeholders.filter((s) =>
-    value.includes(parseInt(s.id, 10))
+    value.includes(s.id)
   );
 
   // Toggle stakeholder selection
-  const toggleStakeholder = (stakeholderId: string) => {
-    const numericId = parseInt(stakeholderId, 10);
-    if (value.includes(numericId)) {
-      onValueChange(value.filter((id) => id !== numericId));
+  const toggleStakeholder = (stakeholderId: number) => {
+    if (value.includes(stakeholderId)) {
+      onValueChange(value.filter((id) => id !== stakeholderId));
     } else {
-      onValueChange([...value, numericId]);
+      onValueChange([...value, stakeholderId]);
     }
   };
 
   // Remove a selected stakeholder
-  const removeStakeholder = (stakeholderId: string) => {
-    const numericId = parseInt(stakeholderId, 10);
-    onValueChange(value.filter((id) => id !== numericId));
+  const removeStakeholder = (stakeholderId: number) => {
+    onValueChange(value.filter((id) => id !== stakeholderId));
   };
 
   const handleAddNew = () => {
@@ -219,7 +218,7 @@ const MultiStakeholderSelector: React.FC<MultiStakeholderSelectorProps> = ({
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          value.includes(parseInt(stakeholder.id, 10))
+                          value.includes(stakeholder.id)
                             ? "opacity-100"
                             : "opacity-0"
                         )}
