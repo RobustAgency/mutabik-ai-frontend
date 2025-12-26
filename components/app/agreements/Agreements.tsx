@@ -9,9 +9,13 @@ import { useRouter } from "next/navigation";
 import {
   useGetAgreementsQuery,
   useDeleteAgreementMutation,
+  useGetAgreementStatisticsQuery,
   Agreement,
 } from "@/app/lib/features/agreementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { StatisticsCard } from "@/components/custom/StatisticsCard";
+import { StatisticsCardSkeleton } from "@/components/custom/StatisticsCardSkeleton";
+import { FileText, CheckCircle, AlertCircle, Clock } from "lucide-react";
 
 const Agreements: React.FC = () => {
   const router = useRouter();
@@ -25,6 +29,7 @@ const Agreements: React.FC = () => {
     page: currentPage,
     per_page: 15,
   });
+  const { data: statistics, isLoading: isStatisticsLoading } = useGetAgreementStatisticsQuery();
   const [deleteAgreement, { isLoading: isDeleting }] = useDeleteAgreementMutation();
 
   const agreements = data?.data ?? [];
@@ -69,11 +74,14 @@ const Agreements: React.FC = () => {
           Agreement ID
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ getValue, row }) => {
+        const displayId = getValue() as string | undefined;
+        return (
+          <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+            {displayId || `AG-${String(row.original.id).padStart(6, "0")}`}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "agreement_type",
@@ -90,6 +98,8 @@ const Agreements: React.FC = () => {
           order_form: "Order Form",
           addendum: "Addendum",
           sla: "SLA",
+          nda: "NDA",
+          sow: "SOW",
           other: "Other",
         };
         const colorMap: Record<string, string> = {
@@ -122,15 +132,21 @@ const Agreements: React.FC = () => {
         const code = (getValue() as string) || "";
         const labelMap: Record<string, string> = {
           draft: "Draft",
+          under_review: "Under Review",
+          pending_signature: "Pending Signature",
           active: "Active",
-          lapsed: "Lapsed",
+          expired: "Expired",
           terminated: "Terminated",
+          suspended: "Suspended",
         };
         const statusColors: Record<string, string> = {
           draft: "bg-[#FEF3C7] text-[#D97706]",
+          under_review: "bg-[#DBEAFE] text-[#1D4ED8]",
+          pending_signature: "bg-[#FDE68A] text-[#F59E0B]",
           active: "bg-[#ECFDF3] text-[#047857]",
-          lapsed: "bg-[#F3F4F6] text-[#374151]",
+          expired: "bg-[#F3F4F6] text-[#374151]",
           terminated: "bg-[#FEE2E2] text-[#DC2626]",
+          suspended: "bg-[#FEE2E2] text-[#DC2626]",
         };
         return (
           <div
@@ -224,8 +240,52 @@ const Agreements: React.FC = () => {
 
   return (
     <>
+    {/* Statistics Cards */}
+    {isStatisticsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+              <StatisticsCardSkeleton />
+              <StatisticsCardSkeleton />
+              <StatisticsCardSkeleton />
+              <StatisticsCardSkeleton />
+            </div>
+          ) : (
+            statistics && (
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                <StatisticsCard
+                  label="Total Agreements"
+                  value={statistics.total_agreements}
+                  icon={FileText}
+                  iconColor="text-[#667085]"
+                  valueColor="text-[#1D2939]"
+                />
+                <StatisticsCard
+                  label="Active"
+                  value={statistics.active_agreements}
+                  icon={CheckCircle}
+                  iconColor="text-[#039855]"
+                  valueColor="text-[#039855]"
+                />
+                <StatisticsCard
+                  label="Expiring in 90 Days"
+                  value={statistics.expiring_in_90_days}
+                  icon={Clock}
+                  iconColor="text-[#F59E0B]"
+                  valueColor="text-[#F59E0B]"
+                />
+                <StatisticsCard
+                  label="Pending Signature"
+                  value={statistics.pending_signature_count}
+                  icon={AlertCircle}
+                  iconColor="text-[#F59E0B]"
+                  valueColor="text-[#F59E0B]"
+                />
+              </div>
+            )
+          )}
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
+          
+
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
