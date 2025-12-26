@@ -55,4 +55,3 @@ export const RequirementsList: React.FC<RequirementsListProps> = ({
     </div>
   );
 };
-

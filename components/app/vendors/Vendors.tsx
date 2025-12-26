@@ -9,11 +9,16 @@ import { useRouter } from "next/navigation";
 import {
   useGetVendorsQuery,
   useDeleteVendorMutation,
+  useGetVendorStatisticsQuery,
   Vendor,
   VendorFilters,
+  VendorType,
 } from "@/app/lib/features/vendorsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { StatisticsCard } from "@/components/custom/StatisticsCard";
+import { StatisticsCardSkeleton } from "@/components/custom/StatisticsCardSkeleton";
+import { Building2, CheckCircle, AlertCircle } from "lucide-react";
 
 const Vendors: React.FC = () => {
   const router = useRouter();
@@ -36,10 +41,26 @@ const Vendors: React.FC = () => {
   }), [filters, currentPage]);
 
   const { data, isLoading } = useGetVendorsQuery(queryParams);
+  const { data: statistics, isLoading: isStatisticsLoading } = useGetVendorStatisticsQuery();
   const [deleteVendor, { isLoading: isDeleting }] = useDeleteVendorMutation();
 
   const vendors = data?.data ?? [];
   const pagination = data?.pagination;
+
+  const getTypeLabels = (types: VendorType[]): string => {
+    const typeLabels: Record<VendorType, string> = {
+      model_provider: "Model Provider",
+      dataset_provider: "Dataset Provider",
+      infrastructure_cloud: "Infrastructure/Cloud",
+      saas_platform: "SaaS Platform",
+      consulting_services: "Consulting Services",
+      hardware_provider: "Hardware Provider",
+      api_service: "API Service",
+      annotation_labeling: "Annotation/Labeling",
+      other: "Other",
+    };
+    return types.map((t) => typeLabels[t] || t).join(", ");
+  };
 
   const handleEditClick = (e: React.MouseEvent, vendor: Vendor) => {
     e.stopPropagation();
@@ -92,11 +113,14 @@ const Vendors: React.FC = () => {
           Vendor ID
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ getValue }) => {
+        const displayId = getValue() as string | undefined;
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {displayId || "—"}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "vendor_name",
@@ -205,17 +229,53 @@ const Vendors: React.FC = () => {
       },
     },
     {
-      accessorKey: "stakeholder",
+      accessorKey: "type",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Stakeholder
+          Type
         </div>
       ),
       cell: ({ row }) => {
-        const stakeholder = row.original.stakeholder;
+        const types = row.original.type;
+        if (!types || types.length === 0) {
+          return (
+            <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+              —
+            </div>
+          );
+        }
         return (
           <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-            {stakeholder?.display_name || "—"}
+            {getTypeLabels(types)}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "data_processing_role",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Data Processing Role
+        </div>
+      ),
+      cell: ({ getValue }) => {
+        const role = getValue() as string | null;
+        if (!role) {
+          return (
+            <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+              —
+            </div>
+          );
+        }
+        const roleLabels: Record<string, string> = {
+          controller: "Controller",
+          processor: "Processor",
+          sub_processor: "Sub Processor",
+          not_applicable: "Not Applicable",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+            {roleLabels[role] || role}
           </div>
         );
       },
@@ -252,9 +312,44 @@ const Vendors: React.FC = () => {
 
   return (
     <>
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        {isStatisticsLoading ? (
+          <>
+            <StatisticsCardSkeleton />
+            <StatisticsCardSkeleton />
+            <StatisticsCardSkeleton />
+          </>
+        ) : statistics ? (
+          <>
+            <StatisticsCard
+              label="Total Vendors"
+              value={statistics.total_count}
+              icon={Building2}
+              iconColor="text-[#667085]"
+              valueColor="text-[#1D2939]"
+            />
+            <StatisticsCard
+              label="Approved"
+              value={statistics.approved_count}
+              icon={CheckCircle}
+              iconColor="text-[#039855]"
+              valueColor="text-[#039855]"
+            />
+            <StatisticsCard
+              label="Evaluating"
+              value={statistics.evaluating_count}
+              icon={AlertCircle}
+              iconColor="text-[#F59E0B]"
+              valueColor="text-[#F59E0B]"
+            />
+          </>
+        ) : null}
+      </div>
+
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4">
             <div>
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
                 All Vendors

@@ -33,7 +33,8 @@ const OwnershipGovernance: React.FC<OwnershipGovernanceProps> = ({
     errors = {},
 }) => {
     // Fetch data from APIs
-    const { data: stakeholders = [], isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersQuery();
+    const { data: stakeholdersResponse, isLoading: stakeholdersLoading, error: stakeholdersError } = useGetStakeholdersQuery({ per_page: 100 });
+    const stakeholders = stakeholdersResponse?.data || [];
 
     // Helper to check if field has error
     const hasError = (fieldName: string) => errors[fieldName] && errors[fieldName].length > 0;
