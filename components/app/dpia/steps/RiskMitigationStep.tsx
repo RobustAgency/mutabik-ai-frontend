@@ -127,6 +127,7 @@ export const RiskMitigationStep: React.FC = () => {
             {isResidualRequired && <span className="text-red-500">*</span>}
           </Label>
           <Select
+            key={`residual_risk_level-${watch("residual_risk_level") || "none"}`}
             value={watch("residual_risk_level") || ""}
             onValueChange={(value) =>
               setValue("residual_risk_level", (value || null) as any)

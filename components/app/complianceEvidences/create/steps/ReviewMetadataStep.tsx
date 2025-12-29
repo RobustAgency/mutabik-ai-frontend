@@ -40,6 +40,7 @@ export const ReviewMetadataStep: React.FC<ReviewMetadataStepProps> = ({
             Review Outcome
           </Label>
           <Select
+            key={`review_outcome-${watch("review_outcome") || "none"}`}
             value={watch("review_outcome") || "null"}
             onValueChange={(value) =>
               setValue("review_outcome", value === "null" ? null : (value as ComplianceEvidenceReviewOutcomeEnum), { shouldValidate: true })
@@ -65,6 +66,7 @@ export const ReviewMetadataStep: React.FC<ReviewMetadataStepProps> = ({
             Reviewed By
           </Label>
           <Select
+            key={`reviewed_by-${watchedReviewedBy || "none"}`}
             value={watchedReviewedBy ? String(watchedReviewedBy) : "null"}
             onValueChange={(value) =>
               setValue("reviewed_by", value === "null" ? null : Number(value), { shouldValidate: true })

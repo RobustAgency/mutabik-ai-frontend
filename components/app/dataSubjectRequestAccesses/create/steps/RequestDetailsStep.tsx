@@ -110,6 +110,7 @@ export const RequestDetailsStep: React.FC = () => {
             Request Source <span className="text-red-500">*</span>
           </Label>
           <select
+            key={`request_source-${watch("request_source") || "none"}`}
             id="request_source"
             {...register("request_source")}
             className={`w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${

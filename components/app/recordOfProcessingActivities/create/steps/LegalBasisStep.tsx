@@ -66,6 +66,7 @@ export const LegalBasisStep: React.FC = () => {
           Lawful Basis <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`lawful_basis-${watch("lawful_basis") || "none"}`}
           value={watch("lawful_basis")}
           onValueChange={(value) => setValue("lawful_basis", value as any)}
         >

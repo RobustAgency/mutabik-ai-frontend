@@ -97,6 +97,7 @@ export const DPIAReviewStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="dpia_status">DPIA Status</Label>
             <Select
+              key={`dpia_status-${watch("dpia_status") || "none"}`}
               value={watch("dpia_status") || ""}
               onValueChange={(value) => setValue("dpia_status", (value || null) as any)}
             >
