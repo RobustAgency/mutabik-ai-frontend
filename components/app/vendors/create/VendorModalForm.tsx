@@ -21,6 +21,7 @@ const initialFormData: VendorFormData = {
     tax_id: null,
     stock_ticker: null,
     notes: null,
+    metadata: null,
 };
 
 interface VendorModalFormProps {

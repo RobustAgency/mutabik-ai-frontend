@@ -74,6 +74,7 @@ export const MetadataStep: React.FC = () => {
             Source System <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`source_system-${watch("source_system") || "none"}`}
             value={watch("source_system")}
             onValueChange={(value) => setValue("source_system", value as any)}
           >
@@ -95,6 +96,7 @@ export const MetadataStep: React.FC = () => {
             Language <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`language-${watch("language") || "none"}`}
             value={watch("language")}
             onValueChange={(value) => setValue("language", value as any)}
           >
@@ -116,6 +118,7 @@ export const MetadataStep: React.FC = () => {
             Jurisdiction <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`jurisdiction-${watch("jurisdiction") || "none"}`}
             value={watch("jurisdiction")}
             onValueChange={(value) => setValue("jurisdiction", value as any)}
           >

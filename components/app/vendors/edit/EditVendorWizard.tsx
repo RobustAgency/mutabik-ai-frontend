@@ -22,6 +22,7 @@ import { BasicInformationStep } from "../create/steps/BasicInformationStep";
 import { ClassificationStatusStep } from "../create/steps/ClassificationStatusStep";
 import { PrimaryContactsStep } from "../create/steps/PrimaryContactsStep";
 import { ServiceDetailsStep } from "../create/steps/ServiceDetailsStep";
+import { MetadataStep } from "../create/steps/MetadataStep";
 
 const WIZARD_STEPS = [
   {
@@ -41,6 +42,11 @@ const WIZARD_STEPS = [
   },
   {
     id: 4,
+    title: "Metadata",
+    description: "Sub-processors URL, residency options, websites, parent company, and metadata notes",
+  },
+  {
+    id: 5,
     title: "Additional Information",
     description: "Notes and advanced options (DUNS, LEI, tax ID, stock ticker)",
   },
@@ -92,6 +98,7 @@ const EditVendorWizard: React.FC<EditVendorWizardProps> = ({ vendorId }) => {
         tax_id: vendor.tax_id || null,
         stock_ticker: vendor.stock_ticker || null,
         notes: vendor.notes || null,
+        metadata: vendor.metadata as any || null,
       });
     }
   }, [vendor, reset]);
@@ -106,6 +113,8 @@ const EditVendorWizard: React.FC<EditVendorWizardProps> = ({ vendorId }) => {
         // Primary contacts is optional per backend, so skip validation if empty
         return true;
       case 4:
+        return true; // All metadata fields are optional
+      case 5:
         return true; // All fields are optional in this step
       default:
         return true;
@@ -136,6 +145,7 @@ const EditVendorWizard: React.FC<EditVendorWizardProps> = ({ vendorId }) => {
         data_processing_role: data.data_processing_role as DataProcessingRole,
         service_provided: data.service_provided || null,
         primary_contacts: data.primary_contacts || [],
+        metadata: data.metadata || null,
         duns_number: data.duns_number || null,
         lei_number: data.lei_number || null,
         tax_id: data.tax_id || null,
@@ -161,6 +171,8 @@ const EditVendorWizard: React.FC<EditVendorWizardProps> = ({ vendorId }) => {
       case 3:
         return <PrimaryContactsStep />;
       case 4:
+        return <MetadataStep />;
+      case 5:
         return <ServiceDetailsStep />;
       default:
         return null;

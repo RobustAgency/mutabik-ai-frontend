@@ -53,6 +53,7 @@ export const BasicInformationStep: React.FC = () => {
             Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`type-${type || "none"}`}
             value={type || ""}
             onValueChange={(value) => setValue("type", value as any)}
           >

@@ -59,6 +59,7 @@ export const NotificationStep: React.FC = () => {
             Notification Required <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`notification_required-${watch("notification_required") || "none"}`}
             value={watch("notification_required")}
             onValueChange={(value) => setValue("notification_required", value as any)}
           >
@@ -88,7 +89,8 @@ export const NotificationStep: React.FC = () => {
           <Label htmlFor="notification_status">
             Notification Status <span className="text-red-500">*</span>
           </Label>
-          <Select
+          <Select 
+            key={`notification_status-${watch("notification_status") || "none"}`}
             value={watch("notification_status")}
             onValueChange={(value) => setValue("notification_status", value as any)}
           >
@@ -266,6 +268,7 @@ export const NotificationStep: React.FC = () => {
                   Notification Method <span className="text-red-500">*</span>
                 </Label>
                 <Select
+                  key={`notification_method-${watch("notification_method") || "none"}`}
                   value={watch("notification_method") || ""}
                   onValueChange={(value) =>
                     setValue("notification_method", value === "" ? null : (value as any))

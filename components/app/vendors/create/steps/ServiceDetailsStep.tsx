@@ -34,7 +34,7 @@ export const ServiceDetailsStep: React.FC = () => {
     <div className="space-y-6 w-full">
       <div className="flex flex-col gap-2">
         <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
-          Step 3: Additional Information
+          Additional Information
         </h2>
         <hr className="border-gray-200" />
       </div>

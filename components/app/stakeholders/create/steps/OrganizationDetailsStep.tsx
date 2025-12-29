@@ -58,6 +58,7 @@ export const OrganizationDetailsStep: React.FC = () => {
             Classification <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`classification-${classification || "none"}`}
             value={classification || ""}
             onValueChange={(value) =>
               setValue("classification", value as "internal" | "external", {
@@ -106,6 +107,7 @@ export const OrganizationDetailsStep: React.FC = () => {
             Timezone <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`timezone-${timezone || "none"}`}
             value={timezone || ""}
             onValueChange={(value) => setValue("timezone", value, { shouldValidate: true })}
           >

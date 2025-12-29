@@ -165,6 +165,7 @@ export const ProjectSettingsForm: React.FC<ProjectSettingsFormProps> = ({
                   Governance pillar <span className="text-red-500">*</span>
                 </Label>
                 <Select
+                  key={`governance_pillar-${watch("governance_pillar") || "none"}`}
                   value={watch("governance_pillar") as string}
                   onValueChange={(value) =>
                     setValue("governance_pillar", value as GovernancePillar, {

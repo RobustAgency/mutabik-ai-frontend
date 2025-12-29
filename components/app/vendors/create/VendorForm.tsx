@@ -7,8 +7,8 @@ import { vendorSchema, type VendorFormData } from "@/lib/schemas/vendor.schema";
 import { BasicInformationStep } from "./steps/BasicInformationStep";
 import { ClassificationStatusStep } from "./steps/ClassificationStatusStep";
 import { PrimaryContactsStep } from "./steps/PrimaryContactsStep";
-import { AdvancedOptionsStep } from "./steps/AdvancedOptionsStep";
-import { AdditionalInformationStep } from "./steps/AdditionalInformationStep";
+import { ServiceDetailsStep } from "./steps/ServiceDetailsStep";
+import { MetadataStep } from "./steps/MetadataStep";
 
 interface VendorFormProps {
   formData: VendorFormData;
@@ -59,8 +59,8 @@ const VendorForm: React.FC<VendorFormProps> = ({
         <BasicInformationStep />
         <ClassificationStatusStep />
         <PrimaryContactsStep />
-        <AdvancedOptionsStep />
-        <AdditionalInformationStep />
+        <MetadataStep />
+        <ServiceDetailsStep />
       </div>
     </FormProvider>
   );

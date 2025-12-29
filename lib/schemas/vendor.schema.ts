@@ -91,6 +91,23 @@ export const vendorSchema = z
       .nullable()
       .or(z.literal("")),
     notes: z.string().optional().nullable().or(z.literal("")),
+    metadata: z
+      .object({
+        sub_processors_url: z
+          .union([
+            z.string().url("Please enter a valid URL"),
+            z.literal(""),
+            z.null(),
+          ])
+          .optional()
+          .nullable(),
+        residency_options: z.string().optional().nullable().or(z.literal("")),
+        websites: z.string().optional().nullable().or(z.literal("")),
+        parent_company: z.string().optional().nullable().or(z.literal("")),
+        metadata_notes: z.string().optional().nullable().or(z.literal("")),
+      })
+      .optional()
+      .nullable(),
   })
   .transform((data) => ({
     ...data,
@@ -105,6 +122,18 @@ export const vendorSchema = z
       phone: contact.phone === "" ? null : contact.phone,
       role: contact.role === "" ? null : contact.role,
     })) || [],
+    metadata: data.metadata ? (() => {
+      const processed = {
+        sub_processors_url: data.metadata.sub_processors_url === "" ? null : data.metadata.sub_processors_url,
+        residency_options: data.metadata.residency_options === "" ? null : data.metadata.residency_options,
+        websites: data.metadata.websites === "" ? null : data.metadata.websites,
+        parent_company: data.metadata.parent_company === "" ? null : data.metadata.parent_company,
+        metadata_notes: data.metadata.metadata_notes === "" ? null : data.metadata.metadata_notes,
+      };
+      // If all fields are null/empty, return null
+      const hasAnyValue = Object.values(processed).some(val => val !== null && val !== "");
+      return hasAnyValue ? processed : null;
+    })() : null,
   }));
 
 export type VendorFormData = z.infer<typeof vendorSchema>;

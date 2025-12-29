@@ -61,6 +61,7 @@ export const AdditionalInformationStep: React.FC = () => {
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${status || "none"}`}
             value={status || ""}
             onValueChange={(value) => setValue("status", value as any)}
           >

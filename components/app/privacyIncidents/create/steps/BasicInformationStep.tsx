@@ -76,6 +76,7 @@ export const BasicInformationStep: React.FC = () => {
             Incident Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`incident_type-${watch("incident_type") || "none"}`}
             value={watch("incident_type")}
             onValueChange={(value) => setValue("incident_type", value as any)}
           >
@@ -104,6 +105,7 @@ export const BasicInformationStep: React.FC = () => {
             Risk Level <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`risk_level-${watch("risk_level") || "none"}`}
             value={watch("risk_level")}
             onValueChange={(value) => setValue("risk_level", value as any)}
           >

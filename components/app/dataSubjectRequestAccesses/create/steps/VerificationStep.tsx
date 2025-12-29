@@ -78,6 +78,7 @@ export const VerificationStep: React.FC = () => {
             Verification Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`verification_status-${watch("verification_status") || "none"}`}
             value={verificationStatus}
             onValueChange={(value) =>
               setValue("verification_status", value as any)
@@ -122,6 +123,7 @@ export const VerificationStep: React.FC = () => {
                 Verification Method <span className="text-red-500">*</span>
               </Label>
               <Select
+                key={`verification_method-${watch("verification_method") || "none"}`}
                 value={watch("verification_method") || ""}
                 onValueChange={(value) =>
                   setValue("verification_method", (value || null) as any)
