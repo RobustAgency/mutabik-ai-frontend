@@ -39,6 +39,7 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
     tax_id: null,
     stock_ticker: null,
     notes: null,
+    metadata: null,
   });
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -71,6 +72,7 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
         tax_id: vendor.tax_id || null,
         stock_ticker: vendor.stock_ticker || null,
         notes: vendor.notes || null,
+        metadata: vendor.metadata as any || null,
       });
     }
   }, [vendor]);
@@ -103,6 +105,7 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
       data_processing_role: result.data.data_processing_role as DataProcessingRole,
       service_provided: result.data.service_provided || null,
       primary_contacts: result.data.primary_contacts || [],
+      metadata: result.data.metadata || null,
       duns_number: result.data.duns_number || null,
       lei_number: result.data.lei_number || null,
       tax_id: result.data.tax_id || null,

@@ -97,6 +97,7 @@ export interface CreateVendorData {
   data_processing_role: DataProcessingRole;
   service_provided?: string | null;
   primary_contacts?: PrimaryContact[];
+  metadata?: Record<string, unknown> | null;
   duns_number?: string | null;
   lei_number?: string | null;
   tax_id?: string | null;

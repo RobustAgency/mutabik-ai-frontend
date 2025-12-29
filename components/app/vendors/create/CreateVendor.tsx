@@ -32,6 +32,7 @@ const initialFormData: VendorFormData = {
   tax_id: null,
   stock_ticker: null,
   notes: null,
+  metadata: null,
 };
 
 const CreateVendor: React.FC = () => {
@@ -70,6 +71,7 @@ const CreateVendor: React.FC = () => {
       data_processing_role: result.data.data_processing_role as DataProcessingRole,
       service_provided: result.data.service_provided || null,
       primary_contacts: result.data.primary_contacts || [],
+      metadata: result.data.metadata || null,
       duns_number: result.data.duns_number || null,
       lei_number: result.data.lei_number || null,
       tax_id: result.data.tax_id || null,
