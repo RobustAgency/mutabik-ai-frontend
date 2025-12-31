@@ -123,9 +123,8 @@ export const BasicInformationStep: React.FC = () => {
           <Textarea
             id="description"
             {...register("description")}
-            className={hasError("description") ? "border-red-500" : ""}
+            className={`min-h-32 ${hasError("description") ? "border-red-500" : ""}`}
             placeholder="Detailed description of this data source, its purpose, and contents..."
-            rows={4}
           />
           {hasError("description") && (
             <p className="text-sm text-red-500">{getError("description")}</p>

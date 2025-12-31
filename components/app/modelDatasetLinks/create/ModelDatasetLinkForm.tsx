@@ -30,8 +30,8 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
   const models = modelsData || [];
   const { data: modelVersionsData, isLoading: isLoadingVersions } = useGetAiModelVersionsQuery();
   const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
-  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery();
-  const datasets = datasetsData || [];
+  const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery({});
+  const datasets = datasetsData?.data || [];
   const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
   const snapshots = React.useMemo(() => snapshotsData || [], [snapshotsData]);
 

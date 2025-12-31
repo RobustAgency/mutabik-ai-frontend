@@ -138,9 +138,8 @@ const DataSourceForm: React.FC<DataSourceFormProps> = ({
               id="description"
               value={formData.description || ""}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              className={errors.description ? "border-destructive" : ""}
+              className={`min-h-32 ${errors.description ? "border-destructive" : ""}`}
               placeholder="Enter data source description"
-              rows={4}
             />
             {errors.description && (
               <p className="text-sm text-destructive">{errors.description[0]}</p>

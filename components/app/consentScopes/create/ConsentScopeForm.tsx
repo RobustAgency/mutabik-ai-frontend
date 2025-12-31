@@ -15,8 +15,8 @@ interface ConsentScopeFormProps {
 }
 
 const ConsentScopeForm: React.FC<ConsentScopeFormProps> = ({ formData, setFormData, errors }) => {
-  const { data: datasetsData } = useGetDatasetsQuery();
-  const datasets = datasetsData || [];
+  const { data: datasetsData } = useGetDatasetsQuery({});
+  const datasets = datasetsData?.data || [];
 
   const purposeOptions = [
     { value: "marketing", label: "Marketing" },
