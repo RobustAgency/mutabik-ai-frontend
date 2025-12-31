@@ -4,139 +4,110 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { useCreateDataSourceMutation, CreateDataSourceData } from "@/app/lib/features/dataSourcesApi";
+import { 
+  useCreateDataSourceMutation, 
+  CreateDataSourceData,
+  SystemType,
+  OwnerTeam,
+  DataResidency,
+  HostingModel,
+  DataSourceStatus,
+} from "@/app/lib/features/dataSourcesApi";
 import DataSourceForm from "./DataSourceForm";
-import {
-    validateTextField,
-    validateArrayField,
-    createValidationErrors,
-} from "@/lib/utils/validation";
 
 const initialFormData: CreateDataSourceData = {
-    name: "",
-    system_type: "",
-    owner_team: "",
-    data_domains: [],
-    access_method: "",
-    residency: "",
-    classification: "",
-    hosting_model: "",
-    service_model: "",
-    cloud_provider: "",
-    primary_region: "",
-    secondary_region: "",
-    network_ref: "",
-    retention_policy_ref: "",
-    catalog_uri: "",
+  name: "",
+  description: "",
+  system_type: SystemType.APPLICATION_DB,
+  owner_team: OwnerTeam.DATA_ENGINEERING_TEAM,
+  data_domains: [],
+  residency: DataResidency.US,
+  criticality_level: null,
+  hosting_model: HostingModel.CLOUD,
+  technical_owner: OwnerTeam.DATA_ENGINEERING_TEAM,
+  business_owner: OwnerTeam.DATA_ENGINEERING_TEAM,
+  last_review_date: null,
+  next_review_date: null,
+  status: DataSourceStatus.DRAFT,
 };
 
 interface DataSourceModalFormProps {
-    onSuccess?: (dataSource: any) => void;
-    onCancel?: () => void;
+  onSuccess?: (dataSource: any) => void;
+  onCancel?: () => void;
 }
 
 const DataSourceModalForm: React.FC<DataSourceModalFormProps> = ({
-    onSuccess,
-    onCancel,
+  onSuccess,
+  onCancel,
 }) => {
-    const [formData, setFormData] = useState<CreateDataSourceData>(initialFormData);
-    const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
-    const [createDataSource, { isLoading }] = useCreateDataSourceMutation();
+  const [formData, setFormData] = useState<CreateDataSourceData>(initialFormData);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [createDataSource, { isLoading }] = useCreateDataSourceMutation();
 
-    const validateForm = (): boolean => {
-        const fieldErrors: Record<string, string[]> = {
-            name: validateTextField(formData.name, {
-                required: true,
-                messages: { required: "Data source name is required" },
-            }),
-            system_type: validateTextField(formData.system_type, {
-                required: true,
-                messages: { required: "System type is required" },
-            }),
-            owner_team: validateTextField(formData.owner_team, {
-                required: true,
-                messages: { required: "Owner team is required" },
-            }),
-            data_domains: validateArrayField(formData.data_domains, {
-                required: true,
-                messages: { required: "At least one data domain is required" },
-            }),
-        };
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setValidationErrors({});
 
-        const errors = createValidationErrors(fieldErrors);
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
+    try {
+      const result = await createDataSource(formData).unwrap();
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setValidationErrors({});
+      if (onSuccess) {
+        onSuccess(result);
+      }
+    } catch (err: any) {
+      if (err?.data?.errors) {
+        setValidationErrors(err.data.errors);
+      }
+    }
+  };
 
-        if (!validateForm()) {
-            return;
-        }
+  return (
+    <form onSubmit={handleSave} className="space-y-6">
+      {Object.keys(validationErrors).length > 0 && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <p className="font-semibold mb-2">Please fix the following errors:</p>
+            <ul className="list-disc list-inside space-y-1">
+              {Object.entries(validationErrors).map(([field, errors]) => (
+                <li key={field}>
+                  <span className="font-medium capitalize">
+                    {field.replace(/_/g, " ")}:
+                  </span>{" "}
+                  {errors[0]}
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
 
-        try {
-            const result = await createDataSource(formData).unwrap();
+      <DataSourceForm
+        formData={formData}
+        setFormData={setFormData}
+        errors={validationErrors}
+      />
 
-            if (onSuccess) {
-                onSuccess(result);
-            }
-        } catch (err: any) {
-            if (err?.data?.errors) {
-                setValidationErrors(err.data.errors);
-            }
-        }
-    };
-
-    return (
-        <form onSubmit={handleSave} className="space-y-6">
-            {Object.keys(validationErrors).length > 0 && (
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                        <p className="font-semibold mb-2">Please fix the following errors:</p>
-                        <ul className="list-disc list-inside space-y-1">
-                            {Object.entries(validationErrors).map(([field, errors]) => (
-                                <li key={field}>
-                                    <span className="font-medium capitalize">
-                                        {field.replace(/_/g, " ")}:
-                                    </span>{" "}
-                                    {errors[0]}
-                                </li>
-                            ))}
-                        </ul>
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            <DataSourceForm
-                formData={formData}
-                setFormData={setFormData}
-                errors={validationErrors}
-            />
-
-            <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isLoading}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    type="submit"
-                    className="bg-[#4FD58F] hover:bg-[#3fc77f]"
-                    disabled={isLoading}
-                >
-                    {isLoading ? "Creating..." : "Create Data Source"}
-                </Button>
-            </div>
-        </form>
-    );
+      <div className="flex justify-end gap-3 pt-4 border-t">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="bg-[#4FD58F] hover:bg-[#3fc77f]"
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating..." : "Create Data Source"}
+        </Button>
+      </div>
+    </form>
+  );
 };
 
 export default DataSourceModalForm;
-

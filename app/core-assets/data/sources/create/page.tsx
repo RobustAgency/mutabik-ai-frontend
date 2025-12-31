@@ -1,12 +1,10 @@
-
-
-import CreateDataSource from '@/components/app/dataSources/create/CreateDataSource'
+import CreateDataSourceWizard from '@/components/app/dataSources/create/CreateDataSourceWizard'
 import React from 'react'
 
 const page = () => {
   return (
     <>
-      <CreateDataSource />
+      <CreateDataSourceWizard />
     </>
   )
 }

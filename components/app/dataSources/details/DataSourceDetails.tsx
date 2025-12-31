@@ -15,13 +15,14 @@ const DataSourceDetails: React.FC<DataSourceDetailsProps> = ({
     dataSourceId,
 }) => {
     const router = useRouter();
+    const numericId = Number(dataSourceId);
 
-    const { data: dataSource, isLoading, error } = useGetDataSourceQuery(dataSourceId);
+    const { data: dataSource, isLoading, error } = useGetDataSourceQuery(numericId);
     const [deleteDataSource, { isLoading: isDeleting }] = useDeleteDataSourceMutation();
 
     // Use delete confirmation hook
     const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
-        deleteMutation: async (id: string) => {
+        deleteMutation: async (id: number) => {
             await deleteDataSource(id).unwrap();
         },
         isDeleting,
@@ -35,7 +36,7 @@ const DataSourceDetails: React.FC<DataSourceDetailsProps> = ({
 
     const handleDelete = () => {
         if (dataSource) {
-            openDeleteDialog(dataSourceId, dataSource.name);
+            openDeleteDialog(numericId, dataSource.name);
         }
     };
 

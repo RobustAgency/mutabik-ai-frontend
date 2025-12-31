@@ -24,8 +24,8 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
     setFormData,
     errors,
 }) => {
-    const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery();
-    const dataSources = dataSourcesData || [];
+    const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery({});
+    const dataSources = dataSourcesData?.data || [];
 
     const handleInputChange = (field: keyof CreateDatasetData, value: any) => {
         setFormData((prev) => ({
@@ -154,7 +154,7 @@ const DatasetForm: React.FC<DatasetFormProps> = ({
                         options={dataSources.map((source) => ({
                             id: source.id,
                             label: source.name,
-                            value: source.id,
+                            value: String(source.id),
                         }))}
                         isLoading={isDataSourcesLoading}
                         isEmpty={!isDataSourcesLoading && dataSources.length === 0}

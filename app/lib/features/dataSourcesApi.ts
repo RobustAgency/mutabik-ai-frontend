@@ -1,59 +1,142 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+
+// Enums matching Laravel backend
+export enum SystemType {
+  APPLICATION_DB = "Application DB",
+  DATA_LAKE = "Data Lake",
+  DATA_WAREHOUSE = "Data Warehouse",
+  OPERATIONAL_API = "Operational API",
+  FILES_BUCKETS = "Files/Buckets",
+  THIRD_PARTY_SAAS = "3rd-Party SaaS",
+  STREAMING_KAFKA = "Streaming/Kafka",
+}
+
+export enum OwnerTeam {
+  DATA_ENGINEERING_TEAM = "data_engineering_team",
+  ML_PLATFORM_TEAM = "ml_platform_team",
+  PRIVACY_OFFICE = "privacy_office",
+  AI_GOVERNANCE_BOARD = "ai_governance_board",
+}
+
+export enum DataDomain {
+  CUSTOMER = "customer",
+  FINANCE = "finance",
+  OPERATIONS = "operations",
+  HUMAN_RESOURCES = "human_resources",
+  MARKETING = "marketing",
+  PRODUCT = "product",
+  SALES = "sales",
+  LEGAL = "legal",
+  IT_TECHNOLOGY = "it_technology",
+  SUPPLY_CHAIN = "supply_chain",
+}
+
+export enum DataResidency {
+  AE = "ae",
+  EU = "eu",
+  KSA = "ksa",
+  US = "us",
+  UK = "uk",
+  QA = "qa",
+  JO = "jo",
+  MA = "ma",
+  BH = "bh",
+  OTHER = "other",
+}
+
+export enum CriticalityLevel {
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  CRITICAL = "critical",
+}
+
+export enum HostingModel {
+  ON_PREM = "on_prem",
+  CLOUD = "cloud",
+  HYBRID = "hybrid",
+}
+
+export enum DataSourceStatus {
+  DRAFT = "draft",
+  ACTIVE = "active",
+  UNDER_REVIEW = "under_review",
+  DEPRECATED = "deprecated",
+  ARCHIVED = "archived",
+}
 
 // Types for data sources
 export interface DataSource {
-  id: string;
+  id: number;
   name: string;
-  system_type: string;
-  owner_team: string;
-  data_domains: string[];
-  access_method: string;
-  residency: string;
-  classification: string;
-  hosting_model: string;
-  service_model: string;
-  cloud_provider: string;
-  primary_region: string | null;
-  secondary_region: string | null;
-  network_ref: string | null;
-  retention_policy_ref: string | null;
-  catalog_uri: string | null;
+  description?: string | null;
+  system_type: SystemType;
+  owner_team: OwnerTeam;
+  data_domains: DataDomain[];
+  residency: DataResidency;
+  criticality_level?: CriticalityLevel | null;
+  hosting_model: HostingModel;
+  technical_owner: OwnerTeam;
+  business_owner: OwnerTeam;
+  last_review_date?: string | null;
+  next_review_date?: string | null;
+  status: DataSourceStatus | null;
   created_at: string;
   updated_at: string;
+  display_id?: string;
 }
 
 export interface DataSourceFilters {
-  per_page?: number; // min:1, max:100
-  from?: string; // date
-  to?: string; // date
-  name?: string; // max:255
-  system_type?: string; // max:255
-  access_method?: string; // max:255
-  classification?: string; // max:255
-  // Legacy support
-  search?: string;
+  per_page?: number;
   page?: number;
+  name?: string;
+  system_type?: SystemType;
+  owner_team?: OwnerTeam;
+  data_domains?: DataDomain[];
+  residency?: DataResidency;
+  criticality_level?: CriticalityLevel;
+  hosting_model?: HostingModel;
+  status?: DataSourceStatus;
+  from?: string;
+  to?: string;
+  search?: string;
   limit?: number;
+}
+
+export interface DataSourceListResponse {
+  data: {
+    current_page: number;
+    data: DataSource[];
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+  error: boolean;
+  message: string;
+}
+
+export interface DataSourceItemResponse {
+  data: DataSource;
+  error: boolean;
+  message: string;
 }
 
 export interface CreateDataSourceData {
   name: string;
-  system_type: string;
-  owner_team: string;
-  data_domains: string[];
-  access_method: string;
-  residency: string;
-  classification: string;
-  hosting_model: string;
-  service_model: string;
-  cloud_provider: string;
-  primary_region?: string;
-  secondary_region?: string;
-  network_ref?: string;
-  retention_policy_ref?: string;
-  catalog_uri?: string;
+  description?: string | null;
+  system_type: SystemType;
+  owner_team: OwnerTeam;
+  data_domains: DataDomain[];
+  residency: DataResidency;
+  criticality_level?: CriticalityLevel | null;
+  hosting_model: HostingModel;
+  technical_owner: OwnerTeam;
+  business_owner: OwnerTeam;
+  last_review_date?: string | null;
+  next_review_date?: string | null;
+  status: DataSourceStatus;
 }
 
 export const dataSourcesApi = createApi({
@@ -61,46 +144,55 @@ export const dataSourcesApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["DataSource"],
   endpoints: (builder) => ({
-    getDataSources: builder.query<DataSource[], DataSourceFilters | void>({
-      query: (filters) => ({
+    getDataSources: builder.query<
+      { data: DataSource[]; pagination?: PaginationMeta },
+      DataSourceFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/data-sources",
         method: "GET",
-        params: filters ?? undefined,
+        params: filters,
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "DataSource" as const, id })),
+              ...result.data.map(({ id }) => ({
+                type: "DataSource" as const,
+                id: String(id),
+              })),
               { type: "DataSource", id: "LIST" },
             ]
           : [{ type: "DataSource", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: DataSource[];
-          current_page: number;
-          total: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
+      transformResponse: (response: DataSourceListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
-          return response.data.data;
+          const { current_page, per_page, total, last_page } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
+          return {
+            data: response.data.data,
+            pagination: {
+              current_page,
+              per_page,
+              total,
+              last_page,
+              from,
+              to,
+            },
+          };
         }
-        return [];
+        return { data: [] };
       },
     }),
 
-    getDataSource: builder.query<DataSource, string>({
+    getDataSource: builder.query<DataSource, string | number>({
       query: (id) => ({
         url: `/data-sources/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "DataSource", id }],
-      transformResponse: (response: {
-        data: DataSource;
-        error?: boolean;
-        message?: string;
-      }) => {
+      providesTags: (result, error, id) => [
+        { type: "DataSource", id: String(id) },
+      ],
+      transformResponse: (response: DataSourceItemResponse) => {
         if (response.data) {
           return response.data;
         }
@@ -112,7 +204,7 @@ export const dataSourcesApi = createApi({
       query: (data) => ({
         url: "/data-sources",
         method: "POST",
-        data: data,
+        data,
       }),
       invalidatesTags: [{ type: "DataSource", id: "LIST" }],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -133,15 +225,15 @@ export const dataSourcesApi = createApi({
 
     updateDataSource: builder.mutation<
       DataSource,
-      { id: string; data: Partial<CreateDataSourceData> }
+      { id: number; data: Partial<CreateDataSourceData> }
     >({
       query: ({ id, data }) => ({
         url: `/data-sources/${id}`,
         method: "POST",
-        data: data,
+        data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "DataSource", id },
+        { type: "DataSource", id: String(id) },
         { type: "DataSource", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -160,13 +252,13 @@ export const dataSourcesApi = createApi({
       },
     }),
 
-    deleteDataSource: builder.mutation<void, string>({
+    deleteDataSource: builder.mutation<void, number>({
       query: (id) => ({
         url: `/data-sources/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "DataSource", id },
+        { type: "DataSource", id: String(id) },
         { type: "DataSource", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {

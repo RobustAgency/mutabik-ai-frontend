@@ -77,7 +77,6 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
   title,
   description,
 }) => {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [jurisdictionText, setJurisdictionText] = useState("");
   const [commitmentsText, setCommitmentsText] = useState("");

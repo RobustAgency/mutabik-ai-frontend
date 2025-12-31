@@ -5,25 +5,17 @@ import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { VendorFormData } from "@/lib/schemas/vendor.schema";
 
 export const ServiceDetailsStep: React.FC = () => {
   const {
     register,
-    setValue,
-    watch,
     formState: { errors },
   } = useFormContext<VendorFormData>();
 
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const dunsNumber = watch("duns_number");
-  const leiNumber = watch("lei_number");
-  const taxId = watch("tax_id");
-  const stockTicker = watch("stock_ticker");
-  const notes = watch("notes");
 
   const hasError = (fieldName: keyof VendorFormData) =>
     errors[fieldName] && errors[fieldName]?.message;
