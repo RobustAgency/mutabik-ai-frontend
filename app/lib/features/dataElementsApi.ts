@@ -1,20 +1,80 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+
+// Enums matching Laravel backend
+export enum DataType {
+  STRING = "string",
+  INTEGER = "integer",
+  DECIMAL = "decimal",
+  BOOLEAN = "boolean",
+  DATE = "date",
+  DATETIME = "datetime",
+  TIMESTAMP = "timestamp",
+  JSON = "json",
+  BINARY = "binary",
+  ARRAY = "array",
+  OTHER = "other",
+}
+
+export enum Sensitivity {
+  PUBLIC = "Public",
+  INTERNAL = "Internal",
+  CONFIDENTIAL = "Confidential",
+  RESTRICTED = "Restricted",
+}
+
+export enum PiiFlag {
+  YES = "Yes",
+  NO = "No",
+  MAY_CONTAIN = "May_Contain",
+}
+
+export enum PersonalDataCategory {
+  IDENTIFIER = "Identifier",
+  CONTACT = "Contact",
+  FINANCIAL = "Financial",
+  BEHAVIORAL = "Behavioral",
+  LOCATION = "Location",
+  BIOMETRIC = "Biometric",
+  HEALTH = "Health",
+  SENSITIVE_OTHER = "Sensitive-Other",
+}
+
+export enum SpecialCategoryFlag {
+  YES = "Yes",
+  NO = "No",
+}
+
+export enum CdeFlag {
+  YES = "Yes",
+  NO = "No",
+}
+
+export enum CdeCategory {
+  STRATEGIC = "Strategic",
+  COMPLIANCE = "Compliance",
+  EXTERNAL_REPORTING = "External Reporting",
+  OPERATIONAL = "Operational",
+  FINANCIAL = "Financial",
+  RISK = "Risk",
+  CUSTOMER_EXPERIENCE = "Customer Experience",
+}
 
 // Types for data elements
 export interface DataElement {
-  id: string;
+  id: number;
+  display_id?: string;
   name: string;
   business_definition: string | null;
-  data_type: string;
+  data_type: DataType;
   format: string | null;
-  sensitivity: string;
-  pii_flag: string;
-  personal_data_category: string | null;
-  special_category_flag: string;
-  cde_flag: string;
-  cde_category: string | null;
+  sensitivity: Sensitivity;
+  pii_flag: PiiFlag;
+  personal_data_category: PersonalDataCategory | null;
+  special_category_flag: SpecialCategoryFlag;
+  cde_flag: CdeFlag;
+  cde_category: CdeCategory | null;
   owner_team: string | null;
   quality_rules_ref: string | null;
   catalog_column_id: string | null;
@@ -35,18 +95,38 @@ export interface DataElementFilters {
 
 export interface CreateDataElementData {
   name: string;
-  business_definition?: string;
-  data_type: string;
-  format?: string;
-  sensitivity: string;
-  pii_flag: string;
-  personal_data_category?: string;
-  special_category_flag: string;
-  cde_flag: string;
-  cde_category?: string;
-  owner_team?: string;
-  quality_rules_ref?: string;
-  catalog_column_id?: string;
+  business_definition?: string | null;
+  data_type: DataType;
+  format?: string | null;
+  sensitivity: Sensitivity;
+  pii_flag: PiiFlag;
+  personal_data_category?: PersonalDataCategory | null;
+  special_category_flag: SpecialCategoryFlag;
+  cde_flag: CdeFlag;
+  cde_category?: CdeCategory | null;
+  owner_team?: string | null;
+  quality_rules_ref?: string | null;
+  catalog_column_id?: string | null;
+}
+
+export interface DataElementListResponse {
+  data: {
+    data: DataElement[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number;
+    to: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+export interface DataElementItemResponse {
+  data: DataElement;
+  error?: boolean;
+  message?: string;
 }
 
 export const dataElementsApi = createApi({
@@ -54,46 +134,55 @@ export const dataElementsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["DataElement"],
   endpoints: (builder) => ({
-    getDataElements: builder.query<DataElement[], DataElementFilters | void>({
-      query: (filters) => ({
+    getDataElements: builder.query<
+      { data: DataElement[]; pagination?: PaginationMeta },
+      DataElementFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/data-elements",
         method: "GET",
-        params: filters ?? undefined,
+        params: filters,
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "DataElement" as const, id })),
+              ...result.data.map(({ id }) => ({
+                type: "DataElement" as const,
+                id: String(id),
+              })),
               { type: "DataElement", id: "LIST" },
             ]
           : [{ type: "DataElement", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: DataElement[];
-          current_page: number;
-          total: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
+      transformResponse: (response: DataElementListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
-          return response.data.data;
+          const { current_page, per_page, total, last_page } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
+          return {
+            data: response.data.data,
+            pagination: {
+              current_page,
+              per_page,
+              total,
+              last_page,
+              from,
+              to,
+            },
+          };
         }
-        return [];
+        return { data: [] };
       },
     }),
 
-    getDataElement: builder.query<DataElement, string>({
+    getDataElement: builder.query<DataElement, string | number>({
       query: (id) => ({
         url: `/data-elements/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "DataElement", id }],
-      transformResponse: (response: {
-        data: DataElement;
-        error?: boolean;
-        message?: string;
-      }) => {
+      providesTags: (result, error, id) => [
+        { type: "DataElement", id: String(id) },
+      ],
+      transformResponse: (response: DataElementItemResponse) => {
         if (response.data) {
           return response.data;
         }
@@ -126,15 +215,15 @@ export const dataElementsApi = createApi({
 
     updateDataElement: builder.mutation<
       DataElement,
-      { id: string; data: Partial<CreateDataElementData> }
+      { id: string | number; data: Partial<CreateDataElementData> }
     >({
       query: ({ id, data }) => ({
         url: `/data-elements/${id}`,
-        method: "POST",
+        method: "PUT",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "DataElement", id },
+        { type: "DataElement", id: String(id) },
         { type: "DataElement", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -153,13 +242,13 @@ export const dataElementsApi = createApi({
       },
     }),
 
-    deleteDataElement: builder.mutation<void, string>({
+    deleteDataElement: builder.mutation<void, string | number>({
       query: (id) => ({
         url: `/data-elements/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "DataElement", id },
+        { type: "DataElement", id: String(id) },
         { type: "DataElement", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
