@@ -2,7 +2,6 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
-// Enums matching Laravel backend
 export enum Purpose {
   AI_ML_TRAINING = "ai_ml_training",
   AI_ML_FINE_TUNING = "ai_ml_fine_tuning",
