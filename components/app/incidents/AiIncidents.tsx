@@ -11,9 +11,14 @@ import {
   useDeleteAiIncidentMutation,
   AiIncident,
   AiIncidentFilters,
+  IncidentType,
+  IncidentSeverity,
+  IncidentStatus,
+  Domain,
 } from "@/app/lib/features/aiIncidentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { Badge } from "@/components/ui/badge";
 
 const AiIncidents: React.FC = () => {
   const router = useRouter();
@@ -112,29 +117,40 @@ const AiIncidents: React.FC = () => {
       ),
     },
     {
-      accessorKey: "category",
+      accessorKey: "incident_type",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Category
+          Incident Type
         </div>
       ),
       cell: ({ getValue }) => {
-        const categoryCode = (getValue() as string) || "";
-        const labelMap: Record<string, string> = {
-          safety: "Safety",
-          privacy: "Privacy",
-          security: "Security",
-          bias_fairness: "Bias/Fairness",
-          reliability: "Reliability",
-          availability: "Availability",
-          legal_compliance: "Legal Compliance",
-          vendor: "Vendor",
-          other: "Other",
-        };
+        const type = getValue() as IncidentType | string | null;
+        if (!type) return <span className="text-[#667085]">—</span>;
+        const typeStr = String(type);
+        const label = typeStr.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
         return (
-          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-            {labelMap[categoryCode] || categoryCode}
-          </div>
+          <Badge variant="light" color="info" className="capitalize">
+            {label}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "domain",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Domain
+        </div>
+      ),
+      cell: ({ getValue }) => {
+        const domain = getValue() as Domain | string | null;
+        if (!domain) return <span className="text-[#667085]">—</span>;
+        const domainStr = String(domain);
+        const label = domainStr.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+        return (
+          <Badge variant="light" color="default" className="capitalize">
+            {label}
+          </Badge>
         );
       },
     },
@@ -146,29 +162,19 @@ const AiIncidents: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const severityCode = (getValue() as string) || "";
-        const labelMap: Record<string, string> = {
-          sev1_critical: "Sev1 Critical",
-          sev2_high: "Sev2 High",
-          sev3_medium: "Sev3 Medium",
-          sev4_low: "Sev4 Low",
-          near_miss: "Near Miss",
+        const severity = getValue() as IncidentSeverity | string;
+        const severityStr = String(severity);
+        const severityMap: Record<string, { label: string; variant: "filled" | "outlined" | "light"; color: "default" | "success" | "warning" | "error" | "info" }> = {
+          [IncidentSeverity.SEV1_CRITICAL]: { label: "Sev1 Critical", variant: "filled", color: "error" },
+          [IncidentSeverity.SEV2_HIGH]: { label: "Sev2 High", variant: "filled", color: "warning" },
+          [IncidentSeverity.SEV3_MEDIUM]: { label: "Sev3 Medium", variant: "outlined", color: "warning" },
+          [IncidentSeverity.SEV4_LOW]: { label: "Sev4 Low", variant: "outlined", color: "info" },
         };
-        const colorMap: Record<string, string> = {
-          sev1_critical: "bg-[#FEE2E2] text-[#DC2626]",
-          sev2_high: "bg-[#FED7AA] text-[#EA580C]",
-          sev3_medium: "bg-[#FEF3C7] text-[#D97706]",
-          sev4_low: "bg-[#DBEAFE] text-[#1D4ED8]",
-          near_miss: "bg-[#F3F4F6] text-[#6B7280]",
-        };
-        const label = labelMap[severityCode] || severityCode;
+        const severityInfo = severityMap[severityStr] || { label: severityStr.replace(/_/g, " "), variant: "outlined" as const, color: "default" as const };
         return (
-          <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${colorMap[severityCode] || "bg-[#F2F4F7] text-[#667085]"
-              }`}
-          >
-            {label}
-          </div>
+          <Badge variant={severityInfo.variant} color={severityInfo.color}>
+            {severityInfo.label}
+          </Badge>
         );
       },
     },
@@ -180,36 +186,30 @@ const AiIncidents: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const code = (getValue() as string) || "";
-        const labelMap: Record<string, string> = {
-          open: "Open",
-          contained: "Contained",
-          monitoring: "Monitoring",
-          resolved: "Resolved",
-          closed: "Closed",
+        const status = getValue() as IncidentStatus | string;
+        const statusStr = String(status);
+        const statusMap: Record<string, { label: string; variant: "filled" | "outlined" | "light"; color: "default" | "success" | "warning" | "error" | "info" }> = {
+          [IncidentStatus.OPEN]: { label: "Open", variant: "filled", color: "error" },
+          [IncidentStatus.INVESTIGATING]: { label: "Investigating", variant: "outlined", color: "warning" },
+          [IncidentStatus.CONTAINED]: { label: "Contained", variant: "outlined", color: "warning" },
+          [IncidentStatus.MITIGATED]: { label: "Mitigated", variant: "outlined", color: "info" },
+          [IncidentStatus.RESOLVED]: { label: "Resolved", variant: "filled", color: "success" },
+          [IncidentStatus.CLOSED]: { label: "Closed", variant: "outlined", color: "default" },
+          [IncidentStatus.REOPENED]: { label: "Reopened", variant: "outlined", color: "error" },
         };
-        const statusColors: Record<string, string> = {
-          open: "bg-[#FEE2E2] text-[#DC2626]",
-          contained: "bg-[#FEF3C7] text-[#D97706]",
-          monitoring: "bg-[#DBEAFE] text-[#1D4ED8]",
-          resolved: "bg-[#ECFDF3] text-[#047857]",
-          closed: "bg-[#F3F4F6] text-[#6B7280]",
-        };
+        const statusInfo = statusMap[statusStr] || { label: statusStr.replace(/_/g, " "), variant: "outlined" as const, color: "default" as const };
         return (
-          <div
-            className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${statusColors[code] || "bg-[#F2F4F7] text-[#667085]"
-              }`}
-          >
-            {labelMap[code] || code}
-          </div>
+          <Badge variant={statusInfo.variant} color={statusInfo.color}>
+            {statusInfo.label}
+          </Badge>
         );
       },
     },
     {
-      accessorKey: "ic_owner",
+      accessorKey: "incident_commander",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          IC Owner
+          Incident Commander
         </div>
       ),
       cell: ({ getValue }) => (
@@ -219,10 +219,10 @@ const AiIncidents: React.FC = () => {
       ),
     },
     {
-      accessorKey: "declared_at",
+      accessorKey: "created_at",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Declared At
+          Created At
         </div>
       ),
       cell: ({ getValue }) => (

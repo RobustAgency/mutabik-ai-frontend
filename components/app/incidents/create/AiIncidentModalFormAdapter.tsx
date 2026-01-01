@@ -1,19 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import AiIncidentForm from "./AiIncidentForm";
+import { aiIncidentSchema, type AiIncidentFormData } from "@/lib/schemas/aiIncident.schema";
 import {
   useCreateAiIncidentMutation,
   CreateAiIncidentData,
+  IncidentType,
+  Domain,
+  IncidentSeverity,
+  IncidentStatus,
+  ResponseTeam,
+  PrimaryRegulatoryFramework,
+  NotificationRequirement,
 } from "@/app/lib/features/aiIncidentsApi";
-import {
-  validateTextField,
-  validateArrayField,
-  createValidationErrors,
-} from "@/lib/utils/validation";
+import { BasicInformationStep } from "./steps/BasicInformationStep";
+import { ResponseGovernanceStep } from "./steps/ResponseGovernanceStep";
+import { ImpactAssessmentStep } from "./steps/ImpactAssessmentStep";
+import { LinksEvidenceStep } from "./steps/LinksEvidenceStep";
 
 // AI Incident Modal Form Adapter for SelectWithInlineCreate
 const AiIncidentModalFormAdapter: React.FC<{
@@ -21,130 +29,109 @@ const AiIncidentModalFormAdapter: React.FC<{
   onCancel: () => void;
 }> = ({ onSuccess, onCancel }) => {
   const [createIncident, { isLoading }] = useCreateAiIncidentMutation();
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-  const [formData, setFormData] = useState<CreateAiIncidentData>({
+  const initialFormData: Partial<AiIncidentFormData> = {
     title: "",
     summary: "",
-    category: "safety",
-    severity: "sev3_medium",
-    status: "open",
-    stage: "prod",
-    ic_owner: "",
-    model_id: null,
-    model_version_id: null,
-    use_case_id: null,
-    first_seen_at: "",
-    declared_at: "",
-    resolved_at: null,
-    closed_at: null,
-    impacted_users: null,
-    impacted_data: [],
+    incident_type: IncidentType.OTHER,
+    domain: Domain.AI_GOVERNANCE,
+    severity: IncidentSeverity.SEV3_MEDIUM,
+    status: IncidentStatus.OPEN,
+    incident_commander: "",
+    response_team: ResponseTeam.AI_GOVERNANCE,
+    primary_regulatory_framework: PrimaryRegulatoryFramework.NA,
+    notification_requirement: NotificationRequirement.UNDER_ASSESSMENT,
+    data_residency_affected: null,
+    regulatory_reference: null,
+    estimated_impacted_users: null,
+    estimated_impacted_records: 0,
+    data_types_impacted: [],
+    affected_business_units: null,
+    external_parties_involved: null,
+    business_impact_description: null,
     impacted_systems: null,
-    linked_release_id: null,
+    ai_model_id: null,
+    linked_dataset_id: null,
     linked_risk_id: null,
-    linked_assessment_id: null,
-    linked_capa_id: null,
     evidence_link: null,
+  };
+
+  const methods = useForm<AiIncidentFormData>({
+    resolver: zodResolver(aiIncidentSchema) as any,
+    defaultValues: initialFormData,
+    mode: "onChange",
   });
 
-  const validateForm = (): boolean => {
-    const fieldErrors: Record<string, string[]> = {
-      title: validateTextField(formData.title, {
-        required: true,
-        messages: { required: "Title is required" },
-      }),
-      summary: validateTextField(formData.summary, {
-        required: true,
-        messages: { required: "Summary is required" },
-      }),
-      category: validateTextField(formData.category, {
-        required: true,
-        messages: { required: "Category is required" },
-      }),
-      severity: validateTextField(formData.severity, {
-        required: true,
-        messages: { required: "Severity is required" },
-      }),
-      status: validateTextField(formData.status, {
-        required: true,
-        messages: { required: "Status is required" },
-      }),
-      stage: validateTextField(formData.stage, {
-        required: true,
-        messages: { required: "Stage is required" },
-      }),
-      ic_owner: validateTextField(formData.ic_owner, {
-        required: true,
-        messages: { required: "Incident commander is required" },
-      }),
-      first_seen_at: validateTextField(formData.first_seen_at, {
-        required: true,
-        messages: { required: "First seen at is required" },
-      }),
-      declared_at: validateTextField(formData.declared_at, {
-        required: true,
-        messages: { required: "Declared at is required" },
-      }),
-      impacted_data: validateArrayField(formData.impacted_data, {
-        required: true,
-        messages: { required: "At least one impacted data type is required" },
-      }),
-    };
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-    const validationErrors = createValidationErrors(fieldErrors);
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const handleFormSubmit = async (data: AiIncidentFormData) => {
     try {
-      const result = await createIncident(formData).unwrap();
+      const payload: CreateAiIncidentData = {
+        title: data.title,
+        summary: data.summary,
+        incident_type: data.incident_type,
+        domain: data.domain,
+        severity: data.severity,
+        status: data.status,
+        incident_commander: data.incident_commander,
+        response_team: data.response_team,
+        primary_regulatory_framework: data.primary_regulatory_framework,
+        notification_requirement: data.notification_requirement,
+        data_residency_affected: data.data_residency_affected || null,
+        regulatory_reference: data.regulatory_reference || null,
+        estimated_impacted_users: data.estimated_impacted_users || null,
+        estimated_impacted_records: data.estimated_impacted_records,
+        data_types_impacted: data.data_types_impacted,
+        affected_business_units: data.affected_business_units || null,
+        external_parties_involved: data.external_parties_involved || null,
+        business_impact_description: data.business_impact_description || null,
+        impacted_systems: data.impacted_systems || null,
+        ai_model_id: data.ai_model_id || null,
+        linked_dataset_id: data.linked_dataset_id || null,
+        linked_risk_id: data.linked_risk_id || null,
+        evidence_link: data.evidence_link || null,
+      };
+
+      const result = await createIncident(payload).unwrap();
       onSuccess(result);
-    } catch (error: any) {
-      if (error?.data?.errors) setErrors(error.data.errors);
+    } catch (error) {
+      console.error("Failed to create AI incident:", error);
     }
   };
+
+  const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {Object.keys(errors).length > 0 && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            <p className="font-semibold mb-2">Please fix the following errors:</p>
-            <ul className="list-disc list-inside space-y-1">
-              {Object.entries(errors).map(([field, fieldErrors]) => (
-                <li key={field}>
-                  <span className="font-medium capitalize">
-                    {field.replace(/_/g, " ")}:
-                  </span>{" "}
-                  {fieldErrors[0]}
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
-      <AiIncidentForm formData={formData} setFormData={setFormData} errors={errors} />
-      <div className="flex gap-3 mt-6">
-        <Button type="submit" disabled={isLoading} className="bg-[#4FD58F] text-white">
-          {isLoading ? "Creating..." : "Create Incident"}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        {hasErrors && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please fix the errors in the form before submitting.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <BasicInformationStep />
+        <ResponseGovernanceStep />
+        <ImpactAssessmentStep />
+        <LinksEvidenceStep />
+
+        <div className="flex gap-3 pt-4 border-t">
+          <Button type="submit" disabled={isLoading} className="bg-[#4FD58F] text-white">
+            {isLoading ? "Creating..." : "Create Incident"}
+          </Button>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
   );
 };
 
 export default AiIncidentModalFormAdapter;
-
