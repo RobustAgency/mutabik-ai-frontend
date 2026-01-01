@@ -42,8 +42,9 @@ export const KriIndicatorForm: React.FC<KriIndicatorFormProps> = ({
   const { data: aiRiskRegistersData, isLoading: isAiRiskRegistersLoading } =
     useGetAiRiskRegistersQuery({ per_page: 100 });
   const aiRiskRegisters = aiRiskRegistersData?.data ?? [];
-  const { data: dataSources = [], isLoading: isDataSourcesLoading } =
-    useGetDataSourcesQuery();
+  const { data: dataSourcesData, isLoading: isDataSourcesLoading } =
+    useGetDataSourcesQuery({});
+  const dataSources = dataSourcesData?.data || [];
 
   useEffect(() => {
     if (initialData) {

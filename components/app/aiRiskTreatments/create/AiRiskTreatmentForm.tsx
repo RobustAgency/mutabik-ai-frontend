@@ -44,8 +44,9 @@ export const AiRiskTreatmentForm: React.FC<AiRiskTreatmentFormProps> = ({
     useGetAiRiskRegistersQuery({ per_page: 100 });
   const aiRiskRegisters = aiRiskRegistersData?.data ?? [];
 
-  const { data: stakeholders = [], isLoading: isStakeholdersLoading } =
+  const { data: stakeholdersResponse, isLoading: isStakeholdersLoading } =
     useGetStakeholdersQuery({ per_page: 100 });
+  const stakeholders = stakeholdersResponse?.data || [];
 
   const { data: capasData, isLoading: isCapasLoading } =
     useGetCorrectivePreventiveActionsQuery();

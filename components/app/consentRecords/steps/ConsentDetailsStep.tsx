@@ -55,6 +55,7 @@ export const ConsentDetailsStep: React.FC = () => {
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${watch("status") || "none"}`}
             value={watch("status")}
             onValueChange={(value) => setValue("status", value as any)}
           >
@@ -138,6 +139,7 @@ export const ConsentDetailsStep: React.FC = () => {
             Consent Method <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`consent_method-${watch("consent_method") || "none"}`}
             value={watch("consent_method")}
             onValueChange={(value) => setValue("consent_method", value as any)}
           >

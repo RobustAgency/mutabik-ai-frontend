@@ -73,7 +73,8 @@ export const CommitteeMembershipForm: React.FC<CommitteeMembershipFormProps> = (
   // Fetch data for dropdowns
   const { data: committeesData } = useGetAiCommitteesQuery({ per_page: 100 });
   const committees = committeesData?.data ?? [];
-  const { data: stakeholders = [], isLoading: isLoadingStakeholders } = useGetStakeholdersQuery();
+  const { data: stakeholdersResponse, isLoading: isLoadingStakeholders } = useGetStakeholdersQuery({ per_page: 100 });
+  const stakeholders = stakeholdersResponse?.data || [];
 
   const methods = useForm<CommitteeMembershipFormData>({
     resolver: zodResolver(committeeMembershipSchema) as any,

@@ -42,6 +42,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             AI Model <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`ai_model_id-${watch("ai_model_id") || "none"}`}
             value={watch("ai_model_id")?.toString() ?? ""}
             onValueChange={(value) =>
               setValue("ai_model_id", Number(value), {
@@ -123,7 +124,8 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
         >
           Choose governance pillar <span className="text-red-500">*</span>
         </Label>
-        <Select
+        <Select 
+          key={`governance_pillar-${watch("governance_pillar") || "none"}`}
           value={watch("governance_pillar")}
           onValueChange={(value) =>
             setValue("governance_pillar", value as GovernancePillar, {

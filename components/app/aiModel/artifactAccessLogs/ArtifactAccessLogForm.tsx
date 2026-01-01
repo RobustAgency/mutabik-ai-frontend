@@ -49,9 +49,10 @@ export default function ArtifactAccessLogForm({
     loading,
 }: ArtifactAccessLogFormProps) {
     const { data: artifactsData, isLoading: isLoadingArtifacts } = useGetAiModelArtifactsQuery({ per_page: 100 });
-    const { data: stakeholders = [], isLoading: isLoadingStakeholders } = useGetStakeholdersQuery();
+    const { data: stakeholdersResponse, isLoading: isLoadingStakeholders } = useGetStakeholdersQuery({ per_page: 100 });
 
     const artifacts = artifactsData?.data || [];
+    const stakeholders = stakeholdersResponse?.data || [];
 
     const [formData, setFormData] = useState<{
         artifact_id: string;

@@ -7,10 +7,16 @@ import { AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCreateAgreementMutation, CreateAgreementData } from "@/app/lib/features/agreementsApi";
+import {
+  useCreateAgreementMutation,
+  CreateAgreementData,
+  AgreementType,
+  AgreementStatus,
+} from "@/app/lib/features/agreementsApi";
 import { useGetVendorsQuery } from "@/app/lib/features/vendorsApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import VendorModalForm from "@/components/app/vendors/create/VendorModalForm";
+import StakeholderSelectorWithInline from "@/components/app/useCases/create/StakeholderSelectorWithInline";
 
 interface AgreementModalFormProps {
   onSuccess?: (agreement: any) => void;
@@ -22,8 +28,8 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
   const { data: vendorsData, isLoading: isVendorsLoading } = useGetVendorsQuery({ per_page: 100 });
 
   const [form, setForm] = useState<Partial<CreateAgreementData>>({
-    agreement_type: "msa",
-    status: "draft",
+    agreement_type: AgreementType.MSA,
+    status: AgreementStatus.DRAFT,
   });
   const [effectiveFrom, setEffectiveFrom] = useState<string>("");
   const [effectiveTo, setEffectiveTo] = useState<string>("");
@@ -53,10 +59,12 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
     try {
       const payload: CreateAgreementData = {
         vendor_id: Number(form.vendor_id),
-        agreement_type: form.agreement_type as any,
-        status: form.status as any,
-        effective_from: new Date(effectiveFrom).toISOString(),
-        effective_to: new Date(effectiveTo).toISOString(),
+        agreement_type: form.agreement_type as AgreementType,
+        status: form.status as AgreementStatus,
+        agreement_owner_id: Number(form.agreement_owner_id) || 0, // Required but will be validated by backend
+        asset_types_covered: form.asset_types_covered || ["ai_model"], // Required but defaulting to a valid value
+        effective_from: effectiveFrom,
+        effective_to: effectiveTo,
         doc_ref: form.doc_ref!.trim(),
       };
       const created = await createAgreement(payload).unwrap();
@@ -142,8 +150,21 @@ const AgreementModalForm: React.FC<AgreementModalFormProps> = ({ onSuccess, onCa
       </div>
 
       <div className="space-y-2">
+        <Label>Agreement Owner <span className="text-red-500">*</span></Label>
+        <StakeholderSelectorWithInline
+          label=""
+          value={form.agreement_owner_id ? String(form.agreement_owner_id) : null}
+          onValueChange={(value) => setForm((p) => ({ ...p, agreement_owner_id: value ? Number(value) : undefined }))}
+          placeholder="Select agreement owner"
+          required={true}
+          error={errors.agreement_owner_id ? errors.agreement_owner_id[0] : undefined}
+          filterType="person"
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label>Document URL <span className="text-red-500">*</span></Label>
-        <Input value={form.doc_ref || ""} onChange={(e) => setForm((p) => ({ ...p, doc_ref: e.target.value }))} placeholder="https://example.com/agreement.pdf" />
+        <Input value={form.doc_ref || ""} onChange={(e) => setForm((p) => ({ ...p, doc_ref: e.target.value }))} placeholder="https://example.com/agreement.pdf" className={errors.doc_ref ? "border-destructive" : ""} />
       </div>
 
       <div className="flex justify-end gap-3 pt-4 border-t">

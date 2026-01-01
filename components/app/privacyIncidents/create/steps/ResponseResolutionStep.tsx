@@ -114,6 +114,7 @@ export const ResponseResolutionStep: React.FC = () => {
           Status <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`status-${watch("status") || "none"}`}
           value={watch("status")}
           onValueChange={(value) => setValue("status", value as any)}
         >

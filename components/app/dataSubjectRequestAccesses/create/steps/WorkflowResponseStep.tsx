@@ -198,6 +198,7 @@ export const WorkflowResponseStep: React.FC = () => {
             Overdue <span className="text-red-500">*</span>
           </Label>
           <select
+            key={`is_overdue-${watch("is_overdue") || "none"}`}
             id="is_overdue"
             value={isOverdue ? "yes" : "no"}
             onChange={(e) =>
@@ -228,6 +229,7 @@ export const WorkflowResponseStep: React.FC = () => {
               Response Method <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`response_method-${watch("response_method") || "none"}`}
               value={watch("response_method") || ""}
               onValueChange={(value) =>
                 setValue("response_method", (value || null) as any)
@@ -251,6 +253,7 @@ export const WorkflowResponseStep: React.FC = () => {
               Response Format <span className="text-red-500">*</span>
             </Label>
             <Select
+              key={`response_format-${watch("response_format") || "none"}`}
               value={watch("response_format") || ""}
               onValueChange={(value) =>
                 setValue("response_format", (value || null) as any)

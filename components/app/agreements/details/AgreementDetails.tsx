@@ -99,37 +99,7 @@ const AgreementDetails: React.FC = () => {
             </a>
           </div>
 
-          {agreement.sla_terms && (
-            <div>
-              <div className="text-sm font-medium mb-2">SLA Terms</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[#667085]">
-                <div>
-                  <div className="text-xs">Availability Target %</div>
-                  <div>{agreement.sla_terms.availability_target_pct ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Latency p95 (ms)</div>
-                  <div>{agreement.sla_terms.latency_p95_ms ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Support Tier</div>
-                  <div>{agreement.sla_terms.support_tier ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Breach Definition</div>
-                  <div>{agreement.sla_terms.breach_definition ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Credit Schedule Ref</div>
-                  <div>{agreement.sla_terms.credit_schedule_ref ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Monitoring Ref</div>
-                  <div>{agreement.sla_terms.monitoring_ref ?? "—"}</div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* SLA Terms removed - not in new backend structure */}
         </CardContent>
       </Card>
 

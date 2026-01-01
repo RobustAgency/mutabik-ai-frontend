@@ -1,9 +1,9 @@
 "use client";
 
-import CreateAgreement from "@/components/app/agreements/create/CreateAgreement";
+import CreateAgreementWizard from "@/components/app/agreements/create/CreateAgreementWizard";
 
 export default function Page() {
-    return <CreateAgreement />;
+    return <CreateAgreementWizard />;
 }
 
 

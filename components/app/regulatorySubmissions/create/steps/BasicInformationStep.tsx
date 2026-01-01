@@ -64,6 +64,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Framework
           </Label>
           <Select
+            key={`framework_id-${watchedFrameworkId || "none"}`}
             value={watchedFrameworkId ? String(watchedFrameworkId) : "null"}
             onValueChange={(value) =>
               setValue("framework_id", value === "null" ? null : Number(value), { shouldValidate: true })
@@ -89,6 +90,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             AI Model
           </Label>
           <Select
+            key={`ai_model_id-${watchedAiModelId || "none"}`}
             value={watchedAiModelId ? String(watchedAiModelId) : "null"}
             onValueChange={(value) =>
               setValue("ai_model_id", value === "null" ? null : Number(value), { shouldValidate: true })
@@ -151,6 +153,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Submission Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`submission_type-${watch("submission_type") || "none"}`}
             value={watch("submission_type")}
             onValueChange={(value) =>
               setValue("submission_type", value as RegulatorySubmissionTypeEnum, { shouldValidate: true })
@@ -178,6 +181,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${watch("status") || "none"}`}
             value={watch("status")}
             onValueChange={(value) =>
               setValue("status", value as RegulatorySubmissionStatusEnum, { shouldValidate: true })

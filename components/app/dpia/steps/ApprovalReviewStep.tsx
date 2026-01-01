@@ -93,6 +93,7 @@ export const ApprovalReviewStep: React.FC = () => {
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${watch("status") || "none"}`}
             value={watch("status")}
             onValueChange={(value) => setValue("status", value as any)}
           >
@@ -180,6 +181,7 @@ export const ApprovalReviewStep: React.FC = () => {
             {isApprovalStage && <span className="text-red-500">*</span>}
           </Label>
           <Select
+            key={`final_decision-${watch("final_decision") || "none"}`}
             value={watch("final_decision") || ""}
             onValueChange={(value) =>
               setValue("final_decision", (value || null) as any)

@@ -1,4 +1,4 @@
-import EditVendor from "@/components/app/vendors/edit/EditVendor";
+import EditVendorWizard from "@/components/app/vendors/edit/EditVendorWizard";
 import React from "react";
 
 interface VendorEditPageProps {
@@ -21,7 +21,7 @@ const VendorEditPage = async ({ params }: VendorEditPageProps) => {
 
   return (
     <div>
-      <EditVendor vendorId={vendorId} />
+      <EditVendorWizard vendorId={vendorId} />
     </div>
   );
 };

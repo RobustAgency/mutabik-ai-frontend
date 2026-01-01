@@ -77,4 +77,3 @@ export const ControlsList: React.FC<ControlsListProps> = ({
     </div>
   );
 };
-

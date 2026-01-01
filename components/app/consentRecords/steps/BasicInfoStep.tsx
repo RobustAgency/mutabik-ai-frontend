@@ -69,6 +69,7 @@ export const BasicInfoStep: React.FC = () => {
             Subject Realm <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`subject_realm-${watch("subject_realm") || "none"}`}
             value={watch("subject_realm")}
             onValueChange={(value) => setValue("subject_realm", value as any)}
           >
@@ -100,6 +101,7 @@ export const BasicInfoStep: React.FC = () => {
             Purpose <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`purpose-${watch("purpose") || "none"}`}
             value={watch("purpose")}
             onValueChange={(value) => setValue("purpose", value as any)}
           >
