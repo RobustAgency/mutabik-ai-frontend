@@ -1,6 +1,18 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { axiosBaseQuery, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  transformListResponseWithPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+  ListResponseWithPagination,
+  SingleItemResponse,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Types for AI Incidents
 export interface AiIncident {
@@ -95,54 +107,8 @@ export const aiIncidentsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "AiIncident" as const,
-                id: String(id),
-              })),
-              { type: "AiIncident", id: "LIST" },
-            ]
-          : [{ type: "AiIncident", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: AiIncident[];
-          current_page: number;
-          per_page: number;
-          total: number;
-          last_page: number;
-          from: number;
-          to: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from: response.data.from,
-              to: response.data.to,
-            },
-          };
-        }
-        return {
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 15,
-            total: 0,
-            last_page: 1,
-            from: 0,
-            to: 0,
-          },
-        };
-      },
+      transformResponse: transformListResponseWithPagination<AiIncident>,
+      providesTags: (result) => createListTags(result, "AiIncident"),
     }),
 
     getAiIncident: builder.query<AiIncident, number>({
@@ -150,17 +116,8 @@ export const aiIncidentsApi = createApi({
         url: `/ai-incidents/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "AiIncident", id: String(id) }],
-      transformResponse: (response: {
-        data: AiIncident;
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as AiIncident;
-      },
+      transformResponse: transformSingleItemResponse<AiIncident>,
+      providesTags: createItemTags("AiIncident"),
     }),
 
     createAiIncident: builder.mutation<AiIncident, CreateAiIncidentData>({
@@ -169,20 +126,11 @@ export const aiIncidentsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "AiIncident", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI Incident created successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create AI incident";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("AiIncident"),
+      onQueryStarted: createMutationToastHandler(
+        "AI Incident created successfully",
+        "Failed to create AI incident"
+      ),
     }),
 
     updateAiIncident: builder.mutation<
@@ -194,23 +142,11 @@ export const aiIncidentsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "AiIncident", id: String(id) },
-        { type: "AiIncident", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI Incident updated successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update AI incident";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiIncident"),
+      onQueryStarted: createMutationToastHandler(
+        "AI Incident updated successfully",
+        "Failed to update AI incident"
+      ),
     }),
 
     deleteAiIncident: builder.mutation<void, number>({
@@ -218,21 +154,11 @@ export const aiIncidentsApi = createApi({
         url: `/ai-incidents/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "AiIncident", id: String(id) },
-        { type: "AiIncident", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI Incident deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete AI incident";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiIncident"),
+      onQueryStarted: createDeleteToastHandler(
+        "AI Incident deleted successfully",
+        "Failed to delete AI incident"
+      ),
     }),
   }),
 });

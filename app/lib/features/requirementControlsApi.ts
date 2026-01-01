@@ -9,26 +9,17 @@ import {
   RequirementControlListResponse,
   RequirementControlSingleResponse,
 } from "@/interfaces/RequirementControl";
-
-const normaliseMeta = (payload?: RequirementControlListResponse["data"]): RequirementControlListMeta => {
-  if (!payload) {
-    return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
-  }
-  if (payload.meta) {
-    return {
-      current_page: payload.meta.current_page ?? 1,
-      per_page: payload.meta.per_page ?? 0,
-      total: payload.meta.total ?? 0,
-      last_page: payload.meta.last_page ?? payload.meta.current_page ?? 1,
-    };
-  }
-  return {
-    current_page: payload.current_page ?? 1,
-    per_page: payload.per_page ?? 0,
-    total: payload.total ?? 0,
-    last_page: payload.last_page ?? payload.current_page ?? 1,
-  };
-};
+import {
+  transformListResponseWithMeta,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  ListResponseWithMeta,
+  SingleItemResponse,
+  ListMeta,
+} from "@/lib/api/rtkQueryHelpers";
 
 export const requirementControlsApi = createApi({
   reducerPath: "requirementControlsApi",
@@ -44,28 +35,16 @@ export const requirementControlsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      transformResponse: (response: RequirementControlListResponse) => {
-        const list = response?.data?.data ?? [];
-        const meta = normaliseMeta(response?.data);
-        return { data: list, meta };
-      },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "RequirementControl" as const, id })),
-              { type: "RequirementControl" as const, id: "LIST" },
-            ]
-          : [{ type: "RequirementControl" as const, id: "LIST" }],
+      transformResponse: transformListResponseWithMeta<RequirementControl>,
+      providesTags: (result) => createListTags(result, "RequirementControl"),
     }),
     getRequirementControl: builder.query<RequirementControl, string | number>({
       query: (id) => ({
         url: `/admin/requirement-controls/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: RequirementControlSingleResponse) => {
-        return (response?.data as RequirementControl) ?? (response as unknown as RequirementControl);
-      },
-      providesTags: (result, _error, id) => [{ type: "RequirementControl", id }],
+      transformResponse: transformSingleItemResponse<RequirementControl>,
+      providesTags: createItemTags("RequirementControl"),
     }),
     createRequirementControl: builder.mutation<unknown, CreateRequirementControlRequest>({
       query: (data) => ({
@@ -73,7 +52,7 @@ export const requirementControlsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "RequirementControl", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("RequirementControl"),
     }),
     updateRequirementControl: builder.mutation<
       unknown,
@@ -84,20 +63,14 @@ export const requirementControlsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (result, _error, { id }) => [
-        { type: "RequirementControl", id },
-        { type: "RequirementControl", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("RequirementControl"),
     }),
     deleteRequirementControl: builder.mutation<unknown, string | number>({
       query: (id) => ({
         url: `/admin/requirement-controls/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, _error, id) => [
-        { type: "RequirementControl", id },
-        { type: "RequirementControl", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("RequirementControl"),
     }),
   }),
 });
