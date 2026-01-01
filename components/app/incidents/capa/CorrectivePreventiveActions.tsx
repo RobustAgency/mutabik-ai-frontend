@@ -11,6 +11,12 @@ import {
   useDeleteCorrectivePreventiveActionMutation,
   CorrectivePreventiveAction,
   CorrectivePreventiveActionFilters,
+  SourceType,
+  CapaType,
+  Priority,
+  OwnerTeam,
+  Status,
+  VerificationResult,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
@@ -41,15 +47,15 @@ const CorrectivePreventiveActions: React.FC = () => {
 
   const columns: ColumnDef<CorrectivePreventiveAction>[] = [
     {
-      accessorKey: "display_id",
+      accessorKey: "id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           CAPA ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {row.original.display_id || `#${row.original.id}`}
         </div>
       ),
     },
@@ -67,6 +73,30 @@ const CorrectivePreventiveActions: React.FC = () => {
       ),
     },
     {
+      accessorKey: "source_type",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Source
+        </div>
+      ),
+      cell: ({ getValue }) => {
+        const type = getValue() as SourceType;
+        const labels: Record<SourceType, string> = {
+          [SourceType.INCIDENT]: "Incident",
+          [SourceType.RCA]: "RCA",
+          [SourceType.AUDIT_FINDING]: "Audit Finding",
+          [SourceType.RISK_ASSESSMENT]: "Risk Assessment",
+          [SourceType.CUSTOMER_COMPLAINT]: "Customer Complaint",
+          [SourceType.REGULATORY_REQUIREMENT]: "Regulatory Requirement",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[type] || type}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "capa_type",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
@@ -74,8 +104,17 @@ const CorrectivePreventiveActions: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const type = getValue() as string;
-        return type.replace(/\b\w/g, (l) => l.toUpperCase());
+        const type = getValue() as CapaType;
+        const labels: Record<CapaType, string> = {
+          [CapaType.CORRECTIVE]: "Corrective",
+          [CapaType.PREVENTIVE]: "Preventive",
+          [CapaType.BOTH]: "Both",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[type] || type}
+          </div>
+        );
       },
     },
     {
@@ -86,16 +125,22 @@ const CorrectivePreventiveActions: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const priority = getValue() as string;
-        const colors: Record<string, string> = {
-          critical: "bg-red-100 text-red-800",
-          high: "bg-orange-100 text-orange-800",
-          medium: "bg-yellow-100 text-yellow-800",
-          low: "bg-blue-100 text-blue-800",
+        const priority = getValue() as Priority;
+        const labels: Record<Priority, string> = {
+          [Priority.LOW]: "Low",
+          [Priority.MEDIUM]: "Medium",
+          [Priority.HIGH]: "High",
+          [Priority.CRITICAL]: "Critical",
+        };
+        const colors: Record<Priority, string> = {
+          [Priority.CRITICAL]: "bg-red-100 text-red-800",
+          [Priority.HIGH]: "bg-orange-100 text-orange-800",
+          [Priority.MEDIUM]: "bg-yellow-100 text-yellow-800",
+          [Priority.LOW]: "bg-blue-100 text-blue-800",
         };
         return (
           <div className={`inline-flex px-2 py-1 rounded-full text-xs ${colors[priority] || ""}`}>
-            {priority.replace(/\b\w/g, (l) => l.toUpperCase())}
+            {labels[priority] || priority}
           </div>
         );
       },
@@ -108,8 +153,20 @@ const CorrectivePreventiveActions: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const status = getValue() as string;
-        return status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const status = getValue() as Status;
+        const labels: Record<Status, string> = {
+          [Status.NEW]: "New",
+          [Status.IN_PROGRESS]: "In Progress",
+          [Status.BLOCKED]: "Blocked",
+          [Status.PENDING_VERIFICATION]: "Pending Verification",
+          [Status.CLOSED]: "Closed",
+          [Status.OVERDUE]: "Overdue",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[status] || status}
+          </div>
+        );
       },
     },
     {
@@ -120,8 +177,25 @@ const CorrectivePreventiveActions: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const team = getValue() as string;
-        return team.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const team = getValue() as OwnerTeam;
+        const labels: Record<OwnerTeam, string> = {
+          [OwnerTeam.AI_GOVERNANCE]: "AI Governance",
+          [OwnerTeam.DATA_PRIVACY_OFFICE]: "Data Privacy Office",
+          [OwnerTeam.DATA_GOVERNANCE]: "Data Governance",
+          [OwnerTeam.ML_ENGINEERING]: "ML Engineering",
+          [OwnerTeam.DATA_ENGINEERING]: "Data Engineering",
+          [OwnerTeam.INFORMATION_SECURITY]: "Information Security",
+          [OwnerTeam.LEGAL]: "Legal",
+          [OwnerTeam.COMPLIANCE]: "Compliance",
+          [OwnerTeam.EXECUTIVE_LEADERSHIP]: "Executive Leadership",
+          [OwnerTeam.PRODUCT]: "Product",
+          [OwnerTeam.CUSTOMER_SUCCESS]: "Customer Success",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[team] || team}
+          </div>
+        );
       },
     },
     {
@@ -203,7 +277,9 @@ const CorrectivePreventiveActions: React.FC = () => {
               data={capas}
               variant="projects"
               loading={isLoading}
-              onRowClick={(row) => router.push(`/governance/incidents/capa/${row.id}/details`)}
+              onRowClick={(row) => {
+                router.push(`/governance/incidents/capa/${row.id}/details`);
+              }}
               pagination={
                 pagination
                   ? {

@@ -1,12 +1,12 @@
-import CreateIncidentAction from '@/components/app/incidents/actions/create/CreateIncidentAction'
+import CreateIncidentActionWizard from '@/components/app/incidents/actions/create/CreateIncidentActionWizard'
 import React from 'react'
 
 const page = () => {
-    return (
-        <div>
-            <CreateIncidentAction />
-        </div>
-    )
+  return (
+    <>
+      <CreateIncidentActionWizard />
+    </>
+  )
 }
 
 export default page

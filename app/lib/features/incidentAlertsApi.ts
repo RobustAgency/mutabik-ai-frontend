@@ -2,24 +2,51 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
+// Enums for Incident Alerts
+export enum AlertSourceType {
+  MONITORING_RULE = "monitoring_rule",
+  KRI_THRESHOLD = "kri_threshold",
+  MANUAL_REPORT = "manual_report",
+  AUTOMATED_SCAN = "automated_scan",
+  USER_COMPLAINT = "user_complaint",
+  EXTERNAL_REPORT = "external_report",
+}
+
+export enum AlertSeverity {
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  CRITICAL = "critical",
+}
+
 // Types for Incident Alerts
 export interface IncidentAlert {
   id: number;
   organization_id: number;
   ai_incident_id: number;
-  source_type: "kri" | "monitoring_rule" | "human_report" | "vendor_notice" | "security_tool" | "other";
+  source_type: AlertSourceType;
+  data_source_id?: number | null;
+  alert_sensitivity: AlertSeverity;
   source_ref?: string | null;
-  rule_version?: string | null;
-  context?: string | null;
+  context: string;
   first_seen_at: string;
   last_seen_at?: string | null;
   evidence_link?: string | null;
+  auto_promote_incident?: boolean | null;
   created_at: string;
+  updated_at?: string;
+  display_id?: string | null;
+  ai_incident?: {
+    id: number;
+    title: string;
+    display_id?: string;
+    [key: string]: unknown;
+  } | null;
 }
 
 export interface IncidentAlertFilters {
   ai_incident_id?: number;
-  source_type?: IncidentAlert["source_type"];
+  source_type?: AlertSourceType;
   from?: string | null; // date, before_or_equal:today
   to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
@@ -28,13 +55,15 @@ export interface IncidentAlertFilters {
 
 export interface CreateIncidentAlertData {
   ai_incident_id: number;
-  source_type: IncidentAlert["source_type"];
+  source_type: AlertSourceType;
+  data_source_id?: number | null;
+  alert_sensitivity: AlertSeverity;
   source_ref?: string | null;
-  rule_version?: string | null;
-  context?: string | null;
+  context: string;
   first_seen_at: string;
   last_seen_at?: string | null;
   evidence_link?: string | null;
+  auto_promote_incident?: boolean;
 }
 
 export const incidentAlertsApi = createApi({

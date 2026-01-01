@@ -2,37 +2,81 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
+// Enums for Incident Actions
+export enum ActionType {
+  KILL_SWITCH = "kill_switch",
+  MODEL_ROLLBACK = "model_rollback",
+  DATA_ISOLATION = "data_isolation",
+  ACCESS_REVOCATION = "access_revocation",
+  SYSTEM_PATCH = "system_patch",
+  CONFIGURATION_CHANGE = "configuration_change",
+  COMMUNICATION_NOTIFICATION = "communication_notification",
+  INVESTIGATION = "investigation",
+  CONTAINMENT = "containment",
+  ERADICATION = "eradication",
+  RECOVERY = "recovery",
+  DOCUMENTATION = "documentation",
+  OTHER = "other",
+}
+
+export enum ExecutionStatus {
+  PLANNED = "planned",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  ROLLED_BACK = "rolled_back",
+}
+
+export enum ApprovalRequired {
+  NO_APPROVAL_NEEDED = "no_approval_needed",
+  MANAGER_APPROVAL = "manager_approval",
+  EXECUTIVE_APPROVAL = "executive_approval",
+  LEGAL_APPROVAL = "legal_approval",
+}
+
+export enum ValidationResult {
+  PENDING = "pending",
+  PARTIALLY_EFFECTIVE = "partially_effective",
+  EFFECTIVE = "effective",
+  INEFFECTIVE = "ineffective",
+}
+
 // Types for Incident Actions
 export interface IncidentAction {
   id: number;
   organization_id: number;
   ai_incident_id: number;
-  action_type:
-    | "kill_switch"
-    | "rollback_release"
-    | "key_rotation"
-    | "blocklist_update"
-    | "traffic_throttle"
-    | "model_disable_tool"
-    | "policy_change"
-    | "communication"
-    | "data_purge"
-    | "other";
+  action_type: ActionType;
+  execution_status: ExecutionStatus;
   description: string;
-  performed_by: string;
+  performed_by: number;
+  individual_name?: string | null;
+  depends_on?: string | null;
+  approval_required?: ApprovalRequired | null;
+  estimated_duration?: string | null;
+  actual_duration?: string | null;
   started_at: string;
   completed_at?: string | null;
-  validation_result: "passed" | "failed" | "pending" | "not_applicable";
+  validation_result: ValidationResult;
   validation_notes?: string | null;
   linked_release_id?: string | null;
   evidence_link?: string | null;
   created_at: string;
+  updated_at?: string;
+  display_id?: string | null;
+  ai_incident?: {
+    id: number;
+    title: string;
+    display_id?: string;
+    [key: string]: unknown;
+  } | null;
 }
 
 export interface IncidentActionFilters {
   ai_incident_id?: number;
-  action_type?: IncidentAction["action_type"];
-  validation_result?: IncidentAction["validation_result"];
+  action_type?: ActionType;
+  execution_status?: ExecutionStatus;
+  validation_result?: ValidationResult;
   from?: string | null; // date, before_or_equal:today
   to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
@@ -41,12 +85,18 @@ export interface IncidentActionFilters {
 
 export interface CreateIncidentActionData {
   ai_incident_id: number;
-  action_type: IncidentAction["action_type"];
+  action_type: ActionType;
+  execution_status: ExecutionStatus;
   description: string;
-  performed_by: string;
+  performed_by: number;
+  individual_name?: string | null;
+  depends_on?: string | null;
+  approval_required?: ApprovalRequired | null;
+  estimated_duration?: string | null;
+  actual_duration?: string | null;
   started_at: string;
   completed_at?: string | null;
-  validation_result: IncidentAction["validation_result"];
+  validation_result: ValidationResult;
   validation_notes?: string | null;
   linked_release_id?: string | null;
   evidence_link?: string | null;

@@ -33,12 +33,14 @@ const EditIncidentAlert: React.FC<EditIncidentAlertProps> = ({ alertId }) => {
       setFormData({
         ai_incident_id: data.ai_incident_id,
         source_type: data.source_type,
+        data_source_id: data.data_source_id ?? null,
+        alert_sensitivity: data.alert_sensitivity,
         source_ref: data.source_ref ?? null,
-        rule_version: data.rule_version ?? null,
-        context: data.context ?? null,
+        context: data.context ?? "",
         first_seen_at: data.first_seen_at,
         last_seen_at: data.last_seen_at ?? null,
         evidence_link: data.evidence_link ?? null,
+        auto_promote_incident: data.auto_promote_incident ?? false,
       });
     }
   }, [data]);

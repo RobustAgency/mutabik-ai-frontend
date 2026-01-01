@@ -10,6 +10,8 @@ import IncidentAlertForm from "./IncidentAlertForm";
 import {
   CreateIncidentAlertData,
   useCreateIncidentAlertMutation,
+  AlertSourceType,
+  AlertSeverity,
 } from "@/app/lib/features/incidentAlertsApi";
 import {
   validateTextField,
@@ -23,13 +25,15 @@ const CreateIncidentAlert: React.FC = () => {
 
   const [formData, setFormData] = useState<CreateIncidentAlertData>({
     ai_incident_id: 0,
-    source_type: "monitoring_rule",
+    source_type: AlertSourceType.MONITORING_RULE,
+    data_source_id: null,
+    alert_sensitivity: AlertSeverity.MEDIUM,
     source_ref: null,
-    rule_version: null,
-    context: null,
+    context: "",
     first_seen_at: "",
     last_seen_at: null,
     evidence_link: null,
+    auto_promote_incident: false,
   });
 
   const validateForm = (): boolean => {

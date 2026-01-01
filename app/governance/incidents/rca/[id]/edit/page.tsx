@@ -1,4 +1,4 @@
-import EditIncidentRCA from '@/components/app/incidents/rca/edit/EditIncidentRCA'
+import EditIncidentRCAWizard from '@/components/app/incidents/rca/edit/EditIncidentRCAWizard'
 import React, { use } from 'react'
 
 interface EditIncidentRCAPageProps {
@@ -7,7 +7,7 @@ interface EditIncidentRCAPageProps {
 
 const EditIncidentRCAPage = ({ params }: EditIncidentRCAPageProps) => {
   const { id } = use(params);
-  return <EditIncidentRCA rcaId={id} />;
+  return <EditIncidentRCAWizard rcaId={Number(id)} />;
 };
 
 export default EditIncidentRCAPage;
