@@ -106,7 +106,7 @@ export const BasicInformationStep: React.FC = () => {
     <div className="space-y-6 w-full">
       <div className="flex flex-col gap-2">
         <h2 className="font-sans font-bold text-md leading-6 tracking-normal text-[#039855]">
-          Basic Information <span className="text-red-500">*</span>
+          Basic Information
         </h2>
         <hr className="border-gray-200" />
       </div>
@@ -132,7 +132,7 @@ export const BasicInformationStep: React.FC = () => {
         {/* Description */}
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="description">
-            Description <span className="text-red-500">*</span>
+            Description
           </Label>
           <Textarea
             id="description"

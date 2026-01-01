@@ -24,29 +24,7 @@ import { BasicInformationStep } from "./steps/BasicInformationStep";
 import { ClassificationStep } from "./steps/ClassificationStep";
 import { OwnershipStep } from "./steps/OwnershipStep";
 import { ReviewDatesStep } from "./steps/ReviewDatesStep";
-
-const WIZARD_STEPS = [
-  {
-    id: 1,
-    title: "Essential Information",
-    description: "Source name, description, system type, owner team, and data domains",
-  },
-  {
-    id: 2,
-    title: "Location & Classification",
-    description: "Data residency, criticality level, and hosting model",
-  },
-  {
-    id: 3,
-    title: "Ownership",
-    description: "Technical owner and business owner",
-  },
-  {
-    id: 4,
-    title: "Review Schedule",
-    description: "Review dates and status",
-  },
-];
+import { DATA_SOURCE_WIZARD_STEPS } from "../constants";
 
 const initialFormData: DataSourceFormData = {
   name: "",
@@ -99,7 +77,7 @@ const CreateDataSourceWizard: React.FC = () => {
   const handleNext = async () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, DATA_SOURCE_WIZARD_STEPS.length));
     }
   };
 
@@ -187,7 +165,7 @@ const CreateDataSourceWizard: React.FC = () => {
           <FormProvider {...methods}>
             <MultiStepWizard
               currentStep={currentStep}
-              steps={WIZARD_STEPS}
+              steps={DATA_SOURCE_WIZARD_STEPS}
               onNext={handleNext}
               onPrevious={handlePrevious}
               onSubmit={handleFormSubmit}

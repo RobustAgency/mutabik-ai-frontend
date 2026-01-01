@@ -15,13 +15,14 @@ interface DatasetDetailsProps {
 const DatasetDetails: React.FC<DatasetDetailsProps> = ({ datasetId }) => {
     const router = useRouter();
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const datasetIdNum = Number(datasetId);
 
-    const { data: dataset, isLoading, error } = useGetDatasetQuery(datasetId);
+    const { data: dataset, isLoading, error } = useGetDatasetQuery(datasetIdNum);
     const [deleteDataset, { isLoading: isDeleting }] = useDeleteDatasetMutation();
 
     const handleDelete = async () => {
         try {
-            await deleteDataset(datasetId).unwrap();
+            await deleteDataset(datasetIdNum).unwrap();
             router.push("/core-assets/data/registry");
         } catch (error) {
             console.error("Failed to delete dataset:", error);

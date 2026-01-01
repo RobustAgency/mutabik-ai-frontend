@@ -14,10 +14,11 @@ import { DynamicFilter } from "@/components/custom/DynamicFilter";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<DataElementFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
-    dataElementId: string | null;
+    dataElementId: number | null;
     dataElementName: string;
   }>({
     isOpen: false,
@@ -26,7 +27,20 @@ const DataElements: React.FC = () => {
   });
 
   const [deleteDataElement, { isLoading: isDeleting }] = useDeleteDataElementMutation();
-  const { data: dataElements, isLoading } = useGetDataElementsQuery(filters);
+
+  const queryParams = React.useMemo(() => ({
+    ...filters,
+    page: currentPage,
+    per_page: 15,
+  }), [filters, currentPage]);
+
+  const { data: dataElementsData, isLoading } = useGetDataElementsQuery(queryParams);
+  const dataElements = dataElementsData?.data || [];
+  const pagination = dataElementsData?.pagination;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const [associateState, setAssociateState] = React.useState<{ isOpen: boolean; dataElementId: number | null }>({ isOpen: false, dataElementId: null });
 
@@ -45,7 +59,7 @@ const DataElements: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (deleteDialogState.dataElementId) {
+    if (deleteDialogState.dataElementId !== null) {
       try {
         await deleteDataElement(deleteDialogState.dataElementId).unwrap();
         setDeleteDialogState({
@@ -235,12 +249,20 @@ const DataElements: React.FC = () => {
               </Button>
             </div>
           </div>
-          <Card className="bg-white w-full rounded-xl border-0 py-4">
+          <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable
               columns={columns}
-              data={dataElements ?? []}
+              data={dataElements}
               variant="projects"
               loading={isLoading}
+              serverSide={true}
+              pagination={pagination ? {
+                page: pagination.current_page,
+                limit: pagination.per_page,
+                total: pagination.total,
+                totalPages: pagination.last_page,
+              } : undefined}
+              onPageChange={handlePageChange}
               onRowClick={(row) =>
                 router.push(`/core-assets/data/elements/${row.id}/details`)
               }

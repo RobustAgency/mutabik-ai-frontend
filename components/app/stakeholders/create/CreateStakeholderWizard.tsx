@@ -18,34 +18,7 @@ import { ContactInformationStep } from "./steps/ContactInformationStep";
 import { OrganizationDetailsStep } from "./steps/OrganizationDetailsStep";
 import { RoleTagsStep } from "./steps/RoleTagsStep";
 import { AdditionalInformationStep } from "./steps/AdditionalInformationStep";
-
-const WIZARD_STEPS = [
-  {
-    id: 1,
-    title: "Basic Information",
-    description: "Type, name, and organization unit",
-  },
-  {
-    id: 2,
-    title: "Contact Information",
-    description: "Email and phone",
-  },
-  {
-    id: 3,
-    title: "Organization Details",
-    description: "Classification, country, and timezone",
-  },
-  {
-    id: 4,
-    title: "Role Tags",
-    description: "Select stakeholder roles",
-  },
-  {
-    id: 5,
-    title: "Additional Information",
-    description: "Status, dates, and optional fields",
-  },
-];
+import { STAKEHOLDER_WIZARD_STEPS } from "../constants";
 
 const initialFormData: StakeholderFormData = {
   type: "person",
@@ -110,7 +83,7 @@ export const CreateStakeholderWizard: React.FC = () => {
   const handleNext = async () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, STAKEHOLDER_WIZARD_STEPS.length));
     }
   };
 
@@ -190,7 +163,7 @@ export const CreateStakeholderWizard: React.FC = () => {
           <FormProvider {...methods}>
             <MultiStepWizard
               currentStep={currentStep}
-              steps={WIZARD_STEPS}
+              steps={STAKEHOLDER_WIZARD_STEPS}
               onNext={handleNext}
               onPrevious={handlePrevious}
               onSubmit={handleFormSubmit}

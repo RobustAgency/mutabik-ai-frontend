@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import {
   useCreateDataElementMutation,
   CreateDataElementData,
+  PiiFlag,
+  CdeFlag,
 } from "@/app/lib/features/dataElementsApi";
 import {
   validateTextField,
@@ -20,18 +22,18 @@ const CreateDataElement: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<CreateDataElementData>({
     name: "",
-    business_definition: "",
-    data_type: "",
-    format: "",
-    sensitivity: "",
-    pii_flag: "No",
-    personal_data_category: "",
-    special_category_flag: "No",
-    cde_flag: "No",
-    cde_category: "",
-    owner_team: "",
-    quality_rules_ref: "",
-    catalog_column_id: "",
+    business_definition: null,
+    data_type: "" as any,
+    format: null,
+    sensitivity: "" as any,
+    pii_flag: PiiFlag.NO,
+    personal_data_category: null,
+    special_category_flag: "" as any,
+    cde_flag: CdeFlag.NO,
+    cde_category: null,
+    owner_team: null,
+    quality_rules_ref: null,
+    catalog_column_id: null,
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
@@ -42,10 +44,6 @@ const CreateDataElement: React.FC = () => {
       name: validateTextField(formData.name, {
         required: true,
         messages: { required: "Name is required" },
-      }),
-      business_definition: validateTextField(formData.business_definition, {
-        required: true,
-        messages: { required: "Business definition is required" },
       }),
       data_type: validateTextField(formData.data_type, {
         required: true,
@@ -67,25 +65,13 @@ const CreateDataElement: React.FC = () => {
         required: true,
         messages: { required: "CDE flag is required" },
       }),
-      owner_team: validateTextField(formData.owner_team, {
-        required: true,
-        messages: { required: "Owner team is required" },
-      }),
     };
 
-    if (formData.pii_flag === "Yes") {
-      const personalCategoryErrors = validateTextField(formData.personal_data_category, {
-        required: true,
-        messages: {
-          required: "Personal data category is required when PII flag is Yes",
-        },
-      });
-      if (personalCategoryErrors.length) {
-        fieldErrors.personal_data_category = personalCategoryErrors;
-      }
-    }
-
-    if (formData.cde_flag === "Yes") {
+    // Business definition and owner_team are optional (nullable in backend)
+    // Personal data category is optional even when PII flag is Yes (backend allows nullable)
+    
+    // CDE category is required only when CDE flag is Yes
+    if (formData.cde_flag === CdeFlag.YES) {
       const cdeCategoryErrors = validateTextField(formData.cde_category, {
         required: true,
         messages: {

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreateDataElementData } from "@/app/lib/features/dataElementsApi";
+import { CreateDataElementData, DataType, Sensitivity, PiiFlag, PersonalDataCategory, SpecialCategoryFlag, CdeFlag, CdeCategory } from "@/app/lib/features/dataElementsApi";
 
 interface DataElementFormProps {
   formData: CreateDataElementData;
@@ -38,22 +38,22 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="data_type">Data Type <span className="text-red-500">*</span></Label>
-            <Select key={`data_type-${formData.data_type || 'empty'}`} value={formData.data_type || ""} onValueChange={(value) => handleChange("data_type", value)}>
+            <Select key={`data_type-${formData.data_type || 'empty'}`} value={formData.data_type || ""} onValueChange={(value) => handleChange("data_type", value as DataType)}>
               <SelectTrigger className={`w-full ${errors.data_type ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select data type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="string">string</SelectItem>
-                <SelectItem value="integer">integer</SelectItem>
-                <SelectItem value="decimal">decimal</SelectItem>
-                <SelectItem value="boolean">boolean</SelectItem>
-                <SelectItem value="date">date</SelectItem>
-                <SelectItem value="datetime">datetime</SelectItem>
-                <SelectItem value="timestamp">timestamp</SelectItem>
-                <SelectItem value="json">json</SelectItem>
-                <SelectItem value="binary">binary</SelectItem>
-                <SelectItem value="array">array</SelectItem>
-                <SelectItem value="other">other</SelectItem>
+                <SelectItem value={DataType.STRING}>string</SelectItem>
+                <SelectItem value={DataType.INTEGER}>integer</SelectItem>
+                <SelectItem value={DataType.DECIMAL}>decimal</SelectItem>
+                <SelectItem value={DataType.BOOLEAN}>boolean</SelectItem>
+                <SelectItem value={DataType.DATE}>date</SelectItem>
+                <SelectItem value={DataType.DATETIME}>datetime</SelectItem>
+                <SelectItem value={DataType.TIMESTAMP}>timestamp</SelectItem>
+                <SelectItem value={DataType.JSON}>json</SelectItem>
+                <SelectItem value={DataType.BINARY}>binary</SelectItem>
+                <SelectItem value={DataType.ARRAY}>array</SelectItem>
+                <SelectItem value={DataType.OTHER}>other</SelectItem>
               </SelectContent>
             </Select>
             {errors.data_type && <p className="text-sm text-red-500">{errors.data_type[0]}</p>}
@@ -70,28 +70,25 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="owner_team">Owner Team <span className="text-red-500">*</span></Label>
+            <Label htmlFor="owner_team">Owner Team</Label>
             <Input
               id="owner_team"
-              value={formData.owner_team}
-              onChange={(e) => handleChange("owner_team", e.target.value)}
+              value={formData.owner_team || ""}
+              onChange={(e) => handleChange("owner_team", e.target.value || null)}
               placeholder="e.g., Data Engineering"
-              className={errors.owner_team ? "border-red-500" : ""}
             />
-            {errors.owner_team && <p className="text-sm text-red-500">{errors.owner_team[0]}</p>}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="business_definition">Business Definition <span className="text-red-500">*</span></Label>
+          <Label htmlFor="business_definition">Business Definition</Label>
           <Textarea
             id="business_definition"
-            value={formData.business_definition}
-            onChange={(e) => handleChange("business_definition", e.target.value)}
+            value={formData.business_definition || ""}
+            onChange={(e) => handleChange("business_definition", e.target.value || null)}
             placeholder="Provide a clear business definition for this element"
-            className={`min-h-32 resize-none ${errors.business_definition ? "border-red-500" : ""}`}
+            className="min-h-32 resize-none"
           />
-          {errors.business_definition && <p className="text-sm text-red-500">{errors.business_definition[0]}</p>}
         </div>
       </div>
 
@@ -101,15 +98,15 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="sensitivity">Sensitivity <span className="text-red-500">*</span></Label>
-            <Select key={`sensitivity-${formData.sensitivity || 'empty'}`} value={formData.sensitivity || ""} onValueChange={(value) => handleChange("sensitivity", value)}>
+            <Select key={`sensitivity-${formData.sensitivity || 'empty'}`} value={formData.sensitivity || ""} onValueChange={(value) => handleChange("sensitivity", value as Sensitivity)}>
               <SelectTrigger className={`w-full ${errors.sensitivity ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select sensitivity" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Public">Public</SelectItem>
-                <SelectItem value="Internal">Internal</SelectItem>
-                <SelectItem value="Confidential">Confidential</SelectItem>
-                <SelectItem value="Restricted">Restricted</SelectItem>
+                <SelectItem value={Sensitivity.PUBLIC}>Public</SelectItem>
+                <SelectItem value={Sensitivity.INTERNAL}>Internal</SelectItem>
+                <SelectItem value={Sensitivity.CONFIDENTIAL}>Confidential</SelectItem>
+                <SelectItem value={Sensitivity.RESTRICTED}>Restricted</SelectItem>
               </SelectContent>
             </Select>
             {errors.sensitivity && <p className="text-sm text-red-500">{errors.sensitivity[0]}</p>}
@@ -117,34 +114,35 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="pii_flag">PII Flag <span className="text-red-500">*</span></Label>
-            <Select key={`pii_flag-${formData.pii_flag || 'empty'}`} value={formData.pii_flag || ""} onValueChange={(value) => handleChange("pii_flag", value)}>
+            <Select key={`pii_flag-${formData.pii_flag || 'empty'}`} value={formData.pii_flag || ""} onValueChange={(value) => handleChange("pii_flag", value as PiiFlag)}>
               <SelectTrigger className={`w-full ${errors.pii_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select PII flag" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
+                <SelectItem value={PiiFlag.YES}>Yes</SelectItem>
+                <SelectItem value={PiiFlag.NO}>No</SelectItem>
+                <SelectItem value={PiiFlag.MAY_CONTAIN}>May Contain</SelectItem>
               </SelectContent>
             </Select>
             {errors.pii_flag && <p className="text-sm text-red-500">{errors.pii_flag[0]}</p>}
           </div>
 
-          {formData.pii_flag === "Yes" && (
+          {formData.pii_flag === PiiFlag.YES && (
             <div className="space-y-2">
-              <Label htmlFor="personal_data_category">Personal Data Category <span className="text-red-500">*</span></Label>
-              <Select key={`personal_data_category-${formData.personal_data_category || 'empty'}`} value={formData.personal_data_category || ""} onValueChange={(value) => handleChange("personal_data_category", value)}>
+              <Label htmlFor="personal_data_category">Personal Data Category</Label>
+              <Select key={`personal_data_category-${formData.personal_data_category || 'empty'}`} value={formData.personal_data_category || ""} onValueChange={(value) => handleChange("personal_data_category", (value ? value as PersonalDataCategory : null))}>
                 <SelectTrigger className={`w-full ${errors.personal_data_category ? "border-red-500" : ""}`}>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Select category (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Identifier">Identifier</SelectItem>
-                  <SelectItem value="Contact">Contact</SelectItem>
-                  <SelectItem value="Financial">Financial</SelectItem>
-                  <SelectItem value="Behavioral">Behavioral</SelectItem>
-                  <SelectItem value="Location">Location</SelectItem>
-                  <SelectItem value="Biometric">Biometric</SelectItem>
-                  <SelectItem value="Health">Health</SelectItem>
-                  <SelectItem value="Sensitive-Other">Sensitive-Other</SelectItem>
+                  <SelectItem value={PersonalDataCategory.IDENTIFIER}>Identifier</SelectItem>
+                  <SelectItem value={PersonalDataCategory.CONTACT}>Contact</SelectItem>
+                  <SelectItem value={PersonalDataCategory.FINANCIAL}>Financial</SelectItem>
+                  <SelectItem value={PersonalDataCategory.BEHAVIORAL}>Behavioral</SelectItem>
+                  <SelectItem value={PersonalDataCategory.LOCATION}>Location</SelectItem>
+                  <SelectItem value={PersonalDataCategory.BIOMETRIC}>Biometric</SelectItem>
+                  <SelectItem value={PersonalDataCategory.HEALTH}>Health</SelectItem>
+                  <SelectItem value={PersonalDataCategory.SENSITIVE_OTHER}>Sensitive-Other</SelectItem>
                 </SelectContent>
               </Select>
               {errors.personal_data_category && <p className="text-sm text-red-500">{errors.personal_data_category[0]}</p>}
@@ -153,13 +151,13 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
 
           <div className="space-y-2">
             <Label htmlFor="special_category_flag">Special Category Flag <span className="text-red-500">*</span></Label>
-            <Select key={`special_category_flag-${formData.special_category_flag || 'empty'}`} value={formData.special_category_flag || ""} onValueChange={(value) => handleChange("special_category_flag", value)}>
+            <Select key={`special_category_flag-${formData.special_category_flag || 'empty'}`} value={formData.special_category_flag || ""} onValueChange={(value) => handleChange("special_category_flag", value as SpecialCategoryFlag)}>
               <SelectTrigger className={`w-full ${errors.special_category_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select flag" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
+                <SelectItem value={SpecialCategoryFlag.YES}>Yes</SelectItem>
+                <SelectItem value={SpecialCategoryFlag.NO}>No</SelectItem>
               </SelectContent>
             </Select>
             {errors.special_category_flag && <p className="text-sm text-red-500">{errors.special_category_flag[0]}</p>}
@@ -173,33 +171,33 @@ const DataElementForm: React.FC<DataElementFormProps> = ({ formData, setFormData
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="cde_flag">CDE Flag <span className="text-red-500">*</span></Label>
-            <Select key={`cde_flag-${formData.cde_flag || 'empty'}`} value={formData.cde_flag || ""} onValueChange={(value) => handleChange("cde_flag", value)}>
+            <Select key={`cde_flag-${formData.cde_flag || 'empty'}`} value={formData.cde_flag || ""} onValueChange={(value) => handleChange("cde_flag", value as CdeFlag)}>
               <SelectTrigger className={`w-full ${errors.cde_flag ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select CDE flag" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
+                <SelectItem value={CdeFlag.YES}>Yes</SelectItem>
+                <SelectItem value={CdeFlag.NO}>No</SelectItem>
               </SelectContent>
             </Select>
             {errors.cde_flag && <p className="text-sm text-red-500">{errors.cde_flag[0]}</p>}
           </div>
 
-          {formData.cde_flag === "Yes" && (
+          {formData.cde_flag === CdeFlag.YES && (
             <div className="space-y-2">
               <Label htmlFor="cde_category">CDE Category <span className="text-red-500">*</span></Label>
-              <Select key={`cde_category-${formData.cde_category || 'empty'}`} value={formData.cde_category || ""} onValueChange={(value) => handleChange("cde_category", value)}>
+              <Select key={`cde_category-${formData.cde_category || 'empty'}`} value={formData.cde_category || ""} onValueChange={(value) => handleChange("cde_category", (value ? value as CdeCategory : null))}>
                 <SelectTrigger className={`w-full ${errors.cde_category ? "border-red-500" : ""}`}>
                   <SelectValue placeholder="Select CDE category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Strategic">Strategic</SelectItem>
-                  <SelectItem value="Compliance">Compliance</SelectItem>
-                  <SelectItem value="External Reporting">External Reporting</SelectItem>
-                  <SelectItem value="Operational">Operational</SelectItem>
-                  <SelectItem value="Financial">Financial</SelectItem>
-                  <SelectItem value="Risk">Risk</SelectItem>
-                  <SelectItem value="Customer Experience">Customer Experience</SelectItem>
+                  <SelectItem value={CdeCategory.STRATEGIC}>Strategic</SelectItem>
+                  <SelectItem value={CdeCategory.COMPLIANCE}>Compliance</SelectItem>
+                  <SelectItem value={CdeCategory.EXTERNAL_REPORTING}>External Reporting</SelectItem>
+                  <SelectItem value={CdeCategory.OPERATIONAL}>Operational</SelectItem>
+                  <SelectItem value={CdeCategory.FINANCIAL}>Financial</SelectItem>
+                  <SelectItem value={CdeCategory.RISK}>Risk</SelectItem>
+                  <SelectItem value={CdeCategory.CUSTOMER_EXPERIENCE}>Customer Experience</SelectItem>
                 </SelectContent>
               </Select>
               {errors.cde_category && <p className="text-sm text-red-500">{errors.cde_category[0]}</p>}

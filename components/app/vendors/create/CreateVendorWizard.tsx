@@ -22,34 +22,7 @@ import { ClassificationStatusStep } from "./steps/ClassificationStatusStep";
 import { PrimaryContactsStep } from "./steps/PrimaryContactsStep";
 import { ServiceDetailsStep } from "./steps/ServiceDetailsStep";
 import { MetadataStep } from "./steps/MetadataStep";
-
-const WIZARD_STEPS = [
-  {
-    id: 1,
-    title: "Basic Information",
-    description: "Vendor name, legal name, HQ country, risk tier, and status",
-  },
-  {
-    id: 2,
-    title: "Vendor Classification",
-    description: "Type, data processing role, and services provided",
-  },
-  {
-    id: 3,
-    title: "Primary Contacts",
-    description: "Contact information for vendor representatives",
-  },
-  {
-    id: 4,
-    title: "Metadata",
-    description: "Sub-processors URL, residency options, websites, parent company, and metadata notes",
-  },
-  {
-    id: 5,
-    title: "Additional Information",
-    description: "Notes and advanced options (DUNS, LEI, tax ID, stock ticker)",
-  },
-];
+import { VENDOR_WIZARD_STEPS } from "../constants";
 
 const initialFormData: VendorFormData = {
   vendor_name: "",
@@ -107,7 +80,7 @@ const CreateVendorWizard: React.FC = () => {
   const handleNext = async () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, VENDOR_WIZARD_STEPS.length));
     }
   };
 
@@ -199,7 +172,7 @@ const CreateVendorWizard: React.FC = () => {
           <FormProvider {...methods}>
             <MultiStepWizard
               currentStep={currentStep}
-              steps={WIZARD_STEPS}
+              steps={VENDOR_WIZARD_STEPS}
               onNext={handleNext}
               onPrevious={handlePrevious}
               onSubmit={handleFormSubmit}

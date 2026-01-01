@@ -151,10 +151,11 @@ export const DatasetMetricsStep: React.FC = () => {
         <div className="space-y-2">
           <Label htmlFor="retention_period">Retention Period</Label>
           <Select
+            key={`retention-period-${retentionPeriod || "none"}`}
             value={retentionPeriod || ""}
             onValueChange={(value) => setValue("retention_period", value || null, { shouldValidate: true })}
           >
-            <SelectTrigger className={hasError("retention_period") ? "border-red-500" : ""}>
+            <SelectTrigger className={`w-full ${hasError("retention_period") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}>
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
             <SelectContent>

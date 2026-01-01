@@ -1,6 +1,5 @@
-
-
-import EditDataElement from "@/components/app/dataElements/edit/EditDataElement";
+import EditDataElementWizard from '@/components/app/dataElements/edit/EditDataElementWizard'
+import React from 'react'
 
 interface DataElementEditPageProps {
   params: Promise<{ id: string }>;
@@ -8,8 +7,9 @@ interface DataElementEditPageProps {
 
 const DataElementEditPage = async ({ params }: DataElementEditPageProps) => {
   const { id } = await params;
-  return <EditDataElement elementId={id} />;
-};
+  const elementId = Number(id);
+  return <EditDataElementWizard elementId={elementId} />;
+}
 
-export default DataElementEditPage;
+export default DataElementEditPage
 
