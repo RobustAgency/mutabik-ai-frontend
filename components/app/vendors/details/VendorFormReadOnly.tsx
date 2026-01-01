@@ -48,10 +48,6 @@ const DATA_PROCESSING_ROLE_LABELS: Record<string, string> = {
 const VendorFormReadOnly: React.FC<VendorFormReadOnlyProps> = ({
     vendor,
 }) => {
-    const getTypeLabels = (types: VendorType[]): string => {
-        return types.map((t) => TYPE_LABELS[t] || t).join(", ");
-    };
-
     // Helper to format date time
     const formatDateTime = (dateString: string | null | undefined): string => {
         if (!dateString) return "Not specified";

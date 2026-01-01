@@ -33,7 +33,6 @@ const VendorForm: React.FC<VendorFormProps> = ({
   }, [JSON.stringify(formData)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync react-hook-form values back to parent formData
-  const watchedValues = methods.watch();
   React.useEffect(() => {
     const subscription = methods.watch((values) => {
       setFormData(values as VendorFormData);

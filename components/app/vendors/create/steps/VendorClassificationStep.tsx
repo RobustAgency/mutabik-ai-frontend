@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, CheckCircle } from "lucide-react";
+import { X } from "lucide-react";
 import type { VendorFormData } from "@/lib/schemas/vendor.schema";
 
 const VENDOR_TYPE_OPTIONS = [

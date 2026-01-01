@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, CheckCircle } from "lucide-react";
+import { X } from "lucide-react";
 import type { VendorFormData } from "@/lib/schemas/vendor.schema";
 
 const VENDOR_TYPE_OPTIONS = [
@@ -44,7 +44,6 @@ export const ClassificationStatusStep: React.FC = () => {
 
   const types = watch("type") || [];
   const dataProcessingRole = watch("data_processing_role");
-  const serviceProvided = watch("service_provided");
 
   const handleTypeToggle = (typeValue: string) => {
     const newTypes = types.includes(typeValue as any)

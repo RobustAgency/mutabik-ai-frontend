@@ -20,7 +20,7 @@ interface Props {
 
 const AssociateElementWithDatasetModal: React.FC<Props> = ({ dataElementId, onClose, onSuccess }) => {
   const { data: datasetsResp, isLoading: isLoadingDatasets } = useGetDatasetsQuery({ limit: 100 });
-  const datasets = datasetsResp ?? [];
+  const datasets = datasetsResp?.data ?? [];
   const datasetOptions = datasets.map((d: any) => ({ id: d.id, label: `#${d.id} • ${d.name || d.dataset_name || "Dataset"}`, value: String(d.id) }));
   const [createMap, { isLoading }] = useCreateDatasetElementMapMutation();
 

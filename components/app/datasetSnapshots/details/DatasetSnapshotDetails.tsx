@@ -9,7 +9,7 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import DatasetSnapshotFormReadOnly from "./DatasetSnapshotFormReadOnly";
 
 interface DatasetSnapshotDetailsProps {
-    snapshotId: string;
+    snapshotId: number;
 }
 
 const DatasetSnapshotDetails: React.FC<DatasetSnapshotDetailsProps> = ({ snapshotId }) => {

@@ -21,7 +21,6 @@ export const PrimaryContactsStep: React.FC = () => {
   const {
     setValue,
     watch,
-    formState: { errors },
   } = useFormContext<VendorFormData>();
 
   const contacts = watch("primary_contacts") || [];
@@ -62,11 +61,6 @@ export const PrimaryContactsStep: React.FC = () => {
     const updatedContacts = contacts.filter((_, i) => i !== index);
     setValue("primary_contacts", updatedContacts, { shouldValidate: true });
   };
-
-  const hasError = (fieldName: keyof VendorFormData) =>
-    errors[fieldName] && errors[fieldName]?.message;
-  const getError = (fieldName: keyof VendorFormData) =>
-    errors[fieldName]?.message as string;
 
   return (
     <div className="space-y-6 w-full">
