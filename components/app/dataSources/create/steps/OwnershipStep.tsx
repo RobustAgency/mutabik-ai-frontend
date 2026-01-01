@@ -55,13 +55,6 @@ export const OwnershipStep: React.FC = () => {
             <Label htmlFor="technical_owner">
               Technical Owner <span className="text-red-500">*</span>
             </Label>
-            <Link
-              href="/core-assets/stakeholders"
-              className="text-sm text-[#4FD58F] hover:underline flex items-center gap-1"
-            >
-              Manage
-              <ExternalLink className="h-3 w-3" />
-            </Link>
           </div>
           <Select
             key={`technical_owner-${technicalOwner || "none"}`}
@@ -92,13 +85,6 @@ export const OwnershipStep: React.FC = () => {
             <Label htmlFor="business_owner">
               Business Owner <span className="text-red-500">*</span>
             </Label>
-            <Link
-              href="/core-assets/stakeholders"
-              className="text-sm text-[#4FD58F] hover:underline flex items-center gap-1"
-            >
-              Manage
-              <ExternalLink className="h-3 w-3" />
-            </Link>
           </div>
           <Select
             key={`business_owner-${businessOwner || "none"}`}
