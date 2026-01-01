@@ -1,10 +1,7 @@
-
-
-import CreateDatasetSnapshot from "@/components/app/datasetSnapshots/create/CreateDatasetSnapshot";
+import CreateDatasetSnapshotWizard from "@/components/app/datasetSnapshots/create/CreateDatasetSnapshotWizard";
 
 const CreateDatasetSnapshotPage = () => {
-  return <CreateDatasetSnapshot />;
+  return <CreateDatasetSnapshotWizard />;
 };
 
 export default CreateDatasetSnapshotPage;
-

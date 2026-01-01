@@ -17,10 +17,10 @@ interface ConsentCoverageFormProps {
 
 const ConsentCoverageForm: React.FC<ConsentCoverageFormProps> = ({ formData, setFormData, errors }) => {
   const { data: datasetsData } = useGetDatasetsQuery({});
-  const { data: snapshotsData } = useGetDatasetSnapshotsQuery();
+  const { data: snapshotsData } = useGetDatasetSnapshotsQuery({});
 
   const datasets = datasetsData?.data || [];
-  const snapshots = snapshotsData || [];
+  const snapshots = snapshotsData?.data || [];
 
   const purposeOptions = [
     { value: "marketing", label: "Marketing" },

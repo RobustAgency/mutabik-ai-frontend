@@ -22,10 +22,10 @@ const JURISDICTIONS = ["AE", "EU", "KSA", "US", "UK", "QA", "JO", "MA", "BH", "O
 
 const DatasetSubjectPopulationForm: React.FC<DatasetSubjectPopulationFormProps> = ({ formData, setFormData, errors }) => {
   const { data: datasetsData } = useGetDatasetsQuery({});
-  const { data: snapshotsData } = useGetDatasetSnapshotsQuery();
+  const { data: snapshotsData } = useGetDatasetSnapshotsQuery({});
 
   const datasets = datasetsData?.data || [];
-  const snapshots = snapshotsData || [];
+  const snapshots = snapshotsData?.data || [];
 
   // Filter snapshots based on selected dataset
   const filteredSnapshots = formData.dataset_id

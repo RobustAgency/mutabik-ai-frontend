@@ -19,29 +19,7 @@ import { BasicInformationStep } from "../create/steps/BasicInformationStep";
 import { DatasetMetricsStep } from "../create/steps/DatasetMetricsStep";
 import { PrivacyPostureStep } from "../create/steps/PrivacyPostureStep";
 import { CrossBorderStep } from "../create/steps/CrossBorderStep";
-
-const WIZARD_STEPS = [
-  {
-    id: 1,
-    title: "Basic Information",
-    description: "Dataset name, description, purpose, ownership, data sources, and status",
-  },
-  {
-    id: 2,
-    title: "Dataset Metrics",
-    description: "Estimated row count, size, retention period, and primary languages",
-  },
-  {
-    id: 3,
-    title: "Privacy Posture",
-    description: "Contains personal data and sensitivity level",
-  },
-  {
-    id: 4,
-    title: "Cross-Border & Licensing",
-    description: "Cross-border transfer and license type",
-  },
-];
+import { DATASET_WIZARD_STEPS } from "../constants";
 
 interface EditDatasetWizardProps {
   datasetId: number;
@@ -107,7 +85,7 @@ const EditDatasetWizard: React.FC<EditDatasetWizardProps> = ({ datasetId }) => {
   const handleNext = async () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, DATASET_WIZARD_STEPS.length));
     }
   };
 
@@ -221,7 +199,7 @@ const EditDatasetWizard: React.FC<EditDatasetWizardProps> = ({ datasetId }) => {
           <FormProvider {...methods}>
             <MultiStepWizard
               currentStep={currentStep}
-              steps={WIZARD_STEPS}
+              steps={DATASET_WIZARD_STEPS}
               onNext={handleNext}
               onPrevious={handlePrevious}
               onSubmit={handleFormSubmit}

@@ -14,14 +14,7 @@ import { MultiStepWizard } from "./MultiStepWizard";
 import { FormDataType } from "../types/useCaseTypes";
 import { useCreateUseCaseMutation } from "@/app/lib/features/useCasesApi";
 import { CreateUseCaseData } from "@/service/app/useCases";
-
-const WIZARD_STEPS = [
-  { id: 1, title: "Basic Information", description: "Core details" },
-  { id: 2, title: "ROI & Business Impact", description: "Financial metrics" },
-  { id: 3, title: "Use Case Classification", description: "Priority & ROI" },
-  { id: 4, title: "Governance & Risk", description: "Risk assessment" },
-  { id: 5, title: "Data Assessment", description: "Data readiness" },
-];
+import { USE_CASE_WIZARD_STEPS } from "../constants";
 
 const initialFormData: FormDataType = {
   // Step 1: Basic Information
@@ -199,7 +192,7 @@ const CreateUseCases: React.FC = () => {
   // Handle next step
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, USE_CASE_WIZARD_STEPS.length));
       setValidationErrors({});
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -376,7 +369,7 @@ const CreateUseCases: React.FC = () => {
           {/* Multi-Step Wizard */}
           <MultiStepWizard
             currentStep={currentStep}
-            steps={WIZARD_STEPS}
+            steps={USE_CASE_WIZARD_STEPS}
             onNext={handleNext}
             onPrevious={handlePrevious}
             onSubmit={handleSubmit}

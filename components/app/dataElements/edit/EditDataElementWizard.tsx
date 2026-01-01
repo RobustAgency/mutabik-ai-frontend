@@ -19,34 +19,7 @@ import { PhysicalLocationStep } from "../create/steps/PhysicalLocationStep";
 import { TechnicalDetailsStep } from "../create/steps/TechnicalDetailsStep";
 import { ClassificationStep } from "../create/steps/ClassificationStep";
 import { CdeReferencesStep } from "../create/steps/CdeReferencesStep";
-
-const WIZARD_STEPS = [
-  {
-    id: 1,
-    title: "Basic Information",
-    description: "Element name, data type, format, business definition, data steward, and status",
-  },
-  {
-    id: 2,
-    title: "Physical Location & Lineage",
-    description: "Data source, database, schema, table, column, and datasets using this element",
-  },
-  {
-    id: 3,
-    title: "Technical Details",
-    description: "Nullable, unique, default value, sample values, and validation rules",
-  },
-  {
-    id: 4,
-    title: "Classification",
-    description: "Sensitivity level and contains personal data",
-  },
-  {
-    id: 5,
-    title: "Critical Data Element (CDE)",
-    description: "CDE flag and categories",
-  },
-];
+import { DATA_ELEMENT_WIZARD_STEPS } from "../constants";
 
 interface EditDataElementWizardProps {
   elementId: number;
@@ -113,7 +86,7 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
   const handleNext = async () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, DATA_ELEMENT_WIZARD_STEPS.length));
     }
   };
 
@@ -227,7 +200,7 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
           <FormProvider {...methods}>
             <MultiStepWizard
               currentStep={currentStep}
-              steps={WIZARD_STEPS}
+              steps={DATA_ELEMENT_WIZARD_STEPS}
               onNext={handleNext}
               onPrevious={handlePrevious}
               onSubmit={handleFormSubmit}

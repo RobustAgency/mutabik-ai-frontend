@@ -219,7 +219,7 @@ export const dataElementsApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `/data-elements/${id}`,
-        method: "PUT",
+        method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [

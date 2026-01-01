@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import DatasetSnapshotDetails from "@/components/app/datasetSnapshots/details/DatasetSnapshotDetails";
 
@@ -9,7 +7,7 @@ interface PageProps {
 
 const SnapshotDetailsPage = async ({ params }: PageProps) => {
   const { id } = await params;
-  return <DatasetSnapshotDetails snapshotId={id} />;
+  return <DatasetSnapshotDetails snapshotId={Number(id)} />;
 };
 
 export default SnapshotDetailsPage;

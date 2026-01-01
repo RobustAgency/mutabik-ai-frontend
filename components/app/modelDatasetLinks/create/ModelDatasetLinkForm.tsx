@@ -32,8 +32,8 @@ const ModelDatasetLinkForm: React.FC<ModelDatasetLinkFormProps> = ({ formData, s
   const modelVersions = React.useMemo(() => modelVersionsData || [], [modelVersionsData]);
   const { data: datasetsData, isLoading: isLoadingDatasets, isError: isDatasetsError } = useGetDatasetsQuery({});
   const datasets = datasetsData?.data || [];
-  const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery();
-  const snapshots = React.useMemo(() => snapshotsData || [], [snapshotsData]);
+  const { data: snapshotsData, isLoading: isLoadingSnapshots } = useGetDatasetSnapshotsQuery({});
+  const snapshots = React.useMemo(() => snapshotsData?.data || [], [snapshotsData]);
 
   // Filter versions based on selected model
   const filteredVersions = React.useMemo(() => {
