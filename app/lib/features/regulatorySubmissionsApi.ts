@@ -9,26 +9,17 @@ import {
   RegulatorySubmissionListResponse,
   RegulatorySubmissionSingleResponse,
 } from "@/interfaces/RegulatorySubmission";
-
-const normaliseMeta = (payload?: RegulatorySubmissionListResponse["data"]): RegulatorySubmissionListMeta => {
-  if (!payload) {
-    return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
-  }
-  if (payload.meta) {
-    return {
-      current_page: payload.meta.current_page ?? 1,
-      per_page: payload.meta.per_page ?? 0,
-      total: payload.meta.total ?? 0,
-      last_page: payload.meta.last_page ?? payload.meta.current_page ?? 1,
-    };
-  }
-  return {
-    current_page: payload.current_page ?? 1,
-    per_page: payload.per_page ?? 0,
-    total: payload.total ?? 0,
-    last_page: payload.last_page ?? payload.current_page ?? 1,
-  };
-};
+import {
+  transformListResponseWithMeta,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  ListResponseWithMeta,
+  SingleItemResponse,
+  ListMeta,
+} from "@/lib/api/rtkQueryHelpers";
 
 export const regulatorySubmissionsApi = createApi({
   reducerPath: "regulatorySubmissionsApi",
@@ -44,28 +35,16 @@ export const regulatorySubmissionsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      transformResponse: (response: RegulatorySubmissionListResponse) => {
-        const list = response?.data?.data ?? [];
-        const meta = normaliseMeta(response?.data);
-        return { data: list, meta };
-      },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "RegulatorySubmission" as const, id })),
-              { type: "RegulatorySubmission" as const, id: "LIST" },
-            ]
-          : [{ type: "RegulatorySubmission" as const, id: "LIST" }],
+      transformResponse: transformListResponseWithMeta<RegulatorySubmission>,
+      providesTags: (result) => createListTags(result, "RegulatorySubmission"),
     }),
     getRegulatorySubmission: builder.query<RegulatorySubmission, string | number>({
       query: (id) => ({
         url: `/regulatory-submissions/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: RegulatorySubmissionSingleResponse) => {
-        return (response?.data as RegulatorySubmission) ?? (response as unknown as RegulatorySubmission);
-      },
-      providesTags: (result, _error, id) => [{ type: "RegulatorySubmission", id }],
+      transformResponse: transformSingleItemResponse<RegulatorySubmission>,
+      providesTags: createItemTags("RegulatorySubmission"),
     }),
     createRegulatorySubmission: builder.mutation<unknown, CreateRegulatorySubmissionRequest>({
       query: (data) => ({
@@ -73,7 +52,7 @@ export const regulatorySubmissionsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "RegulatorySubmission", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("RegulatorySubmission"),
     }),
     updateRegulatorySubmission: builder.mutation<
       unknown,
@@ -84,17 +63,14 @@ export const regulatorySubmissionsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (result, _error, { id }) => [
-        { type: "RegulatorySubmission", id },
-        { type: "RegulatorySubmission", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("RegulatorySubmission"),
     }),
     deleteRegulatorySubmission: builder.mutation<unknown, string | number>({
       query: (id) => ({
         url: `/regulatory-submissions/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: "RegulatorySubmission", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("RegulatorySubmission"),
     }),
   }),
 });

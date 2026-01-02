@@ -1,12 +1,12 @@
-import CreateIncidentRCA from '@/components/app/incidents/rca/create/CreateIncidentRCA'
+import CreateIncidentRCAWizard from '@/components/app/incidents/rca/create/CreateIncidentRCAWizard'
 import React from 'react'
 
 const page = () => {
-    return (
-        <div>
-            <CreateIncidentRCA />
-        </div>
-    )
+  return (
+    <>
+      <CreateIncidentRCAWizard />
+    </>
+  )
 }
 
 export default page

@@ -11,6 +11,9 @@ import {
   useDeleteIncidentNotificationMutation,
   IncidentNotification,
   IncidentNotificationFilters,
+  AudienceType,
+  Channel,
+  DeliveryStatus,
 } from "@/app/lib/features/incidentNotificationsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
@@ -41,15 +44,15 @@ const IncidentNotifications: React.FC = () => {
 
   const columns: ColumnDef<IncidentNotification>[] = [
     {
-      accessorKey: "display_id",
+      accessorKey: "id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Notification ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {row.original.display_id || `#${row.original.id}`}
         </div>
       ),
     },
@@ -60,7 +63,11 @@ const IncidentNotifications: React.FC = () => {
           Incident ID
         </div>
       ),
-      cell: ({ getValue }) => `#${getValue() as number}`,
+      cell: ({ getValue }) => (
+        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+          #{getValue() as number}
+        </div>
+      ),
     },
     {
       accessorKey: "audience_type",
@@ -70,8 +77,22 @@ const IncidentNotifications: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const type = getValue() as string;
-        return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const type = getValue() as AudienceType;
+        const labels: Record<AudienceType, string> = {
+          [AudienceType.INTERNAL_EXECUTIVE]: "Internal Executive",
+          [AudienceType.INTERNAL_TECHNICAL]: "Internal Technical",
+          [AudienceType.DATA_PROTECTION_AUTHORITY]: "Data Protection Authority",
+          [AudienceType.AFFECTED_DATA_SUBJECTS]: "Affected Data Subjects",
+          [AudienceType.EXTERNAL_PARTNERS]: "External Partners",
+          [AudienceType.MEDIA_PUBLIC]: "Media/Public",
+          [AudienceType.BOARD_AUDIT_COMMITTEE]: "Board/Audit Committee",
+          [AudienceType.LEGAL_COMPLIANCE]: "Legal/Compliance",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[type] || type}
+          </div>
+        );
       },
     },
     {
@@ -82,18 +103,61 @@ const IncidentNotifications: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const channel = getValue() as string;
-        return channel.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const channel = getValue() as Channel;
+        const labels: Record<Channel, string> = {
+          [Channel.EMAIL]: "Email",
+          [Channel.SMS]: "SMS",
+          [Channel.PORTAL_NOTIFICATION]: "Portal Notification",
+          [Channel.SLACK_TEAMS]: "Slack/Teams",
+          [Channel.FORMAL_LETTER]: "Formal Letter",
+          [Channel.PRESS_RELEASE]: "Press Release",
+          [Channel.REGULATORY_FILING]: "Regulatory Filing",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[channel] || channel}
+          </div>
+        );
       },
     },
     {
-      accessorKey: "notified_at",
+      accessorKey: "delivery_status",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Notified At
+          Status
         </div>
       ),
-      cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
+      cell: ({ getValue }) => {
+        const status = getValue() as DeliveryStatus;
+        const labels: Record<DeliveryStatus, string> = {
+          [DeliveryStatus.DRAFT]: "Draft",
+          [DeliveryStatus.SENT]: "Sent",
+          [DeliveryStatus.DELIVERED]: "Delivered",
+          [DeliveryStatus.ACKNOWLEDGED]: "Acknowledged",
+          [DeliveryStatus.FAILED]: "Failed",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[status] || status}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "sent_at",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Sent At
+        </div>
+      ),
+      cell: ({ getValue }) => {
+        const date = getValue() as string;
+        try {
+          return new Date(date).toLocaleDateString();
+        } catch {
+          return date;
+        }
+      },
     },
     {
       id: "actions",
@@ -176,6 +240,9 @@ const IncidentNotifications: React.FC = () => {
                   : undefined
               }
               onPageChange={setCurrentPage}
+              onRowClick={(row) => {
+                router.push(`/governance/incidents/notifications/${row.id}/details`);
+              }}
             />
           </Card>
         </CardContent>

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreateCorrectivePreventiveActionData } from "@/app/lib/features/correctivePreventiveActionsApi";
+import { CreateCorrectivePreventiveActionData, VerificationResult } from "@/app/lib/features/correctivePreventiveActionsApi";
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiModelModalForm from "@/components/app/aiModel/create/AiModelModalForm";
@@ -44,15 +44,15 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Source ID <span className="text-red-500">*</span></Label>
+          <Label>Source Reference <span className="text-red-500">*</span></Label>
           <Input
-            value={formData.source_id}
-            onChange={(e) => handleInputChange("source_id", e.target.value)}
-            placeholder={formData.source_type === "incident" ? "Enter incident ID" : formData.source_type === "risk" ? "Enter risk ID" : "Enter source ID"}
-            className={errors.source_id ? "border-destructive" : ""}
+            value={formData.source_reference}
+            onChange={(e) => handleInputChange("source_reference", e.target.value)}
+            placeholder={formData.source_type === "incident" ? "Enter incident ID" : formData.source_type === "risk assessment" ? "Enter risk ID" : "Enter source reference"}
+            className={errors.source_reference ? "border-destructive" : ""}
           />
-          {errors.source_id && (
-            <p className="text-sm text-destructive">{errors.source_id[0]}</p>
+          {errors.source_reference && (
+            <p className="text-sm text-destructive">{errors.source_reference[0]}</p>
           )}
         </div>
       </div>
@@ -60,9 +60,9 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       <div className="space-y-2">
         <Label>Model</Label>
         <SelectWithInlineCreate
-          key={`model_id-${formData.model_id ?? 'none'}`}
-          value={formData.model_id ? String(formData.model_id) : undefined}
-          onValueChange={(value) => handleInputChange("model_id", value || null)}
+          key={`ai_model_id-${formData.ai_model_id ?? 'none'}`}
+          value={formData.ai_model_id ? String(formData.ai_model_id) : undefined}
+          onValueChange={(value) => handleInputChange("ai_model_id", value ? Number(value) : null)}
           options={aiModels.map((model: any) => ({
             id: model.id,
             label: model.name,
@@ -73,10 +73,10 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
           entityName="AI Model"
           modalForm={AiModelModalForm}
           placeholder="Select model (optional)"
-          error={!!errors.model_id}
+          error={!!errors.ai_model_id}
         />
-        {errors.model_id && (
-          <p className="text-sm text-destructive">{errors.model_id[0]}</p>
+        {errors.ai_model_id && (
+          <p className="text-sm text-destructive">{errors.ai_model_id[0]}</p>
         )}
       </div>
 
@@ -146,8 +146,11 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       </div>
 
       <div className="space-y-2">
-        <Label>Actions</Label>
-        <Textarea className="min-h-32 resize-none" value={formData.actions || ""} onChange={(e) => handleInputChange("actions", e.target.value || null)} rows={3} placeholder="Steps or link to checklist" />
+        <Label>Actions <span className="text-red-500">*</span></Label>
+        <Textarea className="min-h-32 resize-none" value={formData.actions} onChange={(e) => handleInputChange("actions", e.target.value)} rows={3} placeholder="Steps or link to checklist" />
+        {errors.actions && (
+          <p className="text-sm text-destructive">{errors.actions[0]}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -173,18 +176,25 @@ const CAPAForm: React.FC<CAPAFormProps> = ({ formData, setFormData, errors }) =>
       </div>
 
       <div className="space-y-2">
-        <Label>Verification Result <span className="text-red-500">*</span></Label>
-        <Select key={`verification_result-${formData.verification_result || "none"}`} value={formData.verification_result} onValueChange={(value) => handleInputChange("verification_result", value)}>
+        <Label>Verification Result</Label>
+        <Select 
+          key={`verification_result-${formData.verification_result || "none"}`} 
+          value={formData.verification_result ?? undefined} 
+          onValueChange={(value) => handleInputChange("verification_result", value ? (value as VerificationResult) : null)}
+        >
           <SelectTrigger className={`w-full ${errors.verification_result ? "border-destructive" : ""}`}>
-            <SelectValue />
+            <SelectValue placeholder="Select verification result (optional)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="passed">Passed</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="not_applicable">Not Applicable</SelectItem>
+            <SelectItem value={VerificationResult.PENDING}>Pending</SelectItem>
+            <SelectItem value={VerificationResult.VERIFIED_EFFECTIVE}>Verified Effective</SelectItem>
+            <SelectItem value={VerificationResult.REQUIRES_REWORK}>Requires Rework</SelectItem>
+            <SelectItem value={VerificationResult.VERIFIED_INEFFECTIVE}>Verified Ineffective</SelectItem>
           </SelectContent>
         </Select>
+        {errors.verification_result && (
+          <p className="text-sm text-destructive">{errors.verification_result[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">

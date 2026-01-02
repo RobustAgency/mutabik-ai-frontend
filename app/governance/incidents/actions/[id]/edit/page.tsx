@@ -1,4 +1,4 @@
-import EditIncidentAction from '@/components/app/incidents/actions/edit/EditIncidentAction'
+import EditIncidentActionWizard from '@/components/app/incidents/actions/edit/EditIncidentActionWizard'
 import React, { use } from 'react'
 
 interface EditIncidentActionPageProps {
@@ -7,7 +7,7 @@ interface EditIncidentActionPageProps {
 
 const EditIncidentActionPage = ({ params }: EditIncidentActionPageProps) => {
   const { id } = use(params);
-  return <EditIncidentAction actionId={id} />;
+  return <EditIncidentActionWizard actionId={Number(id)} />;
 };
 
 export default EditIncidentActionPage;

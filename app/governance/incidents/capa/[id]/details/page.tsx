@@ -1,5 +1,7 @@
-import CAPADetails from '@/components/app/incidents/capa/details/CAPADetails'
-import React, { use } from 'react'
+"use client";
+
+import { use } from "react";
+import CAPADetails from "@/components/app/incidents/capa/details/CAPADetails";
 
 interface CAPADetailsPageProps {
   params: Promise<{ id: string }>;
@@ -11,4 +13,3 @@ const CAPADetailsPage = ({ params }: CAPADetailsPageProps) => {
 };
 
 export default CAPADetailsPage;
-

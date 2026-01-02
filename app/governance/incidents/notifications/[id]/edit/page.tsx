@@ -1,4 +1,4 @@
-import EditIncidentNotification from '@/components/app/incidents/notifications/edit/EditIncidentNotification'
+import EditIncidentNotificationWizard from '@/components/app/incidents/notifications/edit/EditIncidentNotificationWizard'
 import React, { use } from 'react'
 
 interface EditIncidentNotificationPageProps {
@@ -7,7 +7,7 @@ interface EditIncidentNotificationPageProps {
 
 const EditIncidentNotificationPage = ({ params }: EditIncidentNotificationPageProps) => {
   const { id } = use(params);
-  return <EditIncidentNotification notificationId={id} />;
+  return <EditIncidentNotificationWizard notificationId={Number(id)} />;
 };
 
 export default EditIncidentNotificationPage;

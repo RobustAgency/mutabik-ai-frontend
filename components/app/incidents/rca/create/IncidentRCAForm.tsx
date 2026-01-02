@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreateIncidentRootCauseAnalysisData } from "@/app/lib/features/incidentRootCauseAnalysesApi";
+import { 
+  CreateIncidentRootCauseAnalysisData,
+  RcaMethod
+} from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiIncidentModalForm from "@/components/app/incidents/create/AiIncidentModalForm";
@@ -48,28 +51,40 @@ const IncidentRCAForm: React.FC<IncidentRCAFormProps> = ({ formData, setFormData
 
       <div className="space-y-2">
         <Label>RCA Method <span className="text-red-500">*</span></Label>
-        <Select key={`rca_method-${formData.rca_method || "none"}`} value={formData.rca_method} onValueChange={(value) => handleInputChange("rca_method", value)}>
+        <Select key={`rca_method-${formData.rca_method || "none"}`} value={formData.rca_method} onValueChange={(value) => handleInputChange("rca_method", value as RcaMethod)}>
           <SelectTrigger className={`w-full ${errors.rca_method ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="5_whys">5 Whys</SelectItem>
-            <SelectItem value="fishbone">Fishbone</SelectItem>
-            <SelectItem value="timeline_analysis">Timeline Analysis</SelectItem>
-            <SelectItem value="fault_tree">Fault Tree</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            <SelectItem value={RcaMethod.FIVE_WHYS}>5 Whys</SelectItem>
+            <SelectItem value={RcaMethod.FISHBONE}>Fishbone</SelectItem>
+            <SelectItem value={RcaMethod.FAULT_TREE}>Fault Tree</SelectItem>
+            <SelectItem value={RcaMethod.EVENT_CAUSAL}>Event Causal</SelectItem>
+            <SelectItem value={RcaMethod.CHANGE}>Change</SelectItem>
+            <SelectItem value={RcaMethod.TIMELINE}>Timeline</SelectItem>
+            <SelectItem value={RcaMethod.BARRIER}>Barrier</SelectItem>
+            <SelectItem value={RcaMethod.COMBINED}>Combined</SelectItem>
           </SelectContent>
         </Select>
+        {errors.rca_method && (
+          <p className="text-sm text-destructive">{errors.rca_method[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label>Immediate Cause <span className="text-red-500">*</span></Label>
         <Textarea value={formData.immediate_cause} onChange={(e) => handleInputChange("immediate_cause", e.target.value)} className="min-h-32 resize-none" />
+        {errors.immediate_cause && (
+          <p className="text-sm text-destructive">{errors.immediate_cause[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label>Latent Causes <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.latent_causes} onChange={(e) => handleInputChange("latent_causes", e.target.value)} className="min-h-32 resize-none" />
+        <Label>Root Causes <span className="text-red-500">*</span></Label>
+        <Textarea value={formData.root_causes} onChange={(e) => handleInputChange("root_causes", e.target.value)} className="min-h-32 resize-none" />
+        {errors.root_causes && (
+          <p className="text-sm text-destructive">{errors.root_causes[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -78,34 +93,39 @@ const IncidentRCAForm: React.FC<IncidentRCAFormProps> = ({ formData, setFormData
       </div>
 
       <div className="space-y-2">
-        <Label>Impact Assessment</Label>
-        <Textarea value={formData.impact_assessment || ""} onChange={(e) => handleInputChange("impact_assessment", e.target.value || null)} className="min-h-32 resize-none" />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Fixes Implemented</Label>
-        <Textarea value={formData.fixes_implemented || ""} onChange={(e) => handleInputChange("fixes_implemented", e.target.value || null)} className="min-h-32 resize-none" />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Lessons Learned <span className="text-red-500">*</span></Label>
-        <Textarea value={formData.lessons_learned} onChange={(e) => handleInputChange("lessons_learned", e.target.value)} className="min-h-32 resize-none" />
+        <Label>Control Failures</Label>
+        <Textarea value={formData.control_failures || ""} onChange={(e) => handleInputChange("control_failures", e.target.value || null)} className="min-h-32 resize-none" />
       </div>
 
       <div className="space-y-2">
         <Label>Recommendations <span className="text-red-500">*</span></Label>
         <Textarea required value={formData.recommendations} onChange={(e) => handleInputChange("recommendations", e.target.value)} className="min-h-32 resize-none" />
+        {errors.recommendations && (
+          <p className="text-sm text-destructive">{errors.recommendations[0]}</p>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Approved By <span className="text-red-500">*</span></Label>
-          <Input value={formData.approved_by} onChange={(e) => handleInputChange("approved_by", e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Approved At <span className="text-red-500">*</span></Label>
-          <Input type="datetime-local" value={formData.approved_at} onChange={(e) => handleInputChange("approved_at", e.target.value)} />
-        </div>
+      <div className="space-y-2">
+        <Label>Lead Analyst <span className="text-red-500">*</span></Label>
+        <Input value={formData.lead_analyst} onChange={(e) => handleInputChange("lead_analyst", e.target.value)} />
+        {errors.lead_analyst && (
+          <p className="text-sm text-destructive">{errors.lead_analyst[0]}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Review Committee</Label>
+        <Input value={formData.review_committee || ""} onChange={(e) => handleInputChange("review_committee", e.target.value || null)} />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Analysis Date</Label>
+        <Input type="date" value={formData.analysis_date || ""} onChange={(e) => handleInputChange("analysis_date", e.target.value || null)} />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Approved At</Label>
+        <Input type="datetime-local" value={formData.approved_at || ""} onChange={(e) => handleInputChange("approved_at", e.target.value || null)} />
       </div>
 
       <div className="space-y-2">

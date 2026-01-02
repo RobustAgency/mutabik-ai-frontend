@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreateIncidentAlertData } from "@/app/lib/features/incidentAlertsApi";
+import { CreateIncidentAlertData, AlertSourceType, AlertSeverity } from "@/app/lib/features/incidentAlertsApi";
 import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
+import { useGetDataSourcesQuery } from "@/app/lib/features/dataSourcesApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiIncidentModalForm from "@/components/app/incidents/create/AiIncidentModalForm";
+import DataSourceModalForm from "@/components/app/dataSources/create/DataSourceModalForm";
 
 interface IncidentAlertFormProps {
   formData: CreateIncidentAlertData;
@@ -22,7 +24,9 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
   errors,
 }) => {
   const { data: incidentsData, isLoading: isIncidentsLoading } = useGetAiIncidentsQuery({ per_page: 100 });
+  const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery({ per_page: 100 });
   const incidents = incidentsData?.data || [];
+  const dataSources = dataSourcesData?.data || [];
 
   const handleInputChange = (field: keyof CreateIncidentAlertData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -63,12 +67,12 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
             <SelectValue placeholder="Select source type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="kri">KRI</SelectItem>
-            <SelectItem value="monitoring_rule">Monitoring Rule</SelectItem>
-            <SelectItem value="human_report">Human Report</SelectItem>
-            <SelectItem value="vendor_notice">Vendor Notice</SelectItem>
-            <SelectItem value="security_tool">Security Tool</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            <SelectItem value={AlertSourceType.MONITORING_RULE}>Monitoring Rule</SelectItem>
+            <SelectItem value={AlertSourceType.KRI_THRESHOLD}>KRI Threshold</SelectItem>
+            <SelectItem value={AlertSourceType.MANUAL_REPORT}>Manual Report</SelectItem>
+            <SelectItem value={AlertSourceType.AUTOMATED_SCAN}>Automated Scan</SelectItem>
+            <SelectItem value={AlertSourceType.USER_COMPLAINT}>User Complaint</SelectItem>
+            <SelectItem value={AlertSourceType.EXTERNAL_REPORT}>External Report</SelectItem>
           </SelectContent>
         </Select>
         {getError("source_type") && (
@@ -87,21 +91,60 @@ const IncidentAlertForm: React.FC<IncidentAlertFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="rule_version">Rule Version</Label>
-        <Input
-          id="rule_version"
-          value={formData.rule_version || ""}
-          onChange={(e) => handleInputChange("rule_version", e.target.value || null)}
-          placeholder="Detector/rule version or hash"
+        <Label htmlFor="data_source_id">Data Source</Label>
+        <SelectWithInlineCreate
+          key={`data_source_id-${formData.data_source_id || "none"}`}
+          value={formData.data_source_id ? String(formData.data_source_id) : ""}
+          onValueChange={(value) => {
+            // Empty string means no selection (null)
+            handleInputChange("data_source_id", value === "" ? null : Number(value));
+          }}
+          placeholder={isDataSourcesLoading ? "Loading data sources..." : "Select data source (optional)"}
+          options={dataSources.map((source) => ({
+            id: source.id,
+            label: source.name,
+            value: String(source.id),
+          }))}
+          isLoading={isDataSourcesLoading}
+          isEmpty={!isDataSourcesLoading && dataSources.length === 0}
+          entityName="Data Source"
+          canCreate={true}
+          modalForm={DataSourceModalForm}
+          error={!!errors.data_source_id}
         />
+        {getError("data_source_id") && (
+          <p className="text-sm text-destructive">{getError("data_source_id")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="context">Context</Label>
+        <Label htmlFor="alert_sensitivity">Alert Sensitivity <span className="text-red-500">*</span></Label>
+        <Select
+          key={`alert_sensitivity-${formData.alert_sensitivity || "none"}`}
+          value={formData.alert_sensitivity}
+          onValueChange={(value) => handleInputChange("alert_sensitivity", value)}
+        >
+          <SelectTrigger className={`w-full ${errors.alert_sensitivity ? "border-destructive" : ""}`}>
+            <SelectValue placeholder="Select severity" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={AlertSeverity.LOW}>Low</SelectItem>
+            <SelectItem value={AlertSeverity.MEDIUM}>Medium</SelectItem>
+            <SelectItem value={AlertSeverity.HIGH}>High</SelectItem>
+            <SelectItem value={AlertSeverity.CRITICAL}>Critical</SelectItem>
+          </SelectContent>
+        </Select>
+        {getError("alert_sensitivity") && (
+          <p className="text-sm text-destructive">{getError("alert_sensitivity")}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="context">Context <span className="text-red-500">*</span></Label>
         <Textarea
           id="context"
           value={formData.context || ""}
-          onChange={(e) => handleInputChange("context", e.target.value || null)}
+          onChange={(e) => handleInputChange("context", e.target.value)}
           placeholder="Brief payload/context (sanitized)"
           className={`min-h-32 resize-none`}
         />
