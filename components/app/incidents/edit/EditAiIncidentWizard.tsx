@@ -100,11 +100,11 @@ const EditAiIncidentWizard: React.FC<EditAiIncidentWizardProps> = ({ incidentId 
           "domain",
           "severity",
           "status",
+          "incident_commander",
+          "response_team",
         ]);
       case 2:
         return await trigger([
-          "incident_commander",
-          "response_team",
           "primary_regulatory_framework",
           "notification_requirement",
         ]);
@@ -131,9 +131,9 @@ const EditAiIncidentWizard: React.FC<EditAiIncidentWizardProps> = ({ incidentId 
   const getCurrentStepFields = (step: number): (keyof AiIncidentFormData)[] => {
     switch (step) {
       case 1:
-        return ["title", "summary", "incident_type", "domain", "severity", "status"];
+        return ["title", "summary", "incident_type", "domain", "severity", "status", "incident_commander", "response_team"];
       case 2:
-        return ["incident_commander", "response_team", "primary_regulatory_framework", "notification_requirement"];
+        return ["primary_regulatory_framework", "notification_requirement"];
       case 3:
         return ["estimated_impacted_records", "data_types_impacted"];
       case 4:

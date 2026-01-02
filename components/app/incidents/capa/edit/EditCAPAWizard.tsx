@@ -83,7 +83,7 @@ const EditCAPAWizard: React.FC<EditCAPAWizardProps> = ({ capaId }) => {
         status: capa.status,
         success_criteria: capa.success_criteria || null,
         linked_training: capa.linked_training || null,
-        estimated_cost: capa.estimated_cost || null,
+        estimated_cost: capa.estimated_cost ? Number(capa.estimated_cost) : null,
         verification_result: capa.verification_result || null,
         effectiveness_review_date: formatDateForInput(capa.effectiveness_review_date),
         evidence_link: capa.evidence_link || null,

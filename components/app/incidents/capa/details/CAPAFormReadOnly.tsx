@@ -267,7 +267,7 @@ const CAPAFormReadOnly: React.FC<CAPAFormReadOnlyProps> = ({ capa }) => {
             <div>
               <Label className="text-xs text-gray-500">Estimated Cost</Label>
               <p className="font-medium text-sm mt-1">
-                ${capa.estimated_cost.toFixed(2)}
+                ${Number(capa.estimated_cost).toFixed(2)}
               </p>
             </div>
           )}
