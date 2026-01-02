@@ -18,6 +18,7 @@ import {
   Domain,
   IncidentSeverity,
   IncidentStatus,
+  ResponseTeam,
 } from "@/app/lib/features/aiIncidentsApi";
 
 const INCIDENT_TYPE_OPTIONS = [
@@ -65,6 +66,20 @@ const STATUS_OPTIONS = [
   { value: IncidentStatus.REOPENED, label: "Reopened" },
 ];
 
+const RESPONSE_TEAM_OPTIONS = [
+  { value: ResponseTeam.AI_GOVERNANCE, label: "AI Governance" },
+  { value: ResponseTeam.DATA_PRIVACY_OFFICE, label: "Data Privacy Office" },
+  { value: ResponseTeam.DATA_GOVERNANCE, label: "Data Governance" },
+  { value: ResponseTeam.ML_ENGINEERING, label: "ML Engineering" },
+  { value: ResponseTeam.DATA_ENGINEERING, label: "Data Engineering" },
+  { value: ResponseTeam.INFORMATION_SECURITY, label: "Information Security" },
+  { value: ResponseTeam.LEGAL, label: "Legal" },
+  { value: ResponseTeam.COMPLIANCE, label: "Compliance" },
+  { value: ResponseTeam.EXECUTIVE_LEADERSHIP, label: "Executive Leadership" },
+  { value: ResponseTeam.PRODUCT, label: "Product" },
+  { value: ResponseTeam.CUSTOMER_SUCCESS, label: "Customer Success" },
+];
+
 export const BasicInformationStep: React.FC = () => {
   const {
     register,
@@ -82,7 +97,7 @@ export const BasicInformationStep: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
-          Basic Information & Classification
+          Basic Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 md:col-span-2">
@@ -93,7 +108,7 @@ export const BasicInformationStep: React.FC = () => {
               id="title"
               {...register("title")}
               className={hasError("title") ? "border-destructive" : ""}
-              placeholder="Short, descriptive name"
+              placeholder="Short, descriptive incident name"
             />
             {getError("title") && (
               <p className="text-sm text-destructive">{getError("title")}</p>
@@ -108,7 +123,7 @@ export const BasicInformationStep: React.FC = () => {
               id="summary"
               {...register("summary")}
               className={`min-h-32 resize-none ${hasError("summary") ? "border-destructive" : ""}`}
-              placeholder="Short narrative of what happened"
+              placeholder="Brief narrative of what happened and current impact"
             />
             {getError("summary") && (
               <p className="text-sm text-destructive">{getError("summary")}</p>
@@ -212,6 +227,46 @@ export const BasicInformationStep: React.FC = () => {
             </Select>
             {getError("status") && (
               <p className="text-sm text-destructive">{getError("status")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="incident_commander">
+              Incident Commander <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="incident_commander"
+              {...register("incident_commander")}
+              className={hasError("incident_commander") ? "border-destructive" : ""}
+              placeholder="Name of assigned commander"
+            />
+            {getError("incident_commander") && (
+              <p className="text-sm text-destructive">{getError("incident_commander")}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="response_team">
+              Response Team <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              key={`response_team-${watch("response_team") || "none"}`}
+              value={watch("response_team")}
+              onValueChange={(value) => setValue("response_team", value as ResponseTeam)}
+            >
+              <SelectTrigger className={`w-full ${hasError("response_team") ? "border-destructive" : ""}`}>
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent>
+                {RESPONSE_TEAM_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {getError("response_team") && (
+              <p className="text-sm text-destructive">{getError("response_team")}</p>
             )}
           </div>
         </div>

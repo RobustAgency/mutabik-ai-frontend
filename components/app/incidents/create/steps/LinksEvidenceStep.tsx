@@ -49,12 +49,15 @@ export const LinksEvidenceStep: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
-          Links & Evidence
+          Links & References
         </h3>
+        <p className="text-sm text-[#667085]">
+          Connect this incident to related assets for full traceability.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="ai_model_id">AI Model</Label>
+              <Label htmlFor="ai_model_id">Linked Model</Label>
               {selectedModel && (
                 <Link
                   href={`/core-assets/ai-models/${selectedModel.id}`}
@@ -79,6 +82,7 @@ export const LinksEvidenceStep: React.FC = () => {
               modalForm={AiModelModalForm}
               placeholder="Select AI model"
             />
+            <p className="text-xs text-[#667085]">From Model Registry</p>
           </div>
 
           <div className="space-y-2">
@@ -108,11 +112,12 @@ export const LinksEvidenceStep: React.FC = () => {
               modalForm={DatasetModalForm}
               placeholder="Select dataset"
             />
+            <p className="text-xs text-[#667085]">From Dataset Registry</p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="linked_risk_id">Linked Risk ID</Label>
+              <Label htmlFor="linked_risk_id">Linked Risk</Label>
               {selectedRisk && (
                 <Link
                   href={`/risk-compliance/ai-risk-management/register/${selectedRisk.id}`}
@@ -137,6 +142,7 @@ export const LinksEvidenceStep: React.FC = () => {
               modalForm={AiRiskRegisterModalForm}
               placeholder="Select risk from register"
             />
+            <p className="text-xs text-[#667085]">From Risk Register</p>
           </div>
 
           <div className="space-y-2 md:col-span-2">
@@ -147,6 +153,7 @@ export const LinksEvidenceStep: React.FC = () => {
               {...register("evidence_link")}
               placeholder="https://example.com/evidence"
             />
+            <p className="text-xs text-[#667085]">Link to logs, tickets, or documentation</p>
             {getError("evidence_link") && (
               <p className="text-sm text-destructive">{getError("evidence_link")}</p>
             )}

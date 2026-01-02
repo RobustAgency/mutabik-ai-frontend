@@ -11,27 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 import type { AiIncidentFormData } from "@/lib/schemas/aiIncident.schema";
 import {
-  ResponseTeam,
   PrimaryRegulatoryFramework,
   NotificationRequirement,
   ResidencyAffected,
 } from "@/app/lib/features/aiIncidentsApi";
-
-const RESPONSE_TEAM_OPTIONS = [
-  { value: ResponseTeam.AI_GOVERNANCE, label: "AI Governance" },
-  { value: ResponseTeam.DATA_PRIVACY_OFFICE, label: "Data Privacy Office" },
-  { value: ResponseTeam.DATA_GOVERNANCE, label: "Data Governance" },
-  { value: ResponseTeam.ML_ENGINEERING, label: "ML Engineering" },
-  { value: ResponseTeam.DATA_ENGINEERING, label: "Data Engineering" },
-  { value: ResponseTeam.INFORMATION_SECURITY, label: "Information Security" },
-  { value: ResponseTeam.LEGAL, label: "Legal" },
-  { value: ResponseTeam.COMPLIANCE, label: "Compliance" },
-  { value: ResponseTeam.EXECUTIVE_LEADERSHIP, label: "Executive Leadership" },
-  { value: ResponseTeam.PRODUCT, label: "Product" },
-  { value: ResponseTeam.CUSTOMER_SUCCESS, label: "Customer Success" },
-];
 
 const REGULATORY_FRAMEWORK_OPTIONS = [
   { value: PrimaryRegulatoryFramework.GDPR, label: "GDPR" },
@@ -87,49 +74,15 @@ export const ResponseGovernanceStep: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">
-          Response & Governance
+          Classification & Compliance
         </h3>
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            Classification determines regulatory notification requirements and escalation paths
+          </AlertDescription>
+        </Alert>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="incident_commander">
-              Incident Commander <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="incident_commander"
-              {...register("incident_commander")}
-              className={hasError("incident_commander") ? "border-destructive" : ""}
-              placeholder="Name of incident commander"
-            />
-            {getError("incident_commander") && (
-              <p className="text-sm text-destructive">{getError("incident_commander")}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="response_team">
-              Response Team <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              key={`response_team-${watch("response_team") || "none"}`}
-              value={watch("response_team")}
-              onValueChange={(value) => setValue("response_team", value as ResponseTeam)}
-            >
-              <SelectTrigger className={`w-full ${hasError("response_team") ? "border-destructive" : ""}`}>
-                <SelectValue placeholder="Select response team" />
-              </SelectTrigger>
-              <SelectContent>
-                {RESPONSE_TEAM_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {getError("response_team") && (
-              <p className="text-sm text-destructive">{getError("response_team")}</p>
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="primary_regulatory_framework">
               Primary Regulatory Framework <span className="text-red-500">*</span>
@@ -205,8 +158,9 @@ export const ResponseGovernanceStep: React.FC = () => {
             <Input
               id="regulatory_reference"
               {...register("regulatory_reference")}
-              placeholder="Reference number or identifier"
+              placeholder="e.g., GDPR Art. 33, UAE PDPL Section X"
             />
+            <p className="text-xs text-[#667085]">Specific regulation article if applicable</p>
           </div>
         </div>
       </div>

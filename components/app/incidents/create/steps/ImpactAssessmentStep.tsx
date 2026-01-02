@@ -92,7 +92,7 @@ export const ImpactAssessmentStep: React.FC = () => {
               type="number"
               min="0"
               {...register("estimated_impacted_users", { valueAsNumber: true })}
-              placeholder="Number of users"
+              placeholder="Number or 'Internal Only'"
             />
           </div>
 
@@ -106,7 +106,7 @@ export const ImpactAssessmentStep: React.FC = () => {
               min="0"
               {...register("estimated_impacted_records", { valueAsNumber: true })}
               className={hasError("estimated_impacted_records") ? "border-destructive" : ""}
-              placeholder="Number of records"
+              placeholder="Number of data records affected"
             />
             {getError("estimated_impacted_records") && (
               <p className="text-sm text-destructive">{getError("estimated_impacted_records")}</p>
@@ -155,7 +155,7 @@ export const ImpactAssessmentStep: React.FC = () => {
               id="business_impact_description"
               {...register("business_impact_description")}
               className="min-h-32 resize-none"
-              placeholder="Describe the business impact"
+              placeholder="Describe operational, reputational, or financial impact"
             />
           </div>
 
@@ -164,7 +164,7 @@ export const ImpactAssessmentStep: React.FC = () => {
             <Input
               id="impacted_systems"
               {...register("impacted_systems")}
-              placeholder="List of impacted systems"
+              placeholder="List affected systems, models, or services"
             />
           </div>
         </div>
