@@ -5,7 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreateIncidentNotificationData } from "@/app/lib/features/incidentNotificationsApi";
+import { 
+  CreateIncidentNotificationData,
+  AudienceType,
+  Channel,
+  DeliveryStatus
+} from "@/app/lib/features/incidentNotificationsApi";
 import { useGetAiIncidentsQuery } from "@/app/lib/features/aiIncidentsApi";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import AiIncidentModalForm from "@/components/app/incidents/create/AiIncidentModalForm";
@@ -24,7 +29,12 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const isExternalAudience = ["customers", "regulator", "vendor", "media"].includes(formData.audience_type);
+  const isExternalAudience = [
+    AudienceType.DATA_PROTECTION_AUTHORITY,
+    AudienceType.AFFECTED_DATA_SUBJECTS,
+    AudienceType.EXTERNAL_PARTNERS,
+    AudienceType.MEDIA_PUBLIC,
+  ].includes(formData.audience_type);
 
   return (
     <div className="space-y-4">
@@ -56,43 +66,53 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
 
       <div className="space-y-2">
         <Label>Audience Type <span className="text-red-500">*</span></Label>
-        <Select key={`audience_type-${formData.audience_type || "none"}`} value={formData.audience_type} onValueChange={(value) => handleInputChange("audience_type", value)}>
+        <Select key={`audience_type-${formData.audience_type || "none"}`} value={formData.audience_type} onValueChange={(value) => handleInputChange("audience_type", value as AudienceType)}>
           <SelectTrigger className={`w-full ${errors.audience_type ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="internal_exec">Internal Executive</SelectItem>
-            <SelectItem value="internal_staff">Internal Staff</SelectItem>
-            <SelectItem value="customers">Customers</SelectItem>
-            <SelectItem value="regulator">Regulator</SelectItem>
-            <SelectItem value="vendor">Vendor</SelectItem>
-            <SelectItem value="media">Media</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            <SelectItem value={AudienceType.INTERNAL_EXECUTIVE}>Internal Executive</SelectItem>
+            <SelectItem value={AudienceType.INTERNAL_TECHNICAL}>Internal Technical</SelectItem>
+            <SelectItem value={AudienceType.DATA_PROTECTION_AUTHORITY}>Data Protection Authority</SelectItem>
+            <SelectItem value={AudienceType.AFFECTED_DATA_SUBJECTS}>Affected Data Subjects</SelectItem>
+            <SelectItem value={AudienceType.EXTERNAL_PARTNERS}>External Partners</SelectItem>
+            <SelectItem value={AudienceType.MEDIA_PUBLIC}>Media/Public</SelectItem>
+            <SelectItem value={AudienceType.BOARD_AUDIT_COMMITTEE}>Board/Audit Committee</SelectItem>
+            <SelectItem value={AudienceType.LEGAL_COMPLIANCE}>Legal/Compliance</SelectItem>
           </SelectContent>
         </Select>
+        {errors.audience_type && (
+          <p className="text-sm text-destructive">{errors.audience_type[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label>Channel <span className="text-red-500">*</span></Label>
-        <Select key={`channel-${formData.channel || "none"}`} value={formData.channel} onValueChange={(value) => handleInputChange("channel", value)}>
+        <Select key={`channel-${formData.channel || "none"}`} value={formData.channel} onValueChange={(value) => handleInputChange("channel", value as Channel)}>
           <SelectTrigger className={`w-full ${errors.channel ? "border-destructive" : ""}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="email">Email</SelectItem>
-            <SelectItem value="portal">Portal</SelectItem>
-            <SelectItem value="status_page">Status Page</SelectItem>
-            <SelectItem value="phone">Phone</SelectItem>
-            <SelectItem value="meeting">Meeting</SelectItem>
-            <SelectItem value="legal_letter">Legal Letter</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            <SelectItem value={Channel.EMAIL}>Email</SelectItem>
+            <SelectItem value={Channel.SMS}>SMS</SelectItem>
+            <SelectItem value={Channel.PORTAL_NOTIFICATION}>Portal Notification</SelectItem>
+            <SelectItem value={Channel.SLACK_TEAMS}>Slack/Teams</SelectItem>
+            <SelectItem value={Channel.FORMAL_LETTER}>Formal Letter</SelectItem>
+            <SelectItem value={Channel.PRESS_RELEASE}>Press Release</SelectItem>
+            <SelectItem value={Channel.REGULATORY_FILING}>Regulatory Filing</SelectItem>
           </SelectContent>
         </Select>
+        {errors.channel && (
+          <p className="text-sm text-destructive">{errors.channel[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label>Notice Summary <span className="text-red-500">*</span></Label>
         <Textarea required value={formData.notice_summary} onChange={(e) => handleInputChange("notice_summary", e.target.value)} className="min-h-32 resize-none" />
+        {errors.notice_summary && (
+          <p className="text-sm text-destructive">{errors.notice_summary[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -101,20 +121,35 @@ const IncidentNotificationForm: React.FC<IncidentNotificationFormProps> = ({ for
       </div>
 
       <div className="space-y-2">
-        <Label>Notified At <span className="text-red-500">*</span></Label>
-        <Input type="datetime-local" value={formData.notified_at} onChange={(e) => handleInputChange("notified_at", e.target.value)} />
+        <Label>Sent At <span className="text-red-500">*</span></Label>
+        <Input type="datetime-local" value={formData.sent_at} onChange={(e) => handleInputChange("sent_at", e.target.value)} />
+        {errors.sent_at && (
+          <p className="text-sm text-destructive">{errors.sent_at[0]}</p>
+        )}
       </div>
 
-      {isExternalAudience && (
-        <div className="space-y-2">
-          <Label>Approved By <span className="text-red-500">*</span></Label>
-          <Input value={formData.approved_by || ""} onChange={(e) => handleInputChange("approved_by", e.target.value || null)} />
-        </div>
-      )}
+      <div className="space-y-2">
+        <Label>Sent By</Label>
+        <Input value={formData.sent_by || ""} onChange={(e) => handleInputChange("sent_by", e.target.value || null)} />
+      </div>
 
       <div className="space-y-2">
-        <Label>Approval Reference</Label>
-        <Input value={formData.approval_ref || ""} onChange={(e) => handleInputChange("approval_ref", e.target.value || null)} />
+        <Label>Delivery Status <span className="text-red-500">*</span></Label>
+        <Select key={`delivery_status-${formData.delivery_status || "none"}`} value={formData.delivery_status} onValueChange={(value) => handleInputChange("delivery_status", value as DeliveryStatus)}>
+          <SelectTrigger className={`w-full ${errors.delivery_status ? "border-destructive" : ""}`}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={DeliveryStatus.DRAFT}>Draft</SelectItem>
+            <SelectItem value={DeliveryStatus.SENT}>Sent</SelectItem>
+            <SelectItem value={DeliveryStatus.DELIVERED}>Delivered</SelectItem>
+            <SelectItem value={DeliveryStatus.ACKNOWLEDGED}>Acknowledged</SelectItem>
+            <SelectItem value={DeliveryStatus.FAILED}>Failed</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.delivery_status && (
+          <p className="text-sm text-destructive">{errors.delivery_status[0]}</p>
+        )}
       </div>
 
       <div className="space-y-2">

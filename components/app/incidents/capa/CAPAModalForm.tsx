@@ -6,7 +6,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import CAPAForm from "./create/CAPAForm";
-import { CreateCorrectivePreventiveActionData, useCreateCorrectivePreventiveActionMutation } from "@/app/lib/features/correctivePreventiveActionsApi";
+import { 
+  CreateCorrectivePreventiveActionData, 
+  useCreateCorrectivePreventiveActionMutation,
+  SourceType,
+  CapaType,
+  Priority,
+  OwnerTeam,
+  Status,
+  VerificationResult
+} from "@/app/lib/features/correctivePreventiveActionsApi";
 import {
   validateTextField,
   createValidationErrors,
@@ -23,33 +32,34 @@ const CAPAModalForm: React.FC<CAPAModalFormProps> = ({ isOpen, onClose, incident
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const [formData, setFormData] = useState<CreateCorrectivePreventiveActionData>({
-    source_type: "incident",
-    source_id: incidentId ? String(incidentId) : "",
-    model_id: null,
+    source_type: SourceType.INCIDENT,
+    source_reference: incidentId ? String(incidentId) : "",
+    ai_model_id: null,
+    dataset_id: null,
     title: "",
-    capa_type: "corrective",
-    priority: "medium",
-    owner_team: "product_ops",
+    capa_type: CapaType.CORRECTIVE,
+    priority: Priority.MEDIUM,
+    owner_team: OwnerTeam.AI_GOVERNANCE,
     assignee: null,
     root_cause: null,
-    actions: null,
+    actions: "",
     due_date: "",
-    status: "new",
-    verification_result: "pending",
+    status: Status.NEW,
+    verification_result: null,
     evidence_link: null,
   });
 
   const validateForm = (): boolean => {
     const fieldErrors: Record<string, string[]> = {
       source_type: validateTextField(formData.source_type, { required: true, messages: { required: "Source type is required" } }),
-      source_id: validateTextField(formData.source_id, { required: true, messages: { required: "Source ID is required" } }),
+      source_reference: validateTextField(formData.source_reference, { required: true, messages: { required: "Source reference is required" } }),
       title: validateTextField(formData.title, { required: true, messages: { required: "Title is required" } }),
       capa_type: validateTextField(formData.capa_type, { required: true, messages: { required: "CAPA type is required" } }),
       priority: validateTextField(formData.priority, { required: true, messages: { required: "Priority is required" } }),
       owner_team: validateTextField(formData.owner_team, { required: true, messages: { required: "Owner team is required" } }),
+      actions: validateTextField(formData.actions, { required: true, messages: { required: "Actions is required" } }),
       due_date: validateTextField(formData.due_date, { required: true, messages: { required: "Due date is required" } }),
       status: validateTextField(formData.status, { required: true, messages: { required: "Status is required" } }),
-      verification_result: validateTextField(formData.verification_result, { required: true, messages: { required: "Verification result is required" } }),
     };
 
     const validationErrors = createValidationErrors(fieldErrors);
