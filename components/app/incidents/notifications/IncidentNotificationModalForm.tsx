@@ -6,7 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import IncidentNotificationForm from "./create/IncidentNotificationForm";
-import { CreateIncidentNotificationData, useCreateIncidentNotificationMutation } from "@/app/lib/features/incidentNotificationsApi";
+import { 
+  CreateIncidentNotificationData, 
+  useCreateIncidentNotificationMutation,
+  AudienceType,
+  Channel,
+  DeliveryStatus
+} from "@/app/lib/features/incidentNotificationsApi";
 import {
   validateTextField,
   createValidationErrors,
@@ -24,17 +30,29 @@ const IncidentNotificationModalForm: React.FC<IncidentNotificationModalFormProps
 
   const [formData, setFormData] = useState<CreateIncidentNotificationData>({
     ai_incident_id: incidentId || 0,
-    audience_type: "internal_exec",
-    channel: "email",
+    template: null,
+    language: null,
+    regulatory_basis: null,
+    notification_deadline: null,
+    audience_type: AudienceType.INTERNAL_EXECUTIVE,
+    channel: Channel.EMAIL,
     notice_summary: "",
     notice_link: null,
-    notified_at: "",
-    approved_by: null,
-    approval_ref: null,
+    sent_at: "",
+    sent_by: null,
+    delivery_status: DeliveryStatus.DRAFT,
+    response_summary: null,
     follow_up_required: false,
+    follow_up_date: null,
+    follow_up_notes: null,
   });
 
-  const isExternalAudience = ["customers", "regulator", "vendor", "media"].includes(formData.audience_type);
+  const isExternalAudience = [
+    AudienceType.DATA_PROTECTION_AUTHORITY,
+    AudienceType.AFFECTED_DATA_SUBJECTS,
+    AudienceType.EXTERNAL_PARTNERS,
+    AudienceType.MEDIA_PUBLIC,
+  ].includes(formData.audience_type);
 
   const validateForm = (): boolean => {
     const fieldErrors: Record<string, string[]> = {
@@ -54,15 +72,15 @@ const IncidentNotificationModalForm: React.FC<IncidentNotificationModalFormProps
         required: true,
         messages: { required: "Notice summary is required" },
       }),
-      notified_at: validateTextField(formData.notified_at, {
+      sent_at: validateTextField(formData.sent_at, {
         required: true,
-        messages: { required: "Notified at is required" },
+        messages: { required: "Sent at is required" },
+      }),
+      delivery_status: validateTextField(formData.delivery_status, {
+        required: true,
+        messages: { required: "Delivery status is required" },
       }),
     };
-
-    if (isExternalAudience && !formData.approved_by?.trim()) {
-      fieldErrors.approved_by = ["Approved by is required for external communications"];
-    }
 
     const validationErrors = createValidationErrors(fieldErrors);
     setErrors(validationErrors);
@@ -110,7 +128,7 @@ const IncidentNotificationModalForm: React.FC<IncidentNotificationModalFormProps
           <IncidentNotificationForm formData={formData} setFormData={setFormData} errors={errors} />
           <div className="flex gap-3 mt-6">
             <Button type="submit" disabled={isLoading} className="bg-[#4FD58F] text-white">
-              {isLoading ? "Sending..." : isExternalAudience ? "Submit for Approval" : "Send Notification"}
+              {isLoading ? "Creating..." : "Create Notification"}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

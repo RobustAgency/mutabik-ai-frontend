@@ -101,13 +101,6 @@ export const GovernanceStep: React.FC = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="approved_by">Approved By</Label>
-              <Link
-                href="/core-assets/stakeholders"
-                className="text-sm text-[#4FD58F] hover:underline flex items-center gap-1"
-              >
-                Manage
-                <ExternalLink className="h-3 w-3" />
-              </Link>
             </div>
             <Select
               key={`approved_by-${approvedBy || "none"}`}

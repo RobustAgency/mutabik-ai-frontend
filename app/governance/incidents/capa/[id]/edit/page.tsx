@@ -1,4 +1,4 @@
-import EditCAPA from '@/components/app/incidents/capa/edit/EditCAPA'
+import EditCAPAWizard from '@/components/app/incidents/capa/edit/EditCAPAWizard'
 import React, { use } from 'react'
 
 interface EditCAPAPageProps {
@@ -7,7 +7,7 @@ interface EditCAPAPageProps {
 
 const EditCAPAPage = ({ params }: EditCAPAPageProps) => {
   const { id } = use(params);
-  return <EditCAPA capaId={id} />;
+  return <EditCAPAWizard capaId={Number(id)} />;
 };
 
 export default EditCAPAPage;

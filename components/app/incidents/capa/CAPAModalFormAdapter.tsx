@@ -8,6 +8,11 @@ import CAPAForm from "./create/CAPAForm";
 import {
   useCreateCorrectivePreventiveActionMutation,
   CreateCorrectivePreventiveActionData,
+  SourceType,
+  CapaType,
+  Priority,
+  OwnerTeam,
+  Status,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import {
   validateTextField,
@@ -23,19 +28,20 @@ const CAPAModalFormAdapter: React.FC<{
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const [formData, setFormData] = useState<CreateCorrectivePreventiveActionData>({
-    source_type: "risk",
-    source_id: "",
-    model_id: null,
+    source_type: SourceType.RISK_ASSESSMENT,
+    source_reference: "",
+    ai_model_id: null,
+    dataset_id: null,
     title: "",
-    capa_type: "corrective",
-    priority: "medium",
-    owner_team: "product_ops",
+    capa_type: CapaType.CORRECTIVE,
+    priority: Priority.MEDIUM,
+    owner_team: OwnerTeam.AI_GOVERNANCE,
     assignee: null,
     root_cause: null,
-    actions: null,
+    actions: "",
     due_date: "",
-    status: "new",
-    verification_result: "pending",
+    status: Status.NEW,
+    verification_result: null,
     evidence_link: null,
   });
 
@@ -45,9 +51,9 @@ const CAPAModalFormAdapter: React.FC<{
         required: true,
         messages: { required: "Source type is required" },
       }),
-      source_id: validateTextField(formData.source_id, {
+      source_reference: validateTextField(formData.source_reference, {
         required: true,
-        messages: { required: "Source ID is required" },
+        messages: { required: "Source reference is required" },
       }),
       title: validateTextField(formData.title, {
         required: true,
@@ -65,6 +71,10 @@ const CAPAModalFormAdapter: React.FC<{
         required: true,
         messages: { required: "Owner team is required" },
       }),
+      actions: validateTextField(formData.actions, {
+        required: true,
+        messages: { required: "Actions is required" },
+      }),
       due_date: validateTextField(formData.due_date, {
         required: true,
         messages: { required: "Due date is required" },
@@ -72,10 +82,6 @@ const CAPAModalFormAdapter: React.FC<{
       status: validateTextField(formData.status, {
         required: true,
         messages: { required: "Status is required" },
-      }),
-      verification_result: validateTextField(formData.verification_result, {
-        required: true,
-        messages: { required: "Verification result is required" },
       }),
     };
 

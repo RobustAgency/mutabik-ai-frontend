@@ -11,6 +11,7 @@ import {
   useDeleteIncidentRootCauseAnalysisMutation,
   IncidentRootCauseAnalysis,
   IncidentRootCauseAnalysisFilters,
+  RcaMethod,
 } from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
@@ -41,15 +42,15 @@ const IncidentRootCauseAnalyses: React.FC = () => {
 
   const columns: ColumnDef<IncidentRootCauseAnalysis>[] = [
     {
-      accessorKey: "display_id",
+      accessorKey: "id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Root Cause Analysis ID
+          RCA ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {row.original.display_id || `#${row.original.id}`}
         </div>
       ),
     },
@@ -60,7 +61,11 @@ const IncidentRootCauseAnalyses: React.FC = () => {
           Incident ID
         </div>
       ),
-      cell: ({ getValue }) => `#${getValue() as number}`,
+      cell: ({ getValue }) => (
+        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+          #{getValue() as number}
+        </div>
+      ),
     },
     {
       accessorKey: "rca_method",
@@ -70,15 +75,34 @@ const IncidentRootCauseAnalyses: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const method = getValue() as string;
-        return method.replace(/_/g, " ").toUpperCase();
+        const method = getValue() as RcaMethod;
+        const labels: Record<RcaMethod, string> = {
+          [RcaMethod.FIVE_WHYS]: "5 Whys",
+          [RcaMethod.FISHBONE]: "Fishbone",
+          [RcaMethod.FAULT_TREE]: "Fault Tree",
+          [RcaMethod.EVENT_CAUSAL]: "Event Causal",
+          [RcaMethod.CHANGE]: "Change",
+          [RcaMethod.TIMELINE]: "Timeline",
+          [RcaMethod.BARRIER]: "Barrier",
+          [RcaMethod.COMBINED]: "Combined",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[method] || method}
+          </div>
+        );
       },
     },
     {
-      accessorKey: "approved_by",
+      accessorKey: "lead_analyst",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Approved By
+          Lead Analyst
+        </div>
+      ),
+      cell: ({ getValue }) => (
+        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+          {getValue() as string}
         </div>
       ),
     },
@@ -89,7 +113,15 @@ const IncidentRootCauseAnalyses: React.FC = () => {
           Approved At
         </div>
       ),
-      cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
+      cell: ({ getValue }) => {
+        const date = getValue() as string | null | undefined;
+        if (!date) return "Not approved";
+        try {
+          return new Date(date).toLocaleDateString();
+        } catch {
+          return date;
+        }
+      },
     },
     {
       id: "actions",
@@ -172,6 +204,9 @@ const IncidentRootCauseAnalyses: React.FC = () => {
                   : undefined
               }
               onPageChange={setCurrentPage}
+              onRowClick={(row) => {
+                router.push(`/governance/incidents/rca/${row.id}/details`);
+              }}
             />
           </Card>
         </CardContent>

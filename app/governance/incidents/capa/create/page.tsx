@@ -1,12 +1,12 @@
-import CreateCAPA from '@/components/app/incidents/capa/create/CreateCAPA'
+import CreateCAPAWizard from '@/components/app/incidents/capa/create/CreateCAPAWizard'
 import React from 'react'
 
 const page = () => {
-    return (
-        <div>
-            <CreateCAPA />
-        </div>
-    )
+  return (
+    <>
+      <CreateCAPAWizard />
+    </>
+  )
 }
 
 export default page

@@ -11,9 +11,37 @@ import {
   useDeleteIncidentActionMutation,
   IncidentAction,
   IncidentActionFilters,
+  ActionType,
+  ExecutionStatus,
+  ValidationResult,
 } from "@/app/lib/features/incidentActionsApi";
+import { useGetStakeholderQuery } from "@/app/lib/features/stakeholdersApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+
+// Component to display stakeholder name
+const PerformedByCell: React.FC<{ performedById: number }> = ({
+  performedById,
+}) => {
+  const { data: stakeholder, isLoading } = useGetStakeholderQuery(
+    performedById,
+    { skip: !performedById }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+      {stakeholder?.display_name || `ID: ${performedById}`}
+    </div>
+  );
+};
 
 const IncidentActions: React.FC = () => {
   const router = useRouter();
@@ -63,15 +91,15 @@ const IncidentActions: React.FC = () => {
 
   const columns: ColumnDef<IncidentAction>[] = [
     {
-      accessorKey: "display_id",
+      accessorKey: "id",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           Action ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {row.original.display_id || `#${row.original.id}`}
         </div>
       ),
     },
@@ -96,8 +124,50 @@ const IncidentActions: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const type = getValue() as string;
-        return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const type = getValue() as ActionType;
+        const labels: Record<ActionType, string> = {
+          [ActionType.KILL_SWITCH]: "Kill Switch",
+          [ActionType.MODEL_ROLLBACK]: "Model Rollback",
+          [ActionType.DATA_ISOLATION]: "Data Isolation",
+          [ActionType.ACCESS_REVOCATION]: "Access Revocation",
+          [ActionType.SYSTEM_PATCH]: "System Patch",
+          [ActionType.CONFIGURATION_CHANGE]: "Configuration Change",
+          [ActionType.COMMUNICATION_NOTIFICATION]: "Communication/Notification",
+          [ActionType.INVESTIGATION]: "Investigation",
+          [ActionType.CONTAINMENT]: "Containment",
+          [ActionType.ERADICATION]: "Eradication",
+          [ActionType.RECOVERY]: "Recovery",
+          [ActionType.DOCUMENTATION]: "Documentation",
+          [ActionType.OTHER]: "Other",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[type] || type}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "execution_status",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Status
+        </div>
+      ),
+      cell: ({ getValue }) => {
+        const status = getValue() as ExecutionStatus;
+        const labels: Record<ExecutionStatus, string> = {
+          [ExecutionStatus.PLANNED]: "Planned",
+          [ExecutionStatus.IN_PROGRESS]: "In Progress",
+          [ExecutionStatus.COMPLETED]: "Completed",
+          [ExecutionStatus.FAILED]: "Failed",
+          [ExecutionStatus.ROLLED_BACK]: "Rolled Back",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[status] || status}
+          </div>
+        );
       },
     },
     {
@@ -107,6 +177,10 @@ const IncidentActions: React.FC = () => {
           Performed By
         </div>
       ),
+      cell: ({ row }) => {
+        const action = row.original;
+        return <PerformedByCell performedById={action.performed_by} />;
+      },
     },
     {
       accessorKey: "validation_result",
@@ -115,6 +189,20 @@ const IncidentActions: React.FC = () => {
           Validation
         </div>
       ),
+      cell: ({ getValue }) => {
+        const result = getValue() as ValidationResult;
+        const labels: Record<ValidationResult, string> = {
+          [ValidationResult.PENDING]: "Pending",
+          [ValidationResult.PARTIALLY_EFFECTIVE]: "Partially Effective",
+          [ValidationResult.EFFECTIVE]: "Effective",
+          [ValidationResult.INEFFECTIVE]: "Ineffective",
+        };
+        return (
+          <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#1D2939]">
+            {labels[result] || result}
+          </div>
+        );
+      },
     },
     {
       id: "actions",
@@ -190,6 +278,9 @@ const IncidentActions: React.FC = () => {
                   : undefined
               }
               onPageChange={setCurrentPage}
+              onRowClick={(row) => {
+                router.push(`/governance/incidents/actions/${row.id}/details`);
+              }}
             />
           </Card>
         </CardContent>

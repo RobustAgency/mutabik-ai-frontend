@@ -1,6 +1,16 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { axiosBaseQuery, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  transformListResponseWithPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Enums
 export enum VendorType {
@@ -119,55 +129,8 @@ export const vendorsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) => {
-        if (!result) {
-          return [{ type: "Vendor", id: "LIST" }];
-        }
-        // Handle transformed response format
-        const vendors = result.data && Array.isArray(result.data) ? result.data : [];
-        return [
-          ...vendors.map(({ id }) => ({ type: "Vendor" as const, id: String(id) })),
-          { type: "Vendor", id: "LIST" },
-        ];
-      },
-      transformResponse: (response: {
-        data: {
-          data: Vendor[];
-          current_page: number;
-          per_page: number;
-          total: number;
-          last_page: number;
-          from: number;
-          to: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from: response.data.from,
-              to: response.data.to,
-            },
-          };
-        }
-        return {
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 15,
-            total: 0,
-            last_page: 1,
-            from: 0,
-            to: 0,
-          },
-        };
-      },
+      transformResponse: transformListResponseWithPagination<Vendor>,
+      providesTags: (result) => createListTags(result, "Vendor"),
     }),
 
     getVendor: builder.query<Vendor, string | number>({
@@ -175,17 +138,8 @@ export const vendorsApi = createApi({
         url: `/vendors/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Vendor", id: String(id) }],
-      transformResponse: (response: {
-        data: Vendor;
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as Vendor;
-      },
+      transformResponse: transformSingleItemResponse<Vendor>,
+      providesTags: createItemTags("Vendor"),
     }),
 
     getVendorStatistics: builder.query<
@@ -224,19 +178,10 @@ export const vendorsApi = createApi({
         { type: "Vendor", id: "LIST" },
         { type: "Vendor", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor created successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create vendor";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Vendor created successfully",
+        "Failed to create vendor"
+      ),
     }),
 
     updateVendor: builder.mutation<
@@ -253,19 +198,10 @@ export const vendorsApi = createApi({
         { type: "Vendor", id: "LIST" },
         { type: "Vendor", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor updated successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update vendor";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Vendor updated successfully",
+        "Failed to update vendor"
+      ),
     }),
 
     deleteVendor: builder.mutation<void, number>({
@@ -278,17 +214,10 @@ export const vendorsApi = createApi({
         { type: "Vendor", id: "LIST" },
         { type: "Vendor", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete vendor";
-          toast.error(errorMessage);
-        }
-      },
+      onQueryStarted: createDeleteToastHandler(
+        "Vendor deleted successfully",
+        "Failed to delete vendor"
+      ),
     }),
   }),
 });
