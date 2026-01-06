@@ -466,4 +466,9 @@ export const userRoutes: RouteItem[] = [
       },
     ],
   },
+  {
+    href: "/users",
+    label: "Users",
+    icon: Users,
+  },
 ];

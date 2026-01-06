@@ -6,7 +6,7 @@ export interface User {
   name: string;
   email: string;
   role?: string;
-  [key: string]: any;
+  
 }
 
 export interface UserFilters {
@@ -69,8 +69,15 @@ export const usersApi = createApi({
             ]
           : [{ type: "User" as const, id: "ORG_LIST" }],
     }),
+    deleteUser: builder.mutation<{ success: boolean }, number>({
+      query: (userId) => ({
+        url: `/members/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "User", id: "ORG_LIST" }],
+    }),
   }),
 });
 
-export const { useGetUsersQuery, useGetOrganizationUsersQuery } = usersApi;
+export const { useGetUsersQuery, useGetOrganizationUsersQuery, useDeleteUserMutation } = usersApi;
 
