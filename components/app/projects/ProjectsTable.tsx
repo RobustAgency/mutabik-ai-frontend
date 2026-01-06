@@ -26,11 +26,10 @@ const ProjectsTable: React.FC = () => {
   }), [filters, currentPage]);
 
   const { data, isLoading } = useGetProjectsQuery(queryParams);
-console.log("Projects data:", data);
   const projects = data?.data ?? [];
   const pagination = data?.pagination;
 
-  const handleRowClick = (project: any) => {
+  const handleRowClick = (project: Project) => {
     router.push(`/projects/${project.id}/details`);
   };
 
@@ -249,7 +248,7 @@ console.log("Projects data:", data);
 
               <TabsContent value="grid" className="mt-0">
                 <ProjectCards
-                  projects={projects as any}
+                  projects={projects}
                   pagination={pagination ? {
                     page: pagination.current_page,
                     limit: pagination.per_page,

@@ -1,32 +1,10 @@
-'use client';
+"use client";
 
 import React from "react";
 import { getGovernancePillarLabel } from "@/utils/governancePillar";
 import Pagniation from "@/components/custom/Pagniation";
 import Image from "next/image";
-
-interface User {
-  name: string;
-  
-}
-
-interface Project {
-  id: string | number;
-  name: string;
-  description: string;
-  governance_pillar: string;
-  updated_at: string;
-  progress: number;
-  users?: User[];
-  frameworks?: {
-    name?: string;
-    icon_url?: string;
-  }[];
-  framework?: {
-    name?: string;
-    icon_url?: string;
-  };
-}
+import { Project, Framework } from "@/app/lib/features/projectsApi";
 
 interface Pagination {
   page: number;
@@ -106,7 +84,7 @@ const ProjectCard = ({ project, onCardClick }: ProjectCardProps): React.ReactNod
     frameworks,
     framework,
   } = project;
-  const allFrameworks = (frameworks && frameworks.length > 0)
+  const allFrameworks: Framework[] = (frameworks && frameworks.length > 0)
     ? frameworks
     : framework
       ? [framework]
@@ -153,7 +131,7 @@ const ProjectCard = ({ project, onCardClick }: ProjectCardProps): React.ReactNod
                 <span className="text-sm text-gray-500">No frameworks</span>
               ) : (
                 <>
-                  {allFrameworks.slice(0, 3).map((fw: any, idx: number) => (
+                  {allFrameworks.slice(0, 3).map((fw: Framework | any, idx: number) => (
                     <Image
                       key={idx}
                       src={fw?.icon_url || "/projects/fraemwork-logo.png"}

@@ -199,7 +199,7 @@ export function DataTable<TData, TValue>({
             <span className="absolute left-3 text-[#A3A3A3]">
               <Search size={20} color="#A3A3A3" />
             </span>
-            <Input
+              <Input
               placeholder={searchPlaceholder}
               value={
                 serverSide
@@ -208,7 +208,7 @@ export function DataTable<TData, TValue>({
                   ""
               }
               onChange={handleSearchChange}
-              className="pl-10 pr-4 py-5 w-full text-sm text-[#A3A3A3] rounded-[8px]"
+              className="pl-10 pr-4 py-5 w-full text-sm text-[#A3A3A3] rounded-xl"
               disabled={loading}
             />
           </div>
@@ -265,7 +265,7 @@ export function DataTable<TData, TValue>({
                         <input
                           type="checkbox"
                           checked={selectedRows.includes(row.id)}
-                          className="text-[#FFFFFF] rounded-[4px] h-[16px]"
+                          className="text-[#FFFFFF] rounded-lg h-4"
                           onChange={() => handleRowCheckboxChange(row.id)}
                         />
                       </TableCell>
