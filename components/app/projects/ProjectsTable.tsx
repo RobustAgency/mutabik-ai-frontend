@@ -3,6 +3,8 @@
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ProjectCards from "@/components/ui/projectCards";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
@@ -10,12 +12,13 @@ import Image from "next/image";
 import { useGetProjectsQuery, ProjectFilters, Project } from "@/app/lib/features/projectsApi";
 import { getGovernancePillarLabel } from "@/utils/governancePillar";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { List, LayoutGrid } from "lucide-react";
 
 const ProjectsTable: React.FC = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<ProjectFilters>({});
-
+  const [viewMode, setViewMode] = React.useState<"table" | "grid">("table");
   const queryParams = React.useMemo(() => ({
     ...filters,
     page: currentPage,
@@ -23,7 +26,6 @@ const ProjectsTable: React.FC = () => {
   }), [filters, currentPage]);
 
   const { data, isLoading } = useGetProjectsQuery(queryParams);
-
   const projects = data?.data ?? [];
   const pagination = data?.pagination;
 
@@ -64,7 +66,7 @@ const ProjectsTable: React.FC = () => {
       cell: ({ getValue }) => {
         const pillarValue = getValue() as string;
         return (
-          <div className="h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium px-2">
+          <div className="h-6 flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium px-2">
             {getGovernancePillarLabel(pillarValue)}
           </div>
         );
@@ -158,7 +160,7 @@ const ProjectsTable: React.FC = () => {
       cell: ({ getValue }) => {
         const progress = getValue() as number;
         return (
-          <div className="h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium px-2">
+          <div className="h-6 flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium px-2">
             {progress}%
           </div>
         );
@@ -183,6 +185,22 @@ const ProjectsTable: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as ProjectFilters)}
               />
+              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "table" | "grid")}>
+                <TabsList className="grid grid-cols-2 bg-[#F2F4F7] rounded-lg p-1">
+                  <TabsTrigger 
+                    value="table" 
+                    className="data-[state=active]:bg-[#4FD58F] data-[state=active]:text-white rounded-md flex items-center gap-2 px-2 py-1 text-xs"
+                  >
+                    <List size={16} />
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="grid" 
+                    className="data-[state=active]:bg-[#4FD58F] data-[state=active]:text-white rounded-md flex items-center gap-2 px-2 py-1 text-xs"
+                  >
+                    <LayoutGrid size={16} />
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
               <Button
                 onClick={() => router.push(`/projects/create?step=${1}`)}
                 className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
@@ -192,38 +210,58 @@ const ProjectsTable: React.FC = () => {
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
-            <DataTable
-              columns={columns}
-              data={projects}
-              variant="projects"
-              loading={isLoading}
-              serverSide={true}
-              onRowClick={handleRowClick}
-              pagination={
-                pagination
-                  ? {
-                      page: pagination.current_page,
-                      limit: pagination.per_page,
-                      total: pagination.total,
-                      totalPages: pagination.last_page,
-                    }
-                  : undefined
-              }
-              onPageChange={handlePageChange}
-              emptyState={{
-                title: "No projects found",
-                description: "Get started by creating your first project",
-                action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/projects/create?step=1")
-                    }
-                  >
-                    Create Project
-                  </Button>
-                ),
-              }}
-            />
+            <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "table" | "grid")} className="w-full">
+              <TabsContent value="table" className="mt-0">
+                <DataTable
+                  columns={columns}
+                  data={projects}
+                  variant="projects"
+                  loading={isLoading}
+                  serverSide={true}
+                  onRowClick={handleRowClick}
+                  pagination={
+                    pagination
+                      ? {
+                          page: pagination.current_page,
+                          limit: pagination.per_page,
+                          total: pagination.total,
+                          totalPages: pagination.last_page,
+                        }
+                      : undefined
+                  }
+                  onPageChange={handlePageChange}
+                  emptyState={{
+                    title: "No projects found",
+                    description: "Get started by creating your first project",
+                    action: (
+                      <Button
+                        onClick={() =>
+                          router.push("/projects/create?step=1")
+                        }
+                      >
+                        Create Project
+                      </Button>
+                    ),
+                  }}
+                />
+              </TabsContent>
+
+              <TabsContent value="grid" className="mt-0">
+                <ProjectCards
+                  projects={projects}
+                  pagination={pagination ? {
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  } : undefined}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                  loading={isLoading}
+                  onCardClick={handleRowClick}
+                />
+              </TabsContent>
+            </Tabs>
           </Card>
         </CardContent>
       </Card>
