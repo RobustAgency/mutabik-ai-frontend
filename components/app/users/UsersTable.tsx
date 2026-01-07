@@ -16,10 +16,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import InviteUsersDialog from "./InviteUsersDialog";
 
 const UsersTable: React.FC = () => {
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
   const queryParams = React.useMemo(() => ({ per_page: 10 }), []);
 
@@ -80,21 +82,14 @@ const UsersTable: React.FC = () => {
       header: () => <div className="text-sm font-medium text-[#667085]">Actions</div>,
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={(e) => { e.stopPropagation(); router.push(`/users/${row.original.id}`); }}
-          >
-            View
-          </Button>
           <Button
             size="sm"
             variant="ghost"
             onClick={(e) => handleDeleteClick(e, row.original)}
             disabled={isDeleting}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-gray-500 hover:text-gray-700  border-1 border-gray-200 hover:bg-gray-200 outline-2"
           >
-            <Trash2 size={16} />
+            <span>remove</span>
           </Button>
         </div>
       ),
@@ -110,6 +105,12 @@ const UsersTable: React.FC = () => {
               <h2 className="font-medium text-sm text-[#000000]">Users</h2>
               <p className="text-sm text-[#667085]">Manage organization users</p>
             </div>
+            <Button 
+              onClick={() => setInviteDialogOpen(true)}
+              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+            >
+              Invite
+            </Button>
           </div>
 
           <DataTable
@@ -144,6 +145,8 @@ const UsersTable: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <InviteUsersDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} />
     </>
   );
 };

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Role } from "@/interfaces/Roles";
 import { inviteService, type TeamMember } from "@/service/app/invite";
 
-const ROLES = [
+export const ROLES = [
   { label: "Project Lead", value: Role.PROJECT_LEAD },
   { label: "Reviewer", value: Role.REVIEWER },
   { label: "Contributor", value: Role.CONTRIBUTOR },
