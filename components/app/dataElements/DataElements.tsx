@@ -132,26 +132,40 @@ const DataElements: React.FC = () => {
       ),
       cell: ({ getValue }) => {
         const sensitivity = getValue() as string;
+        // Determine badge color based on sensitivity level
+        const getBadgeClass = (sens: string) => {
+          switch (sens) {
+            case "Restricted":
+            case "Confidential":
+              return "bg-[#FEF3F2] text-[#F04438]";
+            case "Internal":
+              return "bg-[#F2F4F7] text-[#667085]";
+            case "Public":
+              return "bg-[#ECFDF5] text-[#027A48]";
+            default:
+              return "bg-[#F2F4F7] text-[#667085]";
+          }
+        };
         return (
-          <div className="h-[24px] flex items-center justify-center rounded-full bg-[#FEF3F2] text-[#F04438] text-xs font-medium px-2">
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${getBadgeClass(sensitivity)}`}>
             {sensitivity}
           </div>
         );
       },
     },
     {
-      accessorKey: "pii_flag",
+      accessorKey: "contains_personal_data",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           PII
         </div>
       ),
       cell: ({ getValue }) => {
-        const piiFlag = getValue() as string;
+        const containsPersonalData = getValue() as boolean;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${containsPersonalData ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
             }`}>
-            {piiFlag}
+            {containsPersonalData ? "Yes" : "No"}
           </div>
         );
       },
@@ -164,27 +178,18 @@ const DataElements: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const cdeFlag = getValue() as string;
+        // Handle both boolean and string "1"/"0" from backend
+        const cdeFlagValue = getValue();
+        const cdeFlag = typeof cdeFlagValue === "string" 
+          ? (cdeFlagValue === "1" || cdeFlagValue === "true")
+          : (cdeFlagValue === true || cdeFlagValue === 1);
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
             }`}>
-            {cdeFlag}
+            {cdeFlag ? "Yes" : "No"}
           </div>
         );
       },
-    },
-    {
-      accessorKey: "owner_team",
-      header: () => (
-        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Owner Team
-        </div>
-      ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
     },
     {
       id: "actions",
@@ -223,6 +228,8 @@ const DataElements: React.FC = () => {
           </div>
         );
       },
+      enableHiding: false,
+      enableSorting: false,
     },
   ];
 

@@ -4,16 +4,22 @@ import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } fr
 
 export enum DataType {
   STRING = "string",
+  VARCHAR = "varchar",
   INTEGER = "integer",
+  BIGINT = "bigint",
   DECIMAL = "decimal",
+  FLOAT = "float",
   BOOLEAN = "boolean",
   DATE = "date",
   DATETIME = "datetime",
   TIMESTAMP = "timestamp",
+  UUID = "uuid",
   JSON = "json",
-  BINARY = "binary",
   ARRAY = "array",
-  OTHER = "other",
+  BINARY = "binary",
+  BLOB = "blob",
+  VECTOR = "vector",
+  ENUM = "enum",
 }
 
 export enum Sensitivity {
@@ -23,41 +29,47 @@ export enum Sensitivity {
   RESTRICTED = "Restricted",
 }
 
-export enum PiiFlag {
-  YES = "Yes",
-  NO = "No",
-  MAY_CONTAIN = "May_Contain",
+export enum DataSteward {
+  DATA_ENGINEERING_TEAM = "data_engineering_team",
+  ML_PLATFORM_TEAM = "ml_platform_team",
+  PRIVACY_OFFICE = "privacy_office",
+  AI_GOVERNANCE_BOARD = "ai_governance_board",
+}
+
+export enum Status {
+  ACTIVE = "active",
+  DEPRECATED = "deprecated",
+  RETIRED = "retired",
 }
 
 export enum PersonalDataCategory {
-  IDENTIFIER = "Identifier",
-  CONTACT = "Contact",
-  FINANCIAL = "Financial",
-  BEHAVIORAL = "Behavioral",
-  LOCATION = "Location",
-  BIOMETRIC = "Biometric",
-  HEALTH = "Health",
-  SENSITIVE_OTHER = "Sensitive-Other",
+  DIRECT_IDENTIFIER = "direct_identifier",
+  CONTACT_INFORMATION = "contact_information",
+  FINANCIAL_DATA = "financial_data",
+  DEMOGRAPHIC = "demographic",
+  BEHAVIORAL = "behavioral",
+  LOCATION = "location",
+  BIOMETRIC = "biometric",
+  HEALTH = "health",
+  GENETIC = "genetic",
+  POLITICAL = "political",
+  RELIGIOUS = "religious",
+  RACIAL = "racial",
+  SEXUAL = "sexual",
+  CRIMINAL = "criminal",
+  CHILDREN = "children",
 }
 
-export enum SpecialCategoryFlag {
-  YES = "Yes",
-  NO = "No",
-}
-
-export enum CdeFlag {
-  YES = "Yes",
-  NO = "No",
-}
-
-export enum CdeCategory {
-  STRATEGIC = "Strategic",
-  COMPLIANCE = "Compliance",
-  EXTERNAL_REPORTING = "External Reporting",
-  OPERATIONAL = "Operational",
-  FINANCIAL = "Financial",
-  RISK = "Risk",
-  CUSTOMER_EXPERIENCE = "Customer Experience",
+export enum DefaultMaskingMethod {
+  NONE = "none",
+  TOKENIZATION = "tokenization",
+  HASHING = "hashing",
+  ENCRYPTION = "encryption",
+  REDACTION = "redaction",
+  GENERALIZATION = "generalization",
+  K_ANONYMITY = "k_anonymity",
+  DIFFERENTIAL_PRIVACY = "differential_privacy",
+  PSEUDONYMIZATION = "pseudonymization",
 }
 
 // Types for data elements
@@ -65,18 +77,29 @@ export interface DataElement {
   id: number;
   display_id?: string;
   name: string;
-  business_definition: string | null;
   data_type: DataType;
   format: string | null;
+  business_definition: string;
+  data_steward: DataSteward;
+  status: Status;
+  data_source_id: number;
+  database_name: string;
+  schema_name: string | null;
+  table_name: string;
+  column_name: string;
+  used_in_datasets: string[] | null;
+  is_nullable: boolean | null;
+  is_unique: boolean | null;
+  default_value: string | null;
+  validation_rule: string | null;
+  sample_values: string | null;
   sensitivity: Sensitivity;
-  pii_flag: PiiFlag;
-  personal_data_category: PersonalDataCategory | null;
-  special_category_flag: SpecialCategoryFlag;
-  cde_flag: CdeFlag;
-  cde_category: CdeCategory | null;
-  owner_team: string | null;
-  quality_rules_ref: string | null;
-  catalog_column_id: string | null;
+  contains_personal_data: boolean;
+  personal_data_type: PersonalDataCategory | null;
+  contains_sensitive_data: boolean | null;
+  default_masking_method: DefaultMaskingMethod | null;
+  cde_flag: boolean | null;
+  cde_categories: string[];
   created_at: string;
   updated_at: string;
 }
@@ -94,18 +117,29 @@ export interface DataElementFilters {
 
 export interface CreateDataElementData {
   name: string;
-  business_definition?: string | null;
   data_type: DataType;
   format?: string | null;
+  business_definition: string;
+  data_steward: DataSteward;
+  status: Status;
+  data_source_id: number;
+  database_name: string;
+  schema_name?: string | null;
+  table_name: string;
+  column_name: string;
+  used_in_datasets?: string[] | null;
+  is_nullable?: boolean | null;
+  is_unique?: boolean | null;
+  default_value?: string | null;
+  validation_rule?: string | null;
+  sample_values?: string | null;
   sensitivity: Sensitivity;
-  pii_flag: PiiFlag;
-  personal_data_category?: PersonalDataCategory | null;
-  special_category_flag: SpecialCategoryFlag;
-  cde_flag: CdeFlag;
-  cde_category?: CdeCategory | null;
-  owner_team?: string | null;
-  quality_rules_ref?: string | null;
-  catalog_column_id?: string | null;
+  contains_personal_data: boolean;
+  personal_data_type?: PersonalDataCategory | null;
+  contains_sensitive_data?: boolean | null;
+  default_masking_method?: DefaultMaskingMethod | null;
+  cde_flag?: boolean | null;
+  cde_categories: string[];
 }
 
 export interface DataElementListResponse {
@@ -157,8 +191,15 @@ export const dataElementsApi = createApi({
           const { current_page, per_page, total, last_page } = response.data;
           const from = (current_page - 1) * per_page + 1;
           const to = Math.min(current_page * per_page, total);
+          // Transform cde_flag from string "1"/"0" to boolean
+          const transformedData = response.data.data.map((element) => ({
+            ...element,
+            cde_flag: typeof element.cde_flag === "string" 
+              ? (element.cde_flag === "1" || element.cde_flag === "true")
+              : element.cde_flag,
+          }));
           return {
-            data: response.data.data,
+            data: transformedData,
             pagination: {
               current_page,
               per_page,
@@ -183,7 +224,13 @@ export const dataElementsApi = createApi({
       ],
       transformResponse: (response: DataElementItemResponse) => {
         if (response.data) {
-          return response.data;
+          // Transform cde_flag from string "1"/"0" to boolean
+          return {
+            ...response.data,
+            cde_flag: typeof response.data.cde_flag === "string" 
+              ? (response.data.cde_flag === "1" || response.data.cde_flag === "true")
+              : response.data.cde_flag,
+          };
         }
         return response as unknown as DataElement;
       },

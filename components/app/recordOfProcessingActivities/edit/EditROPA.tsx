@@ -26,7 +26,6 @@ const EditROPA: React.FC<EditROPAProps> = ({ activityId }) => {
   };
 
   const handleSuccess = () => {
-    // After editing, redirect back to the list page
     router.push("/privacy/ropa");
   };
 
