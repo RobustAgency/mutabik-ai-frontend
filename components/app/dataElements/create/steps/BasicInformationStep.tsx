@@ -17,37 +17,41 @@ import Link from "next/link";
 import type { DataElementFormData } from "@/lib/schemas/dataElement.schema";
 import {
   DataType,
+  DataSteward,
+  Status,
 } from "@/app/lib/features/dataElementsApi";
-import { DataSteward, Status } from "@/app/lib/features/datasetsApi";
 
 const DATA_TYPE_OPTIONS = [
   { value: DataType.STRING, label: "String" },
+  { value: DataType.VARCHAR, label: "Varchar" },
   { value: DataType.INTEGER, label: "Integer" },
+  { value: DataType.BIGINT, label: "Bigint" },
   { value: DataType.DECIMAL, label: "Decimal" },
+  { value: DataType.FLOAT, label: "Float" },
   { value: DataType.BOOLEAN, label: "Boolean" },
   { value: DataType.DATE, label: "Date" },
   { value: DataType.DATETIME, label: "DateTime" },
   { value: DataType.TIMESTAMP, label: "Timestamp" },
+  { value: DataType.UUID, label: "UUID" },
   { value: DataType.JSON, label: "JSON" },
-  { value: DataType.BINARY, label: "Binary" },
   { value: DataType.ARRAY, label: "Array" },
-  { value: DataType.OTHER, label: "Other" },
+  { value: DataType.BINARY, label: "Binary" },
+  { value: DataType.BLOB, label: "Blob" },
+  { value: DataType.VECTOR, label: "Vector" },
+  { value: DataType.ENUM, label: "Enum" },
 ];
 
 const DATA_STEWARD_OPTIONS = [
-  { value: DataSteward.DATA_ENGINEER, label: "Data Engineer" },
-  { value: DataSteward.DATA_SCIENTIST, label: "Data Scientist" },
-  { value: DataSteward.ML_ENGINEER, label: "ML Engineer" },
-  { value: DataSteward.PRIVACY_OFFICER, label: "Privacy Officer" },
-  { value: DataSteward.COMPLIANCE_OFFICER, label: "Compliance Officer" },
+  { value: DataSteward.DATA_ENGINEERING_TEAM, label: "Data Engineering Team" },
+  { value: DataSteward.ML_PLATFORM_TEAM, label: "ML Platform Team" },
+  { value: DataSteward.PRIVACY_OFFICE, label: "Privacy Office" },
+  { value: DataSteward.AI_GOVERNANCE_BOARD, label: "AI Governance Board" },
 ];
 
 const STATUS_OPTIONS = [
-  { value: Status.DRAFT, label: "Draft" },
   { value: Status.ACTIVE, label: "Active" },
-  { value: Status.UNDER_REVIEW, label: "Under Review" },
   { value: Status.DEPRECATED, label: "Deprecated" },
-  { value: Status.ARCHIVED, label: "Archived" },
+  { value: Status.RETIRED, label: "Retired" },
 ];
 
 export const BasicInformationStep: React.FC = () => {
@@ -62,8 +66,8 @@ export const BasicInformationStep: React.FC = () => {
   const businessDefinition = watch("business_definition");
   const dataType = watch("data_type");
   const format = watch("format");
-  const dataSteward = watch("data_steward" as any);
-  const status = watch("status" as any);
+  const dataSteward = watch("data_steward");
+  const status = watch("status");
 
   const hasError = (fieldName: keyof DataElementFormData) =>
     errors[fieldName] && errors[fieldName]?.message;
@@ -156,8 +160,8 @@ export const BasicInformationStep: React.FC = () => {
               key={`data_steward-${dataSteward || "none"}`}
               value={dataSteward || ""}
               onValueChange={(value) =>
-                setValue("data_steward" as any, value as DataSteward, {
-                  shouldValidate: false,
+                setValue("data_steward", value as DataSteward, {
+                  shouldValidate: true,
                 })
               }
             >
@@ -183,8 +187,8 @@ export const BasicInformationStep: React.FC = () => {
               key={`status-${status || "none"}`}
               value={status || Status.ACTIVE}
               onValueChange={(value) =>
-                setValue("status" as any, value as Status, {
-                  shouldValidate: false,
+                setValue("status", value as Status, {
+                  shouldValidate: true,
                 })
               }
             >
@@ -204,13 +208,18 @@ export const BasicInformationStep: React.FC = () => {
 
         {/* Business Definition */}
         <div className="space-y-2">
-          <Label htmlFor="business_definition">Business Definition</Label>
+          <Label htmlFor="business_definition">
+            Business Definition <span className="text-red-500">*</span>
+          </Label>
           <Textarea
             id="business_definition"
             {...register("business_definition")}
             placeholder="Clear business description of this data element..."
-            className="min-h-32 resize-none w-full"
+            className={`min-h-32 resize-none w-full ${hasError("business_definition") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
           />
+          {hasError("business_definition") && (
+            <p className="text-sm text-red-500">{getError("business_definition")}</p>
+          )}
         </div>
       </div>
     </div>
