@@ -29,7 +29,7 @@ export interface UsersListResponse {
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: axiosBaseQuery(),
-  tagTypes: ["User"],
+  tagTypes: ["User"] as const,
   endpoints: (builder) => ({
     getUsers: builder.query<User[], UserFilters | void>({
       query: (filters) => ({

@@ -8,15 +8,10 @@ import { useGetOrganizationUsersQuery, User, useDeleteUserMutation } from "@/app
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+
 import InviteUsersDialog from "./InviteUsersDialog";
+import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 const UsersTable: React.FC = () => {
   const router = useRouter();
@@ -28,9 +23,9 @@ const UsersTable: React.FC = () => {
   const { data: users = [], isLoading } = useGetOrganizationUsersQuery(queryParams);
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
-  const handleRowClick = (user: User) => {
-    router.push(`/users/${user.id}`);
-  };
+  // const handleRowClick = (user: User) => {
+  //   router.push(`/users/${user.id}`);
+  // };
 
   const handleDeleteClick = (e: React.MouseEvent, user: User) => {
     e.stopPropagation();
@@ -50,6 +45,51 @@ const UsersTable: React.FC = () => {
     }
   };
 
+  const getRoleBadge = (role?: string) => {
+  if (!role) {
+    return <Badge variant="light" className="bg-gray-100 text-gray-700">—</Badge>;
+  }
+
+  const config: Record<
+    string,
+    { label: string; className: string }
+  > = {
+    PROJECT_LEAD: {
+      label: "Project Lead",
+      className: "bg-blue-100 text-blue-800",
+    },
+    REVIEWER: {
+      label: "Reviewer",
+      className: "bg-purple-100 text-purple-800",
+    },
+    CONTRIBUTOR: {
+      label: "Contributor",
+      className: "bg-green-100 text-green-800",
+    },
+    AUDITOR: {
+      label: "Auditor",
+      className: "bg-yellow-100 text-yellow-800",
+    },
+  };
+
+  const roleConfig = config[role];
+
+  if (!roleConfig) {
+    return (
+      <Badge variant="light" className="bg-gray-100 text-gray-700">
+        {role}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge variant="light" className={roleConfig.className}>
+      {roleConfig.label}
+    </Badge>
+  );
+};
+
+
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
@@ -62,11 +102,13 @@ const UsersTable: React.FC = () => {
       cell: ({ getValue }) => <div className="text-sm text-[#667085]">{getValue() as string}</div>,
     },
     {
-      accessorKey: "role",
-      header: () => <div className="text-sm font-medium text-[#667085]">Role</div>,
-      cell: ({ getValue }) => <div className="text-sm text-[#667085]">{getValue() as string || '—'}</div>,
-    },
-    {
+  accessorKey: "role",
+  header: () => (
+    <div className="text-sm font-medium text-[#667085]">Role</div>
+  ),
+  cell: ({ row }) => getRoleBadge(row.original.role),
+},
+ {
       accessorKey: "created_at",
       header: () => <div className="text-sm font-medium text-[#667085]">Created</div>,
       cell: ({ getValue }) => {
@@ -89,7 +131,7 @@ const UsersTable: React.FC = () => {
             disabled={isDeleting}
             className="text-gray-500 hover:text-gray-700  border-1 border-gray-200 hover:bg-gray-200 outline-2"
           >
-            <span>remove</span>
+            <span>Remove</span>
           </Button>
         </div>
       ),
@@ -118,14 +160,14 @@ const UsersTable: React.FC = () => {
             data={users}
             serverSide={false}
             loading={isLoading}
-            onRowClick={handleRowClick}
+            // onRowClick={handleRowClick}
             variant="compact"
             emptyState={{ title: 'No users', description: 'No users found' }}
           />
         </CardContent>
       </Card>
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      {/* <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
@@ -144,8 +186,21 @@ const UsersTable: React.FC = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
-
+      </Dialog> */}
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete User"
+        description={`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        loadingText="Deleting..."
+        
+         />
+        
+        
       <InviteUsersDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} />
     </>
   );

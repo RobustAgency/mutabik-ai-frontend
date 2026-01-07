@@ -15,7 +15,7 @@ export const ROLES = [
   { label: "Auditor", value: Role.AUDITOR },
 ];
 
-type Member = {
+ export type Member = {
   email: string;
   role: string;
 };
