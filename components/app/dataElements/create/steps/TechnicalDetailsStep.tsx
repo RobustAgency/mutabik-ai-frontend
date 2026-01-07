@@ -40,8 +40,8 @@ export const TechnicalDetailsStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="is_nullable">Is Nullable</Label>
             <Select
-              key={`is_nullable-${isNullable === null ? "none" : isNullable}`}
-              value={isNullable === null ? "" : String(isNullable)}
+              key={`is_nullable-${isNullable === null || isNullable === undefined ? "none" : isNullable}`}
+              value={isNullable === null || isNullable === undefined ? "" : String(isNullable)}
               onValueChange={(value) => {
                 // Always set to boolean: true or false, never null
                 const boolValue = value === "true";
@@ -64,8 +64,8 @@ export const TechnicalDetailsStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="is_unique">Is Unique</Label>
             <Select
-              key={`is_unique-${isUnique === null ? "none" : isUnique}`}
-              value={isUnique === null ? "" : String(isUnique)}
+              key={`is_unique-${isUnique === null || isUnique === undefined ? "none" : isUnique}`}
+              value={isUnique === null || isUnique === undefined ? "" : String(isUnique)}
               onValueChange={(value) => {
                 // Always set to boolean: true or false, never null
                 const boolValue = value === "true";
