@@ -48,18 +48,29 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
     if (element) {
       reset({
         name: element.name,
-        business_definition: element.business_definition || null,
         data_type: element.data_type,
         format: element.format || null,
+        business_definition: element.business_definition || "",
+        data_steward: element.data_steward,
+        status: element.status,
+        data_source_id: element.data_source_id,
+        database_name: element.database_name,
+        schema_name: element.schema_name || null,
+        table_name: element.table_name,
+        column_name: element.column_name,
+        used_in_datasets: element.used_in_datasets || null,
+        is_nullable: element.is_nullable || null,
+        is_unique: element.is_unique || null,
+        default_value: element.default_value || null,
+        validation_rule: element.validation_rule || null,
+        sample_values: element.sample_values || null,
         sensitivity: element.sensitivity,
-        pii_flag: element.pii_flag,
-        personal_data_category: element.personal_data_category || null,
-        special_category_flag: element.special_category_flag,
-        cde_flag: element.cde_flag,
-        cde_category: element.cde_category || null,
-        owner_team: element.owner_team || null,
-        quality_rules_ref: element.quality_rules_ref || null,
-        catalog_column_id: element.catalog_column_id || null,
+        contains_personal_data: element.contains_personal_data,
+        personal_data_type: element.personal_data_type || null,
+        contains_sensitive_data: element.contains_sensitive_data || null,
+        default_masking_method: element.default_masking_method || null,
+        cde_flag: element.cde_flag || false,
+        cde_categories: element.cde_categories || [],
       });
     }
   }, [element, reset]);
@@ -67,17 +78,15 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
   const validateStep = async (step: number): Promise<boolean> => {
     switch (step) {
       case 1:
-        return await trigger(["name", "data_type"]);
+        return await trigger(["name", "data_type", "business_definition", "data_steward", "status"]);
       case 2:
-        // Physical location fields are UI-only for now, skip validation
-        return true;
+        return await trigger(["data_source_id", "database_name", "table_name", "column_name"]);
       case 3:
-        // Technical details fields are UI-only for now, skip validation
-        return true;
+        return true; // Technical details are optional
       case 4:
-        return await trigger(["sensitivity", "pii_flag"]);
+        return await trigger(["sensitivity", "contains_personal_data"]);
       case 5:
-        return await trigger(["cde_flag", "cde_category"]);
+        return await trigger(["cde_flag", "cde_categories"]);
       default:
         return true;
     }
@@ -97,21 +106,34 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
   const handleFormSubmit = handleSubmit(async (data: DataElementFormData) => {
     try {
       // Convert DataElementFormData to CreateDataElementData
-      // Note: UI-only fields (physical location, technical details, data_steward, status) are not submitted
       const updateData: CreateDataElementData = {
         name: data.name,
-        business_definition: data.business_definition || null,
         data_type: data.data_type,
         format: data.format || null,
+        business_definition: data.business_definition,
+        data_steward: data.data_steward,
+        status: data.status,
+        data_source_id: data.data_source_id,
+        database_name: data.database_name,
+        schema_name: data.schema_name || null,
+        table_name: data.table_name,
+        column_name: data.column_name,
+        used_in_datasets: data.used_in_datasets || null,
+        is_nullable: data.is_nullable !== null && data.is_nullable !== undefined ? data.is_nullable : null,
+        is_unique: data.is_unique !== null && data.is_unique !== undefined ? data.is_unique : null,
+        default_value: data.default_value || null,
+        validation_rule: data.validation_rule || null,
+        sample_values: data.sample_values || null,
         sensitivity: data.sensitivity,
-        pii_flag: data.pii_flag,
-        personal_data_category: data.personal_data_category || null,
-        special_category_flag: data.special_category_flag,
-        cde_flag: data.cde_flag,
-        cde_category: data.cde_category || null,
-        owner_team: data.owner_team || null,
-        quality_rules_ref: data.quality_rules_ref || null,
-        catalog_column_id: data.catalog_column_id || null,
+        contains_personal_data: data.contains_personal_data,
+        personal_data_type: data.personal_data_type || null,
+        // If contains_personal_data is true, contains_sensitive_data must be a boolean (not null)
+        contains_sensitive_data: data.contains_personal_data 
+          ? (data.contains_sensitive_data ?? false) 
+          : null,
+        default_masking_method: data.default_masking_method || null,
+        cde_flag: data.cde_flag || null,
+        cde_categories: data.cde_categories,
       };
       await updateDataElement({
         id: elementId,

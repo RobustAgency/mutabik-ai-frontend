@@ -11,19 +11,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { DataElementFormData } from "@/lib/schemas/dataElement.schema";
-import {
-  CdeFlag,
-  CdeCategory,
-} from "@/app/lib/features/dataElementsApi";
 
+// CDE Categories - these are string values, not enums
 const CDE_CATEGORY_OPTIONS = [
-  { value: CdeCategory.STRATEGIC, label: "Strategic" },
-  { value: CdeCategory.OPERATIONAL, label: "Operational" },
-  { value: CdeCategory.COMPLIANCE, label: "Compliance & Regulatory" },
-  { value: CdeCategory.EXTERNAL_REPORTING, label: "External Reporting" },
-  { value: CdeCategory.FINANCIAL, label: "Financial" },
-  { value: CdeCategory.RISK, label: "Risk Management" },
-  { value: CdeCategory.CUSTOMER_EXPERIENCE, label: "Customer Experience" },
+  { value: "Strategic", label: "Strategic" },
+  { value: "Operational", label: "Operational" },
+  { value: "Compliance", label: "Compliance & Regulatory" },
+  { value: "External Reporting", label: "External Reporting" },
+  { value: "Financial", label: "Financial" },
+  { value: "Risk", label: "Risk Management" },
+  { value: "Customer Experience", label: "Customer Experience" },
 ];
 
 export const CdeReferencesStep: React.FC = () => {
@@ -34,7 +31,7 @@ export const CdeReferencesStep: React.FC = () => {
   } = useFormContext<DataElementFormData>();
 
   const cdeFlag = watch("cde_flag");
-  const cdeCategory = watch("cde_category");
+  const cdeCategories = watch("cde_categories") || [];
 
   const hasError = (fieldName: keyof DataElementFormData) =>
     errors[fieldName] && errors[fieldName]?.message;
@@ -53,16 +50,23 @@ export const CdeReferencesStep: React.FC = () => {
           {/* CDE Flag */}
           <div className="space-y-2">
             <Label htmlFor="cde_flag">
-              CDE Flag <span className="text-red-500">*</span>
+              CDE Flag
             </Label>
             <Select
-              key={`cde_flag-${cdeFlag || "none"}`}
-              value={cdeFlag || ""}
-              onValueChange={(value) =>
-                setValue("cde_flag", value as CdeFlag, {
+              key={`cde_flag-${cdeFlag === null ? "none" : cdeFlag}`}
+              value={cdeFlag === null ? "" : String(cdeFlag)}
+              onValueChange={(value) => {
+                const boolValue = value === "true" ? true : value === "false" ? false : null;
+                setValue("cde_flag", boolValue, {
                   shouldValidate: true,
-                })
-              }
+                });
+                // Reset categories if false
+                if (!boolValue) {
+                  setValue("cde_categories", [], {
+                    shouldValidate: true,
+                  });
+                }
+              }}
             >
               <SelectTrigger
                 className={`w-full ${hasError("cde_flag") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
@@ -70,8 +74,8 @@ export const CdeReferencesStep: React.FC = () => {
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={CdeFlag.YES}>Yes - Critical Data Element</SelectItem>
-                <SelectItem value={CdeFlag.NO}>No</SelectItem>
+                <SelectItem value="true">Yes - Critical Data Element</SelectItem>
+                <SelectItem value="false">No</SelectItem>
               </SelectContent>
             </Select>
             {hasError("cde_flag") && (
@@ -79,26 +83,27 @@ export const CdeReferencesStep: React.FC = () => {
             )}
           </div>
 
-          {/* CDE Category - Only shown when CDE flag is Yes */}
-          {cdeFlag === CdeFlag.YES && (
+          {/* CDE Categories - Only shown when CDE flag is Yes */}
+          {cdeFlag === true && (
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="cde_category">
+              <Label htmlFor="cde_categories">
                 CDE Categories <span className="text-red-500">*</span>
               </Label>
               <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[60px]">
                 {CDE_CATEGORY_OPTIONS.map((option) => {
-                  const isSelected = cdeCategory === option.value;
+                  const isSelected = cdeCategories.includes(option.value);
                   return (
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() =>
-                        setValue(
-                          "cde_category",
-                          isSelected ? null : (option.value as CdeCategory),
-                          { shouldValidate: true }
-                        )
-                      }
+                      onClick={() => {
+                        const newCategories = isSelected
+                          ? cdeCategories.filter((cat) => cat !== option.value)
+                          : [...cdeCategories, option.value];
+                        setValue("cde_categories", newCategories, {
+                          shouldValidate: true,
+                        });
+                      }}
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                         isSelected
                           ? "bg-green-100 text-green-700 border-2 border-green-500"
@@ -110,9 +115,9 @@ export const CdeReferencesStep: React.FC = () => {
                   );
                 })}
               </div>
-              {hasError("cde_category") && (
+              {hasError("cde_categories") && (
                 <p className="text-sm text-red-500">
-                  {getError("cde_category")}
+                  {getError("cde_categories")}
                 </p>
               )}
             </div>

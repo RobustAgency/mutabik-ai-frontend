@@ -16,13 +16,16 @@ import type { DataElementFormData } from "@/lib/schemas/dataElement.schema";
 export const TechnicalDetailsStep: React.FC = () => {
   const {
     register,
+    setValue,
     watch,
     formState: { errors },
   } = useFormContext<DataElementFormData>();
 
-  // These are UI-only fields for now (not in backend API)
-  const isNullable = watch("is_nullable" as any);
-  const isUnique = watch("is_unique" as any);
+  const isNullable = watch("is_nullable");
+  const isUnique = watch("is_unique");
+  const defaultValue = watch("default_value");
+  const validationRule = watch("validation_rule");
+  const sampleValues = watch("sample_values");
 
   return (
     <div className="space-y-6">
@@ -37,18 +40,22 @@ export const TechnicalDetailsStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="is_nullable">Is Nullable</Label>
             <Select
-              key={`is_nullable-${isNullable || "none"}`}
-              value={isNullable || ""}
+              key={`is_nullable-${isNullable === null ? "none" : isNullable}`}
+              value={isNullable === null ? "" : String(isNullable)}
               onValueChange={(value) => {
-                // UI-only field, not submitted to backend
+                // Always set to boolean: true or false, never null
+                const boolValue = value === "true";
+                setValue("is_nullable", boolValue, {
+                  shouldValidate: false,
+                });
               }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="yes">Yes</SelectItem>
-                <SelectItem value="no">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -57,18 +64,22 @@ export const TechnicalDetailsStep: React.FC = () => {
           <div className="space-y-2">
             <Label htmlFor="is_unique">Is Unique</Label>
             <Select
-              key={`is_unique-${isUnique || "none"}`}
-              value={isUnique || ""}
+              key={`is_unique-${isUnique === null ? "none" : isUnique}`}
+              value={isUnique === null ? "" : String(isUnique)}
               onValueChange={(value) => {
-                // UI-only field, not submitted to backend
+                // Always set to boolean: true or false, never null
+                const boolValue = value === "true";
+                setValue("is_unique", boolValue, {
+                  shouldValidate: false,
+                });
               }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="yes">Yes</SelectItem>
-                <SelectItem value="no">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -78,7 +89,7 @@ export const TechnicalDetailsStep: React.FC = () => {
             <Label htmlFor="default_value">Default Value</Label>
             <Input
               id="default_value"
-              {...(register("default_value" as any) as any)}
+              {...register("default_value")}
               placeholder="e.g., null, 0, 'unknown'"
               className="w-full"
             />
@@ -89,7 +100,7 @@ export const TechnicalDetailsStep: React.FC = () => {
             <Label htmlFor="validation_rule">Validation Rule</Label>
             <Input
               id="validation_rule"
-              {...(register("validation_rule" as any) as any)}
+              {...register("validation_rule")}
               placeholder="e.g., ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$"
               className="w-full"
             />
@@ -101,11 +112,11 @@ export const TechnicalDetailsStep: React.FC = () => {
             <Label htmlFor="sample_values">Sample Values</Label>
             <Input
               id="sample_values"
-              {...(register("sample_values" as any) as any)}
-              placeholder="e.g., john@email.com, jane@company.org"
+              {...register("sample_values")}
+              placeholder="e.g., john@email.com"
               className="w-full"
             />
-            <p className="text-xs text-gray-500">Redact if PII</p>
+            <p className="text-xs text-gray-500">Enter a single sample value. Redact if PII</p>
           </div>
         </div>
       </div>

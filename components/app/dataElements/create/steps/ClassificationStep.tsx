@@ -13,7 +13,8 @@ import {
 import type { DataElementFormData } from "@/lib/schemas/dataElement.schema";
 import {
   Sensitivity,
-  PiiFlag,
+  PersonalDataCategory,
+  DefaultMaskingMethod,
 } from "@/app/lib/features/dataElementsApi";
 
 const SENSITIVITY_OPTIONS = [
@@ -23,10 +24,34 @@ const SENSITIVITY_OPTIONS = [
   { value: Sensitivity.RESTRICTED, label: "Restricted" },
 ];
 
-const PII_FLAG_OPTIONS = [
-  { value: PiiFlag.YES, label: "Yes" },
-  { value: PiiFlag.NO, label: "No" },
-  { value: PiiFlag.MAY_CONTAIN, label: "May Contain" },
+const PERSONAL_DATA_CATEGORY_OPTIONS = [
+  { value: PersonalDataCategory.DIRECT_IDENTIFIER, label: "Direct Identifier" },
+  { value: PersonalDataCategory.CONTACT_INFORMATION, label: "Contact Information" },
+  { value: PersonalDataCategory.FINANCIAL_DATA, label: "Financial Data" },
+  { value: PersonalDataCategory.DEMOGRAPHIC, label: "Demographic" },
+  { value: PersonalDataCategory.BEHAVIORAL, label: "Behavioral" },
+  { value: PersonalDataCategory.LOCATION, label: "Location" },
+  { value: PersonalDataCategory.BIOMETRIC, label: "Biometric" },
+  { value: PersonalDataCategory.HEALTH, label: "Health" },
+  { value: PersonalDataCategory.GENETIC, label: "Genetic" },
+  { value: PersonalDataCategory.POLITICAL, label: "Political" },
+  { value: PersonalDataCategory.RELIGIOUS, label: "Religious" },
+  { value: PersonalDataCategory.RACIAL, label: "Racial" },
+  { value: PersonalDataCategory.SEXUAL, label: "Sexual" },
+  { value: PersonalDataCategory.CRIMINAL, label: "Criminal" },
+  { value: PersonalDataCategory.CHILDREN, label: "Children" },
+];
+
+const MASKING_METHOD_OPTIONS = [
+  { value: DefaultMaskingMethod.NONE, label: "None" },
+  { value: DefaultMaskingMethod.TOKENIZATION, label: "Tokenization" },
+  { value: DefaultMaskingMethod.HASHING, label: "Hashing" },
+  { value: DefaultMaskingMethod.ENCRYPTION, label: "Encryption" },
+  { value: DefaultMaskingMethod.REDACTION, label: "Redaction" },
+  { value: DefaultMaskingMethod.GENERALIZATION, label: "Generalization" },
+  { value: DefaultMaskingMethod.K_ANONYMITY, label: "K-Anonymity" },
+  { value: DefaultMaskingMethod.DIFFERENTIAL_PRIVACY, label: "Differential Privacy" },
+  { value: DefaultMaskingMethod.PSEUDONYMIZATION, label: "Pseudonymization" },
 ];
 
 export const ClassificationStep: React.FC = () => {
@@ -37,7 +62,10 @@ export const ClassificationStep: React.FC = () => {
   } = useFormContext<DataElementFormData>();
 
   const sensitivity = watch("sensitivity");
-  const piiFlag = watch("pii_flag");
+  const containsPersonalData = watch("contains_personal_data");
+  const personalDataType = watch("personal_data_type");
+  const containsSensitiveData = watch("contains_sensitive_data");
+  const defaultMaskingMethod = watch("default_masking_method");
 
   const hasError = (fieldName: keyof DataElementFormData) =>
     errors[fieldName] && errors[fieldName]?.message;
@@ -87,34 +115,136 @@ export const ClassificationStep: React.FC = () => {
 
           {/* Contains Personal Data */}
           <div className="space-y-2">
-            <Label htmlFor="pii_flag">
+            <Label htmlFor="contains_personal_data">
               Contains Personal Data <span className="text-red-500">*</span>
             </Label>
             <Select
-              key={`pii_flag-${piiFlag || "none"}`}
-              value={piiFlag || ""}
-              onValueChange={(value) =>
-                setValue("pii_flag", value as PiiFlag, {
+              key={`contains_personal_data-${containsPersonalData}`}
+              value={String(containsPersonalData)}
+              onValueChange={(value) => {
+                const boolValue = value === "true";
+                setValue("contains_personal_data", boolValue, {
                   shouldValidate: true,
-                })
-              }
+                });
+                // Reset dependent fields if false
+                if (!boolValue) {
+                  setValue("personal_data_type", null);
+                  setValue("contains_sensitive_data", null);
+                } else {
+                  // When set to true, set default value for contains_sensitive_data if not already set
+                  if (containsSensitiveData === null || containsSensitiveData === undefined) {
+                    setValue("contains_sensitive_data", false, {
+                      shouldValidate: true,
+                    });
+                  }
+                }
+              }}
             >
               <SelectTrigger
-                className={`w-full ${hasError("pii_flag") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+                className={`w-full ${hasError("contains_personal_data") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
               >
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                {PII_FLAG_OPTIONS.map((option) => (
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+            {hasError("contains_personal_data") && (
+              <p className="text-sm text-red-500">{getError("contains_personal_data")}</p>
+            )}
+          </div>
+
+          {/* Personal Data Type - Only shown when contains_personal_data is true */}
+          {containsPersonalData && (
+            <div className="space-y-2">
+              <Label htmlFor="personal_data_type">
+                Personal Data Type <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                key={`personal_data_type-${personalDataType || "none"}`}
+                value={personalDataType || ""}
+                onValueChange={(value) =>
+                  setValue("personal_data_type", value as PersonalDataCategory, {
+                    shouldValidate: true,
+                  })
+                }
+              >
+                <SelectTrigger
+                  className={`w-full ${hasError("personal_data_type") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+                >
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERSONAL_DATA_CATEGORY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {hasError("personal_data_type") && (
+                <p className="text-sm text-red-500">{getError("personal_data_type")}</p>
+              )}
+            </div>
+          )}
+
+          {/* Contains Sensitive Data - Only shown when contains_personal_data is true */}
+          {containsPersonalData && (
+            <div className="space-y-2">
+              <Label htmlFor="contains_sensitive_data">
+                Contains Sensitive Data <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                key={`contains_sensitive_data-${containsSensitiveData === null || containsSensitiveData === undefined ? "none" : containsSensitiveData}`}
+                value={containsSensitiveData === null || containsSensitiveData === undefined ? "" : String(containsSensitiveData)}
+                onValueChange={(value) => {
+                  // Must be a boolean (true or false), not null
+                  const boolValue = value === "true";
+                  setValue("contains_sensitive_data", boolValue, {
+                    shouldValidate: true,
+                  });
+                }}
+              >
+                <SelectTrigger
+                  className={`w-full ${hasError("contains_sensitive_data") ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+                >
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Yes</SelectItem>
+                  <SelectItem value="false">No</SelectItem>
+                </SelectContent>
+              </Select>
+              {hasError("contains_sensitive_data") && (
+                <p className="text-sm text-red-500">{getError("contains_sensitive_data")}</p>
+              )}
+            </div>
+          )}
+
+          {/* Default Masking Method */}
+          <div className="space-y-2">
+            <Label htmlFor="default_masking_method">Default Masking Method</Label>
+            <Select
+              key={`default_masking_method-${defaultMaskingMethod || "none"}`}
+              value={defaultMaskingMethod || ""}
+              onValueChange={(value) =>
+                setValue("default_masking_method", value as DefaultMaskingMethod, {
+                  shouldValidate: false,
+                })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent>
+                {MASKING_METHOD_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {hasError("pii_flag") && (
-              <p className="text-sm text-red-500">{getError("pii_flag")}</p>
-            )}
           </div>
         </div>
       </div>
