@@ -11,12 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
-import { Role } from "@/interfaces/Roles";
-import {
-  useInviteTeamMutation,
-  type TeamMember,
-} from "@/app/lib/features/inviteApi";
-import { extractErrorMessage } from "@/lib/api/rtkQueryBase";
 import {
   Dialog,
   DialogContent,
@@ -26,32 +20,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Trash2, Plus } from "lucide-react";
-import { ROLES,Member } from "@/components/onboarding/InviteTeam";
-/* -------------------- Constants -------------------- */
 
-// const ROLES = [
-//   { label: "Project Lead", value: Role.PROJECT_LEAD },
-//   { label: "Reviewer", value: Role.REVIEWER },
-//   { label: "Contributor", value: Role.CONTRIBUTOR },
-//   { label: "Auditor", value: Role.AUDITOR },
-// ];
+import {
+  useInviteTeamMutation,
+  type TeamMember,
+} from "@/app/lib/features/inviteApi";
+import { extractErrorMessage } from "@/lib/api/rtkQueryBase";
+import { ROLES, Member } from "@/components/onboarding/InviteTeam";
+import { inviteUsersSchema } from "@/lib/schemas/inviteUsers.schema";
 
-/* -------------------- Types -------------------- */
-
-// type Member = {
-//   email: string;
-//   role: Role | "";
-// };
+/* -------------------- Props -------------------- */
 
 interface InviteUsersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-/* -------------------- Helpers -------------------- */
-
-const isValidEmail = (email: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 /* -------------------- Component -------------------- */
 
@@ -93,43 +76,34 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validMembers = members.filter((m) => m.email.trim() && m.role);
+    const parsed = inviteUsersSchema.safeParse({
+      members: members.filter((m) => m.email || m.role),
+    });
 
-    if (!validMembers.length) {
-      toast.error("Please add at least one team member");
-      return;
-    }
-
-    const invalidEmail = validMembers.find((m) => !isValidEmail(m.email));
-
-    if (invalidEmail) {
-      toast.error(`Invalid email: ${invalidEmail.email}`);
-      return;
-    }
-
-    const emails = validMembers.map((m) => m.email.trim());
-    const duplicates = emails.filter((email, i) => emails.indexOf(email) !== i);
-
-    if (duplicates.length) {
-      toast.error(`Duplicate emails: ${duplicates.join(", ")}`);
+    if (!parsed.success) {
+      parsed.error.issues.forEach((issue) => {
+        toast.error(issue.message);
+      });
       return;
     }
 
     try {
       const response = await inviteTeam({
-        members: validMembers.map(
+        members: parsed.data.members.map(
           (m): TeamMember => ({
             email: m.email.trim(),
-            role: m.role!,
+            role: m.role,
           })
         ),
       }).unwrap();
 
-      if (response.error === false) {
+      if (!response.error) {
         const failed = response.data?.failed ?? [];
 
         if (Array.isArray(failed) && failed.length > 0) {
-          const failedEmails = failed.map((f: any) => f.email || f).join(", ");
+          const failedEmails = failed
+            .map((f: any) => f.email || f)
+            .join(", ");
           toast.warn(`Invitations sent, but some failed: ${failedEmails}`);
         } else {
           toast.success(response.message);
@@ -164,8 +138,6 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
               </DialogDescription>
             </div>
 
-            {/* Add Member Button - Top Right */}
-
             <Button
               type="button"
               variant="outline"
@@ -181,9 +153,9 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {members.map((member, idx) => (
-            <div key={idx} className="flex gap-2 items-center">
+            <div key={idx} className="flex gap-3 items-end">
               {/* Email */}
-              <div>
+              <div className="flex-1">
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <Input
                   type="email"
@@ -197,17 +169,16 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
               </div>
 
               {/* Role */}
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex gap-2 items-end">
                 <div>
                   <label className="block text-sm font-medium mb-1">Role</label>
-                  <div className="flex items-center justify-center gap-5">
-                    <Select
+                  <Select
                     value={member.role}
                     onValueChange={(val) =>
                       handleMemberChange(idx, "role", val)
                     }
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 w-[180px]">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -218,49 +189,23 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
-                    <div className="">
-                  <Trash2
-                    className={`
-      text-red-500
-      cursor-pointer
-      transition
-      hover:text-red-600
-      disabled:opacity-50
-      disabled:cursor-not-allowed
-    `}
-                    role="button"
-                    aria-label="Remove member"
-                    size={18}
-                    tabIndex={members.length === 1 || isInviting ? -1 : 0}
-                    onClick={() => {
-                      if (members.length === 1 || isInviting) return;
-                      removeMember(idx);
-                    }}
-                    onKeyDown={(e) => {
-                      if (
-                        (e.key === "Enter" || e.key === " ") &&
-                        !(members.length === 1 || isInviting)
-                      ) {
-                        e.preventDefault();
-                        removeMember(idx);
-                      }
-                    }}
-                    style={{
-                      opacity: members.length === 1 || isInviting ? 0.5 : 1,
-                      pointerEvents:
-                        members.length === 1 || isInviting ? "none" : "auto",
-                    }}
-                  />
-                </div>
-                  </div>
-                  
-
                 </div>
 
-                
+                {/* Delete Icon */}
+                <Trash2
+                  size={18}
+                  className="mb-3 text-red-500 cursor-pointer hover:text-red-600 transition"
+                  onClick={() =>
+                    !(members.length === 1 || isInviting) &&
+                    removeMember(idx)
+                  }
+                  style={{
+                    opacity: members.length === 1 || isInviting ? 0.5 : 1,
+                    pointerEvents:
+                      members.length === 1 || isInviting ? "none" : "auto",
+                  }}
+                />
               </div>
-
-              {/* Delete Icon Button */}
             </div>
           ))}
 
