@@ -42,9 +42,10 @@ const DSARDetails: React.FC<DSARDetailsProps> = ({ id }) => {
     useDeleteDataSubjectRequestAccessMutation();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  const { data: users = [] } = useGetOrganizationUsersQuery({
+  const { data: usersResponse } = useGetOrganizationUsersQuery({
     per_page: 100,
   });
+  const users = usersResponse?.data ?? [];
 
   const getUserName = (userId: number | null | undefined): string => {
     if (!userId) return "N/A";

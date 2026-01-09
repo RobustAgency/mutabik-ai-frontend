@@ -40,7 +40,6 @@ import { requirementsApi } from "./features/requirementsApi";
 import { controlsApi } from "./features/controlsApi";
 import { requirementControlsApi } from "./features/requirementControlsApi";
 import { usersApi } from "./features/usersApi";
-import { inviteApi } from "@/app/lib/features/inviteApi";
 import { complianceEvidenceApi } from "./features/complianceEvidenceApi";
 import { regulatorySubmissionsApi } from "./features/regulatorySubmissionsApi";
 import { recordOfProcessingActivitiesApi } from "./features/recordOfProcessingActivitiesApi";
@@ -96,7 +95,6 @@ export const makeStore = () => {
       [controlsApi.reducerPath]: controlsApi.reducer,
       [requirementControlsApi.reducerPath]: requirementControlsApi.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
-      [inviteApi.reducerPath]: inviteApi.reducer,
       [complianceEvidenceApi.reducerPath]: complianceEvidenceApi.reducer,
       [regulatorySubmissionsApi.reducerPath]: regulatorySubmissionsApi.reducer,
       [consentRecordsApi.reducerPath]: consentRecordsApi.reducer,
@@ -151,7 +149,6 @@ export const makeStore = () => {
         controlsApi.middleware,
         requirementControlsApi.middleware,
         usersApi.middleware,
-        inviteApi.middleware,
         complianceEvidenceApi.middleware,
         regulatorySubmissionsApi.middleware,
         consentRecordsApi.middleware,

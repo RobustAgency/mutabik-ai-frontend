@@ -6,26 +6,30 @@ import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useGetOrganizationUsersQuery, User, useDeleteUserMutation } from "@/app/lib/features/usersApi";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import InviteUsersDialog from "./InviteUsersDialog";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 const UsersTable: React.FC = () => {
-  const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
-  const queryParams = React.useMemo(() => ({ per_page: 10 }), []);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  
+  const queryParams = React.useMemo(
+    () => ({ per_page: 10, page: currentPage }),
+    [currentPage]
+  );
 
-  const { data: users = [], isLoading } = useGetOrganizationUsersQuery(queryParams);
+  const { data, isLoading } = useGetOrganizationUsersQuery(queryParams);
+  const users = data?.data ?? [];
+  const pagination = data?.pagination;
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
-  // const handleRowClick = (user: User) => {
-  //   router.push(`/users/${user.id}`);
-  // };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleDeleteClick = (e: React.MouseEvent, user: User) => {
     e.stopPropagation();
@@ -46,48 +50,63 @@ const UsersTable: React.FC = () => {
   };
 
   const getRoleBadge = (role?: string) => {
-  if (!role) {
-    return <Badge variant="light" className="bg-gray-100 text-gray-700">—</Badge>;
-  }
+    if (!role) {
+      return <Badge variant="light" className="bg-gray-100 text-gray-700">—</Badge>;
+    }
 
-  const config: Record<
-    string,
-    { label: string; className: string }
-  > = {
-    PROJECT_LEAD: {
-      label: "Project Lead",
-      className: "bg-blue-100 text-blue-800",
-    },
-    REVIEWER: {
-      label: "Reviewer",
-      className: "bg-purple-100 text-purple-800",
-    },
-    CONTRIBUTOR: {
-      label: "Contributor",
-      className: "bg-green-100 text-green-800",
-    },
-    AUDITOR: {
-      label: "Auditor",
-      className: "bg-yellow-100 text-yellow-800",
-    },
-  };
+    // Normalize role to uppercase for comparison (API returns lowercase)
+    const normalizedRole = role.toUpperCase().replace(/-/g, "_");
 
-  const roleConfig = config[role];
+    const config: Record<
+      string,
+      { label: string; className: string }
+    > = {
+      PROJECT_LEAD: {
+        label: "Project Lead",
+        className: "bg-blue-100 text-blue-800",
+      },
+      REVIEWER: {
+        label: "Reviewer",
+        className: "bg-purple-100 text-purple-800",
+      },
+      CONTRIBUTOR: {
+        label: "Contributor",
+        className: "bg-green-100 text-green-800",
+      },
+      AUDITOR: {
+        label: "Auditor",
+        className: "bg-yellow-100 text-yellow-800",
+      },
+      OWNER: {
+        label: "Owner",
+        className: "bg-indigo-100 text-indigo-800",
+      },
+      ADMIN: {
+        label: "Admin",
+        className: "bg-red-100 text-red-800",
+      },
+      SUPER_ADMIN: {
+        label: "Super Admin",
+        className: "bg-gray-800 text-white",
+      },
+    };
 
-  if (!roleConfig) {
+    const roleConfig = config[normalizedRole];
+
+    if (!roleConfig) {
+      return (
+        <Badge variant="light" className="bg-gray-100 text-gray-700">
+          {role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, " ")}
+        </Badge>
+      );
+    }
+
     return (
-      <Badge variant="light" className="bg-gray-100 text-gray-700">
-        {role}
+      <Badge variant="light" className={roleConfig.className}>
+        {roleConfig.label}
       </Badge>
     );
-  }
-
-  return (
-    <Badge variant="light" className={roleConfig.className}>
-      {roleConfig.label}
-    </Badge>
-  );
-};
+  };
 
 
   const columns: ColumnDef<User>[] = [
@@ -129,7 +148,7 @@ const UsersTable: React.FC = () => {
             variant="ghost"
             onClick={(e) => handleDeleteClick(e, row.original)}
             disabled={isDeleting}
-            className="text-gray-500 hover:text-gray-700  border-1 border-gray-200 hover:bg-gray-200 outline-2"
+            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
           >
             <span>Remove</span>
           </Button>
@@ -158,35 +177,25 @@ const UsersTable: React.FC = () => {
           <DataTable
             columns={columns}
             data={users}
-            serverSide={false}
+            serverSide={true}
             loading={isLoading}
-            // onRowClick={handleRowClick}
             variant="compact"
+            pagination={
+              pagination
+                ? {
+                    page: pagination.current_page,
+                    limit: pagination.per_page,
+                    total: pagination.total,
+                    totalPages: pagination.last_page,
+                  }
+                : undefined
+            }
+            onPageChange={handlePageChange}
             emptyState={{ title: 'No users', description: 'No users found' }}
           />
         </CardContent>
       </Card>
 
-      {/* <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete <strong>{userToDelete?.name}</strong>? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-            <Button
-              onClick={confirmDelete}
-              disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
       <ConfirmationDialog
         isOpen={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
@@ -197,11 +206,13 @@ const UsersTable: React.FC = () => {
         cancelText="Cancel"
         isLoading={isDeleting}
         loadingText="Deleting..."
-        
-         />
-        
-        
-      <InviteUsersDialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen} />
+      />
+
+      <InviteUsersDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        onInviteSuccess={() => setCurrentPage(1)}
+      />
     </>
   );
 };

@@ -24,7 +24,7 @@ import { Trash2, Plus } from "lucide-react";
 import {
   useInviteTeamMutation,
   type TeamMember,
-} from "@/app/lib/features/inviteApi";
+} from "@/app/lib/features/usersApi";
 import { extractErrorMessage } from "@/lib/api/rtkQueryBase";
 import { ROLES, Member } from "@/components/onboarding/InviteTeam";
 import { inviteUsersSchema } from "@/lib/schemas/inviteUsers.schema";
@@ -34,6 +34,7 @@ import { inviteUsersSchema } from "@/lib/schemas/inviteUsers.schema";
 interface InviteUsersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onInviteSuccess?: () => void;
 }
 
 /* -------------------- Component -------------------- */
@@ -41,6 +42,7 @@ interface InviteUsersDialogProps {
 const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
   open,
   onOpenChange,
+  onInviteSuccess,
 }) => {
   const [members, setMembers] = React.useState<Member[]>([
     { email: "", role: "" },
@@ -71,6 +73,13 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
       if (prev.length === 1) return prev;
       return prev.filter((_, i) => i !== idx);
     });
+  };
+
+  const handleClose = () => {
+    if (!isInviting) {
+      setMembers([{ email: "", role: "" }]);
+      onOpenChange(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,11 +115,11 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
             .join(", ");
           toast.warn(`Invitations sent, but some failed: ${failedEmails}`);
         } else {
-          toast.success(response.message);
+          toast.success(response.message || "Invitations sent successfully");
         }
 
-        onOpenChange(false);
-        setMembers([{ email: "", role: "" }]);
+        handleClose();
+        onInviteSuccess?.();
       } else {
         toast.error(response.message || "Failed to send invitations");
       }
@@ -127,99 +136,115 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
   /* -------------------- UI -------------------- */
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center mt-2">
-            <div>
-              <DialogTitle>Invite team members</DialogTitle>
-              <DialogDescription>
-                Add one or more users and assign roles
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-200">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              <DialogTitle className="text-xl font-semibold text-[#1D2939]">
+                Invite Team Members
+              </DialogTitle>
+              <DialogDescription className="text-sm text-[#667085]">
+                Add team members by entering their email addresses and assigning roles. They will receive an invitation to join your organization.
               </DialogDescription>
             </div>
+          </div>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            {members.map((member, idx) => (
+              <div
+                key={idx}
+                className="flex gap-4 items-start p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+              >
+                <div className="flex-1 space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#344054]">
+                      Email Address
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="colleague@company.com"
+                      value={member.email}
+                      onChange={(e) =>
+                        handleMemberChange(idx, "email", e.target.value)
+                      }
+                      disabled={isInviting}
+                      className="h-11 bg-white border-gray-300 focus:border-[#4FD58F] focus:ring-[#4FD58F]"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#344054]">
+                      Role
+                    </label>
+                    <Select
+                      value={member.role}
+                      onValueChange={(val) =>
+                        handleMemberChange(idx, "role", val)
+                      }
+                      disabled={isInviting}
+                    >
+                      <SelectTrigger className="h-11 w-full bg-white border-gray-300 focus:border-[#4FD58F] focus:ring-[#4FD58F]">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROLES.map((role) => (
+                          <SelectItem key={role.value} value={role.value}>
+                            {role.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {members.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeMember(idx)}
+                    disabled={isInviting}
+                    className="mt-8 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <Trash2 size={18} />
+                    <span className="sr-only">Remove member</span>
+                  </Button>
+                )}
+              </div>
+            ))}
 
             <Button
               type="button"
               variant="outline"
               onClick={addMember}
               disabled={isInviting}
-              className="flex items-center gap-2 ml-auto mr-3"
+              className="w-full h-11 border-dashed border-2 border-gray-300 hover:border-[#4FD58F] hover:bg-[#4FD58F]/5 hover:text-[#4FD58F] transition-colors"
             >
-              <Plus size={16} />
-              Add member
+              <Plus size={18} className="mr-2" />
+              Add Another Member
             </Button>
           </div>
-        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {members.map((member, idx) => (
-            <div key={idx} className="flex gap-3 items-end">
-              {/* Email */}
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Email</label>
-                <Input
-                  type="email"
-                  placeholder="member@team.com"
-                  value={member.email}
-                  onChange={(e) =>
-                    handleMemberChange(idx, "email", e.target.value)
-                  }
-                  className="h-12"
-                />
-              </div>
-
-              {/* Role */}
-              <div className="flex gap-2 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Role</label>
-                  <Select
-                    value={member.role}
-                    onValueChange={(val) =>
-                      handleMemberChange(idx, "role", val)
-                    }
-                  >
-                    <SelectTrigger className="h-12 w-[180px]">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROLES.map((role) => (
-                        <SelectItem key={role.value} value={role.value}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Delete Icon */}
-                <Trash2
-                  size={18}
-                  className="mb-3 text-red-500 cursor-pointer hover:text-red-600 transition"
-                  onClick={() =>
-                    !(members.length === 1 || isInviting) &&
-                    removeMember(idx)
-                  }
-                  style={{
-                    opacity: members.length === 1 || isInviting ? 0.5 : 1,
-                    pointerEvents:
-                      members.length === 1 || isInviting ? "none" : "auto",
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-
-          <DialogFooter className="gap-2">
+          <DialogFooter className="px-6 py-4 border-t border-gray-200 bg-gray-50 gap-3">
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleClose}
               disabled={isInviting}
+              className="h-11 px-6"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isInviting}>
-              {isInviting ? "Sending invitations..." : "Invite team members"}
+            <Button
+              type="submit"
+              disabled={isInviting || members.every((m) => !m.email || !m.role)}
+              className="h-11 px-6 bg-[#4FD58F] hover:bg-[#45C77D] text-white"
+            >
+              {isInviting ? "Sending Invitations..." : `Send ${members.filter(m => m.email && m.role).length} Invitation${members.filter(m => m.email && m.role).length !== 1 ? 's' : ''}`}
             </Button>
           </DialogFooter>
         </form>

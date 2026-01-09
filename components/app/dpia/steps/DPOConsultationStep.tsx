@@ -25,10 +25,11 @@ export const DPOConsultationStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DPIAFormData>();
 
-  const { data: users = [], isLoading: isLoadingUsers } =
+  const { data: usersResponse, isLoading: isLoadingUsers } =
     useGetOrganizationUsersQuery({
       per_page: 100,
     });
+  const users = usersResponse?.data ?? [];
 
   const dpoConsulted = watch("dpo_consulted") ?? false;
   const dpoUserId = watch("dpo_user_id");
