@@ -53,10 +53,11 @@ export const CdeReferencesStep: React.FC = () => {
               CDE Flag
             </Label>
             <Select
-              key={`cde_flag-${cdeFlag === null ? "none" : cdeFlag}`}
-              value={cdeFlag === null ? "" : String(cdeFlag)}
+              key={`cde_flag-${cdeFlag === null || cdeFlag === undefined ? "none" : cdeFlag}`}
+              value={cdeFlag === null || cdeFlag === undefined ? "" : String(cdeFlag)}
               onValueChange={(value) => {
-                const boolValue = value === "true" ? true : value === "false" ? false : null;
+                // When "No" is selected, set to false (not null)
+                const boolValue = value === "true" ? true : false;
                 setValue("cde_flag", boolValue, {
                   shouldValidate: true,
                 });
