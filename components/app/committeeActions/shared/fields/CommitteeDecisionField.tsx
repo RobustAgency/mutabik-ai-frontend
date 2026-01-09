@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import { useGetCommitteeDecisionsQuery } from "@/app/lib/features/committeeDecisionsApi";
+import CommitteeDecisionModalForm from "@/components/app/committeeDecisions/create/CommitteeDecisionModalForm";
 import type { CommitteeActionFormData } from "@/lib/schemas/committeeAction.schema";
 
 export const CommitteeDecisionField: React.FC = () => {
@@ -60,8 +61,10 @@ export const CommitteeDecisionField: React.FC = () => {
         isLoading={isLoadingDecisions}
         isEmpty={decisions.length === 0}
         entityName="Committee Decision"
-        modalForm={() => null} // TODO: Add CommitteeDecisionModalForm when available
-        canCreate={false}
+        modalForm={CommitteeDecisionModalForm}
+        canCreate={true}
+        modalTitle="Create Committee Decision"
+        modalDescription="Complete the form to create a new committee decision"
         error={hasError}
         triggerClassName={hasError ? "border-red-500" : ""}
       />

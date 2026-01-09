@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import { useGetCommitteeMeetingsQuery } from "@/app/lib/features/committeeMeetingsApi";
+import CommitteeMeetingModalForm from "@/components/app/committeeMeetings/create/CommitteeMeetingModalForm";
 import type { CommitteeDecisionFormData } from "@/lib/schemas/committeeDecision.schema";
 
 export const CommitteeMeetingField: React.FC = () => {
@@ -59,8 +60,10 @@ export const CommitteeMeetingField: React.FC = () => {
         isLoading={isLoadingMeetings}
         isEmpty={meetings.length === 0}
         entityName="Committee Meeting"
-        modalForm={() => null} // TODO: Add CommitteeMeetingModalForm when available
-        canCreate={false}
+        modalForm={CommitteeMeetingModalForm}
+        canCreate={true}
+        modalTitle="Create Committee Meeting"
+        modalDescription="Complete the form to create a new committee meeting"
         error={hasError}
         triggerClassName={hasError ? "border-red-500" : ""}
       />

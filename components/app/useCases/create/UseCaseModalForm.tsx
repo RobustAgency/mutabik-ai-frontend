@@ -16,11 +16,13 @@ import { USE_CASE_WIZARD_STEPS } from "../constants";
 
 interface UseCaseModalFormProps {
   onSuccess?: (useCase: any) => void;
-  // onCancel is not used since the wizard handles its own navigation
+  onCancel?: () => void;
+  // onCancel is optional since the wizard handles its own navigation, but needed for SelectWithInlineCreate
 }
 
 const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
   onSuccess,
+  onCancel,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [createUseCase, { isLoading }] = useCreateUseCaseMutation();
