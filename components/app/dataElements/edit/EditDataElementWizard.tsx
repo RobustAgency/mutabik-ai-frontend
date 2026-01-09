@@ -106,7 +106,7 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
   const handleFormSubmit = handleSubmit(async (data: DataElementFormData) => {
     try {
       // Convert DataElementFormData to CreateDataElementData
-      const updateData: CreateDataElementData = {
+      const baseData: Omit<CreateDataElementData, 'personal_data_type' | 'contains_sensitive_data'> = {
         name: data.name,
         data_type: data.data_type,
         format: data.format || null,
@@ -126,15 +126,20 @@ const EditDataElementWizard: React.FC<EditDataElementWizardProps> = ({ elementId
         sample_values: data.sample_values || null,
         sensitivity: data.sensitivity,
         contains_personal_data: data.contains_personal_data,
-        personal_data_type: data.personal_data_type || null,
-        // If contains_personal_data is true, contains_sensitive_data must be a boolean (not null)
-        contains_sensitive_data: data.contains_personal_data 
-          ? (data.contains_sensitive_data ?? false) 
-          : null,
         default_masking_method: data.default_masking_method || null,
         cde_flag: data.cde_flag || null,
         cde_categories: data.cde_categories,
       };
+
+      // Only include personal_data_type and contains_sensitive_data if contains_personal_data is 1
+      const updateData: CreateDataElementData = data.contains_personal_data === 1
+        ? {
+            ...baseData,
+            personal_data_type: data.personal_data_type || null,
+            contains_sensitive_data: data.contains_sensitive_data ?? 0,
+          }
+        : baseData as CreateDataElementData;
+
       await updateDataElement({
         id: elementId,
         data: updateData,

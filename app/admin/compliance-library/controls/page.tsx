@@ -4,10 +4,8 @@ import ControlsTable from "@/components/admin/controls/ControlsTable";
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
 
 const page = () => {
-  const breadcrumbItems = [{ label: "Controls" }, { label: "List" }];
   return (
     <div>
       <div className="flex items-center justify-between mt-2 mb-10">

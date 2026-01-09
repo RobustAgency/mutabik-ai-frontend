@@ -6,8 +6,6 @@ import {
   CreateComplianceEvidenceRequest,
   UpdateComplianceEvidenceRequest,
   ComplianceEvidenceListMeta,
-  ComplianceEvidenceListResponse,
-  ComplianceEvidenceSingleResponse,
 } from "@/interfaces/ComplianceEvidence";
 import {
   transformListResponseWithMeta,
@@ -16,9 +14,6 @@ import {
   createItemTags,
   createInvalidateListTags,
   createInvalidateItemAndListTags,
-  ListResponseWithMeta,
-  SingleItemResponse,
-  ListMeta,
 } from "@/lib/api/rtkQueryHelpers";
 
 export const complianceEvidenceApi = createApi({

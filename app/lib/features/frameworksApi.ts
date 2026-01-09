@@ -13,14 +13,10 @@ import {
   createItemTags,
   createInvalidateListTags,
   createInvalidateItemAndListTags,
-  ListResponseWithMeta,
-  SingleItemResponse,
   ListMeta,
 } from "@/lib/api/rtkQueryHelpers";
 
 type FrameworkListMeta = ListMeta;
-type FrameworkListResponse = ListResponseWithMeta<Framework>;
-type FrameworkSingleResponse = SingleItemResponse<Framework>;
 
 type UserFrameworkListResponse = {
   error?: boolean;

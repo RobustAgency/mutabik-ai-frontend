@@ -48,17 +48,17 @@ export const dataElementSchema = z
     validation_rule: z.string().optional().nullable(),
     sample_values: z.string().optional().nullable(),
     sensitivity: SensitivityEnum,
-    contains_personal_data: z.boolean(),
+    contains_personal_data: z.union([z.literal(0), z.literal(1)]),
     personal_data_type: PersonalDataCategoryEnum.optional().nullable(),
-    contains_sensitive_data: z.boolean().optional().nullable(),
+    contains_sensitive_data: z.union([z.literal(0), z.literal(1)]).optional().nullable(),
     default_masking_method: DefaultMaskingMethodEnum.optional().nullable(),
     cde_flag: z.boolean().optional().nullable(),
     cde_categories: z.array(z.string()).min(1, "At least one CDE category is required"),
   })
   .refine(
     (data) => {
-      // If contains_personal_data is true, personal_data_type is required
-      if (data.contains_personal_data) {
+      // If contains_personal_data is 1, personal_data_type is required
+      if (data.contains_personal_data === 1) {
         return data.personal_data_type !== null && data.personal_data_type !== undefined;
       }
       return true;
@@ -70,8 +70,8 @@ export const dataElementSchema = z
   )
   .refine(
     (data) => {
-      // If contains_personal_data is true, contains_sensitive_data is required
-      if (data.contains_personal_data) {
+      // If contains_personal_data is 1, contains_sensitive_data is required
+      if (data.contains_personal_data === 1) {
         return data.contains_sensitive_data !== null && data.contains_sensitive_data !== undefined;
       }
       return true;
