@@ -1,13 +1,7 @@
 
 
 import ControlForm from '@/components/admin/controls/ControlForm/ControlForm';
-import Breadcrumbs from '@/components/custom/Breadcrumbs'
 import React from 'react'
-
-const breadcrumbItems = [
-    { label: 'Controls', href: '/admin/compliance-library/controls' },
-    { label: 'Create' },
-];
 
 const CreateControlPage = () => {
     return (

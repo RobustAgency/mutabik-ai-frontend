@@ -24,7 +24,6 @@ import {
   BellDot,
   FileSearch,
   LineChart,
-  GlobeLock,
   Trash2,
   Files,
   FileArchive,
@@ -36,6 +35,7 @@ import {
   FileBarChart,
   Lock,
   Link2,
+  Calendar,
 } from "lucide-react";
 
 export type RouteItem = {
@@ -311,6 +311,21 @@ export const userRoutes: RouteItem[] = [
             href: "/governance/committee-memberships",
             label: "Committee Memberships",
             icon: Users,
+          },
+          {
+            href: "/governance/committee-meetings",
+            label: "Committee Meetings",
+            icon: Calendar,
+          },
+          {
+            href: "/governance/committee-actions",
+            label: "Committee Actions",
+            icon: CheckCircle2,
+          },
+          {
+            href: "/governance/committee-decisions",
+            label: "Committee Decisions",
+            icon: FileCheck2,
           },
         ],
       },

@@ -1,5 +1,3 @@
-"use client";
-
 import EditAgreementWizard from "@/components/app/agreements/edit/EditAgreementWizard";
 import React from "react";
 

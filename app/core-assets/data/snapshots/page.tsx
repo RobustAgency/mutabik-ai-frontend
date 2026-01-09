@@ -74,19 +74,6 @@ const DatasetSnapshotsPage: React.FC = () => {
     }
   };
 
-  const formatResidencyZone = (zone: ResidencyZone | string | null) => {
-    if (!zone) return "N/A";
-    return String(zone);
-  };
-
-  const formatFileFormat = (format: FileFormat | string | null) => {
-    if (!format) return "N/A";
-    return String(format)
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
   const getStatusBadge = (status: Status | string | null) => {
     if (!status) return <Badge variant="outlined" color="default">N/A</Badge>;
     

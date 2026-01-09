@@ -6,8 +6,6 @@ import {
   CreateRequirementControlRequest,
   UpdateRequirementControlRequest,
   RequirementControlListMeta,
-  RequirementControlListResponse,
-  RequirementControlSingleResponse,
 } from "@/interfaces/RequirementControl";
 import {
   transformListResponseWithMeta,
@@ -16,9 +14,6 @@ import {
   createItemTags,
   createInvalidateListTags,
   createInvalidateItemAndListTags,
-  ListResponseWithMeta,
-  SingleItemResponse,
-  ListMeta,
 } from "@/lib/api/rtkQueryHelpers";
 
 export const requirementControlsApi = createApi({

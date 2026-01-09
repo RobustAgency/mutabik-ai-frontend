@@ -4,8 +4,6 @@ import {
   Control,
   ControlFilters,
   ControlListMeta,
-  ControlListResponse,
-  ControlSingleResponse,
   CreateControlRequest,
   UpdateControlRequest,
 } from "@/interfaces/Control";
@@ -16,9 +14,6 @@ import {
   createItemTags,
   createInvalidateListTags,
   createInvalidateItemAndListTags,
-  ListResponseWithMeta,
-  SingleItemResponse,
-  ListMeta,
 } from "@/lib/api/rtkQueryHelpers";
 
 export const controlsApi = createApi({

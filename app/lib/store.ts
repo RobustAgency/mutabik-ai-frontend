@@ -49,6 +49,9 @@ import { dataProtectionImpactAssessmentsApi } from "./features/dataProtectionImp
 import { privacyIncidentsApi } from "./features/privacyIncidentsApi";
 import { aiCommitteesApi } from "./features/aiCommitteesApi";
 import { committeeMembershipsApi } from "./features/committeeMembershipsApi";
+import { committeeMeetingsApi } from "./features/committeeMeetingsApi";
+import { committeeActionsApi } from "./features/committeeActionsApi";
+import { committeeDecisionsApi } from "./features/committeeDecisionsApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -107,6 +110,9 @@ export const makeStore = () => {
       [privacyIncidentsApi.reducerPath]: privacyIncidentsApi.reducer,
       [aiCommitteesApi.reducerPath]: aiCommitteesApi.reducer,
       [committeeMembershipsApi.reducerPath]: committeeMembershipsApi.reducer,
+      [committeeMeetingsApi.reducerPath]: committeeMeetingsApi.reducer,
+      [committeeActionsApi.reducerPath]: committeeActionsApi.reducer,
+      [committeeDecisionsApi.reducerPath]: committeeDecisionsApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -157,7 +163,10 @@ export const makeStore = () => {
         dataProtectionImpactAssessmentsApi.middleware,
         privacyIncidentsApi.middleware,
         aiCommitteesApi.middleware,
-        committeeMembershipsApi.middleware
+        committeeMembershipsApi.middleware,
+        committeeMeetingsApi.middleware,
+        committeeActionsApi.middleware,
+        committeeDecisionsApi.middleware
       ),
   });
 };
