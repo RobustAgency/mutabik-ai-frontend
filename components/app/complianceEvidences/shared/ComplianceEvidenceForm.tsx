@@ -111,7 +111,8 @@ export const ComplianceEvidenceForm: React.FC<ComplianceEvidenceFormProps> = ({
   );
   const requirements = projectRequirements ?? requirementsData?.data ?? [];
   
-  const { data: users = [] } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const { data: usersResponse } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const users = usersResponse?.data ?? [];
   const { data: aiModels = [] } = useGetAiModelsQuery({ per_page: 100 });
 
   const methods = useForm<ComplianceEvidenceFormData>({
