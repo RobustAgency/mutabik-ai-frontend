@@ -60,12 +60,6 @@ export const CdeReferencesStep: React.FC = () => {
                 setValue("cde_flag", boolValue, {
                   shouldValidate: true,
                 });
-                // Reset categories if false
-                if (!boolValue) {
-                  setValue("cde_categories", [], {
-                    shouldValidate: true,
-                  });
-                }
               }}
             >
               <SelectTrigger
@@ -83,45 +77,43 @@ export const CdeReferencesStep: React.FC = () => {
             )}
           </div>
 
-          {/* CDE Categories - Only shown when CDE flag is Yes */}
-          {cdeFlag === true && (
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="cde_categories">
-                CDE Categories <span className="text-red-500">*</span>
-              </Label>
-              <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[60px]">
-                {CDE_CATEGORY_OPTIONS.map((option) => {
-                  const isSelected = cdeCategories.includes(option.value);
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => {
-                        const newCategories = isSelected
-                          ? cdeCategories.filter((cat) => cat !== option.value)
-                          : [...cdeCategories, option.value];
-                        setValue("cde_categories", newCategories, {
-                          shouldValidate: true,
-                        });
-                      }}
-                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                        isSelected
-                          ? "bg-green-100 text-green-700 border-2 border-green-500"
-                          : "bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-              {hasError("cde_categories") && (
-                <p className="text-sm text-red-500">
-                  {getError("cde_categories")}
-                </p>
-              )}
+          {/* CDE Categories - Always visible and required */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="cde_categories">
+              CDE Categories <span className="text-red-500">*</span>
+            </Label>
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[60px]">
+              {CDE_CATEGORY_OPTIONS.map((option) => {
+                const isSelected = cdeCategories.includes(option.value);
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      const newCategories = isSelected
+                        ? cdeCategories.filter((cat) => cat !== option.value)
+                        : [...cdeCategories, option.value];
+                      setValue("cde_categories", newCategories, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      isSelected
+                        ? "bg-green-100 text-green-700 border-2 border-green-500"
+                        : "bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
-          )}
+            {hasError("cde_categories") && (
+              <p className="text-sm text-red-500">
+                {getError("cde_categories")}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

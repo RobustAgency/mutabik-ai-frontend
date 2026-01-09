@@ -1,5 +1,4 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
 import type {
   ConsentRecord,
   CreateConsentRecordData,
@@ -15,8 +14,6 @@ import {
   createInvalidateItemAndListTags,
   createMutationToastHandler,
   createDeleteToastHandler,
-  ListResponseWithCalculatedPagination,
-  SingleItemResponse,
 } from "@/lib/api/rtkQueryHelpers";
 
 export interface ConsentRecordListResponse {

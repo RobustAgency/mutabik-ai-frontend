@@ -6,8 +6,6 @@ import {
   CreateRegulatorySubmissionRequest,
   UpdateRegulatorySubmissionRequest,
   RegulatorySubmissionListMeta,
-  RegulatorySubmissionListResponse,
-  RegulatorySubmissionSingleResponse,
 } from "@/interfaces/RegulatorySubmission";
 import {
   transformListResponseWithMeta,
@@ -16,9 +14,6 @@ import {
   createItemTags,
   createInvalidateListTags,
   createInvalidateItemAndListTags,
-  ListResponseWithMeta,
-  SingleItemResponse,
-  ListMeta,
 } from "@/lib/api/rtkQueryHelpers";
 
 export const regulatorySubmissionsApi = createApi({

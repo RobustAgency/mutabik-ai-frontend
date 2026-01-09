@@ -85,7 +85,8 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
   // Fetch data for dropdowns
   const { data: frameworksData } = useGetUserFrameworksQuery({ per_page: 100 });
   const frameworks = frameworksData?.data ?? [];
-  const { data: users = [] } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const { data: usersResponse } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const users = usersResponse?.data ?? [];
   const { data: aiModels = [] } = useGetAiModelsQuery({ per_page: 100 });
 
   const methods = useForm<RegulatorySubmissionFormData>({

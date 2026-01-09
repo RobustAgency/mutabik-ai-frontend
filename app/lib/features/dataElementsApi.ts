@@ -94,9 +94,9 @@ export interface DataElement {
   validation_rule: string | null;
   sample_values: string | null;
   sensitivity: Sensitivity;
-  contains_personal_data: boolean;
+  contains_personal_data: 0 | 1;
   personal_data_type: PersonalDataCategory | null;
-  contains_sensitive_data: boolean | null;
+  contains_sensitive_data: 0 | 1 | null;
   default_masking_method: DefaultMaskingMethod | null;
   cde_flag: boolean | null;
   cde_categories: string[];
@@ -134,9 +134,9 @@ export interface CreateDataElementData {
   validation_rule?: string | null;
   sample_values?: string | null;
   sensitivity: Sensitivity;
-  contains_personal_data: boolean;
+  contains_personal_data: 0 | 1;
   personal_data_type?: PersonalDataCategory | null;
-  contains_sensitive_data?: boolean | null;
+  contains_sensitive_data?: 0 | 1 | null;
   default_masking_method?: DefaultMaskingMethod | null;
   cde_flag?: boolean | null;
   cde_categories: string[];

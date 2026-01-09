@@ -120,20 +120,20 @@ export const ClassificationStep: React.FC = () => {
             </Label>
             <Select
               key={`contains_personal_data-${containsPersonalData}`}
-              value={String(containsPersonalData)}
+              value={containsPersonalData === null || containsPersonalData === undefined ? "" : String(containsPersonalData)}
               onValueChange={(value) => {
-                const boolValue = value === "true";
-                setValue("contains_personal_data", boolValue, {
+                const numericValue = Number(value) as 0 | 1;
+                setValue("contains_personal_data", numericValue, {
                   shouldValidate: true,
                 });
-                // Reset dependent fields if false
-                if (!boolValue) {
+                // Reset dependent fields if 0 (false)
+                if (numericValue === 0) {
                   setValue("personal_data_type", null);
                   setValue("contains_sensitive_data", null);
                 } else {
-                  // When set to true, set default value for contains_sensitive_data if not already set
+                  // When set to 1 (true), set default value for contains_sensitive_data if not already set
                   if (containsSensitiveData === null || containsSensitiveData === undefined) {
-                    setValue("contains_sensitive_data", false, {
+                    setValue("contains_sensitive_data", 0 as 0 | 1, {
                       shouldValidate: true,
                     });
                   }
@@ -146,8 +146,8 @@ export const ClassificationStep: React.FC = () => {
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="true">Yes</SelectItem>
-                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="1">Yes</SelectItem>
+                <SelectItem value="0">No</SelectItem>
               </SelectContent>
             </Select>
             {hasError("contains_personal_data") && (
@@ -155,8 +155,8 @@ export const ClassificationStep: React.FC = () => {
             )}
           </div>
 
-          {/* Personal Data Type - Only shown when contains_personal_data is true */}
-          {containsPersonalData && (
+          {/* Personal Data Type - Only shown when contains_personal_data is 1 */}
+          {containsPersonalData === 1 && (
             <div className="space-y-2">
               <Label htmlFor="personal_data_type">
                 Personal Data Type <span className="text-red-500">*</span>
@@ -190,7 +190,7 @@ export const ClassificationStep: React.FC = () => {
           )}
 
           {/* Contains Sensitive Data - Only shown when contains_personal_data is true */}
-          {containsPersonalData && (
+          {containsPersonalData === 1 && (
             <div className="space-y-2">
               <Label htmlFor="contains_sensitive_data">
                 Contains Sensitive Data <span className="text-red-500">*</span>
@@ -199,9 +199,9 @@ export const ClassificationStep: React.FC = () => {
                 key={`contains_sensitive_data-${containsSensitiveData === null || containsSensitiveData === undefined ? "none" : containsSensitiveData}`}
                 value={containsSensitiveData === null || containsSensitiveData === undefined ? "" : String(containsSensitiveData)}
                 onValueChange={(value) => {
-                  // Must be a boolean (true or false), not null
-                  const boolValue = value === "true";
-                  setValue("contains_sensitive_data", boolValue, {
+                  // Must be a number (0 or 1), not null
+                  const numericValue = Number(value) as 0 | 1;
+                  setValue("contains_sensitive_data", numericValue, {
                     shouldValidate: true,
                   });
                 }}
@@ -212,8 +212,8 @@ export const ClassificationStep: React.FC = () => {
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Yes</SelectItem>
-                  <SelectItem value="false">No</SelectItem>
+                  <SelectItem value="1">Yes</SelectItem>
+                  <SelectItem value="0">No</SelectItem>
                 </SelectContent>
               </Select>
               {hasError("contains_sensitive_data") && (

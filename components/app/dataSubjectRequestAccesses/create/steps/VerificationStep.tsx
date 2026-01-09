@@ -38,10 +38,11 @@ export const VerificationStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DataSubjectRequestAccessFormData>();
 
-  const { data: users = [], isLoading: isLoadingUsers } =
+  const { data: usersResponse, isLoading: isLoadingUsers } =
     useGetOrganizationUsersQuery({
       per_page: 100,
     });
+  const users = usersResponse?.data ?? [];
 
   const verificationStatus = watch("verification_status");
   const verifiedBy = watch("verified_by");

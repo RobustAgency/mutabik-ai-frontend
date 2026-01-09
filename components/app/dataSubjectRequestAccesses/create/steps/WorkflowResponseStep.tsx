@@ -58,10 +58,11 @@ export const WorkflowResponseStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DataSubjectRequestAccessFormData>();
 
-  const { data: users = [], isLoading: isLoadingUsers } =
+  const { data: usersResponse, isLoading: isLoadingUsers } =
     useGetOrganizationUsersQuery({
       per_page: 100,
     });
+  const users = usersResponse?.data ?? [];
 
   const status = watch("status");
   const isOverdue = watch("is_overdue");

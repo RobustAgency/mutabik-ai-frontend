@@ -127,7 +127,7 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
     <>
       <Select
         key={selectKey}
-        value={value}
+        value={value || undefined}
         onValueChange={handleValueChange}
         disabled={disabled || isLoading}
         open={internalOpen}
@@ -136,9 +136,9 @@ const SelectWithInlineCreate: React.FC<SelectWithInlineCreateProps> = ({
         <SelectTrigger
           className={cn(
             "w-full",
-            error && "border-destructive",
             triggerClassName
           )}
+          aria-invalid={error}
         >
           <SelectValue
             placeholder={isLoading ? "Loading..." : placeholder}
