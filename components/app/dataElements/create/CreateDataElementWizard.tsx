@@ -47,7 +47,7 @@ const initialFormData: Partial<DataElementFormData> = {
   personal_data_type: null,
   contains_sensitive_data: null,
   default_masking_method: null,
-  cde_flag: false,
+  cde_flag: null,
   cde_categories: [],
 };
 
@@ -98,8 +98,8 @@ const CreateDataElementWizard: React.FC = () => {
 
   const handleFormSubmit = handleSubmit(async (data: DataElementFormData) => {
     try {
-      // Convert DataElementFormData to CreateDataElementData
-      const baseData: Omit<CreateDataElementData, 'personal_data_type' | 'contains_sensitive_data'> = {
+      // Build base data object, conditionally including optional fields
+      const baseData: any = {
         name: data.name,
         data_type: data.data_type,
         format: data.format || null,
@@ -112,17 +112,30 @@ const CreateDataElementWizard: React.FC = () => {
         table_name: data.table_name,
         column_name: data.column_name,
         used_in_datasets: data.used_in_datasets || null,
-        is_nullable: data.is_nullable !== null && data.is_nullable !== undefined ? data.is_nullable : null,
-        is_unique: data.is_unique !== null && data.is_unique !== undefined ? data.is_unique : null,
         default_value: data.default_value || null,
         validation_rule: data.validation_rule || null,
         sample_values: data.sample_values || null,
         sensitivity: data.sensitivity,
-        contains_personal_data: data.contains_personal_data,
+        contains_personal_data: data.contains_personal_data, // Schema enforces 0 | 1
         default_masking_method: data.default_masking_method || null,
-        cde_flag: data.cde_flag || null,
         cde_categories: data.cde_categories,
       };
+
+      // Only include is_nullable if it's explicitly set (not null/undefined)
+      if (data.is_nullable !== null && data.is_nullable !== undefined) {
+        baseData.is_nullable = data.is_nullable;
+      }
+
+      // Only include is_unique if it's explicitly set (not null/undefined)
+      if (data.is_unique !== null && data.is_unique !== undefined) {
+        baseData.is_unique = data.is_unique;
+      }
+
+      // Only include cde_flag if it's explicitly set (not null/undefined)
+      // When "No" is selected, it should be false, not null
+      if (data.cde_flag !== null && data.cde_flag !== undefined) {
+        baseData.cde_flag = data.cde_flag;
+      }
 
       // Only include personal_data_type and contains_sensitive_data if contains_personal_data is 1
       const createData: CreateDataElementData = data.contains_personal_data === 1
