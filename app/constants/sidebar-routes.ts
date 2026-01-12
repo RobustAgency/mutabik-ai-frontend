@@ -76,6 +76,11 @@ export const adminRoutes: RouteItem[] = [
       { href: "/admin/users-administration/customers", label: "Customers" },
     ],
   },
+  {
+        href: "/admin/permissions",
+        label: "Permissions",
+        icon: Users,
+      },
 ];
 
 export const userRoutes: RouteItem[] = [
@@ -479,6 +484,7 @@ export const userRoutes: RouteItem[] = [
         label: "Audit Trails & Notifications",
         icon: BellDot,
       },
+      
     ],
   },
   {
@@ -486,4 +492,5 @@ export const userRoutes: RouteItem[] = [
     label: "Users",
     icon: Users,
   },
+  
 ];
