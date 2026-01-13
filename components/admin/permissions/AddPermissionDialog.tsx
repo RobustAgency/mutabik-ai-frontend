@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -24,6 +25,7 @@ import { ROLES } from "@/components/onboarding/InviteTeam";
 /* -------------------- Types -------------------- */
 
 interface GroupForm {
+  groupName: string;
   userId: string;
   role: string;
 }
@@ -44,20 +46,25 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
   onSave,
 }) => {
   const [form, setForm] = React.useState<GroupForm>({
+    groupName: "",
     userId: "",
     role: "",
   });
 
+  const resetForm = () => {
+    setForm({ groupName: "", userId: "", role: "" });
+  };
+
   const handleClose = () => {
-    setForm({ userId: "", role: "" });
+    resetForm();
     onOpenChange(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.userId || !form.role) {
-      toast.error("Please select both user and role");
+    if (!form.groupName || !form.userId || !form.role) {
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -67,28 +74,39 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        if (!open) handleClose();
-      }}
-    >
-      {/* ⬇️ Reduced width & padding */}
-      <DialogContent className="max-w-sm p-0 gap-0">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full max-w-xs p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-4 pt-4 pb-3 border-b border-gray-200">
           <DialogTitle className="text-base font-semibold text-[#1D2939]">
             Add Group
           </DialogTitle>
           <DialogDescription className="text-xs text-[#667085]">
-            Select a user and assign a role.
+            Create a group and assign a user role.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
-          {/* ⬇️ Compact body spacing */}
           <div className="px-4 py-4 space-y-4">
+            {/* Group Name */}
+            <div className="space-y-1.5 w-full">
+              <label className="block text-xs font-medium text-[#344054]">
+                Group Name
+              </label>
+              <Input
+                value={form.groupName}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    groupName: e.target.value,
+                  }))
+                }
+                placeholder="Enter group name"
+                className="h-9 text-sm w-full "
+              />
+            </div>
+
             {/* Select User */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 w-full">
               <label className="block text-xs font-medium text-[#344054]">
                 Select User
               </label>
@@ -98,7 +116,7 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
                   setForm((prev) => ({ ...prev, userId: val }))
                 }
               >
-                <SelectTrigger className="h-9 text-sm">
+                <SelectTrigger className="h-9 text-sm w-full">
                   <SelectValue placeholder="Choose user" />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,7 +128,7 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
             </div>
 
             {/* Select Role */}
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 w-full">
               <label className="block text-xs font-medium text-[#344054]">
                 Select Role
               </label>
@@ -120,7 +138,7 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
                   setForm((prev) => ({ ...prev, role: val }))
                 }
               >
-                <SelectTrigger className="h-9 text-sm">
+                <SelectTrigger className="h-9 text-sm w-full">
                   <SelectValue placeholder="Choose role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -134,7 +152,6 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
             </div>
           </div>
 
-          {/* ⬇️ Compact footer */}
           <DialogFooter className="px-4 py-3 border-t border-gray-200 bg-gray-50 gap-2 rounded-b-lg">
             <Button
               type="button"
@@ -147,7 +164,7 @@ const InviteUsersDialog: React.FC<InviteUsersDialogProps> = ({
 
             <Button
               type="submit"
-              disabled={!form.userId || !form.role}
+              disabled={!form.groupName || !form.userId || !form.role}
               className="h-9 px-4 text-sm bg-[#4FD58F] hover:bg-[#45C77D] text-white"
             >
               Save

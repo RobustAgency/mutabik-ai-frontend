@@ -60,6 +60,8 @@ export const dummyUsers: User[] = [
 import InviteUsersDialog from "./AddPermissionDialog";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { useRouter } from "next/navigation";
+import AddAdminUserDialog from "../adminUsers/AddAdminUserDialog";
+import AddPermissionDialog from "./AddPermissionDialog";
 
 const UsersTable: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -203,7 +205,7 @@ const UsersTable: React.FC = () => {
         loadingText="Deleting..."
       />
 
-      <InviteUsersDialog
+      <AddPermissionDialog
         open={inviteDialogOpen}
         onOpenChange={setInviteDialogOpen}
         // onInviteSuccess={() => setCurrentPage(1) }
