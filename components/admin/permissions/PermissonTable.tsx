@@ -94,7 +94,7 @@ const UsersTable: React.FC = () => {
   const confirmDelete = async () => {
     if (userToDelete?.id) {
       try {
-        await deleteUser(userToDelete.id).unwrap();
+        // await deleteUser(userToDelete.id).unwrap();
         setDeleteDialogOpen(false);
         setUserToDelete(null);
       } catch (error) {

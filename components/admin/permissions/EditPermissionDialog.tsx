@@ -11,6 +11,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
+
+
 export type PermissionKey =
   | "none"
   | "list"
@@ -49,6 +51,7 @@ export function EditPermissionDialog({
   onSave,
 }: EditPermissionDialogProps) {
   const [draft, setDraft] = React.useState<PermissionRow | null>(activeRow);
+ 
 
   React.useEffect(() => {
     setDraft(activeRow);
@@ -79,16 +82,18 @@ export function EditPermissionDialog({
 
     setDraft(updated);
   };
+ 
 
   if (!draft) return null;
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit permissions – {draft.resource}</DialogTitle>
         </DialogHeader>
-
+      
         <div className="grid grid-cols-2 gap-3 py-4">
           {PERMISSIONS.map((permission) => (
             <label key={permission} className="flex items-center gap-2">
@@ -114,5 +119,7 @@ export function EditPermissionDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    
+    </>
   );
 }

@@ -8,8 +8,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -18,15 +21,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 
 import {
-  PermissionRow,
-  PermissionKey,
   EditPermissionDialog,
+  PermissionKey,
+  PermissionRow,
 } from "@/components/admin/permissions/EditPermissionDialog";
 import { AddRoleDialog } from "@/components/admin/permissions/AddRoleDialog";
+import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 
 /* MOCK PERMISSIONS */
 const usePermissions = () => ({
@@ -75,6 +77,13 @@ export default function RolePermissionsPage() {
   const [editOpen, setEditOpen] = React.useState(false);
   const [activeRow, setActiveRow] = React.useState<PermissionRow | null>(null);
 
+  // ConfirmationDialog states
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [rowToDelete, setRowToDelete] = React.useState<PermissionRow | null>(
+    null
+  );
+
+  // Add a new role
   const addRole = (role: string) => {
     setRows((prev) => [
       ...prev,
@@ -92,11 +101,21 @@ export default function RolePermissionsPage() {
     ]);
   };
 
+  // Remove role (called from ConfirmationDialog)
+  const confirmDelete = () => {
+    if (!rowToDelete) return;
+
+    setRows((prev) =>
+      prev.filter((row) => row.resource !== rowToDelete.resource)
+    );
+    setDeleteDialogOpen(false);
+    setRowToDelete(null);
+  };
+
+  // Save edited permissions
   const saveEdit = (updated: PermissionRow) => {
     setRows((prev) =>
-      prev.map((row) =>
-        row.resource === updated.resource ? updated : row
-      )
+      prev.map((row) => (row.resource === updated.resource ? updated : row))
     );
     setEditOpen(false);
     setActiveRow(null);
@@ -107,31 +126,47 @@ export default function RolePermissionsPage() {
       {
         accessorKey: "resource",
         header: "Role name",
+        cell: ({ row }) => (
+          <div className="text-sm font-medium text-[#1D2939]">
+            {row.original.resource}
+          </div>
+        ),
       },
       ...PERMISSIONS.map((permission) => ({
         id: permission,
         header: permission,
         cell: ({ row }: any) => (
-          <Checkbox
-            checked={row.original.permissions[permission]}
-            disabled
-          />
-        ),
-      })),
-      {
-        header:'action',
-        id: "actions",
-        cell: ({ row }: any) => (
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={!canEdit}
+          <div
+            className="flex items-center justify-center cursor-pointer"
             onClick={() => {
+              if (!canEdit) return;
               setActiveRow(row.original);
               setEditOpen(true);
             }}
           >
-            <MoreHorizontal className="w-4 h-4" />
+            <Checkbox
+              checked={row.original.permissions[permission]}
+              disabled={!canEdit}
+            />
+          </div>
+        ),
+      })),
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={!canEdit}
+            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              setRowToDelete(row.original);
+              setDeleteDialogOpen(true);
+            }}
+          >
+            Remove
           </Button>
         ),
       },
@@ -146,16 +181,28 @@ export default function RolePermissionsPage() {
   });
 
   const selectableRoles = AVAILABLE_ROLES.filter(
-    (rol) => !rows.some((row) => row.resource === rol)
+    (role) => !rows.some((row) => row.resource === role)
   );
 
   return (
     <>
-      <Card>
+      <Card className="w-full rounded-2xl bg-white">
         <CardContent className="p-6 space-y-4">
-          <div className="flex justify-between">
-            <h2 className="text-sm font-medium">Role permissions</h2>
-            <Button size="sm" onClick={() => setAddOpen(true)} disabled={!canEdit}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-medium text-[#000000]">
+                Role permissions
+              </h2>
+              <p className="text-sm text-[#667085]">
+                Manage role based permissions
+              </p>
+            </div>
+
+            <Button
+              size="sm"
+              onClick={() => setAddOpen(true)}
+              disabled={!canEdit}
+            >
               <Plus className="w-4 h-4 mr-1" />
               Add role
             </Button>
@@ -176,6 +223,7 @@ export default function RolePermissionsPage() {
                 </TableRow>
               ))}
             </TableHeader>
+
             <TableBody>
               {table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
@@ -205,8 +253,24 @@ export default function RolePermissionsPage() {
         open={editOpen}
         canEdit={canEdit}
         activeRow={activeRow}
-        onClose={() => setEditOpen(false)}
+        onClose={() => {
+          setEditOpen(false);
+          setActiveRow(null);
+        }}
         onSave={saveEdit}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setRowToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Remove Role"
+        description={`Are you sure you want to remove "${rowToDelete?.resource}" permissions? This action cannot be undone.`}
+        confirmText="Remove"
+        cancelText="Cancel"
       />
     </>
   );
