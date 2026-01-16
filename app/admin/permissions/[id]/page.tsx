@@ -134,7 +134,7 @@ export default function RolePermissionsPage() {
       },
       ...PERMISSIONS.map((permission) => ({
         id: permission,
-        header: permission,
+        header: permission.charAt(0).toUpperCase() + permission.slice(1),
         cell: ({ row }: any) => (
           <div
             className="flex items-center justify-center cursor-pointer"
