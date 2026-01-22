@@ -217,13 +217,13 @@ const ComplianceEvidences: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            {/* <Button
+            <Button
               variant={"outline"}
               className="text-[#667085]"
               onClick={(e) => handleEditClick(e, row.original)}
             >
               Edit
-            </Button> */}
+            </Button>
             <Button
               variant={"outline"}
               className="text-[#667085]"
