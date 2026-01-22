@@ -105,14 +105,14 @@ const ComplianceEvidenceDetails: React.FC<ComplianceEvidenceDetailsProps> = ({
                 </p>
               </div>
               <div className="flex gap-2">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={() =>
                     router.push(`/compliance-evidences/${evidence.id}/edit`)
                   }
                 >
                   Edit
-                </Button> */}
+                </Button>
                 <Button
                   variant="outline"
                   className="text-red-600 border-red-200 hover:bg-red-50"

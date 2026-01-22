@@ -76,6 +76,7 @@ export const adminRoutes: RouteItem[] = [
       { href: "/admin/users-administration/customers", label: "Customers" },
     ],
   },
+  { href: "/admin/organizations", label: "Organizations", icon: Building2 },
 ];
 
 export const userRoutes: RouteItem[] = [

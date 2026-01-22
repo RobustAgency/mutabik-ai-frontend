@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { createOrganization } from "@/service/admin/onboarding";
 
-// ✅ Type for form state
 interface FormState {
   organizationName: string;
   website: string;
@@ -42,7 +41,7 @@ const OrganizationSetup: React.FC = () => {
         website: form.website,
         phone: form.phone,
         country: form.country,
-        is_active: 1,
+        is_active: true,
       });
       router.push("/onboarding?mode=invite-team");
     } catch (err: unknown) {

@@ -7,7 +7,7 @@
 
 import { BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { AxiosRequestConfig, AxiosError } from "axios";
-import { apiClient } from "@/lib/api";
+import { apiClient, ApiError } from "@/lib/api";
 
 /**
  * Custom Axios-based base query for RTK Query
@@ -35,6 +35,19 @@ export const axiosBaseQuery =
 
       return { data: result.data };
     } catch (axiosError) {
+      // Handle ApiError (from our custom interceptor)
+      if (axiosError instanceof ApiError) {
+        const error = {
+          status: axiosError.status,
+          data: axiosError.data || {
+            message: axiosError.message,
+            error: true,
+          },
+        };
+        return { error };
+      }
+
+      // Handle AxiosError (standard axios errors)
       const err = axiosError as AxiosError<{
         data?: unknown;
         message?: string;

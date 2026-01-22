@@ -1,202 +1,202 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Organization } from '@/interfaces/Organization';
-import { organizationsService, GetOrganizationsParams, UpdateOrganizationRequest } from '@/service/admin/organizations';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import {
+  useCreateOrganizationMutation,
+  useGetOrganizationQuery,
+  useGetOrganizationsQuery,
+  useUpdateOrganizationMutation,
+  useDeleteOrganizationMutation,
+} from '@/app/lib/features/organizationsApi';
+import {
+  Organization,
+  OrganizationFilters,
+  CreateOrganizationRequest,
+  UpdateOrganizationRequest,
+} from '@/interfaces/Organization';
 
-export const useOrganizations = () => {
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
-    const [pagination, setPagination] = useState<{
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    }>({
-        page: 1,
-        limit: 10,
-        total: 0,
-        totalPages: 1
-    });
-    const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isSearching, setIsSearching] = useState(false);
-    const [initialized, setInitialized] = useState(false);
+export interface UseOrganizationsResult {
+  organizations: Organization[];
+  loading: boolean;
+  error: string | null;
+  totalPages: number;
+  currentPage: number;
+  total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  refresh: () => Promise<void>;
+  loadOrganizations: (filters?: OrganizationFilters) => Promise<void>;
+  handlePageChange: (page: number) => void;
+  handleSearch: (search: string) => void;
+}
 
-    const fetchOrganizations = useCallback(async (params: GetOrganizationsParams = {}) => {
-        try {
-            setLoading(true);
-            const response = await organizationsService.getOrganizations({
-                page: params.page || pagination.page,
-                per_page: params.per_page || pagination.limit,
-                ...params
-            });
+export function useOrganizations(initialFilters?: OrganizationFilters): UseOrganizationsResult {
+  const [filters, setFilters] = useState<OrganizationFilters>(initialFilters || {});
 
-            // Validate response data
-            const organizations = Array.isArray(response.data) ? response.data : [];
-            setOrganizations(organizations);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetOrganizationsQuery(filters);
 
-            // Validate pagination data with safe defaults
-            const safePage = typeof response.current_page === 'number' && response.current_page > 0 ? response.current_page : 1;
-            const safeLimit = typeof response.per_page === 'number' && response.per_page > 0 ? response.per_page : 10;
-            const safeTotal = typeof response.total === 'number' && response.total >= 0 ? response.total : 0;
-            const safeTotalPages = typeof response.last_page === 'number' && response.last_page > 0 ? response.last_page : 1;
+  const loadOrganizations = async (nextFilters: OrganizationFilters = {}) => {
+    setFilters(nextFilters);
+  };
 
-            setPagination({
-                page: safePage,
-                limit: safeLimit,
-                total: safeTotal,
-                totalPages: safeTotalPages
-            });
+  const refresh = async () => {
+    await refetch();
+  };
 
-        } catch (error) {
-            console.error('Error fetching organizations:', error);
-            toast.error('Failed to fetch organizations. Please check your connection and try again.');
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...(prev || {}), page }));
+  };
 
-            // Set safe empty state for pagination if API fails
-            setOrganizations([]);
-            setPagination({
-                page: 1,
-                limit: 10,
-                total: 0,
-                totalPages: 1
-            });
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  const handleSearch = (search: string) => {
+    setFilters((prev) => ({ ...(prev || {}), search, page: 1 }));
+  };
 
-    const searchOrganizations = useCallback(async (term: string) => {
-        if (!term.trim()) {
-            setIsSearching(false);
-            await fetchOrganizations();
-            return;
-        }
+  const errorMessage = useMemo(() => {
+    if (!isError) return null;
+    if (error && typeof error === 'object' && 'data' in error) {
+      const maybeMessage = (error as any)?.data?.message;
+      if (maybeMessage) return String(maybeMessage);
+    }
+    return 'Failed to load organizations';
+  }, [error, isError]);
 
-        try {
-            setLoading(true);
-            setIsSearching(true);
-            const searchResults = await organizationsService.searchOrganizations({ term });
+  return {
+    organizations: data?.data || [],
+    loading: isLoading,
+    error: errorMessage,
+    totalPages: data?.pagination?.last_page ?? 0,
+    currentPage: data?.pagination?.current_page ?? 1,
+    total: data?.pagination?.total ?? 0,
+    pagination: {
+      page: data?.pagination?.current_page ?? 1,
+      limit: data?.pagination?.per_page ?? filters?.per_page ?? 10,
+      total: data?.pagination?.total ?? 0,
+      totalPages: data?.pagination?.last_page ?? 0,
+    },
+    refresh,
+    loadOrganizations,
+    handlePageChange,
+    handleSearch,
+  };
+}
 
-            // Validate search results
-            const safeResults = Array.isArray(searchResults) ? searchResults : [];
-            setOrganizations(safeResults);
+export interface UseOrganizationResult {
+  organization: Organization | null;
+  loading: boolean;
+  error: string | null;
+  loadOrganization: (id: string | number) => Promise<void>;
+}
 
-            // Reset pagination for search results with safe values
-            setPagination(prev => ({
-                page: 1,
-                limit: prev.limit || 10,
-                total: safeResults.length,
-                totalPages: 1
-            }));
+export function useOrganization(id?: string | number): UseOrganizationResult {
+  const [organizationId, setOrganizationId] = useState<string | number | undefined>(id);
 
-        } catch (error) {
-            console.error('Error searching organizations:', error);
-            toast.error('Failed to search organizations. Please check your connection and try again.');
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetOrganizationQuery(organizationId as string | number, {
+    skip: !organizationId,
+  });
 
-            // Set safe empty state if search fails
-            setOrganizations([]);
-            setPagination(prev => ({
-                page: 1,
-                limit: prev.limit || 10,
-                total: 0,
-                totalPages: 1
-            }));
-        } finally {
-            setLoading(false);
-        }
-    }, [fetchOrganizations]);
+  const loadOrganization = async (organizationIdValue: string | number) => {
+    setOrganizationId(organizationIdValue);
+    await refetch();
+  };
 
-    const updateOrganization = useCallback(async (organizationId: number, updateData: UpdateOrganizationRequest): Promise<boolean> => {
-        // Validate input parameters
-        if (!organizationId || typeof organizationId !== 'number') {
-            toast.error('Invalid organization ID');
-            return false;
-        }
+  useEffect(() => {
+    if (id) {
+      setOrganizationId(id);
+    }
+  }, [id]);
 
-        if (!updateData || Object.keys(updateData).length === 0) {
-            toast.error('No update data provided');
-            return false;
-        }
+  const errorMessage = useMemo(() => {
+    if (!isError) return null;
+    if (error && typeof error === 'object' && 'data' in error) {
+      const maybeMessage = (error as any)?.data?.message;
+      if (maybeMessage) return String(maybeMessage);
+    }
+    return 'Failed to load organization';
+  }, [error, isError]);
 
-        try {
-            setLoading(true);
-            await organizationsService.updateOrganization(organizationId, updateData);
-            toast.success('Organization updated successfully');
+  return {
+    organization: data ?? null,
+    loading: isLoading,
+    error: errorMessage,
+    loadOrganization,
+  };
+}
 
-            // Refresh the organizations list with error handling
-            try {
-                if (isSearching && searchTerm) {
-                    await searchOrganizations(searchTerm);
-                } else {
-                    await fetchOrganizations();
-                }
-            } catch (refreshError) {
-                console.error('Error refreshing data after update:', refreshError);
-                toast.warn('Organization updated but failed to refresh list. Please reload the page.');
-            }
+export interface UseOrganizationMutationsResult {
+  creating: boolean;
+  updating: boolean;
+  deleting: boolean;
+  createOrganization: (data: CreateOrganizationRequest) => Promise<boolean>;
+  updateOrganization: (id: string | number, data: UpdateOrganizationRequest) => Promise<boolean>;
+  deleteOrganization: (id: string | number) => Promise<boolean>;
+}
 
-            return true;
-        } catch (error: any) {
-            console.error('Error updating organization:', error);
+export function useOrganizationMutations(): UseOrganizationMutationsResult {
+  const [createOrganizationMutation, { isLoading: creating }] = useCreateOrganizationMutation();
+  const [updateOrganizationMutation, { isLoading: updating }] = useUpdateOrganizationMutation();
+  const [deleteOrganizationMutation, { isLoading: deleting }] = useDeleteOrganizationMutation();
+  const router = useRouter();
 
-            // More detailed error handling
-            let errorMessage = 'Failed to update organization';
+  const createOrganization = async (data: CreateOrganizationRequest): Promise<boolean> => {
+    try {
+      await createOrganizationMutation(data).unwrap();
+      toast.success('Organization created successfully');
+      router.push('/admin/organizations');
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create organization';
+      toast.error(errorMessage);
+      return false;
+    }
+  };
 
-            if (error?.response?.status === 404) {
-                errorMessage = 'Organization not found';
-            } else if (error?.response?.status === 403) {
-                errorMessage = 'You do not have permission to update this organization';
-            } else if (error?.response?.status === 422) {
-                errorMessage = error?.response?.data?.message || 'Invalid data provided';
-            } else if (error?.response?.status >= 500) {
-                errorMessage = 'Server error. Please try again later.';
-            } else if (error?.code === 'NETWORK_ERROR' || !error?.response) {
-                errorMessage = 'Network error. Please check your connection and try again.';
-            } else if (error?.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            }
+  const updateOrganization = async (id: string | number, data: UpdateOrganizationRequest): Promise<boolean> => {
+    try {
+      await updateOrganizationMutation({ id, data }).unwrap();
+      toast.success('Organization updated successfully');
+      router.push('/admin/organizations');
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update organization';
+      toast.error(errorMessage);
+      return false;
+    }
+  };
 
-            toast.error(errorMessage);
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    }, [isSearching, searchTerm, searchOrganizations, fetchOrganizations]);
+  const deleteOrganization = async (id: string | number): Promise<boolean> => {
+    try {
+      await deleteOrganizationMutation(id).unwrap();
+      toast.success('Organization deleted successfully');
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete organization';
+      toast.error(errorMessage);
+      return false;
+    }
+  };
 
-    const handlePageChange = useCallback(async (page: number) => {
-        setPagination(prev => ({ ...prev, page }));
-
-        if (isSearching) {
-            // For search, we typically don't paginate on frontend
-            return;
-        } else {
-            await fetchOrganizations({ page });
-        }
-    }, [isSearching, fetchOrganizations]);
-
-    const handleSearch = useCallback(async (term: string) => {
-        setSearchTerm(term);
-        await searchOrganizations(term);
-    }, [searchOrganizations]);
-
-    // Initialize data only once
-    useEffect(() => {
-        if (!initialized) {
-            fetchOrganizations();
-            setInitialized(true);
-        }
-    }, [initialized, fetchOrganizations]);
-
-    return {
-        organizations,
-        pagination,
-        loading,
-        searchTerm,
-        isSearching,
-        fetchOrganizations,
-        searchOrganizations,
-        updateOrganization,
-        handlePageChange,
-        handleSearch,
-        refetch: fetchOrganizations
-    };
-};
+  return {
+    creating,
+    updating,
+    deleting,
+    createOrganization,
+    updateOrganization,
+    deleteOrganization,
+  };
+}

@@ -22,6 +22,7 @@ export enum ComplianceEvidenceReviewOutcomeEnum {
 
 export interface ComplianceEvidence {
   id: number;
+  project_id?: number | null;
   control_id: number;
   requirement_id?: number | null;
   ai_model_id?: number | null;
