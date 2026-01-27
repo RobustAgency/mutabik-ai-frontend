@@ -36,7 +36,19 @@ export default function OrganizationDetailPage() {
   const handleSubmit = async (payload: OrganizationFormData) => {
     setServerErrors(undefined);
     try {
-      await updateOrganization({ id: organizationId, data: payload }).unwrap();
+      // Prepare the data to send, excluding website if it hasn't changed
+      const dataToSend: Partial<OrganizationFormData> = { ...payload };
+      
+      // Normalize website values for comparison (handle null, empty string, and undefined)
+      const originalWebsite = organization?.website || null;
+      const newWebsite = payload.website || null;
+      
+      // If website hasn't changed, exclude it from the request
+      if (originalWebsite === newWebsite) {
+        delete dataToSend.website;
+      }
+      
+      await updateOrganization({ id: organizationId, data: dataToSend }).unwrap();
       toast.success("Organization updated successfully");
       setIsEditing(false);
       router.refresh();
