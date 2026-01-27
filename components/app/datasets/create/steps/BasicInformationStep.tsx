@@ -13,8 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, ExternalLink } from "lucide-react";
-import Link from "next/link";
+import { X } from "lucide-react";
 import SelectWithInlineCreate from "@/components/custom/SelectWithInlineCreate";
 import DataSourceModalForm from "@/components/app/dataSources/create/DataSourceModalForm";
 import { useGetDataSourcesQuery } from "@/app/lib/features/dataSourcesApi";
@@ -74,13 +73,10 @@ export const BasicInformationStep: React.FC = () => {
   const { data: dataSourcesData, isLoading: isDataSourcesLoading } = useGetDataSourcesQuery({});
   const dataSources = dataSourcesData?.data || [];
 
-  const name = watch("name");
-  const description = watch("description");
   const purpose = watch("purpose");
   const ownerTeam = watch("owner_team");
   const dataSteward = watch("data_steward");
   const sourceIds = watch("source_ids") || [];
-  const status = watch("status");
 
   const hasError = (fieldName: keyof DatasetFormData) =>
     errors[fieldName] && errors[fieldName]?.message;

@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   useGetCorrectivePreventiveActionQuery,
   useDeleteCorrectivePreventiveActionMutation,
-  type CorrectivePreventiveAction,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import CAPAFormReadOnly from "./CAPAFormReadOnly";

@@ -10,7 +10,6 @@ import {
 } from "@/app/lib/features/privacyIncidentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
-import type { PrivacyIncident } from "@/interfaces/PrivacyIncident";
 
 interface PrivacyIncidentDetailsProps {
   id: string;

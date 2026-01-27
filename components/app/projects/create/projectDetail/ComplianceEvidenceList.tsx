@@ -3,7 +3,6 @@
 import React from "react";
 import { useGetComplianceEvidencesQuery } from "@/app/lib/features/complianceEvidenceApi";
 import type { ComplianceEvidence } from "@/interfaces/ComplianceEvidence";
-import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 
 interface ComplianceEvidenceListProps {

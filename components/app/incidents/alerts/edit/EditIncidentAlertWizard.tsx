@@ -13,8 +13,6 @@ import {
   useGetIncidentAlertQuery,
   useUpdateIncidentAlertMutation,
   CreateIncidentAlertData,
-  AlertSourceType,
-  AlertSeverity,
 } from "@/app/lib/features/incidentAlertsApi";
 import { IncidentSourceStep } from "../create/steps/IncidentSourceStep";
 import { AlertDetailsStep } from "../create/steps/AlertDetailsStep";

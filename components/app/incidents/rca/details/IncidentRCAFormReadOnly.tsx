@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import {

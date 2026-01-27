@@ -16,7 +16,6 @@ import {
   useGetIncidentRootCauseAnalysisQuery,
   useUpdateIncidentRootCauseAnalysisMutation,
   CreateIncidentRootCauseAnalysisData,
-  RcaMethod,
 } from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import { BasicInformationStep } from "../create/steps/BasicInformationStep";
 import { AnalysisFindingsStep } from "../create/steps/AnalysisFindingsStep";

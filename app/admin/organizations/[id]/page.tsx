@@ -3,9 +3,7 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import OrganizationForm from "@/components/admin/organizations/OrganizationForm";
-import { useGetOrganizationQuery, useUpdateOrganizationMutation } from "@/app/lib/features/organizationsApi";
-import { OrganizationFormData } from "@/lib/schemas/organization.schema";
+import { useGetOrganizationQuery } from "@/app/lib/features/organizationsApi";
 import Spinner from "@/components/ui/spinner";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,58 +12,23 @@ import { formatDate } from "@/utils/formatDate";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useOrganizationMutations } from "@/hooks/admin/useOrganizations";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { organizationsService } from "@/service/admin/organizations";
+import { OrganizationMember } from "@/interfaces/Organization";
+import { CreateAdminUserRequest } from "@/service/admin/adminUsers";
 import { Label } from "@/components/ui/label";
+import { OrganizationAdminSection } from "@/components/admin/organizations/OrganizationAdminSection";
 
 export default function OrganizationDetailPage() {
   const params = useParams();
   const router = useRouter();
   const organizationId = Number(params.id);
-  const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-
-  const { data: organization, isLoading: loadingOrganization } = useGetOrganizationQuery(organizationId);
-  const [updateOrganization, { isLoading: isUpdating }] = useUpdateOrganizationMutation();
+  const { data: organization, isLoading: loadingOrganization, refetch: refetchOrganization } = useGetOrganizationQuery(organizationId);
   const { deleteOrganization } = useOrganizationMutations();
-  const [serverErrors, setServerErrors] = React.useState<Record<string, string[]> | undefined>(undefined);
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setServerErrors(undefined);
-  };
-
-  const handleSubmit = async (payload: OrganizationFormData) => {
-    setServerErrors(undefined);
-    try {
-      // Prepare the data to send, excluding website if it hasn't changed
-      const dataToSend: Partial<OrganizationFormData> = { ...payload };
-      
-      // Normalize website values for comparison (handle null, empty string, and undefined)
-      const originalWebsite = organization?.website || null;
-      const newWebsite = payload.website || null;
-      
-      // If website hasn't changed, exclude it from the request
-      if (originalWebsite === newWebsite) {
-        delete dataToSend.website;
-      }
-      
-      await updateOrganization({ id: organizationId, data: dataToSend }).unwrap();
-      toast.success("Organization updated successfully");
-      setIsEditing(false);
-      router.refresh();
-    } catch (err: any) {
-      console.error("Failed to update organization:", err);
-      const errors = err?.error?.data?.errors || err?.data?.errors;
-      const errorMessage = err?.error?.data?.message || err?.data?.message || "Failed to update organization";
-      
-      if (errors) {
-        setServerErrors(errors);
-      }
-      
-      // Show toast for validation errors or general errors
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
+  const admin: OrganizationMember | null =
+    (organization?.members && organization.members.length > 0
+      ? organization.members[0]
+      : null);
 
   const handleDelete = async () => {
     const success = await deleteOrganization(organizationId);
@@ -73,6 +36,28 @@ export default function OrganizationDetailPage() {
       router.push('/admin/organizations');
     }
     setShowDeleteDialog(false);
+  };
+
+  const handleCreateAdmin = async (
+    payload: CreateAdminUserRequest
+  ): Promise<boolean> => {
+    try {
+      await organizationsService.createOrganizationAdmin(
+        organizationId,
+        payload
+      );
+      await refetchOrganization();
+      toast.success("Organization admin assigned successfully");
+      return true;
+    } catch (err: any) {
+      console.error("Failed to create organization admin:", err);
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to assign organization admin";
+      toast.error(errorMessage);
+      return false;
+    }
   };
 
   if (loadingOrganization) {
@@ -98,21 +83,6 @@ export default function OrganizationDetailPage() {
     );
   }
 
-  if (isEditing) {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] px-2 py-4">
-        <OrganizationForm
-          organization={organization}
-          mode="edit"
-          onCancel={handleCancel}
-          serverErrors={serverErrors}
-          onSubmit={handleSubmit}
-          isLoading={isUpdating}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#FAFAFA] px-2 py-4">
       <div className="mb-4">
@@ -134,7 +104,7 @@ export default function OrganizationDetailPage() {
             </CardTitle>
             <div className="flex gap-2">
               <Button
-                onClick={() => setIsEditing(true)}
+                onClick={() => router.push(`/admin/organizations/${organizationId}/edit`)}
                 className="bg-primary text-white"
               >
                 Edit
@@ -205,6 +175,11 @@ export default function OrganizationDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      <OrganizationAdminSection
+        admin={admin}
+        onCreateAdmin={handleCreateAdmin}
+      />
 
       <ConfirmationDialog
         isOpen={showDeleteDialog}

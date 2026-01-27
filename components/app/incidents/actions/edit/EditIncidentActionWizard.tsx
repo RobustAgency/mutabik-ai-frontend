@@ -16,9 +16,6 @@ import {
   useGetIncidentActionQuery,
   useUpdateIncidentActionMutation,
   CreateIncidentActionData,
-  ActionType,
-  ExecutionStatus,
-  ValidationResult,
 } from "@/app/lib/features/incidentActionsApi";
 import { BasicInformationStep } from "../create/steps/BasicInformationStep";
 import { ExecutionDetailsStep } from "../create/steps/ExecutionDetailsStep";

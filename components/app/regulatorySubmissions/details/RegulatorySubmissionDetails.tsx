@@ -10,7 +10,6 @@ import {
 } from "@/app/lib/features/regulatorySubmissionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
-import type { RegulatorySubmission } from "@/interfaces/RegulatorySubmission";
 
 interface RegulatorySubmissionDetailsProps {
   id: string;

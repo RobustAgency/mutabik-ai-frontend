@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/select";
 import type { ModelDatasetLinkFormData } from "@/lib/schemas/modelDatasetLink.schema";
 import { CreatedBy, LinkageStatus } from "@/app/lib/features/modelDatasetLinksApi";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 
 const CREATED_BY_OPTIONS = [
   { value: CreatedBy.DATA_ENGINEERING_TEAM, label: "Data Engineering Team" },
@@ -41,7 +39,6 @@ export const GovernanceStatusStep: React.FC = () => {
 
   const createdBySystem = watch("created_by_system");
   const linkageStatus = watch("linkage_status");
-  const businessJustification = watch("business_justification");
 
   const hasError = (fieldName: keyof ModelDatasetLinkFormData) =>
     errors[fieldName] && errors[fieldName]?.message;

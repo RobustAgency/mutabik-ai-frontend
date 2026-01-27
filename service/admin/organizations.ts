@@ -1,6 +1,8 @@
 import { api } from '@/lib/api';
 import { Organization, OrganizationsApiResponse } from '@/interfaces/Organization';
 import { PaginatedResponse } from '@/interfaces/Pagination';
+import { User } from '@/interfaces/User';
+import { CreateAdminUserRequest } from '@/service/admin/adminUsers';
 
 export interface SearchOrganizationsParams {
     term?: string;
@@ -134,6 +136,46 @@ export class OrganizationsService {
             }
         } catch (error) {
             console.error('Error updating organization via API:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the admin user for a specific organization.
+     * Returns null if no admin is assigned yet or the API responds with an error.
+     */
+    async getOrganizationAdmin(organizationId: number): Promise<User | null> {
+        try {
+            const response = await api.get<User>(`${this.basePath}/${organizationId}/admin`);
+
+            if (response.error === false && response.data) {
+                return response.data;
+            }
+
+            return null;
+        } catch (error) {
+            console.error('Error fetching organization admin from API:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Create / assign an admin user for a specific organization.
+     */
+    async createOrganizationAdmin(
+        organizationId: number,
+        adminData: CreateAdminUserRequest
+    ): Promise<User> {
+        try {
+            const response = await api.post<User>(`${this.basePath}/${organizationId}/admin`, adminData);
+
+            if (response.error === false && response.data) {
+                return response.data;
+            }
+
+            throw new Error(response.message || 'Failed to create organization admin');
+        } catch (error) {
+            console.error('Error creating organization admin via API:', error);
             throw error;
         }
     }
