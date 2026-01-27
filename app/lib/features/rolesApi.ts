@@ -13,7 +13,7 @@ import {
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
 
-export interface RolesListResponse extends ListResponseWithMeta<UserRole> {}
+export type RolesListResponse = ListResponseWithMeta<UserRole>;
 
 export type PermissionsTree = Record<string, Record<string, Permission[]>>;
 
