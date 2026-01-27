@@ -133,6 +133,28 @@ export const ComplianceEvidenceForm: React.FC<ComplianceEvidenceFormProps> = ({
 
   const watchedRequirementId = watch("requirement_id");
 
+  // Helper function to extract date part (YYYY-MM-DD) from various datetime formats
+  const extractDatePart = (dateTimeString: string | null | undefined): string | null => {
+    if (!dateTimeString) return null;
+    
+    // Handle ISO format with "T": "2026-01-26T00:00:00" or "2026-01-26T00:00:00Z"
+    if (dateTimeString.includes("T")) {
+      return dateTimeString.split("T")[0];
+    }
+    
+    // Handle space-separated format: "2026-01-26 00:00:00"
+    if (dateTimeString.includes(" ")) {
+      return dateTimeString.split(" ")[0];
+    }
+    
+    // If already in YYYY-MM-DD format, return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateTimeString)) {
+      return dateTimeString;
+    }
+    
+    return null;
+  };
+
   useEffect(() => {
     if (initialData) {
       const sampleIds = initialData.sample_ids || [];
@@ -145,18 +167,12 @@ export const ComplianceEvidenceForm: React.FC<ComplianceEvidenceFormProps> = ({
         artifact_uri: initialData.artifact_uri || "",
         sample_ids: sampleIds,
         sampling_method: initialData.sampling_method || "",
-        collection_period_start: initialData.collection_period_start
-          ? initialData.collection_period_start.split("T")[0]
-          : null,
-        collection_period_end: initialData.collection_period_end
-          ? initialData.collection_period_end.split("T")[0]
-          : null,
+        collection_period_start: extractDatePart(initialData.collection_period_start),
+        collection_period_end: extractDatePart(initialData.collection_period_end),
         collected_by: initialData.collected_by ?? null,
         review_outcome: initialData.review_outcome ?? null,
         reviewed_by: initialData.reviewed_by ?? null,
-        reviewed_at: initialData.reviewed_at
-          ? initialData.reviewed_at.split("T")[0]
-          : null,
+        reviewed_at: extractDatePart(initialData.reviewed_at),
         hash_checksum: initialData.hash_checksum || "",
       };
       
