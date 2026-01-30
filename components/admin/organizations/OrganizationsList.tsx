@@ -152,7 +152,7 @@ export default function OrganizationsList() {
                 const organization = row.original;
                 return (
                     <div className="flex items-center gap-2">
-                        <Link href={`/admin/organizations/${organization.id}`}>
+                        <Link href={`/admin/organizations/${organization.id}/edit`}>
                             <Button
                                 variant="ghost"
                                 size="sm"

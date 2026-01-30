@@ -53,6 +53,7 @@ import { committeeMeetingsApi } from "./features/committeeMeetingsApi";
 import { committeeActionsApi } from "./features/committeeActionsApi";
 import { committeeDecisionsApi } from "./features/committeeDecisionsApi";
 import { organizationsApi } from "./features/organizationsApi";
+import { rolesApi } from "./features/rolesApi";
 
 export const makeStore = () => {
   return configureStore({
@@ -115,6 +116,7 @@ export const makeStore = () => {
       [committeeActionsApi.reducerPath]: committeeActionsApi.reducer,
       [committeeDecisionsApi.reducerPath]: committeeDecisionsApi.reducer,
       [organizationsApi.reducerPath]: organizationsApi.reducer,
+      [rolesApi.reducerPath]: rolesApi.reducer,
       // ... other reducers
     },
     middleware: (getDefaultMiddleware) =>
@@ -169,7 +171,8 @@ export const makeStore = () => {
         committeeMeetingsApi.middleware,
         committeeActionsApi.middleware,
         committeeDecisionsApi.middleware,
-        organizationsApi.middleware
+        organizationsApi.middleware,
+        rolesApi.middleware
       ),
   });
 };

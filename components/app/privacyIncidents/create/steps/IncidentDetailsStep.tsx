@@ -36,7 +36,6 @@ export const IncidentDetailsStep: React.FC = () => {
   const howDiscovered = watch("how_discovered");
   const dataCompromised = watch("data_compromised");
   const dataCategoriesAffected = watch("data_categories_affected") || [];
-  const affectedSubjectKeys = watch("affected_subject_keys") || [];
 
   const {
     fields: subjectKeyFields,

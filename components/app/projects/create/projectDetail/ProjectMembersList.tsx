@@ -14,7 +14,6 @@ interface ProjectMembersListProps {
 
 export const ProjectMembersList: React.FC<ProjectMembersListProps> = ({
   users = [],
-  onAddMember,
 }) => {
   const columns: ColumnDef<ProjectUser>[] = useMemo(
     () => [

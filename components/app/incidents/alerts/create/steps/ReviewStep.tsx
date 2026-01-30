@@ -29,7 +29,6 @@ export const ReviewStep: React.FC = () => {
   const {
     watch,
     setValue,
-    formState: { errors },
   } = useFormContext<IncidentAlertFormData>();
 
   const formData = watch();

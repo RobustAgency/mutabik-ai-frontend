@@ -16,7 +16,6 @@ import {
   Priority,
   OwnerTeam,
   Status,
-  VerificationResult,
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";

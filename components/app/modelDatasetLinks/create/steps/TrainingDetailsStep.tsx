@@ -14,12 +14,8 @@ export const TrainingDetailsStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<ModelDatasetLinkFormData>();
 
-  const rowsUsed = watch("rows_used");
   const trainingStartDate = watch("training_start_date");
   const trainingEndDate = watch("training_end_date");
-  const trainingDuration = watch("training_duration");
-  const computeResources = watch("compute_resources");
-  const cost = watch("cost");
 
   const hasError = (fieldName: keyof ModelDatasetLinkFormData) =>
     errors[fieldName] && errors[fieldName]?.message;

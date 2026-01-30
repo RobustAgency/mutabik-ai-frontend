@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   useGetIncidentRootCauseAnalysisQuery,
   useDeleteIncidentRootCauseAnalysisMutation,
-  type IncidentRootCauseAnalysis,
 } from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import IncidentRCAFormReadOnly from "./IncidentRCAFormReadOnly";

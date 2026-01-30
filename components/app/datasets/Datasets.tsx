@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetDatasetsQuery, useDeleteDatasetMutation, DatasetFilters, Dataset, Purpose, OwnerTeam, DataSteward, Status, ContainPersonalData, Sensitivity } from "@/app/lib/features/datasetsApi";
+import { useGetDatasetsQuery, useDeleteDatasetMutation, DatasetFilters, Dataset, Purpose, OwnerTeam, DataSteward, Status, ContainPersonalData } from "@/app/lib/features/datasetsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";

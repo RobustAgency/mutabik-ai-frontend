@@ -460,23 +460,23 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/admin",
+    href: "/administration",
     label: "Administration",
     icon: Settings,
     children: [
-      { href: "/admin/users", label: "Users & Roles", icon: UserCog },
+      { href: "/administration/users", label: "Users & Roles", icon: UserCog },
       {
-        href: "/admin/integrations",
+        href: "/administration/integrations",
         label: "Integrations & Connectors",
         icon: SlidersHorizontal,
       },
       {
-        href: "/admin/settings",
+        href: "/administration/settings",
         label: "Settings & Configuration",
         icon: Settings,
       },
       {
-        href: "/admin/audit",
+        href: "/administration/audit",
         label: "Audit Trails & Notifications",
         icon: BellDot,
       },

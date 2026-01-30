@@ -16,7 +16,7 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
     const [formData, setFormData] = useState<CreateAdminUserRequest>({
         name: '',
         email: '',
-        role: 'admin'
+        password: ''
     });
     const [errors, setErrors] = useState<Partial<CreateAdminUserRequest>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,8 +34,8 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
             newErrors.email = 'Please enter a valid email address';
         }
 
-        if (!formData.role) {
-            newErrors.role = 'Role is required';
+        if (!formData.password || formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
         }
 
         setErrors(newErrors);
@@ -57,7 +57,7 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
                 setFormData({
                     name: '',
                     email: '',
-                    role: 'admin'
+                    password: ''
                 });
                 setErrors({});
                 setOpen(false);
@@ -92,7 +92,7 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
                 setFormData({
                     name: '',
                     email: '',
-                    role: 'admin'
+                    password: ''
                 });
                 setErrors({});
             }
@@ -106,13 +106,13 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
                     className="px-6 py-2 rounded-lg"
                     disabled={loading}
                 >
-                    Add New Admin
+                    Assign Admin
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-semibold text-gray-900">
-                        Add New Admin User
+                        Assign Admin User
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -149,6 +149,24 @@ const AddAdminUserDialog: React.FC<AddAdminUserDialogProps> = ({ onSubmit, loadi
                         />
                         {errors.email && (
                             <p className="text-sm text-red-500">{errors.email}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                            Password
+                        </Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
+                            placeholder="Enter password"
+                            className={`w-full ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+                            disabled={isSubmitting}
+                        />
+                        {errors.password && (
+                            <p className="text-sm text-red-500">{errors.password}</p>
                         )}
                     </div>
 

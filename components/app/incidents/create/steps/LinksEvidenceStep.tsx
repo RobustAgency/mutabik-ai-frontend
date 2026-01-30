@@ -32,8 +32,6 @@ export const LinksEvidenceStep: React.FC = () => {
   const { data: risksData, isLoading: isLoadingRisks } = useGetAiRiskRegistersQuery({});
   const risks = risksData?.data || [];
 
-  const hasError = (fieldName: keyof AiIncidentFormData) =>
-    errors[fieldName] && errors[fieldName]?.message;
   const getError = (fieldName: keyof AiIncidentFormData) =>
     errors[fieldName]?.message as string;
 

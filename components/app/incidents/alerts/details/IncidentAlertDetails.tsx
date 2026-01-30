@@ -7,9 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   useGetIncidentAlertQuery,
   useDeleteIncidentAlertMutation,
-  type IncidentAlert,
   AlertSourceType,
-  AlertSeverity,
 } from "@/app/lib/features/incidentAlertsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import IncidentAlertFormReadOnly from "./IncidentAlertFormReadOnly";

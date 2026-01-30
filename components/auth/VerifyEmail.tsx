@@ -85,7 +85,7 @@ const VerifyEmail = () => {
                     size={'lg'}
                     onClick={handleResendEmail}
                     disabled={isPending}
-                    className="w-full mt-7 bg-primary hover:bg-primary/90 text-white font-medium !py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full mt-7 bg-primary hover:bg-primary/90 text-white font-medium py-3! rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isPending ? (
                         <>

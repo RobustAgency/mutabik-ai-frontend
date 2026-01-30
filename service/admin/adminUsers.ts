@@ -5,8 +5,7 @@ import { PaginatedResponse } from '@/interfaces/Pagination';
 export interface CreateAdminUserRequest {
     name: string;
     email: string;
-    role: string;
-    password?: string; // Will be set to default "password"
+    password: string;
 }
 
 export interface SearchUsersParams {
@@ -60,12 +59,7 @@ export class AdminUsersService {
 
     async createAdminUser(userData: CreateAdminUserRequest): Promise<User> {
         try {
-            const payload = {
-                ...userData,
-                password: 'password' // Default password as requested
-            };
-
-            const response = await api.post<User>(this.basePath, payload);
+            const response = await api.post<User>(this.basePath, userData);
 
             return response.data;
         } catch (error) {

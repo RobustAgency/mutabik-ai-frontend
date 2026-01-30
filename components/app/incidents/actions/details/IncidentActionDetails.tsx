@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   useGetIncidentActionQuery,
   useDeleteIncidentActionMutation,
-  type IncidentAction,
 } from "@/app/lib/features/incidentActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import IncidentActionFormReadOnly from "./IncidentActionFormReadOnly";

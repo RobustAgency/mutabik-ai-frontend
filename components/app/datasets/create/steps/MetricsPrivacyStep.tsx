@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { DatasetFormData } from "@/lib/schemas/dataset.schema";
 import {
@@ -64,7 +64,6 @@ const SENSITIVITY_OPTIONS = [
 
 export const MetricsPrivacyStep: React.FC = () => {
   const {
-    register,
     setValue,
     watch,
     formState: { errors },
@@ -93,11 +92,6 @@ export const MetricsPrivacyStep: React.FC = () => {
     } else {
       setValue("primary_languages", [...primaryLanguages, language], { shouldValidate: true });
     }
-  };
-
-  const getLanguageLabel = (value: PrimaryLanguage): string => {
-    const found = PRIMARY_LANGUAGE_OPTIONS.find((opt) => opt.value === value);
-    return found ? found.label : value;
   };
 
   return (
