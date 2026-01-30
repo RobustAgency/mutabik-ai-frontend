@@ -10,11 +10,16 @@ import { Badge } from "@/components/ui/badge";
 
 import InviteUsersDialog from "./InviteUsersDialog";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { ManageUserAccessDialog } from "@/components/app/users/ManageUserAccessDialog";
+import { ManageUserRoleDialog } from "@/components/app/users/ManageUserRoleDialog";
 
 const UsersTable: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
+  const [roleDialogUser, setRoleDialogUser] = React.useState<User | null>(null);
+  const [permissionDialogUser, setPermissionDialogUser] =
+    React.useState<User | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
   
   const queryParams = React.useMemo(
@@ -35,6 +40,16 @@ const UsersTable: React.FC = () => {
     e.stopPropagation();
     setUserToDelete(user);
     setDeleteDialogOpen(true);
+  };
+
+  const handleManageRoleClick = (e: React.MouseEvent, user: User) => {
+    e.stopPropagation();
+    setRoleDialogUser(user);
+  };
+
+  const handleManagePermissionsClick = (e: React.MouseEvent, user: User) => {
+    e.stopPropagation();
+    setPermissionDialogUser(user);
   };
 
   const confirmDelete = async () => {
@@ -140,9 +155,27 @@ const UsersTable: React.FC = () => {
     {
       id: "actions",
       accessorKey: "id",
-      header: () => <div className="text-sm font-medium text-[#667085]">Actions</div>,
+      header: () => (
+        <div className="text-sm font-medium text-[#667085]">Actions</div>
+      ),
       cell: ({ row }) => (
         <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={(e) => handleManageRoleClick(e, row.original)}
+            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
+          >
+            <span>Permission set</span>
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={(e) => handleManagePermissionsClick(e, row.original)}
+            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
+          >
+            <span>Direct permissions</span>
+          </Button>
           <Button
             size="sm"
             variant="ghost"
@@ -212,6 +245,26 @@ const UsersTable: React.FC = () => {
         open={inviteDialogOpen}
         onOpenChange={setInviteDialogOpen}
         onInviteSuccess={() => setCurrentPage(1)}
+      />
+
+      <ManageUserRoleDialog
+        user={roleDialogUser}
+        open={Boolean(roleDialogUser)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRoleDialogUser(null);
+          }
+        }}
+      />
+
+      <ManageUserAccessDialog
+        user={permissionDialogUser}
+        open={Boolean(permissionDialogUser)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPermissionDialogUser(null);
+          }
+        }}
       />
     </>
   );

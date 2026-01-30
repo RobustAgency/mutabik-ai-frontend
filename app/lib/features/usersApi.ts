@@ -59,6 +59,26 @@ export interface InviteTeamResponse {
   } | null;
 }
 
+export interface AssignRoleRequest {
+  userId: number;
+  roleId: number;
+}
+
+export interface RevokeRoleRequest {
+  userId: number;
+  roleId: number;
+}
+
+export interface AssignPermissionRequest {
+  userId: number;
+  permissionId: number;
+}
+
+export interface RevokePermissionRequest {
+  userId: number;
+  permissionId: number;
+}
+
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: axiosBaseQuery(),
@@ -123,6 +143,59 @@ export const usersApi = createApi({
         { type: "User", id: "ORG_LIST" },
       ],
     }),
+    assignRole: builder.mutation<{ success: boolean }, AssignRoleRequest>({
+      query: ({ userId, roleId }) => ({
+        url: `/users/${userId}/assign-role`,
+        method: "POST",
+        data: { role_id: roleId },
+      }),
+      invalidatesTags: (_result, _error, { userId }) => [
+        { type: "User", id: userId },
+        { type: "User", id: "LIST" },
+        { type: "User", id: "ORG_LIST" },
+      ],
+    }),
+    revokeRole: builder.mutation<{ success: boolean }, RevokeRoleRequest>({
+      query: ({ userId, roleId }) => ({
+        url: `/users/${userId}/revoke-role/${roleId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, { userId }) => [
+        { type: "User", id: userId },
+        { type: "User", id: "LIST" },
+        { type: "User", id: "ORG_LIST" },
+      ],
+    }),
+    assignPermission: builder.mutation<
+      { success: boolean },
+      AssignPermissionRequest
+    >({
+      query: ({ userId, permissionId }) => ({
+        url: `/users/${userId}/assign-permission`,
+        method: "POST",
+        data: { permission_id: permissionId },
+      }),
+      invalidatesTags: (_result, _error, { userId }) => [
+        { type: "User", id: userId },
+        { type: "User", id: "LIST" },
+        { type: "User", id: "ORG_LIST" },
+      ],
+    }),
+    revokePermission: builder.mutation<
+      { success: boolean },
+      RevokePermissionRequest
+    >({
+      query: ({ userId, permissionId }) => ({
+        url: `/users/${userId}/revoke-permission`,
+        method: "POST",
+        data: { permission_id: permissionId },
+      }),
+      invalidatesTags: (_result, _error, { userId }) => [
+        { type: "User", id: userId },
+        { type: "User", id: "LIST" },
+        { type: "User", id: "ORG_LIST" },
+      ],
+    }),
   }),
 });
 
@@ -131,5 +204,9 @@ export const {
   useGetOrganizationUsersQuery,
   useDeleteUserMutation,
   useInviteTeamMutation,
+  useAssignRoleMutation,
+  useRevokeRoleMutation,
+  useAssignPermissionMutation,
+  useRevokePermissionMutation,
 } = usersApi;
 
