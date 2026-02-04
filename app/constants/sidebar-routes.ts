@@ -72,7 +72,7 @@ export const adminRoutes: RouteItem[] = [
     label: "Users Administration",
     icon: Users2,
     children: [
-      { href: "/admin/users-administration/admin-users", label: "Admins" },
+      // { href: "/admin/users-administration/admin-users", label: "Admins" },
       { href: "/admin/users-administration/customers", label: "Customers" },
     ],
   },
