@@ -13,6 +13,8 @@ import {
 import { RiskMethodology } from "@/interfaces/RiskMethodology";
 import { formatDate } from "@/utils/formatDate";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function RiskMethodologies() {
   const router = useRouter();
@@ -118,20 +120,24 @@ export default function RiskMethodologies() {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => handleEditClick(e, row.original)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085] hover:bg-red-50 hover:text-red-600"
-            onClick={(e) => handleDeleteClick(e, row.original)}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.RISK_METHODOLOGIES_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => handleEditClick(e, row.original)}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.RISK_METHODOLOGIES_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085] hover:bg-red-50 hover:text-red-600"
+              onClick={(e) => handleDeleteClick(e, row.original)}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -148,14 +154,16 @@ export default function RiskMethodologies() {
           <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
             Risk Methodologies
           </h2>
-          <Button
-            onClick={() =>
-              router.push("/risk-compliance/ai-risk-management/methodologies/create")
-            }
-            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-          >
-            Create Risk Methodology
-          </Button>
+          <PermissionGate permission={PERMISSIONS.RISK_METHODOLOGIES_CREATE}>
+            <Button
+              onClick={() =>
+                router.push("/risk-compliance/ai-risk-management/methodologies/create")
+              }
+              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+            >
+              Create Risk Methodology
+            </Button>
+          </PermissionGate>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
           <DataTable
@@ -179,14 +187,16 @@ export default function RiskMethodologies() {
               title: "No Risk Methodologies found",
               description: "Get started by creating your first risk methodology",
               action: (
-                <Button
-                  onClick={() =>
-                    router.push("/risk-compliance/ai-risk-management/methodologies/create")
-                  }
-                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                >
-                  Create Risk Methodology
-                </Button>
+                <PermissionGate permission={PERMISSIONS.RISK_METHODOLOGIES_CREATE}>
+                  <Button
+                    onClick={() =>
+                      router.push("/risk-compliance/ai-risk-management/methodologies/create")
+                    }
+                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                  >
+                    Create Risk Methodology
+                  </Button>
+                </PermissionGate>
               ),
             }}
           />

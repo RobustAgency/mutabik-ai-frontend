@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetConsentScopeQuery, useDeleteConsentScopeMutation } from "@/app/lib/features/consentScopesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import ConsentScopeFormReadOnly from "./ConsentScopeFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ConsentScopeDetailsProps {
   scopeId: string;
@@ -69,8 +71,12 @@ const ConsentScopeDetails: React.FC<ConsentScopeDetailsProps> = ({ scopeId }) =>
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View consent scope information</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.CONSENT_SCOPES_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.CONSENT_SCOPES_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

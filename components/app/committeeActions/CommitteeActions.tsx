@@ -21,6 +21,8 @@ import {
 } from "@/interfaces/CommitteeAction";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const formatDate = (dateString: string | null | undefined): string =>
   formatDateShort(dateString);
@@ -264,20 +266,24 @@ const CommitteeActions: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.COMMITTEE_ACTIONS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.COMMITTEE_ACTIONS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -298,12 +304,14 @@ const CommitteeActions: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                onClick={() => router.push("/governance/committee-actions/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Action
-              </Button>
+              <PermissionGate permission={PERMISSIONS.COMMITTEE_ACTIONS_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/committee-actions/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Action
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -330,11 +338,13 @@ const CommitteeActions: React.FC = () => {
                 title: "No committee actions found",
                 description: "Get started by creating your first committee action",
                 action: (
-                  <Button
-                    onClick={() => router.push("/governance/committee-actions/create")}
-                  >
-                    Create Action
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.COMMITTEE_ACTIONS_CREATE}>
+                    <Button
+                      onClick={() => router.push("/governance/committee-actions/create")}
+                    >
+                      Create Action
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

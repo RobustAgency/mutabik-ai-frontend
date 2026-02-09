@@ -12,6 +12,7 @@ import {
   createInvalidateListTags,
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
+import { profileApi } from "./profileApi";
 
 export type RolesListResponse = ListResponseWithMeta<UserRole>;
 
@@ -85,6 +86,12 @@ export const rolesApi = createApi({
         data,
       }),
       invalidatesTags: createInvalidateItemAndListTags("Role"),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     getPermissions: builder.query<PermissionsTree, void>({
       query: () => ({

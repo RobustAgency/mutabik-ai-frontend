@@ -13,6 +13,8 @@ import { useGetProjectsQuery, ProjectFilters, Project } from "@/app/lib/features
 import { getGovernancePillarLabel } from "@/utils/governancePillar";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { List, LayoutGrid } from "lucide-react";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const ProjectsTable: React.FC = () => {
   const router = useRouter();
@@ -201,12 +203,14 @@ const ProjectsTable: React.FC = () => {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <Button
-                onClick={() => router.push(`/projects/create?step=${1}`)}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Project
-              </Button>
+              <PermissionGate permission={PERMISSIONS.PROJECTS_CREATE}>
+                <Button
+                  onClick={() => router.push(`/projects/create?step=${1}`)}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Project
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -234,13 +238,15 @@ const ProjectsTable: React.FC = () => {
                     title: "No projects found",
                     description: "Get started by creating your first project",
                     action: (
-                      <Button
-                        onClick={() =>
-                          router.push("/projects/create?step=1")
-                        }
-                      >
-                        Create Project
-                      </Button>
+                      <PermissionGate permission={PERMISSIONS.PROJECTS_CREATE}>
+                        <Button
+                          onClick={() =>
+                            router.push("/projects/create?step=1")
+                          }
+                        >
+                          Create Project
+                        </Button>
+                      </PermissionGate>
                     ),
                   }}
                 />

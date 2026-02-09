@@ -135,13 +135,13 @@ const UsersTable: React.FC = () => {
       header: () => <div className="text-sm font-medium text-[#667085]">Email</div>,
       cell: ({ getValue }) => <div className="text-sm text-[#667085]">{getValue() as string}</div>,
     },
-    {
-  accessorKey: "role",
-  header: () => (
-    <div className="text-sm font-medium text-[#667085]">Role</div>
-  ),
-  cell: ({ row }) => getRoleBadge(row.original.role),
-},
+//     {
+//   accessorKey: "role",
+//   header: () => (
+//     <div className="text-sm font-medium text-[#667085]">Role</div>
+//   ),
+//   cell: ({ row }) => getRoleBadge(row.original.role),
+// },
  {
       accessorKey: "created_at",
       header: () => <div className="text-sm font-medium text-[#667085]">Created</div>,

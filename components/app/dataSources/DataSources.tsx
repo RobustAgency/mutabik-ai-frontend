@@ -11,6 +11,8 @@ import { DataSource } from "@/app/lib/features/dataSourcesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const DataSources: React.FC = () => {
   const router = useRouter();
@@ -282,20 +284,24 @@ const DataSources: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DATA_SOURCES_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATA_SOURCES_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -317,12 +323,14 @@ const DataSources: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as DataSourceFilters)}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/sources/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Data Source
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DATA_SOURCES_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/sources/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Data Source
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -350,13 +358,15 @@ const DataSources: React.FC = () => {
                 title: "No data sources found",
                 description: "Get started by creating your first data source",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/core-assets/data/sources/create")
-                    }
-                  >
-                    Create Data Source
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.DATA_SOURCES_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/core-assets/data/sources/create")
+                      }
+                    >
+                      Create Data Source
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

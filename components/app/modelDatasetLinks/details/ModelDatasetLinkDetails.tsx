@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useGetModelDatasetLinkQuery } from "@/app/lib/features/modelDatasetLinksApi";
 import ModelDatasetLinkFormReadOnly from "./ModelDatasetLinkFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ModelDatasetLinkDetailsProps {
   linkId: number;
@@ -55,7 +57,9 @@ const ModelDatasetLinkDetails: React.FC<ModelDatasetLinkDetailsProps> = ({ linkI
             <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View and manage model-dataset link information</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+            <PermissionGate permission={PERMISSIONS.AI_MODEL_DATASETS_EDIT}>
+              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+            </PermissionGate>
           </div>
         </div>
 

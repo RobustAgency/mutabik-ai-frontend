@@ -13,6 +13,8 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
 import { ArtifactAccessLogFilters } from "@/service/app/artifactAccessLogs";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const ArtifactAccessLogsList = () => {
     const router = useRouter();
@@ -114,12 +116,14 @@ const ArtifactAccessLogsList = () => {
                                         setPage(1); // Reset to first page when filters change
                                     }}
                                 />
-                                <Button
-                                    onClick={() => router.push("/core-assets/ai-models/artifact-access-logs/create")}
-                                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                                >
-                                    New Access Log
-                                </Button>
+                                <PermissionGate permission={PERMISSIONS.ARTIFACT_ACCESS_LOGS_CREATE}>
+                                    <Button
+                                        onClick={() => router.push("/core-assets/ai-models/artifact-access-logs/create")}
+                                        className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                    >
+                                        New Access Log
+                                    </Button>
+                                </PermissionGate>
                             </div>
                         </div>
 
@@ -235,14 +239,16 @@ const ArtifactAccessLogsList = () => {
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => handleDeleteClick(log.id)}
-                                                            className="h-8 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                        <PermissionGate permission={PERMISSIONS.ARTIFACT_ACCESS_LOGS_DELETE}>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => handleDeleteClick(log.id)}
+                                                                className="h-8 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </PermissionGate>
                                                     </div>
                                                 </td>
                                             </tr>

@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetUserConsentQuery, useDeleteUserConsentMutation } from "@/app/lib/features/userConsentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import UserConsentFormReadOnly from "./UserConsentFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface UserConsentDetailsProps {
   consentId: string;
@@ -69,8 +71,12 @@ const UserConsentDetails: React.FC<UserConsentDetailsProps> = ({ consentId }) =>
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View consent information</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.USER_CONSENTS_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.USER_CONSENTS_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

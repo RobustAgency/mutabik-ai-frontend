@@ -4,6 +4,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface VersionHeaderProps {
     version: string;
@@ -39,14 +41,16 @@ const VersionHeader: React.FC<VersionHeaderProps> = ({
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/core-assets/ai-models/versions/${versionId}/edit`)}
-                >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                </Button>
+                <PermissionGate permission={PERMISSIONS.AI_MODEL_VERSIONS_EDIT}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/core-assets/ai-models/versions/${versionId}/edit`)}
+                    >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                    </Button>
+                </PermissionGate>
                 {modelId && (
                     <Button
                         variant="outline"

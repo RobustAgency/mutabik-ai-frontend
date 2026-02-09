@@ -19,6 +19,8 @@ import {
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const AiIncidents: React.FC = () => {
   const router = useRouter();
@@ -241,20 +243,24 @@ const AiIncidents: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -283,12 +289,14 @@ const AiIncidents: React.FC = () => {
                   setCurrentPage(1); // Reset to first page when filters change
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Incident
-              </Button>
+              <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/incidents/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Incident
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -313,11 +321,13 @@ const AiIncidents: React.FC = () => {
                 title: "No AI incidents found",
                 description: "Get started by creating your first incident",
                 action: (
-                  <Button
-                    onClick={() => router.push("/governance/incidents/create")}
-                  >
-                    Create Incident
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_CREATE}>
+                    <Button
+                      onClick={() => router.push("/governance/incidents/create")}
+                    >
+                      Create Incident
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

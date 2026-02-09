@@ -13,6 +13,8 @@ import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { StatisticsCard } from "@/components/custom/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/custom/StatisticsCardSkeleton";
 import { Users, Building2, UserCheck } from "lucide-react";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const Stakeholders: React.FC = () => {
   const router = useRouter();
@@ -275,20 +277,24 @@ const Stakeholders: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.STAKEHOLDERS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.STAKEHOLDERS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -345,12 +351,14 @@ const Stakeholders: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as StakeholderFilters)}
               />
-              <Button
-                onClick={() => router.push("/core-assets/stakeholders/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4 whitespace-nowrap"
-              >
-                New Stakeholder
-              </Button>
+              <PermissionGate permission={PERMISSIONS.STAKEHOLDERS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/stakeholders/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4 whitespace-nowrap"
+                >
+                  New Stakeholder
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           {/* <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4">
@@ -385,13 +393,15 @@ const Stakeholders: React.FC = () => {
                 title: "No stakeholders found",
                 description: "Get started by creating your first stakeholder",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/core-assets/stakeholders/create")
-                    }
-                  >
-                    Create Stakeholder
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.STAKEHOLDERS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/core-assets/stakeholders/create")
+                      }
+                    >
+                      Create Stakeholder
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

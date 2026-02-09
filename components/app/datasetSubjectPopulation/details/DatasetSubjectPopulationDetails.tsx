@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetDatasetSubjectPopulationQuery, useDeleteDatasetSubjectPopulationMutation } from "@/app/lib/features/datasetSubjectPopulationApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import DatasetSubjectPopulationFormReadOnly from "./DatasetSubjectPopulationFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DatasetSubjectPopulationDetailsProps {
   populationId: string;
@@ -69,8 +71,12 @@ const DatasetSubjectPopulationDetails: React.FC<DatasetSubjectPopulationDetailsP
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View subject population information</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.DATASET_SUBJECT_POPULATIONS_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.DATASET_SUBJECT_POPULATIONS_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

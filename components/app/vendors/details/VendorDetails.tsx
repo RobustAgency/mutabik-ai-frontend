@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetVendorQuery, useDeleteVendorMutation } from "@/app/lib/features/vendorsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import VendorFormReadOnly from "./VendorFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface VendorDetailsProps {
     vendorId: string | number;
@@ -79,18 +81,22 @@ const VendorDetails: React.FC<VendorDetailsProps> = ({
                             </p>
                         </div>
                         <div className="flex gap-3">
-                            <Button
-                                onClick={handleEdit}
-                                className="flex gap-2 rounded-full border bg-white text-[#1D2939] hover:bg-gray-50"
-                            >
-                                Edit
-                            </Button>
-                            <Button
-                                onClick={() => setShowDeleteDialog(true)}
-                                className="flex gap-2 rounded-full border bg-red-50 text-red-600 hover:bg-red-100"
-                            >
-                                Delete
-                            </Button>
+                            <PermissionGate permission={PERMISSIONS.VENDORS_EDIT}>
+                                <Button
+                                    onClick={handleEdit}
+                                    className="flex gap-2 rounded-full border bg-white text-[#1D2939] hover:bg-gray-50"
+                                >
+                                    Edit
+                                </Button>
+                            </PermissionGate>
+                            <PermissionGate permission={PERMISSIONS.VENDORS_DELETE}>
+                                <Button
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    className="flex gap-2 rounded-full border bg-red-50 text-red-600 hover:bg-red-100"
+                                >
+                                    Delete
+                                </Button>
+                            </PermissionGate>
                         </div>
                     </div>
 

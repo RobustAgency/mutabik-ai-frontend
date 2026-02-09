@@ -14,6 +14,8 @@ import {
 import { KriIndicator, KriStatus } from "@/interfaces/KriIndicator";
 import { formatCategory } from "@/lib/helpers/ui";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function KriIndicatorsList() {
   const router = useRouter();
@@ -145,29 +147,33 @@ export default function KriIndicatorsList() {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-3 text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/risk-compliance/ai-risk-management/kri/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-3 text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDeleteDialog(row.original.id.toString(), row.original.name);
-            }}
-            disabled={isDeleting}
-          >
-            Delete
-          </Button>
+          <PermissionGate permission={PERMISSIONS.KRI_INDICATORS_EDIT}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/risk-compliance/ai-risk-management/kri/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.KRI_INDICATORS_DELETE}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDeleteDialog(row.original.id.toString(), row.original.name);
+              }}
+              disabled={isDeleting}
+            >
+              Delete
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -183,12 +189,14 @@ export default function KriIndicatorsList() {
         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
           KRI Indicators
         </h2>
-        <Button
-          onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
-          className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-        >
-          Create KRI Indicator
-        </Button>
+        <PermissionGate permission={PERMISSIONS.KRI_INDICATORS_CREATE}>
+          <Button
+            onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
+            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+          >
+            Create KRI Indicator
+          </Button>
+        </PermissionGate>
       </div>
       <Card className="bg-white w-full rounded-xl border-0 py-0">
         <DataTable
@@ -212,12 +220,14 @@ export default function KriIndicatorsList() {
             title: "No KRI Indicators found",
             description: "Get started by creating your first KRI indicator",
             action: (
-              <Button
-                onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Create KRI Indicator
-              </Button>
+              <PermissionGate permission={PERMISSIONS.KRI_INDICATORS_CREATE}>
+                <Button
+                  onClick={() => router.push("/risk-compliance/ai-risk-management/kri/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Create KRI Indicator
+                </Button>
+              </PermissionGate>
             ),
           }}
         />

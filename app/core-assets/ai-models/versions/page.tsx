@@ -1,14 +1,15 @@
 
+import React from "react";
+import AiModelVersions from "@/components/app/aiModel/versions/AiModelVersions";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
-import AiModelVersions from '@/components/app/aiModel/versions/AiModelVersions'
-import React from 'react'
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.AI_MODEL_VERSIONS_VIEW}>
+      <AiModelVersions />
+    </PermissionPage>
+  );
+};
 
-const page = () => {
-    return (
-        <div>
-            <AiModelVersions />
-        </div>
-    )
-}
-
-export default page
+export default Page;

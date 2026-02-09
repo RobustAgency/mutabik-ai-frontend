@@ -12,6 +12,8 @@ import { useGetOrganizationUsersQuery } from "@/app/lib/features/usersApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
 import type { DataSubjectRequestAccess } from "@/interfaces/DataSubjectRequestAccess";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DSARDetailsProps {
   id: string;
@@ -118,19 +120,23 @@ const DSARDetails: React.FC<DSARDetailsProps> = ({ id }) => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/privacy/dsar/${request.id}/edit`)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                  onClick={() => setDeleteDialogOpen(true)}
-                >
-                  Delete
-                </Button>
+                <PermissionGate permission={PERMISSIONS.DSAR_EDIT}>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/privacy/dsar/${request.id}/edit`)}
+                  >
+                    Edit
+                  </Button>
+                </PermissionGate>
+                <PermissionGate permission={PERMISSIONS.DSAR_DELETE}>
+                  <Button
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGate>
                 <Button
                   variant="ghost"
                   onClick={() => router.push("/privacy/dsar")}

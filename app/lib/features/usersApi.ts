@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { profileApi } from "./profileApi";
 
 export interface User {
   id: number;
@@ -154,6 +155,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     revokeRole: builder.mutation<{ success: boolean }, RevokeRoleRequest>({
       query: ({ userId, roleId }) => ({
@@ -165,6 +172,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     assignPermission: builder.mutation<
       { success: boolean },
@@ -180,6 +193,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     revokePermission: builder.mutation<
       { success: boolean },
@@ -195,6 +214,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
   }),
 });

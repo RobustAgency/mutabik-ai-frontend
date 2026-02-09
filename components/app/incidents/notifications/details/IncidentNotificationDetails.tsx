@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 import {
   useGetIncidentNotificationQuery,
   useDeleteIncidentNotificationMutation,
@@ -91,21 +93,25 @@ const IncidentNotificationDetails: React.FC<IncidentNotificationDetailsProps> = 
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() =>
-                  router.push(`/governance/incidents/notifications/${notification.id}/edit`)
-                }
-              >
-                Edit
-              </Button>
-              <Button
-                variant="outline"
-                className="text-destructive"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                Delete
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_NOTIFICATIONS_EDIT}>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    router.push(`/governance/incidents/notifications/${notification.id}/edit`)
+                  }
+                >
+                  Edit
+                </Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_NOTIFICATIONS_DELETE}>
+                <Button
+                  variant="outline"
+                  className="text-destructive"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  Delete
+                </Button>
+              </PermissionGate>
               <Button onClick={() => router.push("/governance/incidents/notifications")}>
                 Back
               </Button>

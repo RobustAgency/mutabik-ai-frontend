@@ -19,6 +19,8 @@ import {
 } from "@/app/lib/features/correctivePreventiveActionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const CorrectivePreventiveActions: React.FC = () => {
   const router = useRouter();
@@ -215,26 +217,30 @@ const CorrectivePreventiveActions: React.FC = () => {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/governance/incidents/capa/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDeleteDialogState({ isOpen: true, capaId: row.original.id });
-            }}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.CAPA_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/governance/incidents/capa/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.CAPA_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteDialogState({ isOpen: true, capaId: row.original.id });
+              }}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -262,12 +268,14 @@ const CorrectivePreventiveActions: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/capa/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Create CAPA
-              </Button>
+              <PermissionGate permission={PERMISSIONS.CAPA_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/incidents/capa/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Create CAPA
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">

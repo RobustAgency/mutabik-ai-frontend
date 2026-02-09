@@ -10,6 +10,8 @@ import { useGetDatasetsQuery, useDeleteDatasetMutation, DatasetFilters, Dataset,
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const Datasets: React.FC = () => {
   const router = useRouter();
@@ -244,20 +246,24 @@ const Datasets: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DATASETS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATASETS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -279,12 +285,14 @@ const Datasets: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as DatasetFilters)}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/registry/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Dataset
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DATASETS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/registry/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Dataset
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -312,13 +320,15 @@ const Datasets: React.FC = () => {
                 title: "No datasets found",
                 description: "Get started by creating your first dataset",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/core-assets/data/registry/create")
-                    }
-                  >
-                    Create Dataset
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.DATASETS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/core-assets/data/registry/create")
+                      }
+                    >
+                      Create Dataset
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />
