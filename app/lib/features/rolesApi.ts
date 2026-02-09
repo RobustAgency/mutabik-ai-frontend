@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import type { UserRole, UserRoleFilters } from "@/interfaces/UserRole";
 import type { Permission } from "@/interfaces/Permission";
 import {
@@ -12,7 +11,7 @@ import {
   createInvalidateListTags,
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
-import { profileApi } from "./profileApi";
+
 
 export type RolesListResponse = ListResponseWithMeta<UserRole>;
 
@@ -44,10 +43,7 @@ export interface UpdateRoleRequest {
   permissions?: number[];
 }
 
-export const rolesApi = createApi({
-  reducerPath: "rolesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Role", "Permission"] as const,
+export const rolesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRoles: builder.query<RolesWithMeta, UserRoleFilters | void>({
       query: (filters) => ({
@@ -89,7 +85,7 @@ export const rolesApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
         } catch { /* handled elsewhere */ }
       },
     }),

@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   AiCommittee,
@@ -7,7 +7,6 @@ import type {
   UpdateAiCommitteeData,
 } from "@/interfaces/AiCommittee";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -31,10 +30,7 @@ export interface AiCommitteeListResponse {
   message: string;
 }
 
-export const aiCommitteesApi = createApi({
-  reducerPath: "aiCommitteesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiCommittee"],
+export const aiCommitteesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiCommittees: builder.query<
       { data: AiCommittee[]; pagination?: PaginationMeta },

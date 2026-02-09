@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface ConsentCoverage {
   id: string;
@@ -49,10 +49,7 @@ export interface CreateConsentCoverageData {
   evidence_ref: string;
 }
 
-export const consentCoverageApi = createApi({
-  reducerPath: "consentCoverageApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["ConsentCoverage"],
+export const consentCoverageApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getConsentCoverages: builder.query<
       ConsentCoverage[],

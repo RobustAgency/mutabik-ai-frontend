@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
 import {
   transformListResponseWithPagination,
   transformSingleItemResponse,
@@ -115,10 +115,7 @@ export interface CreateVendorData {
   notes?: string | null;
 }
 
-export const vendorsApi = createApi({
-  reducerPath: "vendorsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Vendor"],
+export const vendorsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getVendors: builder.query<
       { data: Vendor[]; pagination: PaginationMeta },

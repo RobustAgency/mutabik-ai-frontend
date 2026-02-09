@@ -1,6 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
-import { profileApi } from "./profileApi";
+import { baseApi } from "@/lib/api/baseApi";
 
 export interface User {
   id: number;
@@ -80,10 +78,7 @@ export interface RevokePermissionRequest {
   permissionId: number;
 }
 
-export const usersApi = createApi({
-  reducerPath: "usersApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["User"] as const,
+export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], UserFilters | void>({
       query: (filters) => ({
@@ -158,7 +153,7 @@ export const usersApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
         } catch { /* handled elsewhere */ }
       },
     }),
@@ -175,7 +170,7 @@ export const usersApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
         } catch { /* handled elsewhere */ }
       },
     }),
@@ -196,7 +191,7 @@ export const usersApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
         } catch { /* handled elsewhere */ }
       },
     }),
@@ -217,7 +212,7 @@ export const usersApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(profileApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
         } catch { /* handled elsewhere */ }
       },
     }),

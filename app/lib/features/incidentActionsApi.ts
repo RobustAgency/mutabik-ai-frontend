@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums for Incident Actions
 export enum ActionType {
@@ -102,10 +102,7 @@ export interface CreateIncidentActionData {
   evidence_link?: string | null;
 }
 
-export const incidentActionsApi = createApi({
-  reducerPath: "incidentActionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentAction"],
+export const incidentActionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentActions: builder.query<
       { data: IncidentAction[]; pagination: PaginationMeta },

@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 import type {
   AiModelVersion,
   CreateAiModelVersionData,
@@ -23,10 +23,7 @@ export interface AiModelVersionFilters {
   page?: number;
 }
 
-export const aiModelVersionsApi = createApi({
-  reducerPath: "aiModelVersionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModelVersion"],
+export const aiModelVersionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiModelVersions: builder.query<
       AiModelVersion[],

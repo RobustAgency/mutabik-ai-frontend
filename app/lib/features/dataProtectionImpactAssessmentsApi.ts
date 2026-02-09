@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   DataProtectionImpactAssessment,
@@ -6,7 +6,6 @@ import type {
   DPIAFilters,
 } from "@/interfaces/DataProtectionImpactAssessment";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -30,10 +29,7 @@ export interface DPIAItemResponse {
   message: string;
 }
 
-export const dataProtectionImpactAssessmentsApi = createApi({
-  reducerPath: "dataProtectionImpactAssessmentsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DPIA"],
+export const dataProtectionImpactAssessmentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDataProtectionImpactAssessments: builder.query<
       { data: DataProtectionImpactAssessment[]; pagination?: PaginationMeta },

@@ -1,10 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import type {
   ConsentRecord,
   CreateConsentRecordData,
   ConsentRecordFilters,
 } from "@/interfaces/ConsentRecord";
-import { axiosBaseQuery, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
 import {
   transformListResponseWithCalculatedPagination,
   transformSingleItemResponse,
@@ -34,10 +34,7 @@ export interface ConsentRecordItemResponse {
   message: string;
 }
 
-export const consentRecordsApi = createApi({
-  reducerPath: "consentRecordsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["ConsentRecord"],
+export const consentRecordsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getConsentRecords: builder.query<
       { data: ConsentRecord[]; pagination?: PaginationMeta },

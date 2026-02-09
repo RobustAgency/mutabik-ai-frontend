@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import type {
   Profile,
   ProfileResponse,
@@ -34,10 +33,7 @@ function flattenPermissions(profile: Profile): ProfilePermission[] {
   return result;
 }
 
-export const profileApi = createApi({
-  reducerPath: "profileApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Profile"] as const,
+export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<Profile, void>({
       query: () => ({

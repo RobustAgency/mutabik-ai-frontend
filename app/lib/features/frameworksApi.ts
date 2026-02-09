@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Framework,
   FrameworkFilters,
@@ -24,10 +23,7 @@ type UserFrameworkListResponse = {
   data?: Framework[]; // User-side API returns data as direct array
 };
 
-export const frameworksApi = createApi({
-  reducerPath: "frameworksApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Framework"],
+export const frameworksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFrameworks: builder.query<
       { data: Framework[]; meta: FrameworkListMeta },

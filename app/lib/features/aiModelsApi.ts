@@ -1,7 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
+import { baseApi } from "@/lib/api/baseApi";
 import type { AiModel, CreateAiModelData } from "@/service/app/aiModels";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import {
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Filter types for AI Models
 export interface AiModelFilters {
@@ -14,10 +18,7 @@ export interface AiModelFilters {
   per_page?: number; // min:1, max:100
 }
 
-export const aiModelsApi = createApi({
-  reducerPath: "aiModelsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModel"],
+export const aiModelsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiModels: builder.query<AiModel[], AiModelFilters | void>({
       query: (filters = {}) => ({
@@ -71,23 +72,11 @@ export const aiModelsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "AiModel", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI model created successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          // Don't show toast here - let component handle validation errors
-          // Only show toast for unexpected errors
-          if (!mutationError?.error?.data?.errors) {
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create AI model";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("AiModel"),
+      onQueryStarted: createMutationToastHandler(
+        "AI model created successfully",
+        "Failed to create AI model"
+      ),
     }),
 
     updateAiModel: builder.mutation<
@@ -99,24 +88,11 @@ export const aiModelsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "AiModel", id },
-        { type: "AiModel", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI model updated successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update AI model";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiModel"),
+      onQueryStarted: createMutationToastHandler(
+        "AI model updated successfully",
+        "Failed to update AI model"
+      ),
     }),
 
     deleteAiModel: builder.mutation<void, number>({
@@ -124,21 +100,11 @@ export const aiModelsApi = createApi({
         url: `/ai-models/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "AiModel", id },
-        { type: "AiModel", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI model deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete AI model";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiModel"),
+      onQueryStarted: createDeleteToastHandler(
+        "AI model deleted successfully",
+        "Failed to delete AI model"
+      ),
     }),
   }),
 });

@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   RegulatorySubmission,
   RegulatorySubmissionFilters,
@@ -16,10 +15,7 @@ import {
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
 
-export const regulatorySubmissionsApi = createApi({
-  reducerPath: "regulatorySubmissionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["RegulatorySubmission"],
+export const regulatorySubmissionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRegulatorySubmissions: builder.query<
       { data: RegulatorySubmission[]; meta: RegulatorySubmissionListMeta },

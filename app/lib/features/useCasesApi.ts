@@ -1,7 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
+import { baseApi } from "@/lib/api/baseApi";
 import type { UseCase, CreateUseCaseData } from "@/service/app/useCases";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import {
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Filter types for Use Cases
 export interface UseCaseFilters {
@@ -17,10 +21,7 @@ export interface UseCaseFilters {
   per_page?: number; // min:1, max:100
 }
 
-export const useCasesApi = createApi({
-  reducerPath: "useCasesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["UseCase"],
+export const useCasesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUseCases: builder.query<UseCase[], UseCaseFilters | void>({
       query: (filters = {}) => ({
@@ -72,39 +73,24 @@ export const useCasesApi = createApi({
         error?: boolean;
         message?: string;
       }) => {
-        // Handle response structure: { data: UseCase, error: boolean, message: string }
         if (response.data) {
           return response.data;
         }
-        // Fallback: if response is the UseCase directly
         return response as any;
       },
     }),
 
     createUseCase: builder.mutation<UseCase, CreateUseCaseData>({
-      query: (data) => {
-        return {
-          url: "/use-cases",
-          method: "POST",
-          data: data,
-        };
-      },
-      invalidatesTags: [{ type: "UseCase", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Use case created successfully");
-        } catch (error: any) {
-          // Don't show toast here - let component handle validation errors
-          // Only show toast for unexpected errors
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create use case";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      query: (data) => ({
+        url: "/use-cases",
+        method: "POST",
+        data: data,
+      }),
+      invalidatesTags: createInvalidateListTags("UseCase"),
+      onQueryStarted: createMutationToastHandler(
+        "Use case created successfully",
+        "Failed to create use case"
+      ),
     }),
 
     updateUseCase: builder.mutation<
@@ -114,25 +100,13 @@ export const useCasesApi = createApi({
       query: ({ id, data }) => ({
         url: `/use-cases/${id}`,
         method: "POST",
-        data: data, // ✅ Fixed: Changed from 'body' to 'data'
+        data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "UseCase", id },
-        { type: "UseCase", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Use case updated successfully");
-        } catch (error: any) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update use case";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("UseCase"),
+      onQueryStarted: createMutationToastHandler(
+        "Use case updated successfully",
+        "Failed to update use case"
+      ),
     }),
 
     deleteUseCase: builder.mutation<void, number>({
@@ -140,21 +114,11 @@ export const useCasesApi = createApi({
         url: `/use-cases/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "UseCase", id },
-        { type: "UseCase", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Use case deleted successfully");
-        } catch (error: any) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete use case";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("UseCase"),
+      onQueryStarted: createDeleteToastHandler(
+        "Use case deleted successfully",
+        "Failed to delete use case"
+      ),
     }),
   }),
 });
