@@ -17,6 +17,8 @@ import {
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const IncidentAlerts: React.FC = () => {
   const router = useRouter();
@@ -192,25 +194,29 @@ const IncidentAlerts: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(
-                  `/governance/incidents/alerts/${row.original.id}/edit`
-                );
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(
+                    `/governance/incidents/alerts/${row.original.id}/edit`
+                  );
+                }}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -239,14 +245,16 @@ const IncidentAlerts: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() =>
-                  router.push("/governance/incidents/alerts/create")
-                }
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Alert
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_CREATE}>
+                <Button
+                  onClick={() =>
+                    router.push("/governance/incidents/alerts/create")
+                  }
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Alert
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -274,13 +282,15 @@ const IncidentAlerts: React.FC = () => {
                 title: "No alerts found",
                 description: "Get started by creating your first alert",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/governance/incidents/alerts/create")
-                    }
-                  >
-                    Create Alert
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/governance/incidents/alerts/create")
+                      }
+                    >
+                      Create Alert
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

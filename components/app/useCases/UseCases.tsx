@@ -11,6 +11,8 @@ import { UseCase } from "@/service/app/useCases";
 import { formatDateShort } from "@/lib/helpers/date";
 import { UseCaseFilters } from "@/app/lib/features/useCasesApi";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 // Date formatter (e.g., "Oct 06, 2025")
 const formatDate = (dateString: string | null | undefined): string => formatDateShort(dateString);
@@ -141,12 +143,14 @@ const UseCases: React.FC = () => {
               filters={filters}
               onFiltersChange={handleFiltersChange}
             />
-            <Button
-              onClick={() => router.push("/core-assets/ai-use-cases/create")}
-              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New use case
-            </Button>
+            <PermissionGate permission={PERMISSIONS.USE_CASES_CREATE}>
+              <Button
+                onClick={() => router.push("/core-assets/ai-use-cases/create")}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New use case
+              </Button>
+            </PermissionGate>
           </div>
         </div>
         <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -160,9 +164,11 @@ const UseCases: React.FC = () => {
               title: "No use cases found",
               description: "Get started by creating your first use case",
               action: (
-                <Button onClick={() => router.push("/core-assets/ai-use-cases/create")}>
-                  Create Use Case
-                </Button>
+                <PermissionGate permission={PERMISSIONS.USE_CASES_CREATE}>
+                  <Button onClick={() => router.push("/core-assets/ai-use-cases/create")}>
+                    Create Use Case
+                  </Button>
+                </PermissionGate>
               )
             }}
           />

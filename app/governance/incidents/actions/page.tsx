@@ -1,13 +1,17 @@
-import IncidentActions from '@/components/app/incidents/actions/IncidentActions'
 import React from 'react'
+import IncidentActions from '@/components/app/incidents/actions/IncidentActions'
+import { PermissionPage } from '@/components/auth/PermissionPage'
+import { PERMISSIONS } from '@/constants/permissions'
 
-const page = () => {
-    return (
-        <div>
-            <IncidentActions />
-        </div>
-    )
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.INCIDENT_ACTIONS_VIEW}>
+      <div>
+        <IncidentActions />
+      </div>
+    </PermissionPage>
+  )
 }
 
-export default page
+export default Page
 

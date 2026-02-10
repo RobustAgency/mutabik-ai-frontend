@@ -11,6 +11,8 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCategory } from "@/lib/helpers/ui";
 import { formatDate } from "@/utils/formatDate";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface AiRiskRegisterDetailsProps {
   riskId: string;
@@ -18,6 +20,7 @@ interface AiRiskRegisterDetailsProps {
 
 const AiRiskRegisterDetails: React.FC<AiRiskRegisterDetailsProps> = ({ riskId }) => {
   const router = useRouter();
+  const { hasPermission } = usePermissions();
   const { data, isLoading, error } = useGetAiRiskRegisterByIdQuery(Number(riskId));
   const [deleteRisk, { isLoading: isDeleting }] = useDeleteAiRiskRegisterMutation();
 
@@ -45,8 +48,8 @@ const AiRiskRegisterDetails: React.FC<AiRiskRegisterDetailsProps> = ({ riskId })
         description="View and manage AI risk entry"
         loading={isLoading}
         error={error ? "Failed to load AI risk entry" : null}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={hasPermission(PERMISSIONS.AI_RISK_REGISTER_EDIT) ? handleEdit : undefined}
+        onDelete={hasPermission(PERMISSIONS.AI_RISK_REGISTER_DELETE) ? handleDelete : undefined}
       >
         {data && (
           <Card className="border-0 shadow-none">

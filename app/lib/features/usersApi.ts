@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 
 export interface User {
   id: number;
@@ -79,10 +78,7 @@ export interface RevokePermissionRequest {
   permissionId: number;
 }
 
-export const usersApi = createApi({
-  reducerPath: "usersApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["User"] as const,
+export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], UserFilters | void>({
       query: (filters) => ({
@@ -154,6 +150,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     revokeRole: builder.mutation<{ success: boolean }, RevokeRoleRequest>({
       query: ({ userId, roleId }) => ({
@@ -165,6 +167,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     assignPermission: builder.mutation<
       { success: boolean },
@@ -180,6 +188,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
     revokePermission: builder.mutation<
       { success: boolean },
@@ -195,6 +209,12 @@ export const usersApi = createApi({
         { type: "User", id: "LIST" },
         { type: "User", id: "ORG_LIST" },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(baseApi.util.invalidateTags([{ type: "Profile", id: "ME" }]));
+        } catch { /* handled elsewhere */ }
+      },
     }),
   }),
 });

@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums for Corrective Preventive Actions (CAPA)
 export enum SourceType {
@@ -132,10 +132,7 @@ export interface CreateCorrectivePreventiveActionData {
   evidence_link?: string | null;
 }
 
-export const correctivePreventiveActionsApi = createApi({
-  reducerPath: "correctivePreventiveActionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["CorrectivePreventiveAction"],
+export const correctivePreventiveActionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCorrectivePreventiveActions: builder.query<
       { data: CorrectivePreventiveAction[]; pagination: PaginationMeta },

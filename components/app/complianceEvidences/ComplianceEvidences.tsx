@@ -18,6 +18,8 @@ import type {
 } from "@/interfaces/ComplianceEvidence";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const formatDate = (dateString: string | null | undefined): string =>
   formatDateShort(dateString);
@@ -217,20 +219,24 @@ const ComplianceEvidences: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.COMPLIANCE_EVIDENCES_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.COMPLIANCE_EVIDENCES_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -283,11 +289,13 @@ const ComplianceEvidences: React.FC = () => {
                 title: "No compliance evidences found",
                 description: "Get started by creating your first compliance evidence",
                 action: (
-                  <Button
-                    onClick={() => router.push("/compliance-evidences/create")}
-                  >
-                    Create Evidence
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.COMPLIANCE_EVIDENCES_CREATE}>
+                    <Button
+                      onClick={() => router.push("/compliance-evidences/create")}
+                    >
+                      Create Evidence
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

@@ -1,7 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import {
-  axiosBaseQuery,
   MutationError,
   PaginationMeta,
 } from "@/lib/api/rtkQueryBase";
@@ -127,10 +126,7 @@ export interface CreateIncidentNotificationData {
   follow_up_notes?: string | null;
 }
 
-export const incidentNotificationsApi = createApi({
-  reducerPath: "incidentNotificationsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentNotification"],
+export const incidentNotificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentNotifications: builder.query<
       { data: IncidentNotification[]; pagination: PaginationMeta },

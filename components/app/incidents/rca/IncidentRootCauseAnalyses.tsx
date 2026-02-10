@@ -15,6 +15,8 @@ import {
 } from "@/app/lib/features/incidentRootCauseAnalysesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const IncidentRootCauseAnalyses: React.FC = () => {
   const router = useRouter();
@@ -132,26 +134,30 @@ const IncidentRootCauseAnalyses: React.FC = () => {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/governance/incidents/rca/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDeleteDialogState({ isOpen: true, rcaId: row.original.id });
-            }}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_RCA_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/governance/incidents/rca/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_RCA_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteDialogState({ isOpen: true, rcaId: row.original.id });
+              }}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -179,12 +185,14 @@ const IncidentRootCauseAnalyses: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/rca/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New RCA
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_RCA_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/incidents/rca/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New RCA
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">

@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums for Incident Alerts
 export enum AlertSourceType {
@@ -66,10 +66,7 @@ export interface CreateIncidentAlertData {
   auto_promote_incident?: boolean;
 }
 
-export const incidentAlertsApi = createApi({
-  reducerPath: "incidentAlertsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentAlert"],
+export const incidentAlertsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentAlerts: builder.query<
       { data: IncidentAlert[]; pagination: PaginationMeta },

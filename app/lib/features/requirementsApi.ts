@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Requirement,
   RequirementFilters,
@@ -22,10 +21,7 @@ type RequirementListMeta = ListMeta;
 type RequirementListResponse = ListResponseWithMeta<Requirement>;
 type RequirementSingleResponse = SingleItemResponse<Requirement>;
 
-export const requirementsApi = createApi({
-  reducerPath: "requirementsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Requirement"],
+export const requirementsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRequirements: builder.query<
       { data: Requirement[]; meta: RequirementListMeta },

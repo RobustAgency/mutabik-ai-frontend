@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useGetModelDatasetLinksQuery, ModelDatasetLink, ModelDatasetLinkFilters, Role } from "@/app/lib/features/modelDatasetLinksApi";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const ModelDatasetLinksPage: React.FC = () => {
   const router = useRouter();
@@ -181,7 +183,7 @@ const ModelDatasetLinksPage: React.FC = () => {
   ];
 
   return (
-    <>
+    <PermissionPage permission={PERMISSIONS.AI_MODEL_DATASETS_VIEW}>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
@@ -233,7 +235,7 @@ const ModelDatasetLinksPage: React.FC = () => {
           </Card>
         </CardContent>
       </Card>
-    </>
+    </PermissionPage>
   );
 };
 

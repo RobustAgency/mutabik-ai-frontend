@@ -1,13 +1,17 @@
-import Vendors from '@/components/app/vendors/Vendors'
-import React from 'react'
+import React from "react";
+import Vendors from "@/components/app/vendors/Vendors";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
-const page = () => {
-    return (
-        <div>
-            <Vendors />
-        </div>
-    )
-}
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.VENDORS_VIEW}>
+      <div>
+        <Vendors />
+      </div>
+    </PermissionPage>
+  );
+};
 
-export default page
+export default Page;
 

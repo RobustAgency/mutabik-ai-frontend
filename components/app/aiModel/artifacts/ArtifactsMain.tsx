@@ -16,6 +16,8 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateISO } from "@/lib/helpers/date";
 import { AiModelArtifact } from "@/service/app/aiModelArtifacts";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const ArtifactsMain = () => {
     const router = useRouter();
@@ -227,17 +229,19 @@ const ArtifactsMain = () => {
                     >
                         View
                     </Button> */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(row.original.id, row.original.uri);
-                        }}
-                        className="h-8 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <PermissionGate permission={PERMISSIONS.AI_MODEL_ARTIFACTS_DELETE}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(row.original.id, row.original.uri);
+                            }}
+                            className="h-8 border-[#D0D5DD] text-[#DC2626] hover:bg-[#FEF2F2] hover:border-[#DC2626]"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </PermissionGate>
                 </div>
             ),
         },
@@ -261,12 +265,14 @@ const ArtifactsMain = () => {
                                         setPage(1); // Reset to first page when filters change
                                     }}
                                 />
-                                <Button
-                                    onClick={() => router.push("/core-assets/ai-models/artifacts/create")}
-                                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                                >
-                                    New Artifact
-                                </Button>
+                                <PermissionGate permission={PERMISSIONS.AI_MODEL_ARTIFACTS_CREATE}>
+                                    <Button
+                                        onClick={() => router.push("/core-assets/ai-models/artifacts/create")}
+                                        className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                    >
+                                        New Artifact
+                                    </Button>
+                                </PermissionGate>
                             </div>
                         </div>
                         <DataTable
@@ -290,7 +296,9 @@ const ArtifactsMain = () => {
                                 title: "No artifacts found",
                                 description: "Get started by creating your first artifact",
                                 action: (
-                                    <Button onClick={() => router.push("/core-assets/ai-models/artifacts/create")}>New Artifact</Button>
+                                    <PermissionGate permission={PERMISSIONS.AI_MODEL_ARTIFACTS_CREATE}>
+                                        <Button onClick={() => router.push("/core-assets/ai-models/artifacts/create")}>New Artifact</Button>
+                                    </PermissionGate>
                                 ),
                             }}
                         />

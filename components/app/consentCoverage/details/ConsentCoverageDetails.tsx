@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetConsentCoverageQuery, useDeleteConsentCoverageMutation } from "@/app/lib/features/consentCoverageApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import ConsentCoverageFormReadOnly from "./ConsentCoverageFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ConsentCoverageDetailsProps {
   coverageId: string;
@@ -69,8 +71,12 @@ const ConsentCoverageDetails: React.FC<ConsentCoverageDetailsProps> = ({ coverag
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View consent coverage metrics</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.CONSENT_COVERAGES_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.CONSENT_COVERAGES_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

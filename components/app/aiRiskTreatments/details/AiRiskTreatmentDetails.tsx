@@ -11,6 +11,8 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCategory } from "@/lib/helpers/ui";
 import { formatDate } from "@/utils/formatDate";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface AiRiskTreatmentDetailsProps {
   treatmentId: string;
@@ -20,6 +22,7 @@ const AiRiskTreatmentDetails: React.FC<AiRiskTreatmentDetailsProps> = ({
   treatmentId,
 }) => {
   const router = useRouter();
+  const { hasPermission } = usePermissions();
   const { data, isLoading, error } = useGetAiRiskTreatmentByIdQuery(
     Number(treatmentId)
   );
@@ -50,8 +53,8 @@ const AiRiskTreatmentDetails: React.FC<AiRiskTreatmentDetailsProps> = ({
         description="View and manage treatment plan"
         loading={isLoading}
         error={error ? "Failed to load treatment plan" : null}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={hasPermission(PERMISSIONS.AI_RISK_TREATMENTS_EDIT) ? handleEdit : undefined}
+        onDelete={hasPermission(PERMISSIONS.AI_RISK_TREATMENTS_DELETE) ? handleDelete : undefined}
       >
         {data && (
           <Card className="border-0 shadow-none">

@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 export enum FileFormat {
   PARQUET = "parquet",
@@ -171,10 +171,7 @@ export interface DatasetSnapshotItemResponse {
   message?: string;
 }
 
-export const datasetSnapshotsApi = createApi({
-  reducerPath: "datasetSnapshotsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DatasetSnapshot"],
+export const datasetSnapshotsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDatasetSnapshots: builder.query<
       { data: DatasetSnapshot[]; pagination?: PaginationMeta },

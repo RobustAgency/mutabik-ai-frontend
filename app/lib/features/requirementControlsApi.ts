@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   RequirementControl,
   RequirementControlFilters,
@@ -16,10 +15,7 @@ import {
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
 
-export const requirementControlsApi = createApi({
-  reducerPath: "requirementControlsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["RequirementControl"],
+export const requirementControlsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRequirementControls: builder.query<
       { data: RequirementControl[]; meta: RequirementControlListMeta },

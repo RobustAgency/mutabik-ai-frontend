@@ -19,6 +19,8 @@ import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { StatisticsCard } from "@/components/custom/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/custom/StatisticsCardSkeleton";
 import { Building2, CheckCircle, AlertCircle } from "lucide-react";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const Vendors: React.FC = () => {
   const router = useRouter();
@@ -290,20 +292,24 @@ const Vendors: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.VENDORS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.VENDORS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -367,12 +373,14 @@ const Vendors: React.FC = () => {
                   setCurrentPage(1); // Reset to first page when filters change
                 }}
               />
-              <Button
-                onClick={() => router.push("/core-assets/vendors/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Vendor
-              </Button>
+              <PermissionGate permission={PERMISSIONS.VENDORS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/vendors/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Vendor
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -397,11 +405,13 @@ const Vendors: React.FC = () => {
                 title: "No vendors found",
                 description: "Get started by creating your first vendor",
                 action: (
-                  <Button
-                    onClick={() => router.push("/core-assets/vendors/create")}
-                  >
-                    Create Vendor
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.VENDORS_CREATE}>
+                    <Button
+                      onClick={() => router.push("/core-assets/vendors/create")}
+                    >
+                      Create Vendor
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

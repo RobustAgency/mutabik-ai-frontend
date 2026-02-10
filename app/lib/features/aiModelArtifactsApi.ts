@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 import type {
   AiModelArtifact,
   CreateAiModelArtifactData,
@@ -15,10 +15,7 @@ export interface AiModelArtifactFilters {
   page?: number;
 }
 
-export const aiModelArtifactsApi = createApi({
-  reducerPath: "aiModelArtifactsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModelArtifact"],
+export const aiModelArtifactsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiModelArtifacts: builder.query<
       PaginatedArtifactsResponse,

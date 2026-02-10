@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   CommitteeDecision,
@@ -7,7 +7,6 @@ import type {
   UpdateCommitteeDecisionData,
 } from "@/interfaces/CommitteeDecision";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -31,10 +30,7 @@ export interface CommitteeDecisionListResponse {
   message: string;
 }
 
-export const committeeDecisionsApi = createApi({
-  reducerPath: "committeeDecisionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["CommitteeDecision"],
+export const committeeDecisionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCommitteeDecisions: builder.query<
       { data: CommitteeDecision[]; pagination?: PaginationMeta },

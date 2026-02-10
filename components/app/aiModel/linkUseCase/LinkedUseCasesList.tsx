@@ -9,6 +9,8 @@ import { ColumnDef } from '@tanstack/react-table'
 import { useGetAiModelUseCasesQuery, useDeleteAiModelUseCaseMutation } from '@/app/lib/features/aiModelUseCasesApi'
 import { AiModelUseCase } from '@/app/lib/features/aiModelUseCasesApi'
 import ConfirmationDialog from '@/components/custom/ConfirmationDialog'
+import { PermissionGate } from "@/components/auth/PermissionGate"
+import { PERMISSIONS } from "@/constants/permissions"
 
 const LinkedUseCasesList: React.FC = () => {
     const router = useRouter()
@@ -163,18 +165,20 @@ const LinkedUseCasesList: React.FC = () => {
             ),
             cell: ({ row }) => (
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            const useCaseName = row.original.use_case?.name || row.original.use_case?.title || 'this use case'
-                            handleDeleteClick(row.original.id, useCaseName)
-                        }}
-                        className="text-xs text-red-600 hover:text-red-700"
-                    >
-                        Unlink
-                    </Button>
+                    <PermissionGate permission={PERMISSIONS.AI_MODEL_USE_CASES_DELETE}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                const useCaseName = row.original.use_case?.name || row.original.use_case?.title || 'this use case'
+                                handleDeleteClick(row.original.id, useCaseName)
+                            }}
+                            className="text-xs text-red-600 hover:text-red-700"
+                        >
+                            Unlink
+                        </Button>
+                    </PermissionGate>
                 </div>
             ),
         },
@@ -190,12 +194,14 @@ const LinkedUseCasesList: React.FC = () => {
                             Manage links between AI models and use cases
                         </CardDescription>
                     </div>
-                    <Button
-                        className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                        onClick={() => router.push('/core-assets/ai-models/link-use-case/create')}
-                    >
-                        Link Use Case
-                    </Button>
+                    <PermissionGate permission={PERMISSIONS.AI_MODEL_USE_CASES_CREATE}>
+                        <Button
+                            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            onClick={() => router.push('/core-assets/ai-models/link-use-case/create')}
+                        >
+                            Link Use Case
+                        </Button>
+                    </PermissionGate>
                 </div>
             </CardHeader>
             <CardContent className="flex flex-col flex-1">
@@ -210,9 +216,11 @@ const LinkedUseCasesList: React.FC = () => {
                             title: "No linked use cases found",
                             description: "Get started by linking a use case to an AI model.",
                             action: (
-                                <Button onClick={() => router.push('/core-assets/ai-models/link-use-case/create')}>
-                                    Link Use Case
-                                </Button>
+                                <PermissionGate permission={PERMISSIONS.AI_MODEL_USE_CASES_CREATE}>
+                                    <Button onClick={() => router.push('/core-assets/ai-models/link-use-case/create')}>
+                                        Link Use Case
+                                    </Button>
+                                </PermissionGate>
                             )
                         }}
                     />

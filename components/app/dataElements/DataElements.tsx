@@ -11,6 +11,8 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import InlineCreateModal from "@/components/custom/InlineCreateModal";
 import AssociateElementWithDatasetModal from "@/components/app/dataElements/map/AssociateElementWithDatasetModal";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
@@ -201,30 +203,36 @@ const DataElements: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => {
-                e.stopPropagation();
-                setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
-              }}
-            >
-              Associate
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
+                }}
+              >
+                Associate
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -248,12 +256,14 @@ const DataElements: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as DataElementFilters)}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/elements/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Data Element
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/elements/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Data Element
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -277,13 +287,15 @@ const DataElements: React.FC = () => {
                 title: "No data elements found",
                 description: "Get started by creating your first data element",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/core-assets/data/elements/create")
-                    }
-                  >
-                    Create Data Element
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/core-assets/data/elements/create")
+                      }
+                    >
+                      Create Data Element
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

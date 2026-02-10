@@ -6,6 +6,44 @@ import Image from "next/image";
 import Accordian from "@/components/custom/Accordian";
 import { Role } from "@/interfaces/Roles";
 import { adminRoutes, RouteItem, userRoutes } from "@/app/constants/sidebar-routes";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { useMemo } from "react";
+
+/**
+ * Recursively filters routes based on user permissions.
+ * - Routes without a `permission` field are always visible.
+ * - Routes with a `permission` field require the user to have that permission.
+ * - Parent routes (with children) stay visible if at least one child is visible,
+ *   even if the parent itself has a permission the user lacks.
+ */
+function filterRoutesByPermission(
+  routes: RouteItem[],
+  permissionSet: Set<string>,
+  isSuperAdmin: boolean
+): RouteItem[] {
+  return routes
+    .map((route) => {
+      // Recursively filter children first
+      const filteredChildren = route.children
+        ? filterRoutesByPermission(route.children, permissionSet, isSuperAdmin)
+        : undefined;
+
+      // If route has a permission requirement, check it
+      if (route.permission && !isSuperAdmin && !permissionSet.has(route.permission)) {
+        // If it has visible children, keep parent as a container
+        if (filteredChildren && filteredChildren.length > 0) {
+          return { ...route, children: filteredChildren };
+        }
+        return null;
+      }
+
+      return {
+        ...route,
+        children: filteredChildren && filteredChildren.length > 0 ? filteredChildren : undefined,
+      };
+    })
+    .filter(Boolean) as RouteItem[];
+}
 
 export function Sidebar({
   collapsed = false,
@@ -15,10 +53,15 @@ export function Sidebar({
   onNavigate: () => void;
 }) {
   const { user } = useAuth();
+  const { permissions: permissionSet, isSuperAdmin } = usePermissions();
   const pathname = usePathname();
   const role: string = user?.user_metadata?.role ?? "Owner";
 
-  const navigationRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
+  const baseRoutes: RouteItem[] = role === Role.SUPER_ADMIN ? adminRoutes : userRoutes;
+  const navigationRoutes = useMemo(
+    () => filterRoutesByPermission(baseRoutes, permissionSet, isSuperAdmin),
+    [baseRoutes, permissionSet, isSuperAdmin]
+  );
 
   // Helper to recursively render routes and children
   const renderRoute = (item: RouteItem, depth = 0) => {

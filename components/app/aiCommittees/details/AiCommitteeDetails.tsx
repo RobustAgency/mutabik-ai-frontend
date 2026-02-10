@@ -4,6 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 import { useGetAiCommitteeQuery } from "@/app/lib/features/aiCommitteesApi";
 import {
   AiCommitteeType,
@@ -80,12 +82,14 @@ const AiCommitteeDetails: React.FC<AiCommitteeDetailsProps> = ({ committeeId }) 
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/governance/ai-committees/${committeeId}/edit`)}
-            >
-              Edit
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AI_COMMITTEES_EDIT}>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/governance/ai-committees/${committeeId}/edit`)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
             <Button
               variant="outline"
               onClick={() => router.push("/governance/ai-committees")}

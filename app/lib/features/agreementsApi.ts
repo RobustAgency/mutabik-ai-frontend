@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums
 export enum AgreementType {
@@ -187,10 +187,7 @@ export interface CreateAgreementData {
   doc_ref: string;
 }
 
-export const agreementsApi = createApi({
-  reducerPath: "agreementsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Agreement"],
+export const agreementsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAgreements: builder.query<
       { data: Agreement[]; pagination: PaginationMeta },

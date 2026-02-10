@@ -1,6 +1,12 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  transformListResponseWithCalculatedPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Types for stakeholders
 export type StakeholderType =
@@ -84,10 +90,27 @@ export interface CreateStakeholderData {
   end_date?: string | null;
 }
 
-export const stakeholdersApi = createApi({
-  reducerPath: "stakeholdersApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Stakeholder"],
+interface StakeholderListResponse {
+  data: {
+    data: Stakeholder[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number;
+    to: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+interface StakeholderItemResponse {
+  data: Stakeholder;
+  error?: boolean;
+  message?: string;
+}
+
+export const stakeholdersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getStakeholders: builder.query<
       { data: Stakeholder[]; pagination: PaginationMeta },
@@ -98,57 +121,12 @@ export const stakeholdersApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) => {
-        if (!result) {
-          return [{ type: "Stakeholder", id: "LIST" }];
-        }
-        // Handle both transformed and raw response formats
-        const stakeholders = Array.isArray(result) 
-          ? result 
-          : (result.data && Array.isArray(result.data) ? result.data : []);
-        return [
-          ...stakeholders.map(({ id }) => ({ type: "Stakeholder" as const, id: String(id) })),
-          { type: "Stakeholder", id: "LIST" },
-        ];
-      },
-      transformResponse: (response: {
-        data: {
+      providesTags: (result) => createListTags(result, "Stakeholder"),
+      transformResponse: (response: StakeholderListResponse) =>
+        transformListResponseWithCalculatedPagination(response) as {
           data: Stakeholder[];
-          current_page: number;
-          per_page: number;
-          total: number;
-          last_page: number;
-          from: number;
-          to: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from: response.data.from,
-              to: response.data.to,
-            },
-          };
-        }
-        return {
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 10,
-            total: 0,
-            last_page: 1,
-            from: 0,
-            to: 0,
-          },
-        };
-      },
+          pagination: PaginationMeta;
+        },
     }),
 
     getStakeholdersByType: builder.query<
@@ -162,7 +140,10 @@ export const stakeholdersApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "Stakeholder" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "Stakeholder" as const,
+                id,
+              })),
               { type: "Stakeholder", id: "LIST" },
             ]
           : [{ type: "Stakeholder", id: "LIST" }],
@@ -187,17 +168,9 @@ export const stakeholdersApi = createApi({
         url: `/stakeholders/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Stakeholder", id: String(id) }],
-      transformResponse: (response: {
-        data: Stakeholder;
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as Stakeholder;
-      },
+      providesTags: (result, error, id) => [{ type: "Stakeholder", id }],
+      transformResponse: (response: StakeholderItemResponse) =>
+        transformSingleItemResponse(response),
     }),
 
     createStakeholder: builder.mutation<Stakeholder, CreateStakeholderData>({
@@ -210,20 +183,10 @@ export const stakeholdersApi = createApi({
         { type: "Stakeholder", id: "LIST" },
         { type: "Stakeholder", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Stakeholder created successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create stakeholder";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Stakeholder created successfully",
+        "Failed to create stakeholder"
+      ),
     }),
 
     updateStakeholder: builder.mutation<
@@ -236,24 +199,14 @@ export const stakeholdersApi = createApi({
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "Stakeholder", id: String(id) },
+        { type: "Stakeholder", id },
         { type: "Stakeholder", id: "LIST" },
         { type: "Stakeholder", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Stakeholder updated successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update stakeholder";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Stakeholder updated successfully",
+        "Failed to update stakeholder"
+      ),
     }),
 
     deleteStakeholder: builder.mutation<void, string | number>({
@@ -262,22 +215,14 @@ export const stakeholdersApi = createApi({
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "Stakeholder", id: String(id) },
+        { type: "Stakeholder", id },
         { type: "Stakeholder", id: "LIST" },
         { type: "Stakeholder", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Stakeholder deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message ||
-            "Failed to delete stakeholder";
-          toast.error(errorMessage);
-        }
-      },
+      onQueryStarted: createDeleteToastHandler(
+        "Stakeholder deleted successfully",
+        "Failed to delete stakeholder"
+      ),
     }),
 
     getStakeholderStatistics: builder.query<
