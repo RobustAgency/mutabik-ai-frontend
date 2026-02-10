@@ -1,13 +1,17 @@
-import IncidentRootCauseAnalyses from '@/components/app/incidents/rca/IncidentRootCauseAnalyses'
 import React from 'react'
+import IncidentRootCauseAnalyses from '@/components/app/incidents/rca/IncidentRootCauseAnalyses'
+import { PermissionPage } from '@/components/auth/PermissionPage'
+import { PERMISSIONS } from '@/constants/permissions'
 
-const page = () => {
-    return (
-        <div>
-            <IncidentRootCauseAnalyses />
-        </div>
-    )
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.INCIDENT_RCA_VIEW}>
+      <div>
+        <IncidentRootCauseAnalyses />
+      </div>
+    </PermissionPage>
+  )
 }
 
-export default page
+export default Page
 

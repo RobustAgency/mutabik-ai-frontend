@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAgreementQuery, useDeleteAgreementMutation } from "@/app/lib/features/agreementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const AgreementDetails: React.FC = () => {
   const router = useRouter();
@@ -51,8 +53,12 @@ const AgreementDetails: React.FC = () => {
               <p className="font-sans text-sm text-[#667085]">{agreement.agreement_type.toUpperCase()} • {agreement.status}</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => router.push(`/core-assets/agreements/${agreement.id}/edit`)}>Edit</Button>
-              <Button variant="outline" className="text-destructive" onClick={() => setConfirmOpen(true)}>Delete</Button>
+              <PermissionGate permission={PERMISSIONS.AGREEMENTS_EDIT}>
+                <Button variant="outline" onClick={() => router.push(`/core-assets/agreements/${agreement.id}/edit`)}>Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.AGREEMENTS_DELETE}>
+                <Button variant="outline" className="text-destructive" onClick={() => setConfirmOpen(true)}>Delete</Button>
+              </PermissionGate>
               <Button onClick={() => router.push("/core-assets/agreements")}>Back</Button>
             </div>
           </div>

@@ -9,6 +9,8 @@ import {
 import { EntityDetailsLayout } from "@/components/custom/EntityDetailsLayout";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface RiskMethodologyDetailsProps {
   methodologyId: string;
@@ -18,6 +20,7 @@ const RiskMethodologyDetails: React.FC<RiskMethodologyDetailsProps> = ({
   methodologyId,
 }) => {
   const router = useRouter();
+  const { hasPermission } = usePermissions();
   const { data, isLoading, error } = useGetRiskMethodologyByIdQuery(
     Number(methodologyId)
   );
@@ -50,8 +53,8 @@ const RiskMethodologyDetails: React.FC<RiskMethodologyDetailsProps> = ({
         description="View and manage risk methodology information"
         loading={isLoading}
         error={error ? "Failed to load risk methodology" : null}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={hasPermission(PERMISSIONS.RISK_METHODOLOGIES_EDIT) ? handleEdit : undefined}
+        onDelete={hasPermission(PERMISSIONS.RISK_METHODOLOGIES_DELETE) ? handleDelete : undefined}
       >
         {data && (
           <Card className="border-0 shadow-none">

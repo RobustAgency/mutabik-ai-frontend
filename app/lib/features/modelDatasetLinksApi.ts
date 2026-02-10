@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums matching Laravel backend
 export enum Role {
@@ -146,10 +146,7 @@ export interface ModelDatasetLinkItemResponse {
   message?: string;
 }
 
-export const modelDatasetLinksApi = createApi({
-  reducerPath: "modelDatasetLinksApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["ModelDatasetLink"],
+export const modelDatasetLinksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getModelDatasetLinks: builder.query<
       { data: ModelDatasetLink[]; pagination?: PaginationMeta },

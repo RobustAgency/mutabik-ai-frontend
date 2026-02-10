@@ -1,7 +1,14 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
 import { GovernancePillar } from "@/utils/governancePillar";
+import {
+  transformListResponseWithCalculatedPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Types for projects
 export interface Project {
@@ -129,10 +136,27 @@ export interface AddFrameworksData {
   framework_id: number | string;
 }
 
-export const projectsApi = createApi({
-  reducerPath: "projectsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Project"],
+interface ProjectListResponse {
+  data: {
+    data: Project[];
+    current_page: number;
+    total: number;
+    per_page: number;
+    last_page: number;
+    from: number;
+    to: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+interface ProjectItemResponse {
+  data: Project;
+  error?: boolean;
+  message?: string;
+}
+
+export const projectsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<
       { data: Project[]; pagination: PaginationMeta },
@@ -143,54 +167,12 @@ export const projectsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "Project" as const,
-                id: String(id),
-              })),
-              { type: "Project", id: "LIST" },
-            ]
-          : [{ type: "Project", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
+      providesTags: (result) => createListTags(result, "Project"),
+      transformResponse: (response: ProjectListResponse) =>
+        transformListResponseWithCalculatedPagination(response) as {
           data: Project[];
-          current_page: number;
-          total: number;
-          per_page: number;
-          last_page: number;
-          from: number;
-          to: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from: response.data.from,
-              to: response.data.to,
-            },
-          };
-        }
-        return {
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 10,
-            total: 0,
-            last_page: 1,
-            from: 0,
-            to: 0,
-          },
-        };
-      },
+          pagination: PaginationMeta;
+        },
     }),
 
     getProject: builder.query<Project, number>({
@@ -198,17 +180,9 @@ export const projectsApi = createApi({
         url: `/projects/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Project", id: String(id) }],
-      transformResponse: (response: {
-        data: Project;
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as Project;
-      },
+      providesTags: (result, error, id) => [{ type: "Project", id }],
+      transformResponse: (response: ProjectItemResponse) =>
+        transformSingleItemResponse(response),
     }),
 
     createProject: builder.mutation<Project, CreateProjectData>({
@@ -217,21 +191,11 @@ export const projectsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "Project", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Project created successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create project";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("Project"),
+      onQueryStarted: createMutationToastHandler(
+        "Project created successfully",
+        "Failed to create project"
+      ),
     }),
 
     updateProject: builder.mutation<
@@ -243,76 +207,49 @@ export const projectsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Project", id: String(id) },
-        { type: "Project", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Project updated successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update project";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("Project"),
+      onQueryStarted: createMutationToastHandler(
+        "Project updated successfully",
+        "Failed to update project"
+      ),
     }),
 
-    addMember: builder.mutation<void, { projectId: number; data: AddMemberData }>({
+    addMember: builder.mutation<
+      void,
+      { projectId: number; data: AddMemberData }
+    >({
       query: ({ projectId, data }) => ({
         url: `/projects/${projectId}/add-member`,
         method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { projectId }) => [
-        { type: "Project", id: String(projectId) },
+        { type: "Project", id: projectId },
         { type: "Project", id: "LIST" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Member added successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to add member";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Member added successfully",
+        "Failed to add member"
+      ),
     }),
 
-    addFrameworks: builder.mutation<void, { projectId: number; data: AddFrameworksData }>({
+    addFrameworks: builder.mutation<
+      void,
+      { projectId: number; data: AddFrameworksData }
+    >({
       query: ({ projectId, data }) => ({
         url: `/projects/${projectId}/add-framework`,
         method: "POST",
         data: data,
       }),
       invalidatesTags: (result, error, { projectId }) => [
-        { type: "Project", id: String(projectId) },
+        { type: "Project", id: projectId },
         { type: "Project", id: "LIST" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Frameworks added successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to add frameworks";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Frameworks added successfully",
+        "Failed to add frameworks"
+      ),
     }),
   }),
 });
@@ -325,4 +262,3 @@ export const {
   useAddMemberMutation,
   useAddFrameworksMutation,
 } = projectsApi;
-

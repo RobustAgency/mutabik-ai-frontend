@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 export enum SystemType {
   APPLICATION_DB = "Application DB",
@@ -138,10 +138,7 @@ export interface CreateDataSourceData {
   status: DataSourceStatus;
 }
 
-export const dataSourcesApi = createApi({
-  reducerPath: "dataSourcesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DataSource"],
+export const dataSourcesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDataSources: builder.query<
       { data: DataSource[]; pagination?: PaginationMeta },

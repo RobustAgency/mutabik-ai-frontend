@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface DatasetSubjectPopulation {
   id: number;
@@ -61,10 +61,7 @@ export interface PaginatedDatasetSubjectPopulationResponse {
   total: number;
 }
 
-export const datasetSubjectPopulationApi = createApi({
-  reducerPath: "datasetSubjectPopulationApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DatasetSubjectPopulation"],
+export const datasetSubjectPopulationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDatasetSubjectPopulations: builder.query<
       PaginatedDatasetSubjectPopulationResponse,

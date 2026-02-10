@@ -1,6 +1,14 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  transformListResponseWithCalculatedPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 export enum Purpose {
   AI_ML_TRAINING = "ai_ml_training",
@@ -165,10 +173,21 @@ export interface CreateDatasetData {
   license_type?: LicenseType | null;
 }
 
-export const datasetsApi = createApi({
-  reducerPath: "datasetsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Dataset"],
+interface DatasetServerListResponse {
+  data: {
+    data: Dataset[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from?: number;
+    to?: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+export const datasetsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDatasets: builder.query<DatasetListResponse, DatasetFilters>({
       query: (filters) => ({
@@ -176,42 +195,9 @@ export const datasetsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Dataset" as const, id: String(id) })),
-              { type: "Dataset", id: "LIST" },
-            ]
-          : [{ type: "Dataset", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: Dataset[];
-          current_page: number;
-          per_page: number;
-          total: number;
-          last_page: number;
-          from?: number;
-          to?: number;
-        };
-        error?: boolean;
-        message?: string;
-      }): DatasetListResponse => {
-        if (response?.data?.data && Array.isArray(response.data.data)) {
-          const { current_page, per_page, total, last_page, from, to } = response.data;
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page,
-              per_page,
-              total,
-              last_page,
-              from: from ?? (current_page - 1) * per_page + 1,
-              to: to ?? Math.min(current_page * per_page, total),
-            },
-          };
-        }
-        return { data: [], pagination: undefined };
-      },
+      providesTags: (result) => createListTags(result, "Dataset"),
+      transformResponse: (response: DatasetServerListResponse): DatasetListResponse =>
+        transformListResponseWithCalculatedPagination(response) as DatasetListResponse,
     }),
 
     getDataset: builder.query<Dataset, number>({
@@ -219,14 +205,9 @@ export const datasetsApi = createApi({
         url: `/datasets/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Dataset", id: String(id) }],
-      transformResponse: (response: {
-        data: Dataset;
-        error?: boolean;
-        message?: string;
-      }): Dataset => {
-        return response.data;
-      },
+      providesTags: (result, error, id) => [{ type: "Dataset", id }],
+      transformResponse: (response: DatasetItemResponse): Dataset =>
+        transformSingleItemResponse(response),
     }),
 
     createDataset: builder.mutation<DatasetItemResponse, CreateDatasetData>({
@@ -235,20 +216,11 @@ export const datasetsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "Dataset", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Dataset created successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create dataset";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("Dataset"),
+      onQueryStarted: createMutationToastHandler(
+        "Dataset created successfully",
+        "Failed to create dataset"
+      ),
     }),
 
     updateDataset: builder.mutation<
@@ -260,23 +232,11 @@ export const datasetsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Dataset", id: String(id) },
-        { type: "Dataset", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Dataset updated successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update dataset";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("Dataset"),
+      onQueryStarted: createMutationToastHandler(
+        "Dataset updated successfully",
+        "Failed to update dataset"
+      ),
     }),
 
     deleteDataset: builder.mutation<void, number>({
@@ -284,21 +244,11 @@ export const datasetsApi = createApi({
         url: `/datasets/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "Dataset", id: String(id) },
-        { type: "Dataset", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Dataset deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete dataset";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("Dataset"),
+      onQueryStarted: createDeleteToastHandler(
+        "Dataset deleted successfully",
+        "Failed to delete dataset"
+      ),
     }),
   }),
 });

@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 // Enums for Incident Root Cause Analyses
 export enum RcaMethod {
@@ -65,10 +65,7 @@ export interface CreateIncidentRootCauseAnalysisData {
   report_link?: string | null;
 }
 
-export const incidentRootCauseAnalysesApi = createApi({
-  reducerPath: "incidentRootCauseAnalysesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentRootCauseAnalysis"],
+export const incidentRootCauseAnalysesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentRootCauseAnalyses: builder.query<
       { data: IncidentRootCauseAnalysis[]; pagination: PaginationMeta },

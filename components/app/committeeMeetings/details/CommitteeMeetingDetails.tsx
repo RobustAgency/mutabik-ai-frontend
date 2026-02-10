@@ -4,6 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 import { useGetCommitteeMeetingQuery } from "@/app/lib/features/committeeMeetingsApi";
 import { useGetAiCommitteesQuery } from "@/app/lib/features/aiCommitteesApi";
 import {
@@ -80,12 +82,14 @@ const CommitteeMeetingDetails: React.FC<CommitteeMeetingDetailsProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/governance/committee-meetings/${meetingId}/edit`)}
-            >
-              Edit
-            </Button>
+            <PermissionGate permission={PERMISSIONS.COMMITTEE_MEETINGS_EDIT}>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/governance/committee-meetings/${meetingId}/edit`)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
             <Button
               variant="outline"
               onClick={() => router.push("/governance/committee-meetings")}

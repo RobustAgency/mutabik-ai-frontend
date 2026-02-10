@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAiAssetQuery } from "@/app/lib/features/aiAssetsApi";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface AiAssetDetailsProps {
   aiAssetId: string;
@@ -31,13 +33,15 @@ const AiAssetDetails: React.FC<AiAssetDetailsProps> = ({ aiAssetId }) => {
             <p className="font-sans text-sm text-[#667085]">View vendor linkage and lifecycle dates</p>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="text-[#667085]"
-              onClick={() => router.push(`/core-assets/ai-assets/${aiAssetId}/edit`)}
-            >
-              Edit
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AI_ASSETS_EDIT}>
+              <Button
+                variant="outline"
+                className="text-[#667085]"
+                onClick={() => router.push(`/core-assets/ai-assets/${aiAssetId}/edit`)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
           </div>
         </div>
 

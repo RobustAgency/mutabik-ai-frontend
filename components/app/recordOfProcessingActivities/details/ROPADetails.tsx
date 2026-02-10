@@ -10,6 +10,8 @@ import {
 } from "@/app/lib/features/recordOfProcessingActivitiesApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ROPADetailsProps {
   activityId: string;
@@ -114,21 +116,25 @@ const ROPADetails: React.FC<ROPADetailsProps> = ({ activityId }) => {
                 </h1>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    router.push(`/privacy/ropa/${activity.id}/edit`)
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-destructive"
-                  onClick={() => setDeleteDialogOpen(true)}
-                >
-                  Delete
-                </Button>
+                <PermissionGate permission={PERMISSIONS.ROPA_EDIT}>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/privacy/ropa/${activity.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </Button>
+                </PermissionGate>
+                <PermissionGate permission={PERMISSIONS.ROPA_DELETE}>
+                  <Button
+                    variant="outline"
+                    className="text-destructive"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGate>
                 <Button onClick={() => router.push("/privacy/ropa")}>
                   Back
                 </Button>

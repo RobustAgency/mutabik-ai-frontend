@@ -12,6 +12,8 @@ import { AiRiskRegister, RiskLevel, RiskStatus } from "@/interfaces/AiRiskRegist
 import { formatDate } from "@/utils/formatDate";
 import { formatRiskCategory, formatRiskDecision } from "@/utils/riskUtils";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function AiRiskRegisterList() {
   const router = useRouter();
@@ -144,26 +146,30 @@ export default function AiRiskRegisterList() {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/risk-compliance/ai-risk-management/register/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDeleteDialog(String(row.original.id), row.original.title);
-            }}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.AI_RISK_REGISTER_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/risk-compliance/ai-risk-management/register/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.AI_RISK_REGISTER_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDeleteDialog(String(row.original.id), row.original.title);
+              }}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -179,12 +185,14 @@ export default function AiRiskRegisterList() {
         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
           AI Risk Register
         </h2>
-        <Button
-          onClick={() => router.push("/risk-compliance/ai-risk-management/register/create")}
-          className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-        >
-          Register New Risk
-        </Button>
+        <PermissionGate permission={PERMISSIONS.AI_RISK_REGISTER_CREATE}>
+          <Button
+            onClick={() => router.push("/risk-compliance/ai-risk-management/register/create")}
+            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+          >
+            Register New Risk
+          </Button>
+        </PermissionGate>
       </div>
       <Card className="bg-white w-full rounded-xl border-0 py-0">
         <DataTable
@@ -208,12 +216,14 @@ export default function AiRiskRegisterList() {
             title: "No AI Risks found",
             description: "Get started by registering your first AI risk",
             action: (
-              <Button
-                onClick={() => router.push("/risk-compliance/ai-risk-management/register/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Register New Risk
-              </Button>
+              <PermissionGate permission={PERMISSIONS.AI_RISK_REGISTER_CREATE}>
+                <Button
+                  onClick={() => router.push("/risk-compliance/ai-risk-management/register/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Register New Risk
+                </Button>
+              </PermissionGate>
             ),
           }}
         />

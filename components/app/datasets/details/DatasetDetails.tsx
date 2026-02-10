@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetDatasetQuery, useDeleteDatasetMutation } from "@/app/lib/features/datasetsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import DatasetFormReadOnly from "./DatasetFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DatasetDetailsProps {
     datasetId: string;
@@ -70,8 +72,12 @@ const DatasetDetails: React.FC<DatasetDetailsProps> = ({ datasetId }) => {
                             <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View and manage dataset information</p>
                         </div>
                         <div className="flex gap-3">
-                            <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-                            <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+                            <PermissionGate permission={PERMISSIONS.DATASETS_EDIT}>
+                                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+                            </PermissionGate>
+                            <PermissionGate permission={PERMISSIONS.DATASETS_DELETE}>
+                                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+                            </PermissionGate>
                         </div>
                     </div>
 

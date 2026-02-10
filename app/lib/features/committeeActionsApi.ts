@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   CommitteeAction,
@@ -7,7 +7,6 @@ import type {
   UpdateCommitteeActionData,
 } from "@/interfaces/CommitteeAction";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -31,10 +30,7 @@ export interface CommitteeActionListResponse {
   message: string;
 }
 
-export const committeeActionsApi = createApi({
-  reducerPath: "committeeActionsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["CommitteeAction"],
+export const committeeActionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCommitteeActions: builder.query<
       { data: CommitteeAction[]; pagination?: PaginationMeta },

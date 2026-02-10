@@ -11,6 +11,8 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCategory } from "@/lib/helpers/ui";
 import { formatDate } from "@/utils/formatDate";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface KriIndicatorDetailsProps {
   indicatorId: string;
@@ -18,6 +20,7 @@ interface KriIndicatorDetailsProps {
 
 const KriIndicatorDetails: React.FC<KriIndicatorDetailsProps> = ({ indicatorId }) => {
   const router = useRouter();
+  const { hasPermission } = usePermissions();
   const { data, isLoading, error } = useGetKriIndicatorByIdQuery(Number(indicatorId));
   const [deleteIndicator, { isLoading: isDeleting }] = useDeleteKriIndicatorMutation();
 
@@ -45,8 +48,8 @@ const KriIndicatorDetails: React.FC<KriIndicatorDetailsProps> = ({ indicatorId }
         description="View and manage KRI configuration"
         loading={isLoading}
         error={error ? "Failed to load KRI indicator" : null}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={hasPermission(PERMISSIONS.KRI_INDICATORS_EDIT) ? handleEdit : undefined}
+        onDelete={hasPermission(PERMISSIONS.KRI_INDICATORS_DELETE) ? handleDelete : undefined}
       >
         {data && (
           <Card className="border-0 shadow-none">

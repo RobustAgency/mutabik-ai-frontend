@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Organization,
   OrganizationFilters,
@@ -36,10 +35,7 @@ export interface OrganizationSingleResponse {
   data?: Organization;
 }
 
-export const organizationsApi = createApi({
-  reducerPath: "organizationsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Organization"],
+export const organizationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganizations: builder.query<
       { data: Organization[]; pagination: PaginationMeta },

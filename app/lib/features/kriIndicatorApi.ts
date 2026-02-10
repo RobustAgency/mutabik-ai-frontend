@@ -3,10 +3,9 @@
  * Following frontend rules for RTK Query implementation
  */
 
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -38,10 +37,7 @@ interface SingleKriIndicatorResponse {
   error: boolean;
 }
 
-export const kriIndicatorApi = createApi({
-  reducerPath: "kriIndicatorApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["KriIndicator"],
+export const kriIndicatorApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getKriIndicators: builder.query<
       { data: KriIndicator[]; pagination: PaginationMeta },

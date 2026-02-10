@@ -55,14 +55,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className={outfit.variable} suppressHydrationWarning={true}>
-        <AuthProvider initialUser={user} initialProfile={initialProfile}>
-          <StoreProvider>
-            <NextTopLoader
-              color="#4FD58F"
-            />
+        {/* Redux store must wrap any components that use RTK Query hooks */}
+        <StoreProvider>
+          <AuthProvider initialUser={user} initialProfile={initialProfile}>
+            <NextTopLoader color="#4FD58F" />
             <AppShell>{children}</AppShell>
-          </StoreProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </StoreProvider>
         <ToastProvider />
       </body>
     </html>

@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetDataElementQuery, useDeleteDataElementMutation } from "@/app/lib/features/dataElementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import DataElementFormReadOnly from "./DataElementFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DataElementDetailsProps {
   elementId: string;
@@ -69,8 +71,12 @@ const DataElementDetails: React.FC<DataElementDetailsProps> = ({ elementId }) =>
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View and manage data element information</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

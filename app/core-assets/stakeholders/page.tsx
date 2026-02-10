@@ -1,14 +1,16 @@
+import React from "react";
+import Stakeholders from "@/components/app/stakeholders/Stakeholders";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.STAKEHOLDERS_VIEW}>
+      <div>
+        <Stakeholders />
+      </div>
+    </PermissionPage>
+  );
+};
 
-import Stakeholders from '@/components/app/stakeholders/Stakeholders'
-import React from 'react'
-
-const page = () => {
-    return (
-        <div>
-            <Stakeholders />
-        </div>
-    )
-}
-
-export default page
+export default Page;

@@ -10,6 +10,8 @@ import {
 } from "@/app/lib/features/dataProtectionImpactAssessmentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DPIADetailsProps {
   id: string;
@@ -108,19 +110,23 @@ const DPIADetails: React.FC<DPIADetailsProps> = ({ id }) => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/privacy/dpia/${dpia.id}/edit`)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                  onClick={() => setDeleteDialogOpen(true)}
-                >
-                  Delete
-                </Button>
+                <PermissionGate permission={PERMISSIONS.DPIA_EDIT}>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/privacy/dpia/${dpia.id}/edit`)}
+                  >
+                    Edit
+                  </Button>
+                </PermissionGate>
+                <PermissionGate permission={PERMISSIONS.DPIA_DELETE}>
+                  <Button
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGate>
                 <Button
                   variant="ghost"
                   onClick={() => router.push("/privacy/dpia")}

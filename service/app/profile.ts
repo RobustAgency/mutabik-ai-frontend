@@ -1,16 +1,31 @@
 import { api, type ApiResponse } from '@/lib/api';
 
+export interface ProfilePermission {
+    id: number;
+    name: string;
+    guard_name: string;
+}
+
+export interface ProfileRole {
+    id: number;
+    name: string;
+    permissions: ProfilePermission[];
+}
+
 export interface Profile {
     id: number;
     name?: string | null;
     email: string;
     organization_id?: number | null;
     is_organization_active?: boolean | null;
+    is_super_admin?: boolean;
     full_name?: string | null;
     role?: string | null;
     avatar_url?: string | null;
     plan_id?: number | null;
     has_payment_method?: boolean | null;
+    roles?: ProfileRole[];
+    permissions?: ProfilePermission[];
     created_at?: string;
     updated_at?: string;
 }

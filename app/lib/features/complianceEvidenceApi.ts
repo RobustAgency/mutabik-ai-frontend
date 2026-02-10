@@ -1,5 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   ComplianceEvidence,
   ComplianceEvidenceFilters,
@@ -16,10 +15,7 @@ import {
   createInvalidateItemAndListTags,
 } from "@/lib/api/rtkQueryHelpers";
 
-export const complianceEvidenceApi = createApi({
-  reducerPath: "complianceEvidenceApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["ComplianceEvidence"],
+export const complianceEvidenceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getComplianceEvidences: builder.query<
       { data: ComplianceEvidence[]; meta: ComplianceEvidenceListMeta },

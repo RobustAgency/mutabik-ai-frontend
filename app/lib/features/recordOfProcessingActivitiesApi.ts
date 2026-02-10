@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   RecordOfProcessingActivity,
@@ -6,7 +6,6 @@ import type {
   ROPAFilters,
 } from "@/interfaces/RecordOfProcessingActivity";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -30,10 +29,7 @@ export interface ROPAListResponse {
   message: string;
 }
 
-export const recordOfProcessingActivitiesApi = createApi({
-  reducerPath: "recordOfProcessingActivitiesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["RecordOfProcessingActivity"],
+export const recordOfProcessingActivitiesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRecordOfProcessingActivities: builder.query<
       { data: RecordOfProcessingActivity[]; pagination?: PaginationMeta },

@@ -11,6 +11,8 @@ import { AiModel } from "@/service/app/aiModels";
 import { formatDate, getStatusBadge } from "@/lib/helpers/ui";
 import { AiModelFilters } from "@/app/lib/features/aiModelsApi";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 // Helper function to format category names safely
 const formatCategory = (value: unknown): string => {
@@ -180,12 +182,14 @@ const AiModels: React.FC = () => {
                             filters={filters}
                             onFiltersChange={handleFiltersChange}
                         />
-                        <Button
-                            onClick={() => router.push("/core-assets/ai-models/create")}
-                            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                        >
-                            New AI Model
-                        </Button>
+                        <PermissionGate permission={PERMISSIONS.AI_MODELS_CREATE}>
+                            <Button
+                                onClick={() => router.push("/core-assets/ai-models/create")}
+                                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                            >
+                                New AI Model
+                            </Button>
+                        </PermissionGate>
                     </div>
                 </div>
                 <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -199,9 +203,11 @@ const AiModels: React.FC = () => {
                             title: "No AI models found",
                             description: "Get started by creating your first AI model",
                             action: (
-                                <Button onClick={() => router.push("/core-assets/ai-models/create")}>
-                                    Create AI Model
-                                </Button>
+                                <PermissionGate permission={PERMISSIONS.AI_MODELS_CREATE}>
+                                    <Button onClick={() => router.push("/core-assets/ai-models/create")}>
+                                        Create AI Model
+                                    </Button>
+                                </PermissionGate>
                             )
                         }}
                     />

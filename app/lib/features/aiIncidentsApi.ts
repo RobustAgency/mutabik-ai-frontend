@@ -1,6 +1,12 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  createListTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Enums matching Laravel backend
 export enum IncidentType {
@@ -249,10 +255,7 @@ export interface AiIncidentItemResponse {
   message?: string;
 }
 
-export const aiIncidentsApi = createApi({
-  reducerPath: "aiIncidentsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiIncident"],
+export const aiIncidentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiIncidents: builder.query<
       { data: AiIncident[]; pagination?: PaginationMeta },
@@ -263,33 +266,27 @@ export const aiIncidentsApi = createApi({
         method: "GET",
         params: filters,
       }),
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "AiIncident" as const,
-                id: String(id),
-              })),
-              { type: "AiIncident", id: "LIST" },
-            ]
-          : [{ type: "AiIncident", id: "LIST" }],
+      providesTags: (result) => createListTags(result, "AiIncident"),
       transformResponse: (response: any) => {
         if (response?.data?.data && Array.isArray(response.data.data)) {
-          const { current_page, per_page, total, last_page, from, to } = response.data;
-          // Transform data to handle string-to-number conversions and ensure proper typing
-          const transformedData = response.data.data.map((incident: any) => ({
-            ...incident,
-            estimated_impacted_users: incident.estimated_impacted_users 
-              ? (typeof incident.estimated_impacted_users === 'string' 
-                  ? parseInt(incident.estimated_impacted_users, 10) 
-                  : incident.estimated_impacted_users)
-              : null,
-            estimated_impacted_records: incident.estimated_impacted_records
-              ? (typeof incident.estimated_impacted_records === 'string'
+          const { current_page, per_page, total, last_page, from, to } =
+            response.data;
+          // Transform data to handle string-to-number conversions
+          const transformedData = response.data.data.map(
+            (incident: any) => ({
+              ...incident,
+              estimated_impacted_users: incident.estimated_impacted_users
+                ? typeof incident.estimated_impacted_users === "string"
+                  ? parseInt(incident.estimated_impacted_users, 10)
+                  : incident.estimated_impacted_users
+                : null,
+              estimated_impacted_records: incident.estimated_impacted_records
+                ? typeof incident.estimated_impacted_records === "string"
                   ? parseInt(incident.estimated_impacted_records, 10)
-                  : incident.estimated_impacted_records)
-              : 0,
-          }));
+                  : incident.estimated_impacted_records
+                : 0,
+            })
+          );
           return {
             data: transformedData,
             pagination: {
@@ -297,12 +294,11 @@ export const aiIncidentsApi = createApi({
               per_page,
               total,
               last_page,
-              from: from ?? ((current_page - 1) * per_page + 1),
+              from: from ?? (current_page - 1) * per_page + 1,
               to: to ?? Math.min(current_page * per_page, total),
             },
           };
         }
-        // Handle non-paginated response structure
         if (response?.data && Array.isArray(response.data)) {
           return { data: response.data, pagination: undefined };
         }
@@ -315,7 +311,7 @@ export const aiIncidentsApi = createApi({
         url: `/ai-incidents/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "AiIncident", id: String(id) }],
+      providesTags: (result, error, id) => [{ type: "AiIncident", id }],
       transformResponse: (response: AiIncidentItemResponse) => {
         if (response.data) {
           return response.data;
@@ -330,21 +326,11 @@ export const aiIncidentsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "AiIncident", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI incident created successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          if (!hasValidationErrors(mutationError)) {
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create AI incident";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("AiIncident"),
+      onQueryStarted: createMutationToastHandler(
+        "AI incident created successfully",
+        "Failed to create AI incident"
+      ),
     }),
 
     updateAiIncident: builder.mutation<
@@ -356,24 +342,11 @@ export const aiIncidentsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "AiIncident", id: String(id) },
-        { type: "AiIncident", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI incident updated successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          if (!hasValidationErrors(mutationError)) {
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update AI incident";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiIncident"),
+      onQueryStarted: createMutationToastHandler(
+        "AI incident updated successfully",
+        "Failed to update AI incident"
+      ),
     }),
 
     deleteAiIncident: builder.mutation<void, number>({
@@ -381,22 +354,11 @@ export const aiIncidentsApi = createApi({
         url: `/ai-incidents/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "AiIncident", id: String(id) },
-        { type: "AiIncident", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("AI incident deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message ||
-            "Failed to delete AI incident";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiIncident"),
+      onQueryStarted: createDeleteToastHandler(
+        "AI incident deleted successfully",
+        "Failed to delete AI incident"
+      ),
     }),
   }),
 });

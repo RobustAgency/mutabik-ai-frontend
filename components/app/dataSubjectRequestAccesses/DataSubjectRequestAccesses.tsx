@@ -16,6 +16,8 @@ import type {
 } from "@/interfaces/DataSubjectRequestAccess";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const formatDate = (dateString: string | null | undefined): string =>
   formatDateShort(dateString);
@@ -221,20 +223,24 @@ const DataSubjectRequestAccesses: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DSAR_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DSAR_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -256,12 +262,14 @@ const DataSubjectRequestAccesses: React.FC = () => {
             </div>
             <div className="flex items-center gap-3">
               {/* Filters can be wired later, keeping space for DynamicFilter */}
-              <Button
-                onClick={() => router.push("/privacy/dsar/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New DSAR
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DSAR_CREATE}>
+                <Button
+                  onClick={() => router.push("/privacy/dsar/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New DSAR
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -286,9 +294,11 @@ const DataSubjectRequestAccesses: React.FC = () => {
                 title: "No DSAR requests found",
                 description: "Get started by creating your first DSAR request",
                 action: (
-                  <Button onClick={() => router.push("/privacy/dsar/create")}>
-                    Create DSAR
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.DSAR_CREATE}>
+                    <Button onClick={() => router.push("/privacy/dsar/create")}>
+                      Create DSAR
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

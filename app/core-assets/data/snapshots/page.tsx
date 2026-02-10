@@ -10,6 +10,8 @@ import { useGetDatasetSnapshotsQuery, useDeleteDatasetSnapshotMutation, DatasetS
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const DatasetSnapshotsPage: React.FC = () => {
   const router = useRouter();
@@ -234,7 +236,7 @@ const DatasetSnapshotsPage: React.FC = () => {
   ];
 
   return (
-    <>
+    <PermissionPage permission={PERMISSIONS.DATASET_SNAPSHOTS_VIEW}>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1 py-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
@@ -299,7 +301,7 @@ const DatasetSnapshotsPage: React.FC = () => {
         isLoading={isDeleting}
         loadingText="Deleting..."
       />
-    </>
+    </PermissionPage>
   );
 };
 

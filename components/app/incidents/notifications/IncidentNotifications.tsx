@@ -17,6 +17,8 @@ import {
 } from "@/app/lib/features/incidentNotificationsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const IncidentNotifications: React.FC = () => {
   const router = useRouter();
@@ -168,26 +170,30 @@ const IncidentNotifications: React.FC = () => {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/governance/incidents/notifications/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDeleteDialogState({ isOpen: true, notificationId: row.original.id });
-            }}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_NOTIFICATIONS_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/governance/incidents/notifications/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_NOTIFICATIONS_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteDialogState({ isOpen: true, notificationId: row.original.id });
+              }}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -215,12 +221,14 @@ const IncidentNotifications: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/notifications/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Send Notification
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_NOTIFICATIONS_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/incidents/notifications/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Send Notification
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">

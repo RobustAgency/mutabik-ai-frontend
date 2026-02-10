@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
 export enum DataType {
   STRING = "string",
@@ -162,10 +162,7 @@ export interface DataElementItemResponse {
   message?: string;
 }
 
-export const dataElementsApi = createApi({
-  reducerPath: "dataElementsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DataElement"],
+export const dataElementsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDataElements: builder.query<
       { data: DataElement[]; pagination?: PaginationMeta },

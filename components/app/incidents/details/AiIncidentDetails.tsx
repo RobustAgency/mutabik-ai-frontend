@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 import { useGetAiIncidentQuery, useDeleteAiIncidentMutation } from "@/app/lib/features/aiIncidentsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import AiIncidentFormReadOnly from "./AiIncidentFormReadOnly";
@@ -81,12 +83,16 @@ const AiIncidentDetails: React.FC<AiIncidentDetailsProps> = ({ incidentId }) => 
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => router.push(`/governance/incidents/${incident.id}/edit`)}>
-                Edit
-              </Button>
-              <Button variant="outline" className="text-destructive" onClick={() => setDeleteDialogOpen(true)}>
-                Delete
-              </Button>
+              <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_EDIT}>
+                <Button variant="outline" onClick={() => router.push(`/governance/incidents/${incident.id}/edit`)}>
+                  Edit
+                </Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.AI_INCIDENTS_DELETE}>
+                <Button variant="outline" className="text-destructive" onClick={() => setDeleteDialogOpen(true)}>
+                  Delete
+                </Button>
+              </PermissionGate>
               <Button onClick={() => router.push("/governance/incidents")}>Back</Button>
             </div>
           </div>

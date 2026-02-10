@@ -15,6 +15,8 @@ import { AiRiskTreatment, TreatmentStatus, ResultVerification } from "@/interfac
 import { formatDate } from "@/utils/formatDate";
 import { formatCategory } from "@/lib/helpers/ui";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function AiRiskTreatmentsList() {
   const router = useRouter();
@@ -146,27 +148,31 @@ export default function AiRiskTreatmentsList() {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/risk-compliance/ai-risk-management/treatment/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDeleteDialog(String(row.original.id), row.original.plan_summary);
-            }}
-            disabled={isDeleting}
-          >
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.AI_RISK_TREATMENTS_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/risk-compliance/ai-risk-management/treatment/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.AI_RISK_TREATMENTS_DELETE}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDeleteDialog(String(row.original.id), row.original.plan_summary);
+              }}
+              disabled={isDeleting}
+            >
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -182,12 +188,14 @@ export default function AiRiskTreatmentsList() {
         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
           AI Risk Treatments
         </h2>
-        <Button
-          onClick={() => router.push("/risk-compliance/ai-risk-management/treatment/create")}
-          className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-        >
-          Create Treatment Plan
-        </Button>
+        <PermissionGate permission={PERMISSIONS.AI_RISK_TREATMENTS_CREATE}>
+          <Button
+            onClick={() => router.push("/risk-compliance/ai-risk-management/treatment/create")}
+            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+          >
+            Create Treatment Plan
+          </Button>
+        </PermissionGate>
       </div>
       <Card className="bg-white w-full rounded-xl border-0 py-0">
         <DataTable
@@ -211,12 +219,14 @@ export default function AiRiskTreatmentsList() {
             title: "No AI Risk Treatments found",
             description: "Get started by creating your first treatment plan",
             action: (
-              <Button
-                onClick={() => router.push("/risk-compliance/ai-risk-management/treatment/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Create Treatment Plan
-              </Button>
+              <PermissionGate permission={PERMISSIONS.AI_RISK_TREATMENTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/risk-compliance/ai-risk-management/treatment/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Create Treatment Plan
+                </Button>
+              </PermissionGate>
             ),
           }}
         />

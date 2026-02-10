@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   PrivacyIncident,
@@ -6,7 +6,6 @@ import type {
   PrivacyIncidentFilters,
 } from "@/interfaces/PrivacyIncident";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -30,10 +29,7 @@ export interface PrivacyIncidentItemResponse {
   message: string;
 }
 
-export const privacyIncidentsApi = createApi({
-  reducerPath: "privacyIncidentsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["PrivacyIncident"],
+export const privacyIncidentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPrivacyIncidents: builder.query<
       { data: PrivacyIncident[]; pagination?: PaginationMeta },

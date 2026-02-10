@@ -16,6 +16,8 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { StatisticsCard } from "@/components/custom/StatisticsCard";
 import { StatisticsCardSkeleton } from "@/components/custom/StatisticsCardSkeleton";
 import { FileText, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const Agreements: React.FC = () => {
   const router = useRouter();
@@ -218,20 +220,24 @@ const Agreements: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AGREEMENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.AGREEMENTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -295,12 +301,14 @@ const Agreements: React.FC = () => {
                 Manage contracts, DPAs and SLAs
               </p>
             </div>
-            <Button
-              onClick={() => router.push("/core-assets/agreements/create")}
-              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Agreement
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AGREEMENTS_CREATE}>
+              <Button
+                onClick={() => router.push("/core-assets/agreements/create")}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Agreement
+              </Button>
+            </PermissionGate>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable
@@ -324,7 +332,9 @@ const Agreements: React.FC = () => {
                 title: "No agreements found",
                 description: "Get started by creating your first agreement",
                 action: (
-                  <Button onClick={() => router.push("/core-assets/agreements/create")}>Create Agreement</Button>
+                  <PermissionGate permission={PERMISSIONS.AGREEMENTS_CREATE}>
+                    <Button onClick={() => router.push("/core-assets/agreements/create")}>Create Agreement</Button>
+                  </PermissionGate>
                 ),
               }}
             />

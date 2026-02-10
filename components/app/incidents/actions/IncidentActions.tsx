@@ -18,6 +18,8 @@ import {
 import { useGetStakeholderQuery } from "@/app/lib/features/stakeholdersApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 // Component to display stakeholder name
 const PerformedByCell: React.FC<{ performedById: number }> = ({
@@ -213,19 +215,23 @@ const IncidentActions: React.FC = () => {
       ),
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="text-[#667085]"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/governance/incidents/actions/${row.original.id}/edit`);
-            }}
-          >
-            Edit
-          </Button>
-          <Button variant="outline" className="text-[#667085]" onClick={(e) => handleDeleteClick(e, row.original)}>
-            Remove
-          </Button>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_ACTIONS_EDIT}>
+            <Button
+              variant="outline"
+              className="text-[#667085]"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/governance/incidents/actions/${row.original.id}/edit`);
+              }}
+            >
+              Edit
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.INCIDENT_ACTIONS_DELETE}>
+            <Button variant="outline" className="text-[#667085]" onClick={(e) => handleDeleteClick(e, row.original)}>
+              Remove
+            </Button>
+          </PermissionGate>
         </div>
       ),
     },
@@ -253,12 +259,14 @@ const IncidentActions: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/actions/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Action
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_ACTIONS_CREATE}>
+                <Button
+                  onClick={() => router.push("/governance/incidents/actions/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Action
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">

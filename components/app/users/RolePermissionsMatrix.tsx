@@ -121,6 +121,54 @@ export const RolePermissionsMatrix: React.FC<RolePermissionsMatrixProps> = ({
     onChange(nextIds);
   };
 
+  // Get all available permission IDs across all modules
+  const allPermissionIds = React.useMemo(() => {
+    const ids: number[] = [];
+    moduleGroups.forEach((group) => {
+      group.resources.forEach((row) => {
+        ACTION_COLUMNS.forEach((col) => {
+          const permission = row.actions[col.key];
+          if (permission?.id) {
+            ids.push(permission.id);
+          }
+        });
+      });
+    });
+    return Array.from(new Set(ids));
+  }, [moduleGroups]);
+
+  // Check if all permissions are selected
+  const allSelected = React.useMemo(() => {
+    return (
+      allPermissionIds.length > 0 &&
+      allPermissionIds.every((id) => selectedPermissionIds.includes(id))
+    );
+  }, [allPermissionIds, selectedPermissionIds]);
+
+  // Check if no permissions are selected
+  const noneSelected = React.useMemo(() => {
+    return (
+      allPermissionIds.length > 0 &&
+      selectedPermissionIds.length === 0
+    );
+  }, [allPermissionIds, selectedPermissionIds]);
+
+  // Handle "All" checkbox in header
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      onChange([...allPermissionIds]);
+    } else {
+      onChange([]);
+    }
+  };
+
+  // Handle "None" checkbox in header - clears all when checked
+  const handleClearAll = (checked: boolean) => {
+    if (checked) {
+      onChange([]);
+    }
+  };
+
   return (
     <div className="overflow-x-auto rounded-xl border border-[#E4E7EC]">
       <table className="min-w-full divide-y divide-[#E4E7EC]">
@@ -130,10 +178,22 @@ export const RolePermissionsMatrix: React.FC<RolePermissionsMatrixProps> = ({
               Module / Screen
             </th>
             <th className="px-4 py-3 text-center text-[12px] font-medium font-sans leading-4 tracking-normal text-[#667085]">
-              None
+              <div className="flex items-center justify-center">
+                <Checkbox
+                  checked={noneSelected}
+                  onCheckedChange={handleClearAll}
+                />
+                <span className="ml-2">None</span>
+              </div>
             </th>
             <th className="px-4 py-3 text-center text-[12px] font-medium font-sans leading-4 tracking-normal text-[#667085]">
-              All
+              <div className="flex items-center justify-center">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={handleSelectAll}
+                />
+                <span className="ml-2">All</span>
+              </div>
             </th>
             {ACTION_COLUMNS.map((column) => (
               <th
