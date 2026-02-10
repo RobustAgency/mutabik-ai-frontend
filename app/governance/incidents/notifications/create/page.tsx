@@ -1,12 +1,12 @@
-import CreateIncidentNotification from '@/components/app/incidents/notifications/create/CreateIncidentNotification'
+import CreateIncidentNotificationWizard from '@/components/app/incidents/notifications/create/CreateIncidentNotificationWizard'
 import React from 'react'
 
 const page = () => {
-    return (
-        <div>
-            <CreateIncidentNotification />
-        </div>
-    )
+  return (
+    <>
+      <CreateIncidentNotificationWizard />
+    </>
+  )
 }
 
 export default page

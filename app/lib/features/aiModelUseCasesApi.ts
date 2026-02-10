@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 // Type for AI Model Use Case
 export interface AiModelUseCase {
@@ -78,10 +78,7 @@ export interface AiModelUseCasesResponse {
   message: string;
 }
 
-export const aiModelUseCasesApi = createApi({
-  reducerPath: "aiModelUseCasesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModelUseCase"],
+export const aiModelUseCasesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiModelUseCases: builder.query<
       AiModelUseCase[],

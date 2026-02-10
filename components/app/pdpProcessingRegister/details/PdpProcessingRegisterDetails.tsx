@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useGetPdpProcessingRegisterQuery, useDeletePdpProcessingRegisterMutation } from "@/app/lib/features/pdpProcessingRegisterApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import PdpProcessingRegisterFormReadOnly from "./PdpProcessingRegisterFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface PdpProcessingRegisterDetailsProps {
   registerId: string;
@@ -69,8 +71,12 @@ const PdpProcessingRegisterDetails: React.FC<PdpProcessingRegisterDetailsProps> 
               <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View and manage processing activity record</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-              <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              <PermissionGate permission={PERMISSIONS.PDP_PROCESSING_REGISTERS_EDIT}>
+                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.PDP_PROCESSING_REGISTERS_DELETE}>
+                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+              </PermissionGate>
             </div>
           </div>
 

@@ -1,6 +1,4 @@
-
-
-import EditDataSource from "@/components/app/dataSources/edit/EditDataSource";
+import EditDataSourceWizard from "@/components/app/dataSources/edit/EditDataSourceWizard";
 
 interface DataSourceEditPageProps {
   params: Promise<{ id: string }>;
@@ -10,7 +8,7 @@ const DataSourceEditPage = async ({ params }: DataSourceEditPageProps) => {
   const { id } = await params;
   return (
     <div>
-      <EditDataSource dataSourceId={id} />
+      <EditDataSourceWizard dataSourceId={Number(id)} />
     </div>
   )
 };

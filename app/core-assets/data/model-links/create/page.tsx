@@ -1,9 +1,7 @@
-
-
-import CreateModelDatasetLink from "@/components/app/modelDatasetLinks/create/CreateModelDatasetLink";
+import CreateModelDatasetLinkWizard from "@/components/app/modelDatasetLinks/create/CreateModelDatasetLinkWizard";
 
 const CreateModelDatasetLinkPage = () => {
-  return <CreateModelDatasetLink />;
+  return <CreateModelDatasetLinkWizard />;
 };
 
 export default CreateModelDatasetLinkPage;

@@ -1,13 +1,8 @@
-import CreateAiIncident from '@/components/app/incidents/create/CreateAiIncident'
-import React from 'react'
+import CreateAiIncidentWizard from "@/components/app/incidents/create/CreateAiIncidentWizard";
+import React from "react";
 
-const page = () => {
-    return (
-        <div>
-            <CreateAiIncident />
-        </div>
-    )
-}
+const CreateAiIncidentPage = () => {
+  return <CreateAiIncidentWizard />;
+};
 
-export default page
-
+export default CreateAiIncidentPage;

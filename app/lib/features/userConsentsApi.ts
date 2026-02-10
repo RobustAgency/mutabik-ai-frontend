@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface UserConsent {
   id: string;
@@ -42,10 +42,7 @@ export interface CreateUserConsentData {
   scope?: string;
 }
 
-export const userConsentsApi = createApi({
-  reducerPath: "userConsentsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["UserConsent"],
+export const userConsentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserConsents: builder.query<
       UserConsent[],

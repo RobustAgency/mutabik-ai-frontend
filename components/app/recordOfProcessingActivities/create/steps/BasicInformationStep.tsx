@@ -106,6 +106,7 @@ export const BasicInformationStep: React.FC = () => {
             Owner Team <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`owner_team-${watch("owner_team") || "none"}`}
             value={watch("owner_team")}
             onValueChange={(value) => setValue("owner_team", value as any)}
           >
@@ -132,6 +133,7 @@ export const BasicInformationStep: React.FC = () => {
             Controller Role <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`controller_role-${watch("controller_role") || "none"}`}
             value={watch("controller_role")}
             onValueChange={(value) => setValue("controller_role", value as any)}
           >
@@ -158,6 +160,7 @@ export const BasicInformationStep: React.FC = () => {
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${watch("status") || "none"}`}
             value={watch("status")}
             onValueChange={(value) => setValue("status", value as any)}
           >

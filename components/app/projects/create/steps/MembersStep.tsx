@@ -34,7 +34,6 @@ export const MembersStep: React.FC<MembersStepProps> = ({ projectId }) => {
   const {
     addMember,
     loading: projectLoading,
-    fetchProject,
     currentProject,
   } = useProjects();
 

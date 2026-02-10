@@ -28,7 +28,6 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <ReadOnlyField label="Element Name" value={element.name} />
           <ReadOnlyField label="Data Type" value={element.data_type} />
           <ReadOnlyField label="Format" value={element.format} />
-          <ReadOnlyField label="Owner Team" value={element.owner_team} />
         </div>
         <ReadOnlyField label="Business Definition" value={element.business_definition} />
       </div>
@@ -47,26 +46,32 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[#667085]">PII Flag</Label>
+            <Label className="text-[#667085]">Contains Personal Data</Label>
             <div className="flex gap-2">
-              <Badge variant={element.pii_flag === "Yes" ? "filled" : "light"}>
-                {element.pii_flag}
+              <Badge variant={element.contains_personal_data ? "filled" : "light"}>
+                {element.contains_personal_data ? "Yes" : "No"}
               </Badge>
             </div>
           </div>
 
-          {element.personal_data_category && (
-            <ReadOnlyField label="Personal Data Category" value={element.personal_data_category} />
+          {element.personal_data_type && (
+            <ReadOnlyField label="Personal Data Type" value={element.personal_data_type} />
           )}
 
-          <div className="space-y-2">
-            <Label className="text-[#667085]">Special Category Flag</Label>
-            <div className="flex gap-2">
-              <Badge variant={element.special_category_flag === "Yes" ? "filled" : "light"}>
-                {element.special_category_flag}
-              </Badge>
+          {element.contains_sensitive_data !== null && (
+            <div className="space-y-2">
+              <Label className="text-[#667085]">Contains Sensitive Data</Label>
+              <div className="flex gap-2">
+                <Badge variant={element.contains_sensitive_data ? "filled" : "light"}>
+                  {element.contains_sensitive_data ? "Yes" : "No"}
+                </Badge>
+              </div>
             </div>
-          </div>
+          )}
+
+          {element.default_masking_method && (
+            <ReadOnlyField label="Default Masking Method" value={element.default_masking_method} />
+          )}
         </div>
       </div>
 
@@ -77,28 +82,18 @@ const DataElementFormReadOnly: React.FC<DataElementFormReadOnlyProps> = ({ eleme
           <div className="space-y-2">
             <Label className="text-[#667085]">CDE Flag</Label>
             <div className="flex gap-2">
-              <Badge variant={element.cde_flag === "Yes" ? "filled" : "light"}>
-                {element.cde_flag}
+              <Badge variant={element.cde_flag ? "filled" : "light"}>
+                {element.cde_flag ? "Yes" : "No"}
               </Badge>
             </div>
           </div>
 
-          {element.cde_category && (
-            <ReadOnlyField label="CDE Category" value={element.cde_category} />
+          {element.cde_categories && element.cde_categories.length > 0 && (
+            <ReadOnlyField label="CDE Categories" value={element.cde_categories.join(", ")} />
           )}
         </div>
       </div>
 
-      {/* Optional References */}
-      {(element.quality_rules_ref || element.catalog_column_id) && (
-        <div className="space-y-4">
-          <h3 className="font-bold text-base leading-6 tracking-normal text-[#039855]">Optional References</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {element.quality_rules_ref && <ReadOnlyField label="Quality Rules Reference" value={element.quality_rules_ref} />}
-            {element.catalog_column_id && <ReadOnlyField label="Catalog Column ID" value={element.catalog_column_id} />}
-          </div>
-        </div>
-      )}
 
       {/* Metadata */}
       <div className="space-y-4">

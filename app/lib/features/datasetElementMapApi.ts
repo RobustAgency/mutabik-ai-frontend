@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface CreateDatasetElementMapData {
   dataset_id: number;
@@ -25,10 +25,7 @@ export interface CreateDatasetElementMapData {
   // organization_id is validated on backend; usually derived from auth
 }
 
-export const datasetElementMapApi = createApi({
-  reducerPath: "datasetElementMapApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DatasetElementMap"],
+export const datasetElementMapApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createDatasetElementMap: builder.mutation<any, CreateDatasetElementMapData>({
       query: (data) => ({

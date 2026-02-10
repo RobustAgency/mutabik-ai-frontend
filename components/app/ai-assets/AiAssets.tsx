@@ -11,6 +11,8 @@ import {
     useDeleteAiAssetMutation,
     AiAsset,
 } from "@/app/lib/features/aiAssetsApi";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const AiAssets: React.FC = () => {
     const router = useRouter();
@@ -69,24 +71,28 @@ const AiAssets: React.FC = () => {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        className="text-[#667085]"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/core-assets/ai-assets/${row.original.id}/edit`);
-                        }}
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="text-[#667085]"
-                        onClick={(e) => handleRemove(e, row.original)}
-                        disabled={isDeleting}
-                    >
-                        Remove
-                    </Button>
+                    <PermissionGate permission={PERMISSIONS.AI_ASSETS_EDIT}>
+                        <Button
+                            variant="outline"
+                            className="text-[#667085]"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/core-assets/ai-assets/${row.original.id}/edit`);
+                            }}
+                        >
+                            Edit
+                        </Button>
+                    </PermissionGate>
+                    <PermissionGate permission={PERMISSIONS.AI_ASSETS_DELETE}>
+                        <Button
+                            variant="outline"
+                            className="text-[#667085]"
+                            onClick={(e) => handleRemove(e, row.original)}
+                            disabled={isDeleting}
+                        >
+                            Remove
+                        </Button>
+                    </PermissionGate>
                 </div>
             ),
         },
@@ -104,12 +110,14 @@ const AiAssets: React.FC = () => {
                             Manage AI assets vendor details
                         </p>
                     </div>
-                    <Button
-                        onClick={() => router.push("/core-assets/ai-assets/create")}
-                        className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                    >
-                        New AI Asset
-                    </Button>
+                    <PermissionGate permission={PERMISSIONS.AI_ASSETS_CREATE}>
+                        <Button
+                            onClick={() => router.push("/core-assets/ai-assets/create")}
+                            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                        >
+                            New AI Asset
+                        </Button>
+                    </PermissionGate>
                 </div>
 
                 <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -123,9 +131,11 @@ const AiAssets: React.FC = () => {
                             title: "No AI assets found",
                             description: "Get started by creating your first AI asset",
                             action: (
-                                <Button onClick={() => router.push("/core-assets/ai-assets/create")}>
-                                    Create AI Asset
-                                </Button>
+                                <PermissionGate permission={PERMISSIONS.AI_ASSETS_CREATE}>
+                                    <Button onClick={() => router.push("/core-assets/ai-assets/create")}>
+                                        Create AI Asset
+                                    </Button>
+                                </PermissionGate>
                             )
                         }}
                         pagination={

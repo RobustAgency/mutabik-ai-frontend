@@ -79,6 +79,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Control <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`control_id-${watchedControlId || "none"}`}
             value={watchedControlId ? String(watchedControlId) : ""}
             onValueChange={(value) => {
               if (value) {
@@ -108,6 +109,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Requirement
           </Label>
           <Select
+            key={`requirement_id-${watchedRequirementId || "none"}`}
             value={watchedRequirementId ? String(watchedRequirementId) : "null"}
             onValueChange={(value) =>
               setValue("requirement_id", value === "null" ? null : Number(value), { shouldValidate: true })
@@ -135,6 +137,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             AI Model
           </Label>
           <Select
+            key={`ai_model_id-${watchedAiModelId || "none"}`}
             value={watchedAiModelId ? String(watchedAiModelId) : "null"}
             onValueChange={(value) =>
               setValue("ai_model_id", value === "null" ? null : Number(value), { shouldValidate: true })
@@ -160,6 +163,7 @@ export const BasicInformationStep: React.FC<BasicInformationStepProps> = ({
             Artifact Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`artifact_type-${watch("artifact_type") || "none"}`}
             value={watch("artifact_type")}
             onValueChange={(value) =>
               setValue("artifact_type", value as ComplianceEvidenceArtifactTypeEnum, { shouldValidate: true })

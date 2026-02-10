@@ -7,9 +7,11 @@ import { useRouter } from "next/navigation";
 import { useGetDatasetSnapshotQuery, useDeleteDatasetSnapshotMutation } from "@/app/lib/features/datasetSnapshotsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import DatasetSnapshotFormReadOnly from "./DatasetSnapshotFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DatasetSnapshotDetailsProps {
-    snapshotId: string;
+    snapshotId: number;
 }
 
 const DatasetSnapshotDetails: React.FC<DatasetSnapshotDetailsProps> = ({ snapshotId }) => {
@@ -69,8 +71,12 @@ const DatasetSnapshotDetails: React.FC<DatasetSnapshotDetailsProps> = ({ snapsho
                             <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">View and manage snapshot information</p>
                         </div>
                         <div className="flex gap-3">
-                            <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
-                            <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+                            <PermissionGate permission={PERMISSIONS.DATASET_SNAPSHOTS_EDIT}>
+                                <Button variant="outline" onClick={handleEdit} className="border-[#E4E7EC] text-[#667085]">Edit</Button>
+                            </PermissionGate>
+                            <PermissionGate permission={PERMISSIONS.DATASET_SNAPSHOTS_DELETE}>
+                                <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="border-[#E4E7EC] text-[#667085]">Delete</Button>
+                            </PermissionGate>
                         </div>
                     </div>
 

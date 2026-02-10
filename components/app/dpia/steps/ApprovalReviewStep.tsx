@@ -49,10 +49,11 @@ export const ApprovalReviewStep: React.FC = () => {
     formState: { errors },
   } = useFormContext<DPIAFormData>();
 
-  const { data: users = [], isLoading: isLoadingUsers } =
+  const { data: usersResponse, isLoading: isLoadingUsers } =
     useGetOrganizationUsersQuery({
       per_page: 100,
     });
+  const users = usersResponse?.data ?? [];
 
   const stakeholders = watch("stakeholders_consulted") || [];
   const jurisdictions = watch("applicable_jurisdictions") || [];
@@ -93,6 +94,7 @@ export const ApprovalReviewStep: React.FC = () => {
             Status <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`status-${watch("status") || "none"}`}
             value={watch("status")}
             onValueChange={(value) => setValue("status", value as any)}
           >
@@ -180,6 +182,7 @@ export const ApprovalReviewStep: React.FC = () => {
             {isApprovalStage && <span className="text-red-500">*</span>}
           </Label>
           <Select
+            key={`final_decision-${watch("final_decision") || "none"}`}
             value={watch("final_decision") || ""}
             onValueChange={(value) =>
               setValue("final_decision", (value || null) as any)

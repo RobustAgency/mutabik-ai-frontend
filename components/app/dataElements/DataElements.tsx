@@ -11,13 +11,16 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import InlineCreateModal from "@/components/custom/InlineCreateModal";
 import AssociateElementWithDatasetModal from "@/components/app/dataElements/map/AssociateElementWithDatasetModal";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const DataElements: React.FC = () => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<DataElementFilters>({});
   const [deleteDialogState, setDeleteDialogState] = React.useState<{
     isOpen: boolean;
-    dataElementId: string | null;
+    dataElementId: number | null;
     dataElementName: string;
   }>({
     isOpen: false,
@@ -26,7 +29,20 @@ const DataElements: React.FC = () => {
   });
 
   const [deleteDataElement, { isLoading: isDeleting }] = useDeleteDataElementMutation();
-  const { data: dataElements, isLoading } = useGetDataElementsQuery(filters);
+
+  const queryParams = React.useMemo(() => ({
+    ...filters,
+    page: currentPage,
+    per_page: 15,
+  }), [filters, currentPage]);
+
+  const { data: dataElementsData, isLoading } = useGetDataElementsQuery(queryParams);
+  const dataElements = dataElementsData?.data || [];
+  const pagination = dataElementsData?.pagination;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const [associateState, setAssociateState] = React.useState<{ isOpen: boolean; dataElementId: number | null }>({ isOpen: false, dataElementId: null });
 
@@ -45,7 +61,7 @@ const DataElements: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (deleteDialogState.dataElementId) {
+    if (deleteDialogState.dataElementId !== null) {
       try {
         await deleteDataElement(deleteDialogState.dataElementId).unwrap();
         setDeleteDialogState({
@@ -118,26 +134,40 @@ const DataElements: React.FC = () => {
       ),
       cell: ({ getValue }) => {
         const sensitivity = getValue() as string;
+        // Determine badge color based on sensitivity level
+        const getBadgeClass = (sens: string) => {
+          switch (sens) {
+            case "Restricted":
+            case "Confidential":
+              return "bg-[#FEF3F2] text-[#F04438]";
+            case "Internal":
+              return "bg-[#F2F4F7] text-[#667085]";
+            case "Public":
+              return "bg-[#ECFDF5] text-[#027A48]";
+            default:
+              return "bg-[#F2F4F7] text-[#667085]";
+          }
+        };
         return (
-          <div className="h-[24px] flex items-center justify-center rounded-full bg-[#FEF3F2] text-[#F04438] text-xs font-medium px-2">
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${getBadgeClass(sensitivity)}`}>
             {sensitivity}
           </div>
         );
       },
     },
     {
-      accessorKey: "pii_flag",
+      accessorKey: "contains_personal_data",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
           PII
         </div>
       ),
       cell: ({ getValue }) => {
-        const piiFlag = getValue() as string;
+        const containsPersonalData = getValue() as boolean;
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${piiFlag === "Yes" ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${containsPersonalData ? "bg-[#FEF3F2] text-[#F04438]" : "bg-[#F2F4F7] text-[#667085]"
             }`}>
-            {piiFlag}
+            {containsPersonalData ? "Yes" : "No"}
           </div>
         );
       },
@@ -150,27 +180,18 @@ const DataElements: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const cdeFlag = getValue() as string;
+        // Handle both boolean and string "1"/"0" from backend
+        const cdeFlagValue = getValue();
+        const cdeFlag = typeof cdeFlagValue === "string" 
+          ? (cdeFlagValue === "1" || cdeFlagValue === "true")
+          : (cdeFlagValue === true || cdeFlagValue === 1);
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag === "Yes" ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${cdeFlag ? "bg-[#ECF3FF] text-[#465FFF]" : "bg-[#F2F4F7] text-[#667085]"
             }`}>
-            {cdeFlag}
+            {cdeFlag ? "Yes" : "No"}
           </div>
         );
       },
-    },
-    {
-      accessorKey: "owner_team",
-      header: () => (
-        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Owner Team
-        </div>
-      ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
-        </div>
-      ),
     },
     {
       id: "actions",
@@ -182,33 +203,41 @@ const DataElements: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => {
-                e.stopPropagation();
-                setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
-              }}
-            >
-              Associate
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAssociateState({ isOpen: true, dataElementId: Number(row.original.id) });
+                }}
+              >
+                Associate
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
+      enableHiding: false,
+      enableSorting: false,
     },
   ];
 
@@ -227,20 +256,30 @@ const DataElements: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as DataElementFilters)}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/elements/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Data Element
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/elements/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Data Element
+                </Button>
+              </PermissionGate>
             </div>
           </div>
-          <Card className="bg-white w-full rounded-xl border-0 py-4">
+          <Card className="bg-white w-full rounded-xl border-0 py-0">
             <DataTable
               columns={columns}
-              data={dataElements ?? []}
+              data={dataElements}
               variant="projects"
               loading={isLoading}
+              serverSide={true}
+              pagination={pagination ? {
+                page: pagination.current_page,
+                limit: pagination.per_page,
+                total: pagination.total,
+                totalPages: pagination.last_page,
+              } : undefined}
+              onPageChange={handlePageChange}
               onRowClick={(row) =>
                 router.push(`/core-assets/data/elements/${row.id}/details`)
               }
@@ -248,13 +287,15 @@ const DataElements: React.FC = () => {
                 title: "No data elements found",
                 description: "Get started by creating your first data element",
                 action: (
-                  <Button
-                    onClick={() =>
-                      router.push("/core-assets/data/elements/create")
-                    }
-                  >
-                    Create Data Element
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.DATA_ELEMENTS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/core-assets/data/elements/create")
+                      }
+                    >
+                      Create Data Element
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />

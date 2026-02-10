@@ -40,10 +40,11 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
 
     // Fetch stakeholders
     const {
-        data: allStakeholders = [],
+        data: stakeholdersResponse,
         isLoading: stakeholdersLoading,
         error: stakeholdersError
-    } = useGetStakeholdersQuery();
+    } = useGetStakeholdersQuery({ per_page: 100 });
+    const allStakeholders = stakeholdersResponse?.data || [];
 
     // Filter and search stakeholders
     const filteredStakeholders = useMemo(() => {
@@ -68,7 +69,7 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
     }, [allStakeholders, filterType, searchTerm]);
 
     // Find selected stakeholder
-    const selectedStakeholder = allStakeholders.find(s => s.id === value);
+    const selectedStakeholder = allStakeholders.find(s => value ? s.id === Number(value) : false);
 
     return (
         <div className="flex flex-col gap-2 w-full">
@@ -132,7 +133,7 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
                             <>
                                 {/* Clear selection option */}
                                 <div
-                                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
                                     onClick={() => {
                                         onValueChange(null);
                                         setOpen(false);
@@ -151,9 +152,9 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
                                 {filteredStakeholders.map((stakeholder) => (
                                     <div
                                         key={stakeholder.id}
-                                        className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
                                         onClick={() => {
-                                            onValueChange(stakeholder.id);
+                                            onValueChange(String(stakeholder.id));
                                             setOpen(false);
                                             setSearchTerm("");
                                         }}
@@ -161,7 +162,7 @@ const StakeholderSelector: React.FC<StakeholderSelectorProps> = ({
                                         <Check
                                             className={cn(
                                                 "mr-2 h-4 w-4",
-                                                value === stakeholder.id ? "opacity-100" : "opacity-0"
+                                                value === String(stakeholder.id) ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                         <div className="flex flex-col">

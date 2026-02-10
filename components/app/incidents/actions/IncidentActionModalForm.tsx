@@ -6,7 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import IncidentActionForm from "./create/IncidentActionForm";
-import { CreateIncidentActionData, useCreateIncidentActionMutation } from "@/app/lib/features/incidentActionsApi";
+import { 
+  CreateIncidentActionData, 
+  useCreateIncidentActionMutation,
+  ActionType,
+  ExecutionStatus,
+  ValidationResult
+} from "@/app/lib/features/incidentActionsApi";
 import {
   validateTextField,
   createValidationErrors,
@@ -24,12 +30,13 @@ const IncidentActionModalForm: React.FC<IncidentActionModalFormProps> = ({ isOpe
 
   const [formData, setFormData] = useState<CreateIncidentActionData>({
     ai_incident_id: incidentId || 0,
-    action_type: "kill_switch",
+    action_type: ActionType.KILL_SWITCH,
+    execution_status: ExecutionStatus.PLANNED,
     description: "",
-    performed_by: "",
+    performed_by: 0,
     started_at: "",
     completed_at: null,
-    validation_result: "pending",
+    validation_result: ValidationResult.PENDING,
     validation_notes: null,
     linked_release_id: null,
     evidence_link: null,
@@ -49,7 +56,7 @@ const IncidentActionModalForm: React.FC<IncidentActionModalFormProps> = ({ isOpe
         required: true,
         messages: { required: "Description is required" },
       }),
-      performed_by: validateTextField(formData.performed_by, {
+      performed_by: validateTextField(formData.performed_by ? String(formData.performed_by) : "", {
         required: true,
         messages: { required: "Performed by is required" },
       }),

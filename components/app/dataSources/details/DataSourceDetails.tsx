@@ -6,6 +6,8 @@ import { useGetDataSourceQuery, useDeleteDataSourceMutation } from "@/app/lib/fe
 import { EntityDetailsLayout } from "@/components/custom/EntityDetailsLayout";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import DataSourceFormReadOnly from "./DataSourceFormReadOnly";
+import { usePermissions } from "@/hooks/app/usePermissions";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface DataSourceDetailsProps {
     dataSourceId: string;
@@ -15,13 +17,15 @@ const DataSourceDetails: React.FC<DataSourceDetailsProps> = ({
     dataSourceId,
 }) => {
     const router = useRouter();
+    const { hasPermission } = usePermissions();
+    const numericId = Number(dataSourceId);
 
-    const { data: dataSource, isLoading, error } = useGetDataSourceQuery(dataSourceId);
+    const { data: dataSource, isLoading, error } = useGetDataSourceQuery(numericId);
     const [deleteDataSource, { isLoading: isDeleting }] = useDeleteDataSourceMutation();
 
     // Use delete confirmation hook
     const { openDeleteDialog, DeleteConfirmationDialog } = useDeleteConfirmation({
-        deleteMutation: async (id: string) => {
+        deleteMutation: async (id: number) => {
             await deleteDataSource(id).unwrap();
         },
         isDeleting,
@@ -35,7 +39,7 @@ const DataSourceDetails: React.FC<DataSourceDetailsProps> = ({
 
     const handleDelete = () => {
         if (dataSource) {
-            openDeleteDialog(dataSourceId, dataSource.name);
+            openDeleteDialog(numericId, dataSource.name);
         }
     };
 
@@ -46,8 +50,8 @@ const DataSourceDetails: React.FC<DataSourceDetailsProps> = ({
                 description="View and manage data source information"
                 loading={isLoading}
                 error={error ? "Failed to load data source details" : null}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+                onEdit={hasPermission(PERMISSIONS.DATA_SOURCES_EDIT) ? handleEdit : undefined}
+                onDelete={hasPermission(PERMISSIONS.DATA_SOURCES_DELETE) ? handleDelete : undefined}
             >
                 {dataSource && <DataSourceFormReadOnly dataSource={dataSource} />}
             </EntityDetailsLayout>

@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAgreementQuery, useDeleteAgreementMutation } from "@/app/lib/features/agreementsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const AgreementDetails: React.FC = () => {
   const router = useRouter();
@@ -51,8 +53,12 @@ const AgreementDetails: React.FC = () => {
               <p className="font-sans text-sm text-[#667085]">{agreement.agreement_type.toUpperCase()} • {agreement.status}</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => router.push(`/core-assets/agreements/${agreement.id}/edit`)}>Edit</Button>
-              <Button variant="outline" className="text-destructive" onClick={() => setConfirmOpen(true)}>Delete</Button>
+              <PermissionGate permission={PERMISSIONS.AGREEMENTS_EDIT}>
+                <Button variant="outline" onClick={() => router.push(`/core-assets/agreements/${agreement.id}/edit`)}>Edit</Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.AGREEMENTS_DELETE}>
+                <Button variant="outline" className="text-destructive" onClick={() => setConfirmOpen(true)}>Delete</Button>
+              </PermissionGate>
               <Button onClick={() => router.push("/core-assets/agreements")}>Back</Button>
             </div>
           </div>
@@ -99,37 +105,7 @@ const AgreementDetails: React.FC = () => {
             </a>
           </div>
 
-          {agreement.sla_terms && (
-            <div>
-              <div className="text-sm font-medium mb-2">SLA Terms</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[#667085]">
-                <div>
-                  <div className="text-xs">Availability Target %</div>
-                  <div>{agreement.sla_terms.availability_target_pct ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Latency p95 (ms)</div>
-                  <div>{agreement.sla_terms.latency_p95_ms ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Support Tier</div>
-                  <div>{agreement.sla_terms.support_tier ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Breach Definition</div>
-                  <div>{agreement.sla_terms.breach_definition ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Credit Schedule Ref</div>
-                  <div>{agreement.sla_terms.credit_schedule_ref ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs">Monitoring Ref</div>
-                  <div>{agreement.sla_terms.monitoring_ref ?? "—"}</div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* SLA Terms removed - not in new backend structure */}
         </CardContent>
       </Card>
 

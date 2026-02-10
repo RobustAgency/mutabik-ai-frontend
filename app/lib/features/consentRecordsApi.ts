@@ -1,16 +1,20 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
+import { baseApi } from "@/lib/api/baseApi";
 import type {
   ConsentRecord,
   CreateConsentRecordData,
   ConsentRecordFilters,
 } from "@/interfaces/ConsentRecord";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
 import {
-  axiosBaseQuery,
-  MutationError,
-  hasValidationErrors,
-  PaginationMeta,
-} from "@/lib/api/rtkQueryBase";
+  transformListResponseWithCalculatedPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 export interface ConsentRecordListResponse {
   data: {
@@ -30,10 +34,7 @@ export interface ConsentRecordItemResponse {
   message: string;
 }
 
-export const consentRecordsApi = createApi({
-  reducerPath: "consentRecordsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["ConsentRecord"],
+export const consentRecordsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getConsentRecords: builder.query<
       { data: ConsentRecord[]; pagination?: PaginationMeta },
@@ -44,35 +45,8 @@ export const consentRecordsApi = createApi({
         method: "GET",
         params: filters,
       }),
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "ConsentRecord" as const,
-                id,
-              })),
-              { type: "ConsentRecord", id: "LIST" },
-            ]
-          : [{ type: "ConsentRecord", id: "LIST" }],
-      transformResponse: (response: ConsentRecordListResponse) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          const { current_page, per_page, total } = response.data;
-          const from = (current_page - 1) * per_page + 1;
-          const to = Math.min(current_page * per_page, total);
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from,
-              to,
-            },
-          };
-        }
-        return { data: [] };
-      },
+      transformResponse: transformListResponseWithCalculatedPagination<ConsentRecord>,
+      providesTags: (result) => createListTags(result, "ConsentRecord"),
     }),
 
     getConsentRecord: builder.query<ConsentRecord, number>({
@@ -80,15 +54,8 @@ export const consentRecordsApi = createApi({
         url: `/consent-records/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [
-        { type: "ConsentRecord", id },
-      ],
-      transformResponse: (response: ConsentRecordItemResponse) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as any;
-      },
+      transformResponse: transformSingleItemResponse<ConsentRecord>,
+      providesTags: createItemTags("ConsentRecord"),
     }),
 
     createConsentRecord: builder.mutation<
@@ -100,21 +67,11 @@ export const consentRecordsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "ConsentRecord", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Consent record created successfully");
-        } catch (error: any) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to create consent record";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("ConsentRecord"),
+      onQueryStarted: createMutationToastHandler(
+        "Consent record created successfully",
+        "Failed to create consent record"
+      ),
     }),
 
     updateConsentRecord: builder.mutation<
@@ -126,24 +83,11 @@ export const consentRecordsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "ConsentRecord", id },
-        { type: "ConsentRecord", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Consent record updated successfully");
-        } catch (error: any) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message ||
-              "Failed to update consent record";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("ConsentRecord"),
+      onQueryStarted: createMutationToastHandler(
+        "Consent record updated successfully",
+        "Failed to update consent record"
+      ),
     }),
 
     deleteConsentRecord: builder.mutation<void, number>({
@@ -151,22 +95,11 @@ export const consentRecordsApi = createApi({
         url: `/consent-records/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "ConsentRecord", id },
-        { type: "ConsentRecord", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Consent record deleted successfully");
-        } catch (error: any) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message ||
-            "Failed to delete consent record";
-          toast.error(errorMessage);
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("ConsentRecord"),
+      onQueryStarted: createDeleteToastHandler(
+        "Consent record deleted successfully",
+        "Failed to delete consent record"
+      ),
     }),
   }),
 });

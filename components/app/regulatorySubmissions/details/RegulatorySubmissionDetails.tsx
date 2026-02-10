@@ -10,7 +10,8 @@ import {
 } from "@/app/lib/features/regulatorySubmissionsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
-import type { RegulatorySubmission } from "@/interfaces/RegulatorySubmission";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface RegulatorySubmissionDetailsProps {
   id: string;
@@ -105,21 +106,25 @@ const RegulatorySubmissionDetails: React.FC<RegulatorySubmissionDetailsProps> = 
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    router.push(`/regulatory-submissions/${submission.id}/edit`)
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                  onClick={() => setDeleteDialogOpen(true)}
-                >
-                  Delete
-                </Button>
+                <PermissionGate permission={PERMISSIONS.REGULATORY_SUBMISSIONS_EDIT}>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/regulatory-submissions/${submission.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </Button>
+                </PermissionGate>
+                <PermissionGate permission={PERMISSIONS.REGULATORY_SUBMISSIONS_DELETE}>
+                  <Button
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGate>
                 <Button
                   variant="ghost"
                   onClick={() => router.push("/regulatory-submissions")}

@@ -1,10 +1,13 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import type {
   AiModelCard,
   CreateAiModelCardData,
 } from "@/service/app/aiModelCards";
+import {
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
 
 // Filter types for AI Model Cards
 export interface AiModelCardFilters {
@@ -18,10 +21,7 @@ export interface AiModelCardFilters {
   per_page?: number | null; // min:1, max:100
 }
 
-export const aiModelCardsApi = createApi({
-  reducerPath: "aiModelCardsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiModelCard"],
+export const aiModelCardsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiModelCards: builder.query<AiModelCard[], AiModelCardFilters | void>({
       query: (filters = {}) => ({
@@ -32,7 +32,10 @@ export const aiModelCardsApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "AiModelCard" as const, id })),
+              ...result.map(({ id }) => ({
+                type: "AiModelCard" as const,
+                id,
+              })),
               { type: "AiModelCard" as const, id: "LIST" },
             ]
           : [{ type: "AiModelCard" as const, id: "LIST" }],
@@ -53,20 +56,11 @@ export const aiModelCardsApi = createApi({
 
     createAiModelCard: builder.mutation<AiModelCard, CreateAiModelCardData>({
       query: (data) => ({ url: "/ai-model-cards", method: "POST", data }),
-      invalidatesTags: [{ type: "AiModelCard", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Model card created");
-        } catch (error: any) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Create failed";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateListTags("AiModelCard"),
+      onQueryStarted: createMutationToastHandler(
+        "Model card created",
+        "Create failed"
+      ),
     }),
 
     updateAiModelCard: builder.mutation<
@@ -78,23 +72,11 @@ export const aiModelCardsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (_r, _e, { id }) => [
-        { type: "AiModelCard", id },
-        { type: "AiModelCard", id: "LIST" },
-      ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Model card updated");
-        } catch (error: any) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Update failed";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: createInvalidateItemAndListTags("AiModelCard"),
+      onQueryStarted: createMutationToastHandler(
+        "Model card updated",
+        "Update failed"
+      ),
     }),
   }),
 });

@@ -9,6 +9,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useGetAiModelCardsQuery, AiModelCardFilters } from '@/app/lib/features/aiModelCardsApi'
 import { formatDateISO } from '@/lib/helpers/date'
 import { DynamicFilter } from '@/components/custom/DynamicFilter'
+import { PermissionGate } from '@/components/auth/PermissionGate'
+import { PermissionPage } from '@/components/auth/PermissionPage'
+import { PERMISSIONS } from '@/constants/permissions'
 
 const Page = () => {
     const router = useRouter();
@@ -26,6 +29,7 @@ const Page = () => {
     };
 
     return (
+        <PermissionPage permission={PERMISSIONS.AI_MODEL_CARDS_VIEW}>
         <div className="max-w-7xl mx-auto">
             <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
                 <CardContent className="flex flex-col flex-1 gap-4">
@@ -37,7 +41,9 @@ const Page = () => {
                                 filters={filters}
                                 onFiltersChange={(newFilters) => setFilters(newFilters as AiModelCardFilters)}
                             />
-                            <Button onClick={() => router.push('/core-assets/ai-models/cards/create')} className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4">New model version card</Button>
+                            <PermissionGate permission={PERMISSIONS.AI_MODEL_CARDS_CREATE}>
+                                <Button onClick={() => router.push('/core-assets/ai-models/cards/create')} className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4">New model version card</Button>
+                            </PermissionGate>
                         </div>
                     </div>
 
@@ -90,14 +96,16 @@ const Page = () => {
 
                                             {/* Action Buttons */}
                                             <div className="flex items-center gap-3 pt-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => router.push(`/core-assets/ai-models/cards/${card.id}`)}
-                                                    className="flex-1 h-10 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
-                                                >
-                                                    Edit
-                                                </Button>
+                                                <PermissionGate permission={PERMISSIONS.AI_MODEL_CARDS_EDIT}>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => router.push(`/core-assets/ai-models/cards/${card.id}`)}
+                                                        className="flex-1 h-10 border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]"
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                </PermissionGate>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -108,6 +116,7 @@ const Page = () => {
                 </CardContent>
             </Card>
         </div>
+        </PermissionPage>
     )
 }
 

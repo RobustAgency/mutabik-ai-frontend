@@ -18,6 +18,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 // Helper function to format category names safely
 const formatCategory = (value: unknown): string => {
@@ -244,12 +246,14 @@ const AiModelVersions: React.FC = () => {
                                 filters={filters}
                                 onFiltersChange={(newFilters) => setFilters(newFilters as AiModelVersionFilters)}
                             />
-                            <Button
-                                onClick={() => router.push("/core-assets/ai-models/versions/create")}
-                                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-                            >
-                                New AI Model Version
-                            </Button>
+                            <PermissionGate permission={PERMISSIONS.AI_MODEL_VERSIONS_CREATE}>
+                                <Button
+                                    onClick={() => router.push("/core-assets/ai-models/versions/create")}
+                                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                                >
+                                    New AI Model Version
+                                </Button>
+                            </PermissionGate>
                         </div>
                     </div>
                     <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -263,9 +267,11 @@ const AiModelVersions: React.FC = () => {
                                 title: "No model versions found",
                                 description: "Get started by creating your first AI model version",
                                 action: (
-                                    <Button onClick={() => router.push("/core-assets/ai-models/versions/create")}>
-                                        Create Model Version
-                                    </Button>
+                                    <PermissionGate permission={PERMISSIONS.AI_MODEL_VERSIONS_CREATE}>
+                                        <Button onClick={() => router.push("/core-assets/ai-models/versions/create")}>
+                                            Create Model Version
+                                        </Button>
+                                    </PermissionGate>
                                 )
                             }}
                         />

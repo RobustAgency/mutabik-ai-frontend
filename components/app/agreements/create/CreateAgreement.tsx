@@ -126,19 +126,7 @@ const CreateAgreement: React.FC = () => {
             if (form.audit_rights) payload.audit_rights = form.audit_rights as any;
             if (form.transfer_mechanism) payload.transfer_mechanism = form.transfer_mechanism as any;
 
-            const hasSla = form.agreement_type === "sla";
-            if (hasSla) {
-                const sla_terms: any = {};
-                if (form.availability_target_pct) sla_terms.availability_target_pct = Number(form.availability_target_pct);
-                if (form.latency_p95_ms) sla_terms.latency_p95_ms = Number(form.latency_p95_ms);
-                if (form.support_tier) sla_terms.support_tier = form.support_tier;
-                if (form.breach_definition) sla_terms.breach_definition = form.breach_definition;
-                if (form.credit_schedule_ref) sla_terms.credit_schedule_ref = form.credit_schedule_ref;
-                if (form.monitoring_ref) sla_terms.monitoring_ref = form.monitoring_ref;
-                payload.sla_terms = Object.keys(sla_terms).length ? sla_terms : null;
-            } else {
-                payload.sla_terms = null;
-            }
+            // SLA terms removed - not in new backend structure
 
             await createAgreement(payload).unwrap();
             router.push("/core-assets/agreements");

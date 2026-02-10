@@ -1,6 +1,52 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  transformListResponseWithPagination,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  createMutationToastHandler,
+  createDeleteToastHandler,
+} from "@/lib/api/rtkQueryHelpers";
+
+// Enums
+export enum VendorType {
+  MODEL_PROVIDER = "model_provider",
+  DATASET_PROVIDER = "dataset_provider",
+  INFRASTRUCTURE_CLOUD = "infrastructure_cloud",
+  SAAS_PLATFORM = "saas_platform",
+  CONSULTING_SERVICES = "consulting_services",
+  HARDWARE_PROVIDER = "hardware_provider",
+  API_SERVICE = "api_service",
+  ANNOTATION_LABELING = "annotation_labeling",
+  OTHER = "other",
+}
+
+export enum VendorRiskTier {
+  TIER_1 = "tier_1",
+  TIER_2 = "tier_2",
+  TIER_3 = "tier_3",
+  TIER_4 = "tier_4",
+}
+
+export enum VendorStatus {
+  EVALUATING = "evaluating",
+  APPROVED = "approved",
+  CONDITIONALLY_APPROVED = "conditionally_approved",
+  RESTRICTED = "restricted",
+  SUSPENDED = "suspended",
+  TERMINATED = "terminated",
+}
+
+export enum DataProcessingRole {
+  CONTROLLER = "controller",
+  PROCESSOR = "processor",
+  SUB_PROCESSOR = "sub_processor",
+  NOT_APPLICABLE = "not_applicable",
+}
 
 // Types for vendors
 export interface Vendor {
@@ -9,74 +55,67 @@ export interface Vendor {
   vendor_name: string;
   legal_name: string;
   hq_country: string;
-  risk_tier: "tier_1" | "tier_2" | "tier_3" | "tier_4";
-  status:
-    | "evaluating"
-    | "approved"
-    | "conditionally_approved"
-    | "restricted"
-    | "suspended"
-    | "terminated";
-  stakeholder_id: number | null;
-  stakeholder?: {
-    id: number;
-    display_name: string;
-    legal_name: string;
-    email: string;
-  };
+  risk_tier: VendorRiskTier;
+  status: VendorStatus;
+  type: VendorType[] | null;
+  data_processing_role: DataProcessingRole | null;
+  service_provided: string | null;
   primary_contacts: Array<{
     name: string;
     email: string;
-    phone?: string;
-    role?: string;
-    primary?: boolean;
+    phone?: string | null;
+    role?: string | null;
+    primary?: boolean | null;
   }>;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown> | null;
+  duns_number?: string | null;
+  lei_number?: string | null;
+  tax_id?: string | null;
+  stock_ticker?: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
+  display_id?: string;
 }
 
 export interface VendorFilters {
-  risk_tier?: string | null; // enum: Vendor\RiskTier
-  status?: string | null; // enum: Vendor\VendorStatus
-  owner?: string | null; // max:255
-  from?: string | null; // date, before_or_equal:today
-  to?: string | null; // date, after_or_equal:from
-  per_page?: number | null; // min:1, max:100
-  // Legacy support
-  search?: string;
+  risk_tier?: string | null;
+  status?: string | null;
+  owner?: string | null;
+  from?: string | null;
+  to?: string | null;
+  per_page?: number | null;
   page?: number;
+  search?: string;
+}
+
+export interface PrimaryContact {
+  name: string;
+  email: string;
+  phone?: string | null;
+  role?: string | null;
+  primary?: boolean | null;
 }
 
 export interface CreateVendorData {
   vendor_name: string;
   legal_name: string;
   hq_country: string;
-  risk_tier: "tier_1" | "tier_2" | "tier_3" | "tier_4";
-  status:
-    | "evaluating"
-    | "approved"
-    | "conditionally_approved"
-    | "restricted"
-    | "suspended"
-    | "terminated";
-  stakeholder_id: number | null;
-  primary_contacts: Array<{
-    name: string;
-    email: string;
-    phone?: string;
-    role?: string;
-    primary?: boolean;
-  }>;
-  metadata?: Record<string, unknown>;
+  risk_tier: VendorRiskTier;
+  status: VendorStatus;
+  type: VendorType[];
+  data_processing_role: DataProcessingRole;
+  service_provided?: string | null;
+  primary_contacts?: PrimaryContact[];
+  metadata?: Record<string, unknown> | null;
+  duns_number?: string | null;
+  lei_number?: string | null;
+  tax_id?: string | null;
+  stock_ticker?: string | null;
   notes?: string | null;
 }
 
-export const vendorsApi = createApi({
-  reducerPath: "vendorsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Vendor"],
+export const vendorsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getVendors: builder.query<
       { data: Vendor[]; pagination: PaginationMeta },
@@ -87,71 +126,42 @@ export const vendorsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "Vendor" as const,
-                id: String(id),
-              })),
-              { type: "Vendor", id: "LIST" },
-            ]
-          : [{ type: "Vendor", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: Vendor[];
-          current_page: number;
-          per_page: number;
-          total: number;
-          last_page: number;
-          from: number;
-          to: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          return {
-            data: response.data.data,
-            pagination: {
-              current_page: response.data.current_page,
-              per_page: response.data.per_page,
-              total: response.data.total,
-              last_page: response.data.last_page,
-              from: response.data.from,
-              to: response.data.to,
-            },
-          };
-        }
-        return {
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 15,
-            total: 0,
-            last_page: 1,
-            from: 0,
-            to: 0,
-          },
-        };
-      },
+      transformResponse: transformListResponseWithPagination<Vendor>,
+      providesTags: (result) => createListTags(result, "Vendor"),
     }),
 
-    getVendor: builder.query<Vendor, number>({
+    getVendor: builder.query<Vendor, string | number>({
       query: (id) => ({
         url: `/vendors/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Vendor", id: String(id) }],
+      transformResponse: transformSingleItemResponse<Vendor>,
+      providesTags: createItemTags("Vendor"),
+    }),
+
+    getVendorStatistics: builder.query<
+      {
+        total_count: number;
+        approved_count: number;
+        evaluating_count: number;
+      },
+      void
+    >({
+      query: () => ({
+        url: "/vendors/statistics",
+        method: "GET",
+      }),
+      providesTags: [{ type: "Vendor", id: "STATISTICS" }],
       transformResponse: (response: {
-        data: Vendor;
+        data: {
+          total_count: number;
+          approved_count: number;
+          evaluating_count: number;
+        };
         error?: boolean;
         message?: string;
       }) => {
-        if (response.data) {
-          return response.data;
-        }
-        return response as unknown as Vendor;
+        return response.data;
       },
     }),
 
@@ -161,20 +171,14 @@ export const vendorsApi = createApi({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [{ type: "Vendor", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor created successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create vendor";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      invalidatesTags: [
+        { type: "Vendor", id: "LIST" },
+        { type: "Vendor", id: "STATISTICS" },
+      ],
+      onQueryStarted: createMutationToastHandler(
+        "Vendor created successfully",
+        "Failed to create vendor"
+      ),
     }),
 
     updateVendor: builder.mutation<
@@ -189,20 +193,12 @@ export const vendorsApi = createApi({
       invalidatesTags: (result, error, { id }) => [
         { type: "Vendor", id: String(id) },
         { type: "Vendor", id: "LIST" },
+        { type: "Vendor", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor updated successfully");
-        } catch (error) {
-          if (!hasValidationErrors(error)) {
-            const mutationError = error as MutationError;
-            const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update vendor";
-            toast.error(errorMessage);
-          }
-        }
-      },
+      onQueryStarted: createMutationToastHandler(
+        "Vendor updated successfully",
+        "Failed to update vendor"
+      ),
     }),
 
     deleteVendor: builder.mutation<void, number>({
@@ -213,18 +209,12 @@ export const vendorsApi = createApi({
       invalidatesTags: (result, error, id) => [
         { type: "Vendor", id: String(id) },
         { type: "Vendor", id: "LIST" },
+        { type: "Vendor", id: "STATISTICS" },
       ],
-      async onQueryStarted(_, { queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          toast.success("Vendor deleted successfully");
-        } catch (error) {
-          const mutationError = error as MutationError;
-          const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete vendor";
-          toast.error(errorMessage);
-        }
-      },
+      onQueryStarted: createDeleteToastHandler(
+        "Vendor deleted successfully",
+        "Failed to delete vendor"
+      ),
     }),
   }),
 });
@@ -232,6 +222,7 @@ export const vendorsApi = createApi({
 export const {
   useGetVendorsQuery,
   useGetVendorQuery,
+  useGetVendorStatisticsQuery,
   useCreateVendorMutation,
   useUpdateVendorMutation,
   useDeleteVendorMutation,

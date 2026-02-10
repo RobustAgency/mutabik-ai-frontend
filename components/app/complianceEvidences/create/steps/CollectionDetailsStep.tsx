@@ -100,6 +100,7 @@ export const CollectionDetailsStep: React.FC<CollectionDetailsStepProps> = ({
           Collected By
         </Label>
         <Select
+          key={`collected_by-${watchedCollectedBy || "none"}`}
           value={watchedCollectedBy ? String(watchedCollectedBy) : "null"}
           onValueChange={(value) =>
             setValue("collected_by", value === "null" ? null : Number(value), { shouldValidate: true })

@@ -1,23 +1,112 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
 
+export enum FileFormat {
+  PARQUET = "parquet",
+  JSON = "json",
+  CSV = "csv",
+  XML = "xml",
+  AVRO = "avro",
+  ORC = "orc",
+  DELTA_LAKE = "delta_lake",
+  APACHE_ICEBERG = "apache_iceberg",
+  XLSX = "xlsx",
+  OTHER = "other",
+}
+
+export enum ResidencyZone {
+  AE = "AE",
+  EU = "EU",
+  KSA = "KSA",
+  US = "US",
+  UK = "UK",
+  QA = "QA",
+  JO = "JO",
+  MA = "MA",
+  BH = "BH",
+  OTHER = "Other",
+}
+
+export enum StorageTier {
+  HOT = "hot",
+  COLD = "cold",
+  WARM = "warm",
+  ARCHIVE = "archive",
+}
+
+export enum Compression {
+  GZIP = "gzip",
+  SNAPPY = "snappy",
+  LZ4 = "lz4",
+  ZSTD = "zstd",
+  NONE = "none",
+}
+
+export enum EncryptionStatus {
+  ENCRYPTED_AT_REST = "encrypted_at_rest",
+  ENCRYPTED_AT_TRANSIT = "encrypted_at_transit",
+  ENCRYPTED_AT_REST_AND_TRANSIT = "encrypted_at_rest_and_transit",
+  UNENCRYPTED = "unencrypted",
+  NONE = "none",
+}
+
+export enum MaskingMethod {
+  NONE = "none",
+  TOKENIZATION = "tokenization",
+  HASHING = "hashing",
+  ENCRYPTION = "encryption",
+  BASE64_ENCODE = "base64_encode",
+  REDACTION = "redaction",
+  GENERALIZATION = "generalization",
+  PSEUDONYMIZATION = "pseudonymization",
+  DIFFERENTIAL_PRIVACY = "differential_privacy",
+  K_ANONYMIZATION = "k_anonymization",
+}
+
+export enum ApprovedBy {
+  DATA_ENGINEERING_TEAM = "data_engineering_team",
+  ML_PLATFORM_TEAM = "ml_platform_team",
+  PRIVACY_OFFICE = "privacy_office",
+  AI_GOVERNANCE_BOARD = "ai_governance_board",
+}
+
+export enum Status {
+  ACTIVE = "active",
+  DEPRECATED = "deprecated",
+  ARCHIVED = "archived",
+}
+
+// Types for dataset snapshots
 export interface DatasetSnapshot {
-  id: string;
-  dataset_id: string;
+  id: number;
+  dataset_id: number;
   version_tag: string;
-  source_created_at: string;
+  supersedes_snapshot_id?: number | null;
+  description?: string | null;
   time_range_start: string;
   time_range_end: string;
-  row_count: number | null;
-  quality_checksums: string | null;
-  pii_element_count: number | null;
-  special_category_element_count: number | null;
-  masking_anonymization_method: string | null;
-  privacy_transform_evidence_ref: string | null;
-  residency_zone: string;
+  row_count: number;
+  file_count?: number | null;
+  total_size?: number | null;
+  size_unit?: string | null;
+  file_format: FileFormat;
+  pii_element_count?: number | null;
+  consent_coverage_at_creation?: number | null;
+  residency_zone: ResidencyZone;
   storage_uri: string;
+  storage_tier?: StorageTier | null;
+  compression?: Compression | null;
+  encryption_status: EncryptionStatus;
+  masking_method_applied?: MaskingMethod | null;
+  quality_checksums?: string | null;
+  created_by_system?: boolean | null;
+  approved_by?: ApprovedBy | null;
+  expiration_date?: string | null;
+  status: Status;
   created_at: string;
+  updated_at: string;
+  display_id?: string;
   dataset?: {
     id: number;
     name: string;
@@ -28,33 +117,64 @@ export interface DatasetSnapshot {
 // Filter types for Dataset Snapshots
 export interface DatasetSnapshotFilters {
   per_page?: number | null; // min:1, max:100
+  page?: number;
   from?: string | null; // date
   to?: string | null; // date, after_or_equal:from
+  // Legacy support
+  search?: string;
 }
 
 export interface CreateDatasetSnapshotData {
   dataset_id: number;
   version_tag: string;
-  source_created_at: string;
+  supersedes_snapshot_id?: number | null;
+  description?: string | null;
   time_range_start: string;
   time_range_end: string;
-  row_count?: number;
-  quality_checksums?: string;
-  pii_element_count?: number;
-  special_category_element_count?: number;
-  masking_anonymization_method?: string;
-  privacy_transform_evidence_ref?: string;
-  residency_zone: string;
+  row_count: number;
+  file_count?: number | null;
+  total_size?: number | null;
+  size_unit?: string | null;
+  file_format: FileFormat;
+  pii_element_count?: number | null;
+  consent_coverage_at_creation?: number | null;
+  residency_zone: ResidencyZone;
   storage_uri: string;
+  storage_tier?: StorageTier | null;
+  compression?: Compression | null;
+  encryption_status: EncryptionStatus;
+  masking_method_applied?: MaskingMethod | null;
+  quality_checksums?: string | null;
+  created_by_system?: boolean | null;
+  approved_by?: ApprovedBy | null;
+  expiration_date?: string | null;
+  status: Status;
 }
 
-export const datasetSnapshotsApi = createApi({
-  reducerPath: "datasetSnapshotsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DatasetSnapshot"],
+export interface DatasetSnapshotListResponse {
+  data: {
+    data: DatasetSnapshot[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number;
+    to: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+export interface DatasetSnapshotItemResponse {
+  data: DatasetSnapshot;
+  error?: boolean;
+  message?: string;
+}
+
+export const datasetSnapshotsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDatasetSnapshots: builder.query<
-      DatasetSnapshot[],
+      { data: DatasetSnapshot[]; pagination?: PaginationMeta },
       DatasetSnapshotFilters | void
     >({
       query: (filters = {}) => ({
@@ -65,32 +185,41 @@ export const datasetSnapshotsApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({
+              ...result.data.map(({ id }) => ({
                 type: "DatasetSnapshot" as const,
-                id,
+                id: String(id),
               })),
               { type: "DatasetSnapshot", id: "LIST" },
             ]
           : [{ type: "DatasetSnapshot", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: DatasetSnapshot[];
-        };
-      }) => {
+      transformResponse: (response: DatasetSnapshotListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
-          return response.data.data;
+          const { current_page, per_page, total, last_page } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
+          return {
+            data: response.data.data,
+            pagination: {
+              current_page,
+              per_page,
+              total,
+              last_page,
+              from,
+              to,
+            },
+          };
         }
-        return [];
+        return { data: [], pagination: undefined };
       },
     }),
 
-    getDatasetSnapshot: builder.query<DatasetSnapshot, string>({
+    getDatasetSnapshot: builder.query<DatasetSnapshot, number>({
       query: (id) => ({
         url: `/dataset-snapshots/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "DatasetSnapshot", id }],
-      transformResponse: (response: { data: DatasetSnapshot }) => {
+      providesTags: (result, error, id) => [{ type: "DatasetSnapshot", id: String(id) }],
+      transformResponse: (response: DatasetSnapshotItemResponse) => {
         if (response.data) {
           return response.data;
         }
@@ -114,7 +243,7 @@ export const datasetSnapshotsApi = createApi({
           toast.success("Dataset snapshot created successfully");
         } catch (error) {
           const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(mutationError)) {
             const errorMessage =
               mutationError?.error?.data?.message ||
               "Failed to create dataset snapshot";
@@ -126,7 +255,7 @@ export const datasetSnapshotsApi = createApi({
 
     updateDatasetSnapshot: builder.mutation<
       DatasetSnapshot,
-      { id: string; data: Partial<CreateDatasetSnapshotData> }
+      { id: number; data: Partial<CreateDatasetSnapshotData> }
     >({
       query: ({ id, data }) => ({
         url: `/dataset-snapshots/${id}`,
@@ -134,7 +263,7 @@ export const datasetSnapshotsApi = createApi({
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "DatasetSnapshot", id },
+        { type: "DatasetSnapshot", id: String(id) },
         { type: "DatasetSnapshot", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -143,7 +272,7 @@ export const datasetSnapshotsApi = createApi({
           toast.success("Dataset snapshot updated successfully");
         } catch (error) {
           const mutationError = error as MutationError;
-          if (!mutationError?.error?.data?.errors) {
+          if (!hasValidationErrors(mutationError)) {
             const errorMessage =
               mutationError?.error?.data?.message ||
               "Failed to update dataset snapshot";
@@ -153,13 +282,13 @@ export const datasetSnapshotsApi = createApi({
       },
     }),
 
-    deleteDatasetSnapshot: builder.mutation<void, string>({
+    deleteDatasetSnapshot: builder.mutation<void, number>({
       query: (id) => ({
         url: `/dataset-snapshots/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "DatasetSnapshot", id },
+        { type: "DatasetSnapshot", id: String(id) },
         { type: "DatasetSnapshot", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {

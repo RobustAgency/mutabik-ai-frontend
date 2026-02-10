@@ -1,4 +1,4 @@
-import EditIncidentAlert from '@/components/app/incidents/alerts/edit/EditIncidentAlert'
+import EditIncidentAlertWizard from '@/components/app/incidents/alerts/edit/EditIncidentAlertWizard'
 import React, { use } from 'react'
 
 interface EditIncidentAlertPageProps {
@@ -7,7 +7,7 @@ interface EditIncidentAlertPageProps {
 
 const EditIncidentAlertPage = ({ params }: EditIncidentAlertPageProps) => {
   const { id } = use(params);
-  return <EditIncidentAlert alertId={id} />;
+  return <EditIncidentAlertWizard alertId={Number(id)} />;
 };
 
 export default EditIncidentAlertPage;

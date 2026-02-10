@@ -1,37 +1,21 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Framework,
   FrameworkFilters,
   CreateFrameworkRequest,
   UpdateFrameworkRequest,
 } from "@/interfaces/Framework";
+import {
+  transformListResponseWithMeta,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  ListMeta,
+} from "@/lib/api/rtkQueryHelpers";
 
-type FrameworkListMeta = {
-  current_page: number;
-  per_page: number;
-  total: number;
-  last_page?: number;
-};
-
-type FrameworkListResponse = {
-  error?: boolean;
-  message?: string;
-  data?: {
-    data?: Framework[];
-    meta?: FrameworkListMeta;
-    current_page?: number;
-    per_page?: number;
-    total?: number;
-    last_page?: number;
-  };
-};
-
-type FrameworkSingleResponse = {
-  error?: boolean;
-  message?: string;
-  data?: Framework;
-};
+type FrameworkListMeta = ListMeta;
 
 type UserFrameworkListResponse = {
   error?: boolean;
@@ -39,32 +23,7 @@ type UserFrameworkListResponse = {
   data?: Framework[]; // User-side API returns data as direct array
 };
 
-const normaliseMeta = (payload?: FrameworkListResponse["data"]): FrameworkListMeta => {
-  if (!payload) {
-    return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
-  }
-
-  if (payload.meta) {
-    return {
-      current_page: payload.meta.current_page ?? 1,
-      per_page: payload.meta.per_page ?? 0,
-      total: payload.meta.total ?? 0,
-      last_page: payload.meta.last_page ?? payload.meta.current_page ?? 1,
-    };
-  }
-
-  return {
-    current_page: payload.current_page ?? 1,
-    per_page: payload.per_page ?? 0,
-    total: payload.total ?? 0,
-    last_page: payload.last_page ?? payload.current_page ?? 1,
-  };
-};
-
-export const frameworksApi = createApi({
-  reducerPath: "frameworksApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Framework"],
+export const frameworksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFrameworks: builder.query<
       { data: Framework[]; meta: FrameworkListMeta },
@@ -75,18 +34,8 @@ export const frameworksApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      transformResponse: (response: FrameworkListResponse) => {
-        const list = response?.data?.data ?? [];
-        const meta = normaliseMeta(response?.data);
-        return { data: list, meta };
-      },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Framework" as const, id })),
-              { type: "Framework" as const, id: "LIST" },
-            ]
-          : [{ type: "Framework" as const, id: "LIST" }],
+      transformResponse: transformListResponseWithMeta<Framework>,
+      providesTags: (result) => createListTags(result, "Framework"),
     }),
 
     getUserFrameworks: builder.query<
@@ -111,13 +60,7 @@ export const frameworksApi = createApi({
         };
         return { data: list, meta };
       },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Framework" as const, id })),
-              { type: "Framework" as const, id: "USER_LIST" },
-            ]
-          : [{ type: "Framework" as const, id: "USER_LIST" }],
+      providesTags: (result) => createListTags(result, "Framework", "USER_LIST"),
     }),
 
     getFramework: builder.query<Framework, string | number>({
@@ -125,10 +68,8 @@ export const frameworksApi = createApi({
         url: `/admin/frameworks/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: FrameworkSingleResponse) => {
-        return (response?.data as Framework) ?? (response as unknown as Framework);
-      },
-      providesTags: (result, _error, id) => [{ type: "Framework", id }],
+      transformResponse: transformSingleItemResponse<Framework>,
+      providesTags: createItemTags("Framework"),
     }),
 
     createFramework: builder.mutation<unknown, CreateFrameworkRequest>({
@@ -137,7 +78,7 @@ export const frameworksApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "Framework", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("Framework"),
     }),
 
     updateFramework: builder.mutation<
@@ -151,10 +92,7 @@ export const frameworksApi = createApi({
           data,
         };
       },
-      invalidatesTags: (result, _error, { id }) => [
-        { type: "Framework", id },
-        { type: "Framework", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("Framework"),
     }),
   }),
 });

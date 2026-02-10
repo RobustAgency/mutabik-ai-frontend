@@ -86,6 +86,7 @@ export const BasicInfoStep: React.FC = () => {
             Linked Asset Type <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`linked_asset_type-${watch("linked_asset_type") || "none"}`}
             value={watch("linked_asset_type")}
             onValueChange={(value) =>
               setValue("linked_asset_type", value as any)

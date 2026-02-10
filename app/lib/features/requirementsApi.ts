@@ -1,64 +1,27 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Requirement,
   RequirementFilters,
   CreateRequirementRequest,
   UpdateRequirementRequest,
 } from "@/interfaces/Requirement";
+import {
+  transformListResponseWithMeta,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+  ListResponseWithMeta,
+  SingleItemResponse,
+  ListMeta,
+} from "@/lib/api/rtkQueryHelpers";
 
-type RequirementListMeta = {
-  current_page: number;
-  per_page: number;
-  total: number;
-  last_page?: number;
-};
+type RequirementListMeta = ListMeta;
+type RequirementListResponse = ListResponseWithMeta<Requirement>;
+type RequirementSingleResponse = SingleItemResponse<Requirement>;
 
-type RequirementListResponse = {
-  error?: boolean;
-  message?: string;
-  data?: {
-    data?: Requirement[];
-    meta?: RequirementListMeta;
-    current_page?: number;
-    per_page?: number;
-    total?: number;
-    last_page?: number;
-  };
-};
-
-type RequirementSingleResponse = {
-  error?: boolean;
-  message?: string;
-  data?: Requirement;
-};
-
-const normaliseMeta = (payload?: RequirementListResponse["data"]): RequirementListMeta => {
-  if (!payload) {
-    return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
-  }
-
-  if (payload.meta) {
-    return {
-      current_page: payload.meta.current_page ?? 1,
-      per_page: payload.meta.per_page ?? 0,
-      total: payload.meta.total ?? 0,
-      last_page: payload.meta.last_page ?? payload.meta.current_page ?? 1,
-    };
-  }
-
-  return {
-    current_page: payload.current_page ?? 1,
-    per_page: payload.per_page ?? 0,
-    total: payload.total ?? 0,
-    last_page: payload.last_page ?? payload.current_page ?? 1,
-  };
-};
-
-export const requirementsApi = createApi({
-  reducerPath: "requirementsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Requirement"],
+export const requirementsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRequirements: builder.query<
       { data: Requirement[]; meta: RequirementListMeta },
@@ -69,18 +32,8 @@ export const requirementsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      transformResponse: (response: RequirementListResponse) => {
-        const list = response?.data?.data ?? [];
-        const meta = normaliseMeta(response?.data);
-        return { data: list, meta };
-      },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Requirement" as const, id })),
-              { type: "Requirement" as const, id: "LIST" },
-            ]
-          : [{ type: "Requirement" as const, id: "LIST" }],
+      transformResponse: transformListResponseWithMeta<Requirement>,
+      providesTags: (result) => createListTags(result, "Requirement"),
     }),
 
     getRequirement: builder.query<Requirement, string | number>({
@@ -88,10 +41,8 @@ export const requirementsApi = createApi({
         url: `/admin/requirements/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: RequirementSingleResponse) => {
-        return (response?.data as Requirement) ?? (response as unknown as Requirement);
-      },
-      providesTags: (result, _error, id) => [{ type: "Requirement", id }],
+      transformResponse: transformSingleItemResponse<Requirement>,
+      providesTags: createItemTags("Requirement"),
     }),
 
     createRequirement: builder.mutation<unknown, CreateRequirementRequest>({
@@ -100,7 +51,7 @@ export const requirementsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "Requirement", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("Requirement"),
     }),
 
     updateRequirement: builder.mutation<
@@ -112,10 +63,7 @@ export const requirementsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (result, _error, { id }) => [
-        { type: "Requirement", id },
-        { type: "Requirement", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("Requirement"),
     }),
   }),
 });

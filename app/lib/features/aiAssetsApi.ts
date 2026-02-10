@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
 
 interface PaginationMeta {
   current_page: number;
@@ -47,10 +47,7 @@ export interface CreateAiAssetData {
   vendor_assessment_id?: number | null;
 }
 
-export const aiAssetsApi = createApi({
-  reducerPath: "aiAssetsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiAsset"],
+export const aiAssetsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiAssets: builder.query<
       { data: AiAsset[]; pagination: PaginationMeta },

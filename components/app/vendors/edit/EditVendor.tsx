@@ -10,13 +10,12 @@ import {
   useGetVendorQuery,
   useUpdateVendorMutation,
   CreateVendorData,
+  VendorRiskTier,
+  VendorStatus,
+  VendorType,
+  DataProcessingRole,
 } from "@/app/lib/features/vendorsApi";
-import {
-  validateTextField,
-  validateEmail,
-  validateArrayField,
-  createValidationErrors,
-} from "@/lib/utils/validation";
+import { vendorSchema, type VendorFormData } from "@/lib/schemas/vendor.schema";
 import VendorForm from "../create/VendorForm";
 
 interface EditVendorProps {
@@ -25,16 +24,22 @@ interface EditVendorProps {
 
 const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<CreateVendorData>({
+  const [formData, setFormData] = useState<VendorFormData>({
     vendor_name: "",
     legal_name: "",
     hq_country: "",
-    risk_tier: "tier_1",
-    status: "evaluating",
-    stakeholder_id: null,
+    risk_tier: "" as any, // Start empty to trigger validation
+    status: "" as any, // Start empty to trigger validation
+    type: [],
+    data_processing_role: "" as any, // Start empty to trigger validation
+    service_provided: null,
     primary_contacts: [],
-    metadata: {},
+    duns_number: null,
+    lei_number: null,
+    tax_id: null,
+    stock_ticker: null,
     notes: null,
+    metadata: null,
   });
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
@@ -50,85 +55,68 @@ const EditVendor: React.FC<EditVendorProps> = ({ vendorId }) => {
         vendor_name: vendor.vendor_name,
         legal_name: vendor.legal_name,
         hq_country: vendor.hq_country,
-        risk_tier: vendor.risk_tier,
-        status: vendor.status,
-        stakeholder_id: vendor.stakeholder_id,
-        primary_contacts: vendor.primary_contacts || [],
-        metadata: vendor.metadata || {},
-        notes: vendor.notes,
+        risk_tier: vendor.risk_tier as any,
+        status: vendor.status as any,
+        type: vendor.type || [],
+        data_processing_role: vendor.data_processing_role as any,
+        service_provided: vendor.service_provided || null,
+        primary_contacts: (vendor.primary_contacts || []).map(contact => ({
+          name: contact.name,
+          email: contact.email,
+          phone: contact.phone ?? null,
+          role: contact.role ?? null,
+          primary: contact.primary ?? null,
+        })),
+        duns_number: vendor.duns_number || null,
+        lei_number: vendor.lei_number || null,
+        tax_id: vendor.tax_id || null,
+        stock_ticker: vendor.stock_ticker || null,
+        notes: vendor.notes || null,
+        metadata: vendor.metadata as any || null,
       });
     }
   }, [vendor]);
-
-  // Form validation using shared utilities
-  const validateForm = (): boolean => {
-    const fieldErrors: Record<string, string[]> = {
-      vendor_name: validateTextField(formData.vendor_name, {
-        required: true,
-        messages: { required: "Vendor name is required" },
-      }),
-      legal_name: validateTextField(formData.legal_name, {
-        required: true,
-        messages: { required: "Legal name is required" },
-      }),
-      hq_country: validateTextField(formData.hq_country, {
-        required: true,
-        messages: { required: "HQ country is required" },
-      }),
-      risk_tier: validateTextField(formData.risk_tier, {
-        required: true,
-        messages: { required: "Risk tier is required" },
-      }),
-      status: validateTextField(formData.status, {
-        required: true,
-        messages: { required: "Status is required" },
-      }),
-      primary_contacts: validateArrayField(formData.primary_contacts, {
-        required: false,
-      }),
-    };
-
-    const contactErrors: Record<string, string[]> = {};
-    formData.primary_contacts.forEach((contact, index) => {
-      const nameErrors = validateTextField(contact.name, {
-        required: true,
-        messages: { required: "Contact name is required" },
-      });
-      if (nameErrors.length) {
-        contactErrors[`primary_contacts.${index}.name`] = nameErrors;
-      }
-
-      const emailErrors = [
-        ...validateTextField(contact.email, {
-          required: true,
-          messages: { required: "Contact email is required" },
-        }),
-        ...validateEmail(contact.email, "Please enter a valid email address"),
-      ];
-      if (emailErrors.length) {
-        contactErrors[`primary_contacts.${index}.email`] = emailErrors;
-      }
-    });
-
-    const errors = createValidationErrors({ ...fieldErrors, ...contactErrors });
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationErrors({});
 
-    // Client-side validation
-    if (!validateForm()) {
+    // Validate using Zod schema
+    const result = vendorSchema.safeParse(formData);
+    if (!result.success) {
+      const errors: Record<string, string[]> = {};
+      result.error.issues.forEach((err) => {
+        const path = err.path.join(".");
+        errors[path] = [err.message];
+      });
+      setValidationErrors(errors);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
+    // Convert VendorFormData to CreateVendorData
+    const updateData: CreateVendorData = {
+      vendor_name: result.data.vendor_name,
+      legal_name: result.data.legal_name,
+      hq_country: result.data.hq_country,
+      risk_tier: result.data.risk_tier as VendorRiskTier,
+      status: result.data.status as VendorStatus,
+      type: result.data.type as VendorType[],
+      data_processing_role: result.data.data_processing_role as DataProcessingRole,
+      service_provided: result.data.service_provided || null,
+      primary_contacts: result.data.primary_contacts || [],
+      metadata: result.data.metadata || null,
+      duns_number: result.data.duns_number || null,
+      lei_number: result.data.lei_number || null,
+      tax_id: result.data.tax_id || null,
+      stock_ticker: result.data.stock_ticker || null,
+      notes: result.data.notes || null,
+    };
+
     try {
       await updateVendor({
         id: vendorId,
-        data: formData,
+        data: updateData,
       }).unwrap();
       router.push("/core-assets/vendors");
     } catch (err: any) {

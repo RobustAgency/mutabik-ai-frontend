@@ -1,10 +1,13 @@
+import CreateDataElementWizard from '@/components/app/dataElements/create/CreateDataElementWizard'
+import React from 'react'
 
+const page = () => {
+  return (
+    <>
+      <CreateDataElementWizard />
+    </>
+  )
+}
 
-import CreateDataElement from "@/components/app/dataElements/create/CreateDataElement";
-
-const CreateDataElementPage = () => {
-  return <CreateDataElement />;
-};
-
-export default CreateDataElementPage;
+export default page
 

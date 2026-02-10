@@ -1,6 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError } from "@/lib/api/rtkQueryBase";
+import { MutationError } from "@/lib/api/rtkQueryBase";
 
 export interface PdpProcessingRegister {
   id: string;
@@ -46,10 +46,7 @@ export interface CreatePdpProcessingRegisterData {
   status: string;
 }
 
-export const pdpProcessingRegisterApi = createApi({
-  reducerPath: "pdpProcessingRegisterApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["PdpProcessingRegister"],
+export const pdpProcessingRegisterApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPdpProcessingRegisters: builder.query<
       PdpProcessingRegister[],

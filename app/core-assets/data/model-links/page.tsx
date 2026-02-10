@@ -8,61 +8,31 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
-import { useGetModelDatasetLinksQuery, useDeleteModelDatasetLinkMutation, ModelDatasetLink, ModelDatasetLinkFilters } from "@/app/lib/features/modelDatasetLinksApi";
-import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import { useGetModelDatasetLinksQuery, ModelDatasetLink, ModelDatasetLinkFilters, Role } from "@/app/lib/features/modelDatasetLinksApi";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { Badge } from "@/components/ui/badge";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const ModelDatasetLinksPage: React.FC = () => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<ModelDatasetLinkFilters>({});
-  const [deleteDialogState, setDeleteDialogState] = React.useState<{
-    isOpen: boolean;
-    linkId: string | null;
-    linkName: string;
-  }>({
-    isOpen: false,
-    linkId: null,
-    linkName: "",
-  });
 
-  const [deleteLink, { isLoading: isDeleting }] = useDeleteModelDatasetLinkMutation();
-  const { data: links, isLoading } = useGetModelDatasetLinksQuery(filters);
+  const queryParams = React.useMemo(() => ({
+    ...filters,
+    page: currentPage,
+    per_page: 15,
+  }), [filters, currentPage]);
 
-  const handleDeleteClick = (e: React.MouseEvent, link: ModelDatasetLink) => {
-    e.stopPropagation();
-    const modelName = link.ai_model?.name || link.ai_model_id;
-    const versionNumber = link.ai_model_version?.version_number || link.ai_model_version_id.toString();
-    setDeleteDialogState({
-      isOpen: true,
-      linkId: link.id,
-      linkName: `${modelName} (${versionNumber}) - ${link.role}`,
-    });
+  const { data: linksData, isLoading } = useGetModelDatasetLinksQuery(queryParams);
+  const links = linksData?.data || [];
+  const pagination = linksData?.pagination;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const handleConfirmDelete = async () => {
-    if (deleteDialogState.linkId) {
-      try {
-        await deleteLink(deleteDialogState.linkId).unwrap();
-        setDeleteDialogState({
-          isOpen: false,
-          linkId: null,
-          linkName: "",
-        });
-      } catch (error) {
-        console.error("Failed to delete link:", error);
-      }
-    }
-  };
-
-  const handleCancelDelete = () => {
-    if (!isDeleting) {
-      setDeleteDialogState({
-        isOpen: false,
-        linkId: null,
-        linkName: "",
-      });
-    }
-  };
 
   const columns: ColumnDef<ModelDatasetLink>[] = [
     {
@@ -72,9 +42,9 @@ const ModelDatasetLinksPage: React.FC = () => {
           Model-Dataset Link ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ getValue, row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {getValue() as string || `MDL-${String(row.original.id).padStart(6, '0')}`}
         </div>
       ),
     },
@@ -120,11 +90,13 @@ const ModelDatasetLinksPage: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const role = getValue() as string;
+        const role = getValue() as Role | string;
+        const roleStr = String(role);
+        const roleLabel = roleStr.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
         return (
-          <div className="h-[24px] flex items-center justify-center rounded-full bg-[#ECF3FF] text-[#465FFF] text-xs font-medium px-2">
-            {role}
-          </div>
+          <Badge variant="light" color="info" className="capitalize">
+            {roleLabel}
+          </Badge>
         );
       },
     },
@@ -156,23 +128,30 @@ const ModelDatasetLinksPage: React.FC = () => {
       },
     },
     {
-      accessorKey: "eligibility_status",
+      accessorKey: "linkage_status",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Eligibility
+          Status
         </div>
       ),
       cell: ({ getValue }) => {
         const status = getValue() as string | null;
         if (!status) return <span className="text-[#667085]">—</span>;
-        const colorMap: Record<string, string> = {
-          eligible: "bg-[#ECFDF3] text-[#039855]",
-          eligible_with_conditions: "bg-[#FEF3F2] text-[#F79009]",
-          not_eligible: "bg-[#FEF3F2] text-[#F04438]",
+        const statusMap: Record<string, { label: string; variant: "filled" | "outlined" | "light"; color: "default" | "success" | "warning" | "error" | "info" }> = {
+          pending_approval: { label: "Pending Approval", variant: "outlined", color: "warning" },
+          approved: { label: "Approved", variant: "filled", color: "success" },
+          active: { label: "Active", variant: "filled", color: "success" },
+          deprecated: { label: "Deprecated", variant: "outlined", color: "warning" },
+          archived: { label: "Archived", variant: "outlined", color: "default" },
         };
+        const statusInfo = statusMap[status] || { label: status.replace(/_/g, " "), variant: "outlined" as const, color: "default" as const };
         return (
-          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${colorMap[status] || "bg-[#F2F4F7] text-[#667085]"}`}>
-            {status.replace(/_/g, " ")}
+          <div className={`h-[24px] flex items-center justify-center rounded-full text-xs font-medium px-2 ${
+            statusInfo.color === "success" ? "bg-[#ECFDF3] text-[#039855]" :
+            statusInfo.color === "warning" ? "bg-[#FEF3F2] text-[#F79009]" :
+            "bg-[#F2F4F7] text-[#667085]"
+          }`}>
+            {statusInfo.label}
           </div>
         );
       },
@@ -190,9 +169,12 @@ const ModelDatasetLinksPage: React.FC = () => {
             <Button
               variant={"outline"}
               className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/core-assets/data/model-links/${row.original.id}/edit`);
+              }}
             >
-              Remove
+              Edit
             </Button>
           </div>
         );
@@ -201,7 +183,7 @@ const ModelDatasetLinksPage: React.FC = () => {
   ];
 
   return (
-    <>
+    <PermissionPage permission={PERMISSIONS.AI_MODEL_DATASETS_VIEW}>
       <Card className="w-full rounded-2xl border border-[#E4E7EC] bg-white flex flex-col gap-4 mx-auto px-4 sm:px-6 py-4">
         <CardContent className="flex flex-col flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
@@ -213,7 +195,10 @@ const ModelDatasetLinksPage: React.FC = () => {
               <DynamicFilter
                 filterType="ai-model-datasets"
                 filters={filters}
-                onFiltersChange={(newFilters) => setFilters(newFilters as ModelDatasetLinkFilters)}
+                onFiltersChange={(newFilters) => {
+                setFilters(newFilters as ModelDatasetLinkFilters);
+                setCurrentPage(1); // Reset to first page when filters change
+              }}
               />
               <Button
                 onClick={() => router.push("/core-assets/data/model-links/create")}
@@ -226,9 +211,22 @@ const ModelDatasetLinksPage: React.FC = () => {
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable
               columns={columns}
-              data={links ?? []}
+              data={links}
               variant="projects"
               loading={isLoading}
+              serverSide={true}
+              pagination={
+                pagination
+                  ? {
+                      page: pagination.current_page,
+                      limit: pagination.per_page,
+                      total: pagination.total,
+                      totalPages: pagination.last_page,
+                    }
+                  : undefined
+              }
+              onPageChange={handlePageChange}
+              onRowClick={(row) => router.push(`/core-assets/data/model-links/${row.id}`)}
               emptyState={{
                 title: "No model-dataset links found",
                 description: "Links establish traceability for audit and reproducibility",
@@ -237,20 +235,7 @@ const ModelDatasetLinksPage: React.FC = () => {
           </Card>
         </CardContent>
       </Card>
-
-      <ConfirmationDialog
-        isOpen={deleteDialogState.isOpen}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title="Delete Model-Dataset Link"
-        description={`Are you sure you want to delete link "${deleteDialogState.linkName}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-        isLoading={isDeleting}
-        loadingText="Deleting..."
-      />
-    </>
+    </PermissionPage>
   );
 };
 

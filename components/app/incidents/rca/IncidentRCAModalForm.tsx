@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import IncidentRCAForm from "./create/IncidentRCAForm";
-import { CreateIncidentRootCauseAnalysisData, useCreateIncidentRootCauseAnalysisMutation } from "@/app/lib/features/incidentRootCauseAnalysesApi";
+import { 
+  CreateIncidentRootCauseAnalysisData, 
+  useCreateIncidentRootCauseAnalysisMutation,
+  RcaMethod
+} from "@/app/lib/features/incidentRootCauseAnalysesApi";
 
 interface IncidentRCAModalFormProps {
   isOpen: boolean;
@@ -18,16 +22,16 @@ const IncidentRCAModalForm: React.FC<IncidentRCAModalFormProps> = ({ isOpen, onC
 
   const [formData, setFormData] = useState<CreateIncidentRootCauseAnalysisData>({
     ai_incident_id: incidentId || 0,
-    rca_method: "5_whys",
+    rca_method: RcaMethod.FIVE_WHYS,
+    analysis_date: null,
     immediate_cause: "",
-    latent_causes: "",
+    root_causes: "",
     contributing_factors: null,
-    impact_assessment: null,
-    fixes_implemented: null,
-    lessons_learned: "",
+    control_failures: null,
     recommendations: "",
-    approved_by: "",
-    approved_at: "",
+    lead_analyst: "",
+    review_committee: null,
+    approved_at: null,
     report_link: null,
   });
 

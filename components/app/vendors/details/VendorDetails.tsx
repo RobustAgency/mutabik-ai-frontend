@@ -1,178 +1,125 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useGetVendorQuery, useDeleteVendorMutation } from "@/app/lib/features/vendorsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
+import VendorFormReadOnly from "./VendorFormReadOnly";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface VendorDetailsProps {
-  vendorId: string;
+    vendorId: string | number;
 }
 
-const VendorDetails: React.FC<VendorDetailsProps> = ({ vendorId }) => {
-  const router = useRouter();
-  const idNum = Number(vendorId);
-  const { data: vendor, isLoading } = useGetVendorQuery(idNum, { skip: Number.isNaN(idNum) });
-  const [deleteVendor, { isLoading: isDeleting }] = useDeleteVendorMutation();
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+const VendorDetails: React.FC<VendorDetailsProps> = ({
+    vendorId,
+}) => {
+    const router = useRouter();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleDelete = async () => {
-    if (!vendor) return;
-    try {
-      await deleteVendor(vendor.id).unwrap();
-      setDeleteDialogOpen(false);
-      router.push("/core-assets/vendors");
-    } catch (e) {
-      console.error("Failed to delete vendor:", e);
+    const { data: vendor, isLoading, error } = useGetVendorQuery(vendorId);
+    const [deleteVendor, { isLoading: isDeleting }] = useDeleteVendorMutation();
+
+    const handleDelete = async () => {
+        if (!vendor) return;
+        try {
+            await deleteVendor(vendor.id).unwrap();
+            router.push("/core-assets/vendors");
+        } catch (error) {
+            console.error("Failed to delete vendor:", error);
+        }
+    };
+
+    const handleEdit = () => {
+        router.push(`/core-assets/vendors/${vendorId}/edit`);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="max-w-7xl mx-auto">
+                <Card className="p-6 border-[#E4E7EC] shadow-none">
+                    <CardContent className="flex items-center justify-center py-20">
+                        <p className="text-[#667085]">Loading vendor details...</p>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
-  };
 
-  if (Number.isNaN(idNum)) {
+    if (error || !vendor) {
+        return (
+            <div className="max-w-7xl mx-auto">
+                <Card className="p-6 border-[#E4E7EC] shadow-none">
+                    <CardContent className="flex flex-col items-center justify-center py-20 gap-4">
+                        <p className="text-[#667085]">Failed to load vendor details</p>
+                        <Button
+                            onClick={() => router.push("/core-assets/vendors")}
+                            className="bg-[#4FD58F] text-white"
+                        >
+                            Back to Vendors
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
-      <div className="max-w-7xl mx-auto">
-        <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <CardContent>
-            <p className="text-[#667085]">Invalid vendor ID</p>
-          </CardContent>
-        </Card>
-      </div>
+        <>
+            <div className="max-w-7xl mx-auto">
+                <Card className="p-6 border-[#E4E7EC] shadow-none">
+                    <div className="flex flex-col sm:flex-row items-start gap-3 justify-start sm:justify-between mb-6">
+                        <div>
+                            <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
+                                Vendor Details
+                            </h1>
+                            <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+                                View and manage vendor information
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <PermissionGate permission={PERMISSIONS.VENDORS_EDIT}>
+                                <Button
+                                    onClick={handleEdit}
+                                    className="flex gap-2 rounded-full border bg-white text-[#1D2939] hover:bg-gray-50"
+                                >
+                                    Edit
+                                </Button>
+                            </PermissionGate>
+                            <PermissionGate permission={PERMISSIONS.VENDORS_DELETE}>
+                                <Button
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    className="flex gap-2 rounded-full border bg-red-50 text-red-600 hover:bg-red-100"
+                                >
+                                    Delete
+                                </Button>
+                            </PermissionGate>
+                        </div>
+                    </div>
+
+                    <CardContent className="space-y-10 w-full">
+                        <VendorFormReadOnly vendor={vendor} />
+                    </CardContent>
+                </Card>
+            </div>
+
+            <ConfirmationDialog
+                isOpen={showDeleteDialog}
+                onClose={() => setShowDeleteDialog(false)}
+                onConfirm={handleDelete}
+                title="Delete Vendor"
+                description={`Are you sure you want to delete "${vendor.vendor_name}"? This action cannot be undone and will remove the vendor from the system permanently.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                type="danger"
+                isLoading={isDeleting}
+                loadingText="Deleting..."
+            />
+        </>
     );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="max-w-7xl mx-auto">
-        <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <CardContent>
-            <p className="text-[#667085]">Loading vendor...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!vendor) {
-    return (
-      <div className="max-w-7xl mx-auto">
-        <Card className="p-6 border-[#E4E7EC] shadow-none">
-          <CardContent className="flex items-center justify-between">
-            <p className="text-[#667085]">Vendor not found</p>
-            <Button onClick={() => router.push("/core-assets/vendors")}>Back to Vendors</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const labelMap: Record<string, string> = {
-    evaluating: "Evaluating",
-    approved: "Approved",
-    conditionally_approved: "Conditionally Approved",
-    restricted: "Restricted",
-    suspended: "Suspended",
-    terminated: "Terminated",
-  };
-  const riskLabelMap: Record<string, string> = {
-    tier_1: "Tier 1",
-    tier_2: "Tier 2",
-    tier_3: "Tier 3",
-    tier_4: "Tier 4",
-  };
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <Card className="p-6 border-[#E4E7EC] shadow-none">
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
-                {vendor.vendor_name}
-              </h1>
-              <p className="font-sans text-sm text-[#667085]">{vendor.legal_name}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => router.push(`/core-assets/vendors/${vendor.id}/edit`)}>Edit</Button>
-              <Button variant="outline" className="text-destructive" onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
-              <Button onClick={() => router.push("/core-assets/vendors")}>Back</Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs text-[#667085]">HQ Country</div>
-              <div className="text-sm">{vendor.hq_country}</div>
-            </div>
-            <div>
-              <div className="text-xs text-[#667085]">Risk Tier</div>
-              <div className="text-sm">{riskLabelMap[vendor.risk_tier] || vendor.risk_tier}</div>
-            </div>
-            <div>
-              <div className="text-xs text-[#667085]">Status</div>
-              <div className="text-sm">{labelMap[vendor.status] || vendor.status}</div>
-            </div>
-            <div>
-              <div className="text-xs text-[#667085]">Stakeholder</div>
-              <div className="text-sm">{vendor.stakeholder?.display_name || "—"}</div>
-            </div>
-          </div>
-
-          <div>
-            <div className="text-sm font-medium mb-2">Primary Contacts</div>
-            <div className="space-y-2">
-              {(vendor.primary_contacts || []).map((c, i) => (
-                <div key={i} className="text-sm text-[#667085]">
-                  {c.name} • {c.email} {c.phone ? `• ${c.phone}` : ""} {c.primary ? "• Primary" : ""}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-sm font-medium mb-2">Metadata</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[#667085]">
-              <div>
-                <div className="text-xs">Sub-processors URL</div>
-                <div>{(vendor.metadata as any)?.sub_processors_url || "—"}</div>
-              </div>
-              <div>
-                <div className="text-xs">Residency options</div>
-                <div>{Array.isArray((vendor.metadata as any)?.residency_options) ? ((vendor.metadata as any).residency_options as string[]).join(", ") : ((vendor.metadata as any)?.residency_options || "—")}</div>
-              </div>
-              <div>
-                <div className="text-xs">Websites</div>
-                <div>{Array.isArray((vendor.metadata as any)?.websites) ? ((vendor.metadata as any).websites as string[]).join(", ") : ((vendor.metadata as any)?.websites || "—")}</div>
-              </div>
-              <div>
-                <div className="text-xs">Metadata notes</div>
-                <div>{(vendor.metadata as any)?.notes || "—"}</div>
-              </div>
-            </div>
-          </div>
-
-          {vendor.notes && (
-            <div>
-              <div className="text-sm font-medium mb-2">Notes</div>
-              <div className="text-sm text-[#667085]">{vendor.notes}</div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      <ConfirmationDialog
-        isOpen={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete Vendor"
-        description={`Are you sure you want to delete "${vendor.vendor_name}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-        isLoading={isDeleting}
-        loadingText="Deleting..."
-      />
-    </div>
-  );
 };
 
 export default VendorDetails;

@@ -80,7 +80,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   });
 
   const {
-    handleSubmit,
     trigger,
     formState: { errors },
     reset,

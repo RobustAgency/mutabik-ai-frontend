@@ -46,6 +46,7 @@ export const RiskOverviewStep: React.FC = () => {
             Risk Level <span className="text-red-500">*</span>
           </Label>
           <Select
+            key={`risk_level-${watch("risk_level") || "none"}`}
             value={watch("risk_level")}
             onValueChange={(value) => setValue("risk_level", value as any)}
           >
@@ -108,6 +109,7 @@ export const RiskOverviewStep: React.FC = () => {
           Current Stage <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`stage-${watch("stage") || "none"}`}
           value={watch("stage")}
           onValueChange={(value) => setValue("stage", value as any)}
         >

@@ -1,12 +1,12 @@
-import CreateIncidentAlert from '@/components/app/incidents/alerts/create/CreateIncidentAlert'
+import CreateIncidentAlertWizard from '@/components/app/incidents/alerts/create/CreateIncidentAlertWizard'
 import React from 'react'
 
 const page = () => {
-    return (
-        <div>
-            <CreateIncidentAlert />
-        </div>
-    )
+  return (
+    <>
+      <CreateIncidentAlertWizard />
+    </>
+  )
 }
 
 export default page

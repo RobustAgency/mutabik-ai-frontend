@@ -1,29 +1,49 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import { MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+
+// Enums for Incident Root Cause Analyses
+export enum RcaMethod {
+  FIVE_WHYS = "five_whys",
+  FISHBONE = "fishbone",
+  FAULT_TREE = "fault_tree",
+  EVENT_CAUSAL = "event_causal",
+  CHANGE = "change",
+  TIMELINE = "timeline",
+  BARRIER = "barrier",
+  COMBINED = "combined",
+}
 
 // Types for Incident Root Cause Analyses
 export interface IncidentRootCauseAnalysis {
   id: number;
   organization_id: number;
   ai_incident_id: number;
-  rca_method: "5_whys" | "fishbone" | "timeline_analysis" | "fault_tree" | "other";
+  rca_method: RcaMethod;
+  analysis_date?: string | null;
   immediate_cause: string;
-  latent_causes: string;
+  root_causes: string;
   contributing_factors?: string | null;
-  impact_assessment?: string | null;
-  fixes_implemented?: string | null;
-  lessons_learned: string;
+  control_failures?: string | null;
   recommendations: string;
-  approved_by: string;
-  approved_at: string;
+  lead_analyst: string;
+  review_committee?: string | null;
+  approved_at?: string | null;
   report_link?: string | null;
   created_at: string;
+  updated_at?: string;
+  display_id?: string | null;
+  ai_incident?: {
+    id: number;
+    title: string;
+    display_id?: string;
+    [key: string]: unknown;
+  } | null;
 }
 
 export interface IncidentRootCauseAnalysisFilters {
   ai_incident_id?: number;
-  rca_method?: IncidentRootCauseAnalysis["rca_method"];
+  rca_method?: RcaMethod;
   from?: string | null; // date, before_or_equal:today
   to?: string | null; // date, before_or_equal:today, after_or_equal:from
   page?: number;
@@ -32,23 +52,20 @@ export interface IncidentRootCauseAnalysisFilters {
 
 export interface CreateIncidentRootCauseAnalysisData {
   ai_incident_id: number;
-  rca_method: IncidentRootCauseAnalysis["rca_method"];
+  rca_method: RcaMethod;
+  analysis_date?: string | null;
   immediate_cause: string;
-  latent_causes: string;
+  root_causes: string;
   contributing_factors?: string | null;
-  impact_assessment?: string | null;
-  fixes_implemented?: string | null;
-  lessons_learned: string;
+  control_failures?: string | null;
   recommendations: string;
-  approved_by: string;
-  approved_at: string;
+  lead_analyst: string;
+  review_committee?: string | null;
+  approved_at?: string | null;
   report_link?: string | null;
 }
 
-export const incidentRootCauseAnalysesApi = createApi({
-  reducerPath: "incidentRootCauseAnalysesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentRootCauseAnalysis"],
+export const incidentRootCauseAnalysesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentRootCauseAnalyses: builder.query<
       { data: IncidentRootCauseAnalysis[]; pagination: PaginationMeta },

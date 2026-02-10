@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import type {
   DataSubjectRequestAccess,
@@ -6,7 +6,6 @@ import type {
   DSARFilters,
 } from "@/interfaces/DataSubjectRequestAccess";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -30,10 +29,7 @@ export interface DSARItemResponse {
   message: string;
 }
 
-export const dataSubjectRequestAccessesApi = createApi({
-  reducerPath: "dataSubjectRequestAccessesApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DataSubjectRequestAccess"],
+export const dataSubjectRequestAccessesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDataSubjectRequestAccesses: builder.query<
       { data: DataSubjectRequestAccess[]; pagination?: PaginationMeta },

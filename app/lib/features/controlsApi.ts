@@ -1,39 +1,21 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { axiosBaseQuery } from "@/lib/api/rtkQueryBase";
+import { baseApi } from "@/lib/api/baseApi";
 import {
   Control,
   ControlFilters,
   ControlListMeta,
-  ControlListResponse,
-  ControlSingleResponse,
   CreateControlRequest,
   UpdateControlRequest,
 } from "@/interfaces/Control";
+import {
+  transformListResponseWithMeta,
+  transformSingleItemResponse,
+  createListTags,
+  createItemTags,
+  createInvalidateListTags,
+  createInvalidateItemAndListTags,
+} from "@/lib/api/rtkQueryHelpers";
 
-const normaliseMeta = (payload?: ControlListResponse["data"]): ControlListMeta => {
-  if (!payload) {
-    return { current_page: 1, per_page: 0, total: 0, last_page: 1 };
-  }
-  if (payload.meta) {
-    return {
-      current_page: payload.meta.current_page ?? 1,
-      per_page: payload.meta.per_page ?? 0,
-      total: payload.meta.total ?? 0,
-      last_page: payload.meta.last_page ?? payload.meta.current_page ?? 1,
-    };
-  }
-  return {
-    current_page: payload.current_page ?? 1,
-    per_page: payload.per_page ?? 0,
-    total: payload.total ?? 0,
-    last_page: payload.last_page ?? payload.current_page ?? 1,
-  };
-};
-
-export const controlsApi = createApi({
-  reducerPath: "controlsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["Control"],
+export const controlsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getControls: builder.query<
       { data: Control[]; meta: ControlListMeta },
@@ -44,28 +26,16 @@ export const controlsApi = createApi({
         method: "GET",
         params: filters ?? undefined,
       }),
-      transformResponse: (response: ControlListResponse) => {
-        const list = response?.data?.data ?? [];
-        const meta = normaliseMeta(response?.data);
-        return { data: list, meta };
-      },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({ type: "Control" as const, id })),
-              { type: "Control" as const, id: "LIST" },
-            ]
-          : [{ type: "Control" as const, id: "LIST" }],
+      transformResponse: transformListResponseWithMeta<Control>,
+      providesTags: (result) => createListTags(result, "Control"),
     }),
     getControl: builder.query<Control, string | number>({
       query: (id) => ({
         url: `/admin/controls/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: ControlSingleResponse) => {
-        return (response?.data as Control) ?? (response as unknown as Control);
-      },
-      providesTags: (result, _error, id) => [{ type: "Control", id }],
+      transformResponse: transformSingleItemResponse<Control>,
+      providesTags: createItemTags("Control"),
     }),
     createControl: builder.mutation<unknown, CreateControlRequest>({
       query: (data) => ({
@@ -73,7 +43,7 @@ export const controlsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: [{ type: "Control", id: "LIST" }],
+      invalidatesTags: createInvalidateListTags("Control"),
     }),
     updateControl: builder.mutation<
       unknown,
@@ -84,10 +54,7 @@ export const controlsApi = createApi({
         method: "POST",
         data,
       }),
-      invalidatesTags: (result, _error, { id }) => [
-        { type: "Control", id },
-        { type: "Control", id: "LIST" },
-      ],
+      invalidatesTags: createInvalidateItemAndListTags("Control"),
     }),
   }),
 });

@@ -3,10 +3,9 @@
  * Following frontend rules for RTK Query implementation
  */
 
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
 import {
-  axiosBaseQuery,
   MutationError,
   hasValidationErrors,
   PaginationMeta,
@@ -38,10 +37,7 @@ interface SingleAiRiskTreatmentResponse {
   error: boolean;
 }
 
-export const aiRiskTreatmentApi = createApi({
-  reducerPath: "aiRiskTreatmentApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["AiRiskTreatment"],
+export const aiRiskTreatmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAiRiskTreatments: builder.query<
       { data: AiRiskTreatment[]; pagination: PaginationMeta },

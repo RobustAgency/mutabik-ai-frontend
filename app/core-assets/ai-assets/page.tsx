@@ -1,12 +1,16 @@
 
-import React from 'react'
-import AiAssets from '@/components/app/ai-assets/AiAssets'
+import React from "react";
+import AiAssets from "@/components/app/ai-assets/AiAssets";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
-const page = () => {
-    return (
-        <AiAssets />
-    )
-}
+const Page = () => {
+  return (
+    <PermissionPage permission={PERMISSIONS.AI_ASSETS_VIEW}>
+      <AiAssets />
+    </PermissionPage>
+  );
+};
 
-export default page
+export default Page;
 

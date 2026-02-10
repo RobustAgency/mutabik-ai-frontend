@@ -1,34 +1,105 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, PaginationMeta } from "@/lib/api/rtkQueryBase";
+import {
+  MutationError,
+  PaginationMeta,
+} from "@/lib/api/rtkQueryBase";
+
+// Enums for Incident Notifications
+export enum Template {
+  DPA_BREACH_NOTIFICATION = "dpa_breach_notification",
+  DATA_SUBJECT_NOTIFICATION = "data_subject_notification",
+  UAE_PDPL_BREACH_NOTIFICATION = "uae_pdpl_breach_notification",
+  EXECUTIVE_SUMMARY_TEMPLATE = "executive_summary_template",
+  CUSTOMER_NOTICE_TEMPLATE = "customer_notice_template",
+  PRESS_RELEASE_TEMPLATE = "press_release_template",
+  INTERNAL_ALL_HANDS_TEMPLATE = "internal_all_hands_template",
+  CUSTOM_OTHER = "custom_other",
+}
+
+export enum Language {
+  ENGLISH = "english",
+  ARABIC = "arabic",
+  FRENCH = "french",
+  GERMAN = "german",
+  SPANISH = "spanish",
+  MULTIPLE = "multiple",
+}
+
+export enum RegulatoryBasis {
+  GDPR_ART_33 = "gdpr_art_33",
+  GDPR_ART_34 = "gdpr_art_34",
+  UAE_PDPL = "uae_pdpl",
+  CONTRACTUAL = "contractual",
+  INTERNAL_POLICY = "internal_policy",
+  NA = "na",
+}
+
+export enum AudienceType {
+  INTERNAL_EXECUTIVE = "internal_executive",
+  INTERNAL_TECHNICAL = "internal_technical",
+  DATA_PROTECTION_AUTHORITY = "data_protection_authority",
+  AFFECTED_DATA_SUBJECTS = "affected_data_subjects",
+  EXTERNAL_PARTNERS = "external_partners",
+  MEDIA_PUBLIC = "media_public",
+  BOARD_AUDIT_COMMITTEE = "board_audit_committee",
+  LEGAL_COMPLIANCE = "legal_compliance",
+}
+
+export enum Channel {
+  EMAIL = "email",
+  SMS = "sms",
+  PORTAL_NOTIFICATION = "portal_notification",
+  SLACK_TEAMS = "slack_teams",
+  FORMAL_LETTER = "formal_letter",
+  PRESS_RELEASE = "press_release",
+  REGULATORY_FILING = "regulatory_filing",
+}
+
+export enum DeliveryStatus {
+  DRAFT = "draft",
+  SENT = "sent",
+  DELIVERED = "delivered",
+  ACKNOWLEDGED = "acknowledged",
+  FAILED = "failed",
+}
 
 // Types for Incident Notifications
 export interface IncidentNotification {
   id: number;
   organization_id: number;
   ai_incident_id: number;
-  audience_type:
-    | "internal_exec"
-    | "internal_staff"
-    | "customers"
-    | "regulator"
-    | "vendor"
-    | "media"
-    | "other";
-  channel: "email" | "portal" | "status_page" | "phone" | "meeting" | "legal_letter" | "other";
+  template?: Template | null;
+  language?: Language | null;
+  regulatory_basis?: RegulatoryBasis | null;
+  notification_deadline?: string | null;
+  audience_type: AudienceType;
+  channel: Channel;
   notice_summary: string;
   notice_link?: string | null;
-  notified_at: string;
-  approved_by?: string | null;
-  approval_ref?: string | null;
+  sent_at: string;
+  sent_by?: string | null;
+  delivery_status: DeliveryStatus;
+  response_summary?: string | null;
   follow_up_required: boolean;
+  follow_up_date?: string | null;
+  follow_up_notes?: string | null;
   created_at: string;
+  updated_at?: string;
+  display_id?: string | null;
+  ai_incident?: {
+    id: number;
+    title: string;
+    display_id?: string;
+    [key: string]: unknown;
+  } | null;
 }
 
 export interface IncidentNotificationFilters {
   ai_incident_id?: number;
-  audience_type?: IncidentNotification["audience_type"];
-  channel?: IncidentNotification["channel"];
+  audience_type?: AudienceType;
+  channel?: Channel;
+  delivery_status?: DeliveryStatus;
   follow_up_required?: boolean;
   from?: string | null; // date, before_or_equal:today
   to?: string | null; // date, before_or_equal:today, after_or_equal:from
@@ -38,20 +109,24 @@ export interface IncidentNotificationFilters {
 
 export interface CreateIncidentNotificationData {
   ai_incident_id: number;
-  audience_type: IncidentNotification["audience_type"];
-  channel: IncidentNotification["channel"];
+  template?: Template | null;
+  language?: Language | null;
+  regulatory_basis?: RegulatoryBasis | null;
+  notification_deadline?: string | null;
+  audience_type: AudienceType;
+  channel: Channel;
   notice_summary: string;
   notice_link?: string | null;
-  notified_at: string;
-  approved_by?: string | null;
-  approval_ref?: string | null;
+  sent_at: string;
+  sent_by?: string | null;
+  delivery_status: DeliveryStatus;
+  response_summary?: string | null;
   follow_up_required: boolean;
+  follow_up_date?: string | null;
+  follow_up_notes?: string | null;
 }
 
-export const incidentNotificationsApi = createApi({
-  reducerPath: "incidentNotificationsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["IncidentNotification"],
+export const incidentNotificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getIncidentNotifications: builder.query<
       { data: IncidentNotification[]; pagination: PaginationMeta },
@@ -117,7 +192,9 @@ export const incidentNotificationsApi = createApi({
         url: `/incident-notifications/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "IncidentNotification", id: String(id) }],
+      providesTags: (result, error, id) => [
+        { type: "IncidentNotification", id: String(id) },
+      ],
       transformResponse: (response: {
         data: IncidentNotification;
         error?: boolean;
@@ -148,7 +225,8 @@ export const incidentNotificationsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message || "Failed to create incident notification";
+              mutationError?.error?.data?.message ||
+              "Failed to create incident notification";
             toast.error(errorMessage);
           }
         }
@@ -176,7 +254,8 @@ export const incidentNotificationsApi = createApi({
           const mutationError = error as MutationError;
           if (!mutationError?.error?.data?.errors) {
             const errorMessage =
-              mutationError?.error?.data?.message || "Failed to update incident notification";
+              mutationError?.error?.data?.message ||
+              "Failed to update incident notification";
             toast.error(errorMessage);
           }
         }
@@ -199,7 +278,8 @@ export const incidentNotificationsApi = createApi({
         } catch (error) {
           const mutationError = error as MutationError;
           const errorMessage =
-            mutationError?.error?.data?.message || "Failed to delete incident notification";
+            mutationError?.error?.data?.message ||
+            "Failed to delete incident notification";
           toast.error(errorMessage);
         }
       },
@@ -214,4 +294,3 @@ export const {
   useUpdateIncidentNotificationMutation,
   useDeleteIncidentNotificationMutation,
 } = incidentNotificationsApi;
-

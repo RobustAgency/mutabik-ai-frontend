@@ -23,10 +23,25 @@ export interface OrganizationMember {
 
 export interface CreateOrganizationRequest {
     name: string;
-    website?: string;
-    phone?: string;
-    country: string;
-    is_active: number;
+    website?: string | null;
+    phone?: string | null;
+    country?: string | null;
+    is_active: boolean;
+}
+
+export interface UpdateOrganizationRequest {
+    name?: string;
+    website?: string | null;
+    phone?: string | null;
+    country?: string | null;
+    is_active?: boolean;
+}
+
+export interface OrganizationFilters {
+    page?: number;
+    per_page?: number;
+    search?: string;
+    is_active?: boolean;
 }
 
 export interface OrganizationsApiResponse {

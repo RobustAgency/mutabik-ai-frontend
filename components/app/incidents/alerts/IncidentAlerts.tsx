@@ -11,9 +11,14 @@ import {
   useDeleteIncidentAlertMutation,
   IncidentAlert,
   IncidentAlertFilters,
+  AlertSourceType,
+  AlertSeverity,
 } from "@/app/lib/features/incidentAlertsApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
+import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const IncidentAlerts: React.FC = () => {
   const router = useRouter();
@@ -27,14 +32,18 @@ const IncidentAlerts: React.FC = () => {
     alertId: null,
   });
 
-  const queryParams = React.useMemo(() => ({
-    ...filters,
-    page: currentPage,
-    per_page: 15,
-  }), [filters, currentPage]);
+  const queryParams = React.useMemo(
+    () => ({
+      ...filters,
+      page: currentPage,
+      per_page: 15,
+    }),
+    [filters, currentPage]
+  );
 
   const { data, isLoading } = useGetIncidentAlertsQuery(queryParams);
-  const [deleteAlert, { isLoading: isDeleting }] = useDeleteIncidentAlertMutation();
+  const [deleteAlert, { isLoading: isDeleting }] =
+    useDeleteIncidentAlertMutation();
 
   const alerts = data?.data ?? [];
   const pagination = data?.pagination;
@@ -74,6 +83,20 @@ const IncidentAlerts: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const SEVERITY_LABELS: Record<AlertSeverity, string> = {
+    [AlertSeverity.LOW]: "Low",
+    [AlertSeverity.MEDIUM]: "Medium",
+    [AlertSeverity.HIGH]: "High",
+    [AlertSeverity.CRITICAL]: "Critical",
+  };
+
+  const SEVERITY_COLORS: Record<AlertSeverity, string> = {
+    [AlertSeverity.LOW]: "bg-blue-100 text-blue-800",
+    [AlertSeverity.MEDIUM]: "bg-yellow-100 text-yellow-800",
+    [AlertSeverity.HIGH]: "bg-orange-100 text-orange-800",
+    [AlertSeverity.CRITICAL]: "bg-red-100 text-red-800",
+  };
+
   const columns: ColumnDef<IncidentAlert>[] = [
     {
       accessorKey: "display_id",
@@ -82,24 +105,47 @@ const IncidentAlerts: React.FC = () => {
           Alert ID
         </div>
       ),
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-          {getValue() as string}
+          {row.original.display_id || `#${row.original.id}`}
         </div>
       ),
     },
     {
-      accessorKey: "ai_incident_id",
+      id: "incident",
       header: () => (
         <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
-          Incident ID
+          Incident
         </div>
       ),
-      cell: ({ getValue }) => (
-        <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
-          #{getValue() as number}
+      cell: ({ row }) => {
+        const incident = row.original.ai_incident;
+        return (
+          <div className="font-sans font-medium text-sm leading-5 tracking-normal text-[#1D2939]">
+            {incident
+              ? `${incident.display_id || `#${incident.id}`} - ${
+                  incident.title
+                }`
+              : `#${row.original.ai_incident_id}`}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "alert_sensitivity",
+      header: () => (
+        <div className="font-sans font-medium text-[12px] leading-4 tracking-normal text-[#667085]">
+          Sensitivity
         </div>
       ),
+      cell: ({ getValue }) => {
+        const sensitivity = getValue() as AlertSeverity;
+        return (
+          <Badge className={SEVERITY_COLORS[sensitivity]}>
+            {SEVERITY_LABELS[sensitivity]}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "source_type",
@@ -109,14 +155,14 @@ const IncidentAlerts: React.FC = () => {
         </div>
       ),
       cell: ({ getValue }) => {
-        const sourceType = (getValue() as string) || "";
-        const labelMap: Record<string, string> = {
-          kri: "KRI",
-          monitoring_rule: "Monitoring Rule",
-          human_report: "Human Report",
-          vendor_notice: "Vendor Notice",
-          security_tool: "Security Tool",
-          other: "Other",
+        const sourceType = getValue() as AlertSourceType;
+        const labelMap: Record<AlertSourceType, string> = {
+          [AlertSourceType.MONITORING_RULE]: "Monitoring Rule",
+          [AlertSourceType.KRI_THRESHOLD]: "KRI Threshold",
+          [AlertSourceType.MANUAL_REPORT]: "Manual Report",
+          [AlertSourceType.AUTOMATED_SCAN]: "Automated Scan",
+          [AlertSourceType.USER_COMPLAINT]: "User Complaint",
+          [AlertSourceType.EXTERNAL_REPORT]: "External Report",
         };
         return (
           <div className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
@@ -148,23 +194,29 @@ const IncidentAlerts: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/governance/incidents/alerts/${row.original.id}/edit`);
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(
+                    `/governance/incidents/alerts/${row.original.id}/edit`
+                  );
+                }}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -193,12 +245,16 @@ const IncidentAlerts: React.FC = () => {
                   setCurrentPage(1);
                 }}
               />
-              <Button
-                onClick={() => router.push("/governance/incidents/alerts/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Alert
-              </Button>
+              <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_CREATE}>
+                <Button
+                  onClick={() =>
+                    router.push("/governance/incidents/alerts/create")
+                  }
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Alert
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-0">
@@ -207,14 +263,18 @@ const IncidentAlerts: React.FC = () => {
               data={alerts}
               variant="projects"
               loading={isLoading}
+              serverSide={true}
+              onRowClick={(row) =>
+                router.push(`/governance/incidents/alerts/${row.id}/details`)
+              }
               pagination={
                 pagination
                   ? {
-                    page: pagination.current_page,
-                    limit: pagination.per_page,
-                    total: pagination.total,
-                    totalPages: pagination.last_page,
-                  }
+                      page: pagination.current_page,
+                      limit: pagination.per_page,
+                      total: pagination.total,
+                      totalPages: pagination.last_page,
+                    }
                   : undefined
               }
               onPageChange={handlePageChange}
@@ -222,11 +282,15 @@ const IncidentAlerts: React.FC = () => {
                 title: "No alerts found",
                 description: "Get started by creating your first alert",
                 action: (
-                  <Button
-                    onClick={() => router.push("/governance/incidents/alerts/create")}
-                  >
-                    Create Alert
-                  </Button>
+                  <PermissionGate permission={PERMISSIONS.INCIDENT_ALERTS_CREATE}>
+                    <Button
+                      onClick={() =>
+                        router.push("/governance/incidents/alerts/create")
+                      }
+                    >
+                      Create Alert
+                    </Button>
+                  </PermissionGate>
                 ),
               }}
             />
@@ -251,4 +315,3 @@ const IncidentAlerts: React.FC = () => {
 };
 
 export default IncidentAlerts;
-

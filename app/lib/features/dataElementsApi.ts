@@ -1,23 +1,105 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/lib/api/baseApi";
 import { toast } from "react-toastify";
-import { axiosBaseQuery, MutationError, hasValidationErrors } from "@/lib/api/rtkQueryBase";
+import { MutationError, hasValidationErrors, PaginationMeta } from "@/lib/api/rtkQueryBase";
+
+export enum DataType {
+  STRING = "string",
+  VARCHAR = "varchar",
+  INTEGER = "integer",
+  BIGINT = "bigint",
+  DECIMAL = "decimal",
+  FLOAT = "float",
+  BOOLEAN = "boolean",
+  DATE = "date",
+  DATETIME = "datetime",
+  TIMESTAMP = "timestamp",
+  UUID = "uuid",
+  JSON = "json",
+  ARRAY = "array",
+  BINARY = "binary",
+  BLOB = "blob",
+  VECTOR = "vector",
+  ENUM = "enum",
+}
+
+export enum Sensitivity {
+  PUBLIC = "Public",
+  INTERNAL = "Internal",
+  CONFIDENTIAL = "Confidential",
+  RESTRICTED = "Restricted",
+}
+
+export enum DataSteward {
+  DATA_ENGINEERING_TEAM = "data_engineering_team",
+  ML_PLATFORM_TEAM = "ml_platform_team",
+  PRIVACY_OFFICE = "privacy_office",
+  AI_GOVERNANCE_BOARD = "ai_governance_board",
+}
+
+export enum Status {
+  ACTIVE = "active",
+  DEPRECATED = "deprecated",
+  RETIRED = "retired",
+}
+
+export enum PersonalDataCategory {
+  DIRECT_IDENTIFIER = "direct_identifier",
+  CONTACT_INFORMATION = "contact_information",
+  FINANCIAL_DATA = "financial_data",
+  DEMOGRAPHIC = "demographic",
+  BEHAVIORAL = "behavioral",
+  LOCATION = "location",
+  BIOMETRIC = "biometric",
+  HEALTH = "health",
+  GENETIC = "genetic",
+  POLITICAL = "political",
+  RELIGIOUS = "religious",
+  RACIAL = "racial",
+  SEXUAL = "sexual",
+  CRIMINAL = "criminal",
+  CHILDREN = "children",
+}
+
+export enum DefaultMaskingMethod {
+  NONE = "none",
+  TOKENIZATION = "tokenization",
+  HASHING = "hashing",
+  ENCRYPTION = "encryption",
+  REDACTION = "redaction",
+  GENERALIZATION = "generalization",
+  K_ANONYMITY = "k_anonymity",
+  DIFFERENTIAL_PRIVACY = "differential_privacy",
+  PSEUDONYMIZATION = "pseudonymization",
+}
 
 // Types for data elements
 export interface DataElement {
-  id: string;
+  id: number;
+  display_id?: string;
   name: string;
-  business_definition: string | null;
-  data_type: string;
+  data_type: DataType;
   format: string | null;
-  sensitivity: string;
-  pii_flag: string;
-  personal_data_category: string | null;
-  special_category_flag: string;
-  cde_flag: string;
-  cde_category: string | null;
-  owner_team: string | null;
-  quality_rules_ref: string | null;
-  catalog_column_id: string | null;
+  business_definition: string;
+  data_steward: DataSteward;
+  status: Status;
+  data_source_id: number;
+  database_name: string;
+  schema_name: string | null;
+  table_name: string;
+  column_name: string;
+  used_in_datasets: string[] | null;
+  is_nullable: boolean | null;
+  is_unique: boolean | null;
+  default_value: string | null;
+  validation_rule: string | null;
+  sample_values: string | null;
+  sensitivity: Sensitivity;
+  contains_personal_data: 0 | 1;
+  personal_data_type: PersonalDataCategory | null;
+  contains_sensitive_data: 0 | 1 | null;
+  default_masking_method: DefaultMaskingMethod | null;
+  cde_flag: boolean | null;
+  cde_categories: string[];
   created_at: string;
   updated_at: string;
 }
@@ -35,67 +117,117 @@ export interface DataElementFilters {
 
 export interface CreateDataElementData {
   name: string;
-  business_definition?: string;
-  data_type: string;
-  format?: string;
-  sensitivity: string;
-  pii_flag: string;
-  personal_data_category?: string;
-  special_category_flag: string;
-  cde_flag: string;
-  cde_category?: string;
-  owner_team?: string;
-  quality_rules_ref?: string;
-  catalog_column_id?: string;
+  data_type: DataType;
+  format?: string | null;
+  business_definition: string;
+  data_steward: DataSteward;
+  status: Status;
+  data_source_id: number;
+  database_name: string;
+  schema_name?: string | null;
+  table_name: string;
+  column_name: string;
+  used_in_datasets?: string[] | null;
+  is_nullable?: boolean | null;
+  is_unique?: boolean | null;
+  default_value?: string | null;
+  validation_rule?: string | null;
+  sample_values?: string | null;
+  sensitivity: Sensitivity;
+  contains_personal_data: 0 | 1;
+  personal_data_type?: PersonalDataCategory | null;
+  contains_sensitive_data?: 0 | 1 | null;
+  default_masking_method?: DefaultMaskingMethod | null;
+  cde_flag?: boolean | null;
+  cde_categories: string[];
 }
 
-export const dataElementsApi = createApi({
-  reducerPath: "dataElementsApi",
-  baseQuery: axiosBaseQuery(),
-  tagTypes: ["DataElement"],
+export interface DataElementListResponse {
+  data: {
+    data: DataElement[];
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    from: number;
+    to: number;
+  };
+  error?: boolean;
+  message?: string;
+}
+
+export interface DataElementItemResponse {
+  data: DataElement;
+  error?: boolean;
+  message?: string;
+}
+
+export const dataElementsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getDataElements: builder.query<DataElement[], DataElementFilters | void>({
-      query: (filters) => ({
+    getDataElements: builder.query<
+      { data: DataElement[]; pagination?: PaginationMeta },
+      DataElementFilters | void
+    >({
+      query: (filters = {}) => ({
         url: "/data-elements",
         method: "GET",
-        params: filters ?? undefined,
+        params: filters,
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "DataElement" as const, id })),
+              ...result.data.map(({ id }) => ({
+                type: "DataElement" as const,
+                id: String(id),
+              })),
               { type: "DataElement", id: "LIST" },
             ]
           : [{ type: "DataElement", id: "LIST" }],
-      transformResponse: (response: {
-        data: {
-          data: DataElement[];
-          current_page: number;
-          total: number;
-        };
-        error?: boolean;
-        message?: string;
-      }) => {
+      transformResponse: (response: DataElementListResponse) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
-          return response.data.data;
+          const { current_page, per_page, total, last_page } = response.data;
+          const from = (current_page - 1) * per_page + 1;
+          const to = Math.min(current_page * per_page, total);
+          // Transform cde_flag from string "1"/"0" to boolean
+          const transformedData = response.data.data.map((element) => ({
+            ...element,
+            cde_flag: typeof element.cde_flag === "string" 
+              ? (element.cde_flag === "1" || element.cde_flag === "true")
+              : element.cde_flag,
+          }));
+          return {
+            data: transformedData,
+            pagination: {
+              current_page,
+              per_page,
+              total,
+              last_page,
+              from,
+              to,
+            },
+          };
         }
-        return [];
+        return { data: [] };
       },
     }),
 
-    getDataElement: builder.query<DataElement, string>({
+    getDataElement: builder.query<DataElement, string | number>({
       query: (id) => ({
         url: `/data-elements/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "DataElement", id }],
-      transformResponse: (response: {
-        data: DataElement;
-        error?: boolean;
-        message?: string;
-      }) => {
+      providesTags: (result, error, id) => [
+        { type: "DataElement", id: String(id) },
+      ],
+      transformResponse: (response: DataElementItemResponse) => {
         if (response.data) {
-          return response.data;
+          // Transform cde_flag from string "1"/"0" to boolean
+          return {
+            ...response.data,
+            cde_flag: typeof response.data.cde_flag === "string" 
+              ? (response.data.cde_flag === "1" || response.data.cde_flag === "true")
+              : response.data.cde_flag,
+          };
         }
         return response as unknown as DataElement;
       },
@@ -126,7 +258,7 @@ export const dataElementsApi = createApi({
 
     updateDataElement: builder.mutation<
       DataElement,
-      { id: string; data: Partial<CreateDataElementData> }
+      { id: string | number; data: Partial<CreateDataElementData> }
     >({
       query: ({ id, data }) => ({
         url: `/data-elements/${id}`,
@@ -134,7 +266,7 @@ export const dataElementsApi = createApi({
         data: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "DataElement", id },
+        { type: "DataElement", id: String(id) },
         { type: "DataElement", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -153,13 +285,13 @@ export const dataElementsApi = createApi({
       },
     }),
 
-    deleteDataElement: builder.mutation<void, string>({
+    deleteDataElement: builder.mutation<void, string | number>({
       query: (id) => ({
         url: `/data-elements/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "DataElement", id },
+        { type: "DataElement", id: String(id) },
         { type: "DataElement", id: "LIST" },
       ],
       async onQueryStarted(_, { queryFulfilled }) {

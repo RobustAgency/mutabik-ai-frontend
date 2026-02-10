@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useGetUserFrameworksQuery } from "@/app/lib/features/frameworksApi";
 import { useGetOrganizationUsersQuery } from "@/app/lib/features/usersApi";
 import { useGetAiModelsQuery } from "@/app/lib/features/aiModelsApi";
@@ -77,7 +76,6 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
   title,
   description,
 }) => {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [jurisdictionText, setJurisdictionText] = useState("");
   const [commitmentsText, setCommitmentsText] = useState("");
@@ -86,7 +84,8 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
   // Fetch data for dropdowns
   const { data: frameworksData } = useGetUserFrameworksQuery({ per_page: 100 });
   const frameworks = frameworksData?.data ?? [];
-  const { data: users = [] } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const { data: usersResponse } = useGetOrganizationUsersQuery({ per_page: 100 });
+  const users = usersResponse?.data ?? [];
   const { data: aiModels = [] } = useGetAiModelsQuery({ per_page: 100 });
 
   const methods = useForm<RegulatorySubmissionFormData>({
@@ -97,7 +96,6 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
 
   const {
     handleSubmit,
-    register,
     setValue,
     watch,
     trigger,
@@ -107,7 +105,6 @@ export const RegulatorySubmissionForm: React.FC<RegulatorySubmissionFormProps> =
 
   const watchedJurisdiction = watch("jurisdiction");
   const watchedCommitments = watch("commitments");
-  const watchedEvidenceBundleIds = watch("evidence_bundle_ids");
 
   // Helper function to parse date strings to YYYY-MM-DD format for HTML date inputs
   const parseDateForInput = (dateString: string | null | undefined): string => {

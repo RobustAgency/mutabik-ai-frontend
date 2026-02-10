@@ -4,6 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 import { useGetCommitteeMembershipQuery } from "@/app/lib/features/committeeMembershipsApi";
 import { useGetAiCommitteesQuery } from "@/app/lib/features/aiCommitteesApi";
 import { useGetStakeholdersQuery } from "@/app/lib/features/stakeholdersApi";
@@ -43,12 +45,13 @@ const CommitteeMembershipDetails: React.FC<CommitteeMembershipDetailsProps> = ({
   const router = useRouter();
   const { data: membership, isLoading } = useGetCommitteeMembershipQuery(membershipId);
   const { data: committeesData } = useGetAiCommitteesQuery({ per_page: 100 });
-  const { data: stakeholders = [] } = useGetStakeholdersQuery();
+  const { data: stakeholdersResponse } = useGetStakeholdersQuery({ per_page: 100 });
+  const stakeholders = stakeholdersResponse?.data || [];
 
   const committees = committeesData?.data ?? [];
   const committee = committees.find((c) => c.id === membership?.ai_committee_id);
   const stakeholder = stakeholders.find(
-    (s) => parseInt(s.id, 10) === membership?.stakeholder_id
+    (s) => s.id === membership?.stakeholder_id
   );
 
   if (isLoading) {
@@ -88,12 +91,14 @@ const CommitteeMembershipDetails: React.FC<CommitteeMembershipDetailsProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/governance/committee-memberships/${membershipId}/edit`)}
-            >
-              Edit
-            </Button>
+            <PermissionGate permission={PERMISSIONS.COMMITTEE_MEMBERSHIPS_EDIT}>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/governance/committee-memberships/${membershipId}/edit`)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
             <Button
               variant="outline"
               onClick={() => router.push("/governance/committee-memberships")}

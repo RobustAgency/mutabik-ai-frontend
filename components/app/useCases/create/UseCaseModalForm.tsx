@@ -12,22 +12,17 @@ import UseCaseClassification from "./UseCaseClassification";
 import GovernanceRisk from "./GovernanceRisk";
 import DataAssesment from "./DataAssesment";
 import { FormDataType } from "../types/useCaseTypes";
+import { USE_CASE_WIZARD_STEPS } from "../constants";
 
 interface UseCaseModalFormProps {
   onSuccess?: (useCase: any) => void;
-  // onCancel is not used since the wizard handles its own navigation
+  onCancel?: () => void;
+  // onCancel is optional since the wizard handles its own navigation, but needed for SelectWithInlineCreate
 }
-
-const WIZARD_STEPS = [
-  { id: 1, title: "Basic Information", description: "Core details" },
-  { id: 2, title: "ROI & Business Impact", description: "Financial metrics" },
-  { id: 3, title: "Use Case Classification", description: "Priority & ROI" },
-  { id: 4, title: "Governance & Risk", description: "Risk assessment" },
-  { id: 5, title: "Data Assessment", description: "Data readiness" },
-];
 
 const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
   onSuccess,
+  onCancel,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [createUseCase, { isLoading }] = useCreateUseCaseMutation();
@@ -161,7 +156,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
   // Handle next step
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+      setCurrentStep((prev) => Math.min(prev + 1, USE_CASE_WIZARD_STEPS.length));
       setValidationErrors({});
     }
   };
@@ -309,7 +304,7 @@ const UseCaseModalForm: React.FC<UseCaseModalFormProps> = ({
       {/* Multi-Step Wizard */}
       <MultiStepWizard
         currentStep={currentStep}
-        steps={WIZARD_STEPS}
+        steps={USE_CASE_WIZARD_STEPS}
         onNext={handleNext}
         onPrevious={handlePrevious}
         onSubmit={handleSubmit}

@@ -11,6 +11,8 @@ import {
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { formatDateShort } from "@/lib/helpers/date";
 import type { ComplianceEvidence } from "@/interfaces/ComplianceEvidence";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ComplianceEvidenceDetailsProps {
   id: string;
@@ -105,21 +107,25 @@ const ComplianceEvidenceDetails: React.FC<ComplianceEvidenceDetailsProps> = ({
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    router.push(`/compliance-evidences/${evidence.id}/edit`)
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                  onClick={() => setDeleteDialogOpen(true)}
-                >
-                  Delete
-                </Button>
+                <PermissionGate permission={PERMISSIONS.COMPLIANCE_EVIDENCES_EDIT}>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/compliance-evidences/${evidence.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </Button>
+                </PermissionGate>
+                <PermissionGate permission={PERMISSIONS.COMPLIANCE_EVIDENCES_DELETE}>
+                  <Button
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                </PermissionGate>
                 <Button
                   variant="ghost"
                   onClick={() => router.push("/compliance-evidences")}

@@ -59,12 +59,13 @@ const EditAgreement: React.FC = () => {
         audit_rights: (agreement.audit_rights as any) ?? "",
         transfer_mechanism: (agreement.transfer_mechanism as any) ?? "",
         doc_ref: agreement.doc_ref ?? "",
-        availability_target_pct: agreement.sla_terms?.availability_target_pct?.toString() ?? "",
-        latency_p95_ms: agreement.sla_terms?.latency_p95_ms?.toString() ?? "",
-        support_tier: agreement.sla_terms?.support_tier ?? "",
-        breach_definition: agreement.sla_terms?.breach_definition ?? "",
-        credit_schedule_ref: agreement.sla_terms?.credit_schedule_ref ?? "",
-        monitoring_ref: agreement.sla_terms?.monitoring_ref ?? "",
+        // SLA terms removed - not in new backend structure
+        availability_target_pct: "",
+        latency_p95_ms: "",
+        support_tier: "",
+        breach_definition: "",
+        credit_schedule_ref: "",
+        monitoring_ref: "",
       });
 
       // Set dates

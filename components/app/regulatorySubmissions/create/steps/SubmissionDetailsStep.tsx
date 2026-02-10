@@ -71,6 +71,7 @@ export const SubmissionDetailsStep: React.FC<SubmissionDetailsStepProps> = ({
           Submitted By <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`submitted_by-${watchedSubmittedBy || "none"}`}
           value={watchedSubmittedBy ? String(watchedSubmittedBy) : ""}
           onValueChange={(value) => {
             if (value) {
