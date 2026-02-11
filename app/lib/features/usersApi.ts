@@ -78,6 +78,17 @@ export interface RevokePermissionRequest {
   permissionId: number;
 }
 
+/* -------------------- Import Users Types -------------------- */
+
+export interface ImportUsersRequest {
+  file: File;
+}
+
+export interface ImportUsersResponse {
+  error: boolean;
+  message: string;
+}
+
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], UserFilters | void>({
@@ -99,7 +110,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
     getOrganizationUsers: builder.query<UsersWithPagination, UserFilters | void>({
       query: (filters) => ({
-        url: "/members",
+        url: "/users",
         method: "GET",
         params: filters ?? undefined,
       }),
@@ -216,6 +227,25 @@ export const usersApi = baseApi.injectEndpoints({
         } catch { /* handled elsewhere */ }
       },
     }),
+    importUsers: builder.mutation<ImportUsersResponse, ImportUsersRequest>({
+      query: ({ file }) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        return {
+          url: "/users/import",
+          method: "POST",
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
+      },
+      invalidatesTags: [
+        { type: "User", id: "LIST" },
+        { type: "User", id: "ORG_LIST" },
+      ],
+    }),
   }),
 });
 
@@ -228,5 +258,6 @@ export const {
   useRevokeRoleMutation,
   useAssignPermissionMutation,
   useRevokePermissionMutation,
+  useImportUsersMutation,
 } = usersApi;
 

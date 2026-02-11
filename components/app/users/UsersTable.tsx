@@ -4,14 +4,20 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/custom/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
-import { useGetOrganizationUsersQuery, User, useDeleteUserMutation } from "@/app/lib/features/usersApi";
+import {
+  useGetOrganizationUsersQuery,
+  User,
+  useDeleteUserMutation,
+} from "@/app/lib/features/usersApi";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 import InviteUsersDialog from "./InviteUsersDialog";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { ManageUserAccessDialog } from "@/components/app/users/ManageUserAccessDialog";
 import { ManageUserRoleDialog } from "@/components/app/users/ManageUserRoleDialog";
+import { UsersImportDialog } from "@/components/app/users/UsersImportDialog";
+import { UserActionsCell } from "@/components/app/users/UserActionsCell";
+import { UserRoleBadge } from "@/components/app/users/UserRoleBadge";
 
 const UsersTable: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -21,6 +27,7 @@ const UsersTable: React.FC = () => {
   const [permissionDialogUser, setPermissionDialogUser] =
     React.useState<User | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   
   const queryParams = React.useMemo(
     () => ({ per_page: 10, page: currentPage }),
@@ -64,66 +71,6 @@ const UsersTable: React.FC = () => {
     }
   };
 
-  const getRoleBadge = (role?: string) => {
-    if (!role) {
-      return <Badge variant="light" className="bg-gray-100 text-gray-700">—</Badge>;
-    }
-
-    // Normalize role to uppercase for comparison (API returns lowercase)
-    const normalizedRole = role.toUpperCase().replace(/-/g, "_");
-
-    const config: Record<
-      string,
-      { label: string; className: string }
-    > = {
-      PROJECT_LEAD: {
-        label: "Project Lead",
-        className: "bg-blue-100 text-blue-800",
-      },
-      REVIEWER: {
-        label: "Reviewer",
-        className: "bg-purple-100 text-purple-800",
-      },
-      CONTRIBUTOR: {
-        label: "Contributor",
-        className: "bg-green-100 text-green-800",
-      },
-      AUDITOR: {
-        label: "Auditor",
-        className: "bg-yellow-100 text-yellow-800",
-      },
-      OWNER: {
-        label: "Owner",
-        className: "bg-indigo-100 text-indigo-800",
-      },
-      ADMIN: {
-        label: "Admin",
-        className: "bg-red-100 text-red-800",
-      },
-      SUPER_ADMIN: {
-        label: "Super Admin",
-        className: "bg-gray-800 text-white",
-      },
-    };
-
-    const roleConfig = config[normalizedRole];
-
-    if (!roleConfig) {
-      return (
-        <Badge variant="light" className="bg-gray-100 text-gray-700">
-          {role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, " ")}
-        </Badge>
-      );
-    }
-
-    return (
-      <Badge variant="light" className={roleConfig.className}>
-        {roleConfig.label}
-      </Badge>
-    );
-  };
-
-
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
@@ -159,33 +106,13 @@ const UsersTable: React.FC = () => {
         <div className="text-sm font-medium text-[#667085]">Actions</div>
       ),
       cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={(e) => handleManageRoleClick(e, row.original)}
-            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
-          >
-            <span>Permission set</span>
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={(e) => handleManagePermissionsClick(e, row.original)}
-            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
-          >
-            <span>Direct permissions</span>
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={(e) => handleDeleteClick(e, row.original)}
-            disabled={isDeleting}
-            className="text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-200"
-          >
-            <span>Remove</span>
-          </Button>
-        </div>
+        <UserActionsCell
+          user={row.original}
+          onManageRole={handleManageRoleClick}
+          onManagePermissions={handleManagePermissionsClick}
+          onDelete={handleDeleteClick}
+          isDeleting={isDeleting}
+        />
       ),
     },
   ];
@@ -199,12 +126,22 @@ const UsersTable: React.FC = () => {
               <h2 className="font-medium text-sm text-[#000000]">Users</h2>
               <p className="text-sm text-[#667085]">Manage organization users</p>
             </div>
-            <Button 
-              onClick={() => setInviteDialogOpen(true)}
-              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              Invite
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setImportDialogOpen(true)}
+                className="h-10 text-sm font-medium px-4 border-gray-300"
+              >
+                Import CSV
+              </Button>
+              <Button 
+                onClick={() => setInviteDialogOpen(true)}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                Invite
+              </Button>
+            </div>
           </div>
 
           <DataTable
@@ -245,6 +182,12 @@ const UsersTable: React.FC = () => {
         open={inviteDialogOpen}
         onOpenChange={setInviteDialogOpen}
         onInviteSuccess={() => setCurrentPage(1)}
+      />
+
+      <UsersImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImportSuccess={() => setCurrentPage(1)}
       />
 
       <ManageUserRoleDialog
