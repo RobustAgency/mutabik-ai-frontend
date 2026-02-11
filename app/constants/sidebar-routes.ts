@@ -502,11 +502,12 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    href: "/administration",
+    href: "/users",
     label: "Administration",
     icon: Settings,
     children: [
-      { href: "/administration/users", label: "Users & Roles", icon: UserCog },
+      { href: "/users", label: "Users", icon: Users },
+      { href: "/administration/users", label: "Roles", icon: UserCog },
       {
         href: "/administration/integrations",
         label: "Integrations & Connectors",
@@ -523,10 +524,5 @@ export const userRoutes: RouteItem[] = [
         icon: BellDot,
       },
     ],
-  },
-  {
-    href: "/users",
-    label: "Users",
-    icon: Users,
   },
 ];
