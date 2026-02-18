@@ -1,6 +1,6 @@
-
-
 import EditStakeholderWizard from "@/components/app/stakeholders/edit/EditStakeholderWizard";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface StakeholderEditPageProps {
   params: Promise<{ id: string }>;
@@ -9,9 +9,11 @@ interface StakeholderEditPageProps {
 const StakeholderEditPage = async ({ params }: StakeholderEditPageProps) => {
   const { id } = await params;
   return (
-    <div>
-      <EditStakeholderWizard stakeholderId={id} />
-    </div>
+    <PermissionPage permission={PERMISSIONS.STAKEHOLDERS_EDIT}>
+      <div>
+        <EditStakeholderWizard stakeholderId={id} />
+      </div>
+    </PermissionPage>
   )
 };
 

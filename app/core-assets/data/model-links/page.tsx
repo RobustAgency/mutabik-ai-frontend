@@ -12,6 +12,7 @@ import { useGetModelDatasetLinksQuery, ModelDatasetLink, ModelDatasetLinkFilters
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
 import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PermissionGate } from "@/components/auth/PermissionGate";
 import { PERMISSIONS } from "@/constants/permissions";
 
 const ModelDatasetLinksPage: React.FC = () => {
@@ -166,16 +167,18 @@ const ModelDatasetLinksPage: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/core-assets/data/model-links/${row.original.id}/edit`);
-              }}
-            >
-              Edit
-            </Button>
+            <PermissionGate permission={PERMISSIONS.AI_MODEL_DATASETS_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/core-assets/data/model-links/${row.original.id}/edit`);
+                }}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -200,12 +203,14 @@ const ModelDatasetLinksPage: React.FC = () => {
                 setCurrentPage(1); // Reset to first page when filters change
               }}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/model-links/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Link
-              </Button>
+              <PermissionGate permission={PERMISSIONS.AI_MODEL_DATASETS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/model-links/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Link
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
