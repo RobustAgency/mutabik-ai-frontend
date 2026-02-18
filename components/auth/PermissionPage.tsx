@@ -1,34 +1,36 @@
 "use client";
 import { usePermissions } from "@/hooks/app/usePermissions";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import type { PermissionName } from "@/constants/permissions";
 import type { ReactNode } from "react";
+import { AccessDeniedPage } from "./AccessDeniedPage";
 
 interface PermissionPageProps {
   /** The permission required to view this page */
   permission: PermissionName;
   /** Where to redirect if user lacks permission (default: /dashboard) */
   redirectTo?: string;
+  /** Custom message to show when access is denied (optional) */
+  accessDeniedMessage?: string;
   children: ReactNode;
 }
 
 export function PermissionPage({
   permission,
   redirectTo = "/dashboard",
+  accessDeniedMessage,
   children,
 }: PermissionPageProps) {
   const { hasPermission } = usePermissions();
-  const router = useRouter();
   const allowed = hasPermission(permission);
 
-  useEffect(() => {
-    if (!allowed) {
-      router.replace(redirectTo);
-    }
-  }, [allowed, redirectTo, router]);
-
-  if (!allowed) return null;
+  if (!allowed) {
+    return (
+      <AccessDeniedPage
+        message={accessDeniedMessage}
+        redirectTo={redirectTo}
+      />
+    );
+  }
 
   return <>{children}</>;
 }
