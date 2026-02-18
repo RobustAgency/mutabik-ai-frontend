@@ -11,10 +11,12 @@ import { useMemo } from "react";
 
 /**
  * Recursively filters routes based on user permissions.
- * - Routes without a `permission` field are always visible.
  * - Routes with a `permission` field require the user to have that permission.
- * - Parent routes (with children) stay visible if at least one child is visible,
- *   even if the parent itself has a permission the user lacks.
+ *   However, if a parent route lacks permission but has visible children, show it as a container.
+ * - Parent routes (routes with children) are completely hidden if:
+ *   1. They have a permission requirement AND user doesn't have it AND no children are visible, OR
+ *   2. All their children are filtered out (no visible children)
+ * - Leaf routes (routes without children) require the permission if specified.
  */
 function filterRoutesByPermission(
   routes: RouteItem[],
@@ -23,23 +25,48 @@ function filterRoutesByPermission(
 ): RouteItem[] {
   return routes
     .map((route) => {
-      // Recursively filter children first
       const filteredChildren = route.children
         ? filterRoutesByPermission(route.children, permissionSet, isSuperAdmin)
         : undefined;
 
-      // If route has a permission requirement, check it
-      if (route.permission && !isSuperAdmin && !permissionSet.has(route.permission)) {
-        // If it has visible children, keep parent as a container
-        if (filteredChildren && filteredChildren.length > 0) {
-          return { ...route, children: filteredChildren };
+      const hasVisibleChildren = filteredChildren && filteredChildren.length > 0;
+      const hasValidHref = route.href && route.href.trim() !== "";
+      const hasChildren = route.children && route.children.length > 0;
+
+      if (route.permission) {
+        if (isSuperAdmin) {
+          if (hasChildren && !hasVisibleChildren) {
+            return null;
+          }
+          return {
+            ...route,
+            children: hasVisibleChildren ? filteredChildren : undefined,
+          };
         }
+        
+        if (!permissionSet.has(route.permission)) {
+          if (hasChildren && hasVisibleChildren) {
+            return {
+              ...route,
+              href: "",
+              children: filteredChildren,
+            };
+          }
+          return null;
+        }
+      }
+
+      if (hasChildren && !hasVisibleChildren) {
+        return null;
+      }
+
+      if (!hasChildren && !hasValidHref) {
         return null;
       }
 
       return {
         ...route,
-        children: filteredChildren && filteredChildren.length > 0 ? filteredChildren : undefined,
+        children: hasVisibleChildren ? filteredChildren : undefined,
       };
     })
     .filter(Boolean) as RouteItem[];
@@ -63,14 +90,11 @@ export function Sidebar({
     [baseRoutes, permissionSet, isSuperAdmin]
   );
 
-  // Helper to recursively render routes and children
   const renderRoute = (item: RouteItem, depth = 0) => {
-    // Check if href is valid (not empty string)
     const hasValidHref = item.href && item.href.trim() !== "";
     const isActive = hasValidHref && (pathname === item.href || pathname.startsWith(item.href + "/"));
     const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
-    // If it has children (with or without href), render as Accordion
     if (hasChildren) {
       return (
         <div key={item.label + (item.href || '')} className={depth > 0 ? "ml-4" : ""}>
@@ -79,7 +103,7 @@ export function Sidebar({
             items={item.children ?? []}
             icon={item.icon ?? (() => null)}
             pathname={pathname}
-            href={item.href} // Pass href even if empty - Accordion will handle it
+            href={item.href}
             onNavigate={onNavigate}
             collapsed={collapsed}
             depth={depth}
@@ -88,9 +112,8 @@ export function Sidebar({
       );
     }
 
-    // Regular link item (no children) - must have valid href
     if (!hasValidHref) {
-      return null; // Don't render items without valid href and no children
+      return null;
     }
 
     return (
@@ -121,7 +144,6 @@ export function Sidebar({
 
   return (
     <div className="flex flex-col overflow-hidden w-full p-5">
-      {/* Logo */}
       <div
         aria-details="logo"
         className="flex items-center justify-between mb-9"
@@ -136,7 +158,6 @@ export function Sidebar({
         </Link>
       </div>
 
-      {/* Sidebar Navigation */}
       <div className="space-y-1">
         {navigationRoutes.map((item) => renderRoute(item))}
       </div>

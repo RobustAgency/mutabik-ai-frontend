@@ -11,6 +11,7 @@ import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { Badge } from "@/components/ui/badge";
 import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PermissionGate } from "@/components/auth/PermissionGate";
 import { PERMISSIONS } from "@/constants/permissions";
 
 const DatasetSnapshotsPage: React.FC = () => {
@@ -222,13 +223,15 @@ const DatasetSnapshotsPage: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.DATASET_SNAPSHOTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -253,12 +256,14 @@ const DatasetSnapshotsPage: React.FC = () => {
                   setCurrentPage(1); // Reset to first page when filters change
                 }}
               />
-              <Button
-                onClick={() => router.push("/core-assets/data/snapshots/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Snapshot
-              </Button>
+              <PermissionGate permission={PERMISSIONS.DATASET_SNAPSHOTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/core-assets/data/snapshots/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Snapshot
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
