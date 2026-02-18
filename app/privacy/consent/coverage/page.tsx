@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useGetConsentCoveragesQuery, useDeleteConsentCoverageMutation, ConsentCoverage } from "@/app/lib/features/consentCoverageApi";
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PermissionGate } from "@/components/auth/PermissionGate";
 import { PERMISSIONS } from "@/constants/permissions";
 
 const ConsentCoveragePage: React.FC = () => {
@@ -185,20 +186,24 @@ const ConsentCoveragePage: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleEditClick(e, row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.CONSENT_COVERAGES_EDIT}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleEditClick(e, row.original)}
+              >
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.CONSENT_COVERAGES_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -214,12 +219,14 @@ const ConsentCoveragePage: React.FC = () => {
               <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">Consent Coverage</h2>
               <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">Aggregated consent metrics for gate checks and compliance</p>
             </div>
-            <Button
-              onClick={() => router.push("/privacy/consent/coverage/create")}
-              className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-            >
-              New Coverage
-            </Button>
+            <PermissionGate permission={PERMISSIONS.CONSENT_COVERAGES_CREATE}>
+              <Button
+                onClick={() => router.push("/privacy/consent/coverage/create")}
+                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+              >
+                New Coverage
+              </Button>
+            </PermissionGate>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
             <DataTable

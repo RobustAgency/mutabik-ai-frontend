@@ -1,7 +1,7 @@
-
-
 import EditAiModelVersion from '@/components/app/aiModel/versions/EditAiModelVersion'
 import React from 'react'
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -10,9 +10,11 @@ interface PageProps {
 const page = async ({ params }: PageProps) => {
     const { id } = await params
     return (
-        <div>
-            <EditAiModelVersion versionId={parseInt(id)} />
-        </div>
+        <PermissionPage permission={PERMISSIONS.AI_MODEL_VERSIONS_EDIT}>
+            <div>
+                <EditAiModelVersion versionId={parseInt(id)} />
+            </div>
+        </PermissionPage>
     )
 }
 

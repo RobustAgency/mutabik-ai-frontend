@@ -1,4 +1,6 @@
 import EditAiRiskRegister from "@/components/app/aiRiskRegister/edit/EditAiRiskRegister";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default async function EditAiRiskRegisterPage({
   params,
@@ -6,6 +8,10 @@ export default async function EditAiRiskRegisterPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <EditAiRiskRegister riskId={id} />;
+  return (
+    <PermissionPage permission={PERMISSIONS.AI_RISK_REGISTER_EDIT}>
+      <EditAiRiskRegister riskId={id} />
+    </PermissionPage>
+  );
 }
 
