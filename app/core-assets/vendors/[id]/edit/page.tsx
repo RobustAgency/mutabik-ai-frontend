@@ -1,5 +1,7 @@
 import EditVendorWizard from "@/components/app/vendors/edit/EditVendorWizard";
 import React from "react";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface VendorEditPageProps {
   params: Promise<{ id: string }>;
@@ -11,18 +13,22 @@ const VendorEditPage = async ({ params }: VendorEditPageProps) => {
 
   if (isNaN(vendorId)) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="p-6 border-[#E4E7EC] shadow-none rounded-lg">
-          <p className="text-[#667085]">Invalid vendor ID</p>
+      <PermissionPage permission={PERMISSIONS.VENDORS_EDIT}>
+        <div className="max-w-7xl mx-auto">
+          <div className="p-6 border-[#E4E7EC] shadow-none rounded-lg">
+            <p className="text-[#667085]">Invalid vendor ID</p>
+          </div>
         </div>
-      </div>
+      </PermissionPage>
     );
   }
 
   return (
-    <div>
-      <EditVendorWizard vendorId={vendorId} />
-    </div>
+    <PermissionPage permission={PERMISSIONS.VENDORS_EDIT}>
+      <div>
+        <EditVendorWizard vendorId={vendorId} />
+      </div>
+    </PermissionPage>
   );
 };
 

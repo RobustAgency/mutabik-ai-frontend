@@ -12,6 +12,7 @@ import { useGetUserConsentsQuery, useDeleteUserConsentMutation, UserConsent, Use
 import ConfirmationDialog from "@/components/custom/ConfirmationDialog";
 import { DynamicFilter } from "@/components/custom/DynamicFilter";
 import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PermissionGate } from "@/components/auth/PermissionGate";
 import { PERMISSIONS } from "@/constants/permissions";
 
 const UserConsentsPage: React.FC = () => {
@@ -150,13 +151,15 @@ const UserConsentsPage: React.FC = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Button
-              variant={"outline"}
-              className="text-[#667085]"
-              onClick={(e) => handleDeleteClick(e, row.original)}
-            >
-              Remove
-            </Button>
+            <PermissionGate permission={PERMISSIONS.USER_CONSENTS_DELETE}>
+              <Button
+                variant={"outline"}
+                className="text-[#667085]"
+                onClick={(e) => handleDeleteClick(e, row.original)}
+              >
+                Remove
+              </Button>
+            </PermissionGate>
           </div>
         );
       },
@@ -178,12 +181,14 @@ const UserConsentsPage: React.FC = () => {
                 filters={filters}
                 onFiltersChange={(newFilters) => setFilters(newFilters as UserConsentFilters)}
               />
-              <Button
-                onClick={() => router.push("/privacy/consent/consents/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                New Consent
-              </Button>
+              <PermissionGate permission={PERMISSIONS.USER_CONSENTS_CREATE}>
+                <Button
+                  onClick={() => router.push("/privacy/consent/consents/create")}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  New Consent
+                </Button>
+              </PermissionGate>
             </div>
           </div>
           <Card className="bg-white w-full rounded-xl border-0 py-4">
