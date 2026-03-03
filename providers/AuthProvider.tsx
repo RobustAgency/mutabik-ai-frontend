@@ -43,14 +43,20 @@ export function AuthProvider({ children, initialUser = null, initialProfile = nu
     const userRole = user?.user_metadata?.role;
     const shouldFetchProfile = !!user?.id && userRole !== Role.ADMIN && userRole !== Role.SUPER_ADMIN;
 
-    const {
+    // const {
+    //     data: apiProfile,
+    //     refetch,
+    //     isLoading: isProfileLoading,
+    //     error: profileError,
+    // } = useGetProfileQuery(undefined, {
+    //     skip: !shouldFetchProfile,
+    // });
+     const {
         data: apiProfile,
         refetch,
         isLoading: isProfileLoading,
         error: profileError,
-    } = useGetProfileQuery(undefined, {
-        skip: !shouldFetchProfile,
-    });
+    } = useGetProfileQuery(undefined);
 
     // For super-admin / admin users we don't call the backend API,
     // so fall back to whatever initialProfile was provided (Supabase data).
