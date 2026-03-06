@@ -5,7 +5,8 @@ export type PermissionModule =
   | "core-assets"
   | "risk-management-and-compliance"
   | "privacy-and-data-protection"
-  | "governance-and-oversight";
+  | "governance-and-oversight"
+  | "administration";
 
 // ─── All Permission Name Constants ───
 // Generated from backend permission seeder. Format: {module}.{resource}.{action}
@@ -334,6 +335,27 @@ export const PERMISSIONS = {
   CAPA_EDIT: "governance-and-oversight.corrective-preventive-actions.edit",
   CAPA_DELETE: "governance-and-oversight.corrective-preventive-actions.delete",
   CAPA_APPROVE: "governance-and-oversight.corrective-preventive-actions.approve",
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ADMINISTRATION
+  // ═══════════════════════════════════════════════════════════════════
+
+  // Users
+  ADMIN_USERS_VIEW: "administration.users.view",
+  ADMIN_USERS_CREATE: "administration.users.create",
+  ADMIN_USERS_EDIT: "administration.users.edit",
+  ADMIN_USERS_DELETE: "administration.users.delete",
+  ADMIN_USERS_APPROVE: "administration.users.approve",
+
+  // Roles
+  ADMIN_ROLES_VIEW: "administration.roles.view",
+  ADMIN_ROLES_CREATE: "administration.roles.create",
+  ADMIN_ROLES_EDIT: "administration.roles.edit",
+  ADMIN_ROLES_DELETE: "administration.roles.delete",
+  ADMIN_ROLES_APPROVE: "administration.roles.approve",
+
+  // Permissions
+  ADMIN_PERMISSIONS_VIEW: "administration.permissions.view",
 } as const;
 
 export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

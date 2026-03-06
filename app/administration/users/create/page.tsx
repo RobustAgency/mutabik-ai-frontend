@@ -13,6 +13,8 @@ import {
 import { RolePermissionsMatrix } from "@/components/app/users/RolePermissionsMatrix";
 import type { PermissionsTree } from "@/app/lib/features/rolesApi";
 import { toast } from "react-toastify";
+import { PermissionPage } from "@/components/auth/PermissionPage";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const CreateRolePage: React.FC = () => {
   const router = useRouter();
@@ -56,69 +58,71 @@ const CreateRolePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <Card className="p-6 border-[#E4E7EC] shadow-none space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
-              Create role
-            </h1>
-            <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
-              Define a new role and assign permissions across modules.
-            </p>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2 max-w-md">
-            <Label htmlFor="role-name">Role name</Label>
-            <Input
-              id="role-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="e.g. Compliance Manager"
-            />
-            {nameError && (
-              <p className="text-sm text-red-500 mt-1">{nameError}</p>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
-              Permissions
-            </h2>
-            <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
-              Use the matrix below to configure which actions this role can
-              perform for each module and screen.
-            </p>
-            <RolePermissionsMatrix
-              permissionsTree={(permissionsTree as PermissionsTree) ?? {}}
-              selectedPermissionIds={selectedPermissionIds}
-              onChange={setSelectedPermissionIds}
-            />
-            {loadingPermissions && (
-              <p className="text-sm text-[#98A2B3] mt-2">
-                Loading permissions...
+    <PermissionPage permission={PERMISSIONS.ADMIN_ROLES_CREATE}>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <Card className="p-6 border-[#E4E7EC] shadow-none space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="font-sans font-semibold text-lg tracking-normal text-[#1D2939]">
+                Create role
+              </h1>
+              <p className="font-sans font-normal text-sm tracking-normal text-[#667085]">
+                Define a new role and assign permissions across modules.
               </p>
-            )}
+            </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/administration/users")}
-              disabled={creating}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={creating}>
-              {creating ? "Creating..." : "Create role"}
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2 max-w-md">
+              <Label htmlFor="role-name">Role name</Label>
+              <Input
+                id="role-name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="e.g. Compliance Manager"
+              />
+              {nameError && (
+                <p className="text-sm text-red-500 mt-1">{nameError}</p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
+                Permissions
+              </h2>
+              <p className="font-sans font-normal text-sm leading-5 tracking-normal text-[#667085]">
+                Use the matrix below to configure which actions this role can
+                perform for each module and screen.
+              </p>
+              <RolePermissionsMatrix
+                permissionsTree={(permissionsTree as PermissionsTree) ?? {}}
+                selectedPermissionIds={selectedPermissionIds}
+                onChange={setSelectedPermissionIds}
+              />
+              {loadingPermissions && (
+                <p className="text-sm text-[#98A2B3] mt-2">
+                  Loading permissions...
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push("/administration/users")}
+                disabled={creating}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={creating}>
+                {creating ? "Creating..." : "Create role"}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </PermissionPage>
   );
 };
 
