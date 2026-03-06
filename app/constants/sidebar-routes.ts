@@ -506,8 +506,18 @@ export const userRoutes: RouteItem[] = [
     label: "Administration",
     icon: Settings,
     children: [
-      { href: "/users", label: "Users", icon: Users },
-      { href: "/administration/users", label: "Roles", icon: UserCog },
+      {
+        href: "/users",
+        label: "Users",
+        icon: Users,
+        permission: "administration.users.view",
+      },
+      {
+        href: "/administration/users",
+        label: "Roles",
+        icon: UserCog,
+        permission: "administration.roles.view",
+      },
       {
         href: "/administration/integrations",
         label: "Integrations & Connectors",

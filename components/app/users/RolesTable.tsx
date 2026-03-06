@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/custom/DataTable";
 import { useGetRolesQuery } from "@/app/lib/features/rolesApi";
 import type { UserRole } from "@/interfaces/UserRole";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const RolesTable: React.FC = () => {
   const router = useRouter();
@@ -81,12 +83,14 @@ const RolesTable: React.FC = () => {
         <h2 className="font-sans font-medium text-sm leading-5 tracking-normal text-[#000000]">
           Users &amp; Roles
         </h2>
-        <Button
-          onClick={() => router.push("/administration/users/create")}
-          className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-        >
-          Add role
-        </Button>
+        <PermissionGate permission={PERMISSIONS.ADMIN_ROLES_CREATE}>
+          <Button
+            onClick={() => router.push("/administration/users/create")}
+            className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+          >
+            Add role
+          </Button>
+        </PermissionGate>
       </div>
       <Card className="bg-white w-full rounded-xl border-0 py-0">
         <DataTable
@@ -106,18 +110,20 @@ const RolesTable: React.FC = () => {
               : undefined
           }
           onPageChange={setPage}
-          emptyState={{
-            title: "No roles found",
-            description: "Get started by creating your first role",
-            action: (
-              <Button
-                onClick={() => router.push("/administration/users/create")}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Add role
-              </Button>
-            ),
-          }}
+            emptyState={{
+              title: "No roles found",
+              description: "Get started by creating your first role",
+              action: (
+                <PermissionGate permission={PERMISSIONS.ADMIN_ROLES_CREATE}>
+                  <Button
+                    onClick={() => router.push("/administration/users/create")}
+                    className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                  >
+                    Add role
+                  </Button>
+                </PermissionGate>
+              ),
+            }}
         />
       </Card>
     </Card>

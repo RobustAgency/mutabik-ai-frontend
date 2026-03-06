@@ -18,6 +18,8 @@ import { ManageUserRoleDialog } from "@/components/app/users/ManageUserRoleDialo
 import { UsersImportDialog } from "@/components/app/users/UsersImportDialog";
 import { UserActionsCell } from "@/components/app/users/UserActionsCell";
 import { UserRoleBadge } from "@/components/app/users/UserRoleBadge";
+import { PermissionGate } from "@/components/auth/PermissionGate";
+import { PERMISSIONS } from "@/constants/permissions";
 
 const UsersTable: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -127,20 +129,24 @@ const UsersTable: React.FC = () => {
               <p className="text-sm text-[#667085]">Manage organization users</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setImportDialogOpen(true)}
-                className="h-10 text-sm font-medium px-4 border-gray-300"
-              >
-                Import CSV
-              </Button>
-              <Button 
-                onClick={() => setInviteDialogOpen(true)}
-                className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
-              >
-                Invite
-              </Button>
+              <PermissionGate permission={PERMISSIONS.ADMIN_USERS_CREATE}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setImportDialogOpen(true)}
+                  className="h-10 text-sm font-medium px-4 border-gray-300"
+                >
+                  Import CSV
+                </Button>
+              </PermissionGate>
+              <PermissionGate permission={PERMISSIONS.ADMIN_USERS_CREATE}>
+                <Button
+                  onClick={() => setInviteDialogOpen(true)}
+                  className="h-10 bg-[#4FD58F] text-white text-sm font-medium px-4"
+                >
+                  Invite
+                </Button>
+              </PermissionGate>
             </div>
           </div>
 
